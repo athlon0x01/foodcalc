@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.domain.repository;
+package com.outdoor.foodcalc.domain.repository.product;
 
 /**
  * <description>
