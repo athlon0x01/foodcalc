@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @author Anton Borovyk
  */
-public class Category {
-    String name;
-    List<Product> products;
+public class CategoryModel {
+    public String name;
+    public List<ProductModel> products;
 }
