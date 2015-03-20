@@ -8,6 +8,7 @@ import com.outdoor.foodcalc.model.ProductModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -35,7 +36,8 @@ public class ProductService {
                 .map(c -> {
                     final CategoryModel cm = new CategoryModel();
                     cm.name = c.getName();
-                    cm.products = productsMap.get(c.getCategoryId()).stream()
+                    final List<Product> productList = productsMap.get(c.getCategoryId());
+                    cm.products = (productList == null) ? new ArrayList<>() : productList.stream()
                             .map(p -> {
                                 final ProductModel pm = new ProductModel();
                                 pm.name = p.getName();

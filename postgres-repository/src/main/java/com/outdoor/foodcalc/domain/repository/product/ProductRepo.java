@@ -2,9 +2,11 @@ package com.outdoor.foodcalc.domain.repository.product;
 
 import com.outdoor.foodcalc.domain.model.product.Category;
 import com.outdoor.foodcalc.domain.model.product.Product;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -18,6 +20,11 @@ import java.util.List;
 public class ProductRepo implements IProductRepo {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
+
+    @Autowired
+    public void setDataSource(DataSource dataSource) {
+        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    }
 
     @Override
     public List<Category> getCategories() {
@@ -36,8 +43,8 @@ public class ProductRepo implements IProductRepo {
 
     private Product mapProducts(ResultSet resultSet, long currentRow) throws SQLException {
         final Category category = new Category(resultSet.getInt("catId"), resultSet.getString("catName"));
-        return new Product(resultSet.getInt("id"),
-                resultSet.getString("name"),
+        return new Product(resultSet.getInt("productId"),
+                resultSet.getString("productName"),
                 category,
                 resultSet.getFloat("calorific"),
                 resultSet.getFloat("proteins"),

@@ -1,4 +1,4 @@
---PostgeSQL implementation of Food Calculator
+﻿--PostgeSQL implementation of Food Calculator
 
 --product related tables
 CREATE TABLE product_categories (
@@ -9,7 +9,7 @@ CREATE TABLE product_categories (
 CREATE TABLE products (
 	id serial PRIMARY KEY,
 	name varchar(64) NOT NULL,
-	category smallint REFERENCES product_category,
+	category smallint REFERENCES product_categories,
 	calorific real DEFAULT 0.0,
 	proteins real DEFAULT 0.0,
 	fats real DEFAULT 0.0,
@@ -27,7 +27,7 @@ CREATE TABLE dishes (
 	id serial PRIMARY KEY,
 	name varchar(64) NOT NULL,
 	description varchar(1024),
-	category smallint REFERENCES dish_category,
+	category smallint REFERENCES dish_categories,
 	calorific real DEFAULT 0.0,
 	proteins real DEFAULT 0.0,
 	fats real DEFAULT 0.0,
@@ -64,7 +64,7 @@ CREATE TABLE grocery_layouts (
 CREATE TABLE layout_days (
 	id serial PRIMARY KEY,
 	day_index smallint NOT NULL,
-	layout integer REFERENCES products_layouts,
+	layout integer REFERENCES grocery_layouts,
 	day_date date,
 	description varchar(1024)
 );
