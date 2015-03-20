@@ -10,4 +10,12 @@ import java.util.List;
 public class CategoryModel {
     public String name;
     public List<ProductModel> products;
+
+    public String getName() {
+        return name;
+    }
+
+    public List<ProductModel> getProducts() {
+        return products;
+    }
 }
