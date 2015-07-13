@@ -1,11 +1,13 @@
 package com.outdoor.foodcalc.domain.model.product;
 
+import com.outdoor.foodcalc.domain.model.IDomainEntity;
+
 /**
  * Product entity (bread, butter, milk, etc.)
  *
  * @author Anton Borovyk
  */
-public class Product {
+public class Product implements IDomainEntity<Product> {
 
     private final int productId;
     private String name;
@@ -98,5 +100,10 @@ public class Product {
 
     public void setDefaultWeight(float defaultWeight) {
         this.defaultWeight = defaultWeight;
+    }
+
+    @Override
+    public boolean sameIdentityAs(Product other) {
+        return productId == other.productId;
     }
 }

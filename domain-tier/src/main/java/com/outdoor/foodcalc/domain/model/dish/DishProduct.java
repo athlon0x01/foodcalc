@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
+import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.product.Product;
 
 /**
@@ -7,7 +8,7 @@ import com.outdoor.foodcalc.domain.model.product.Product;
  *
  * @author Anton Borovyk
  */
-public class DishProduct {
+public class DishProduct implements IValueObject<DishProduct> {
     private final Product product;
     //product item weight in gram
     private final float weight;
@@ -47,5 +48,10 @@ public class DishProduct {
 
     public float getCarbs() {
         return product.getCarbs();
+    }
+
+    @Override
+    public boolean sameValueAs(DishProduct other) {
+        return product.getProductId() == other.getProductId() && weight == other.getWeight();
     }
 }

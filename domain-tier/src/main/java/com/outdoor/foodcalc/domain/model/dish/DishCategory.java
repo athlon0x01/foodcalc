@@ -1,11 +1,13 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
+import com.outdoor.foodcalc.domain.model.IDomainEntity;
+
 /**
  * Dish categories, like soups, snacks, hot drinks, etc.
  *
  * @author Anton Borovyk
  */
-public class DishCategory {
+public class DishCategory implements IDomainEntity<DishCategory> {
 
     private final int categoryId;
     private String name;
@@ -25,5 +27,10 @@ public class DishCategory {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    public boolean sameIdentityAs(DishCategory other) {
+        return categoryId == this.categoryId;
     }
 }

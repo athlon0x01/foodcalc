@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
 import com.google.common.collect.ImmutableList;
+import com.outdoor.foodcalc.domain.model.IDomainEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  *
  * @author Anton Borovyk
  */
-public class Dish {
+public class Dish implements IDomainEntity<Dish> {
 
     private final int dishId;
     private String name;
@@ -74,5 +75,10 @@ public class Dish {
 
     public void setProducts(List<DishProduct> products) {
         this.products = new ArrayList<>(products);
+    }
+
+    @Override
+    public boolean sameIdentityAs(Dish other) {
+        return dishId == other.dishId;
     }
 }
