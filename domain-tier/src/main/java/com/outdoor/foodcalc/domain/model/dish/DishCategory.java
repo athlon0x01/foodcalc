@@ -1,16 +1,16 @@
-package com.outdoor.foodcalc.domain.model.product;
+package com.outdoor.foodcalc.domain.model.dish;
 
 /**
- * <description>
+ * Dish categories, like soups, snacks, hot drinks, etc.
  *
  * @author Anton Borovyk
  */
-public class Category {
+public class DishCategory {
 
     private final int categoryId;
     private String name;
 
-    public Category(int categoryId, String name) {
+    public DishCategory(int categoryId, String name) {
         this.categoryId = categoryId;
         this.name = name;
     }

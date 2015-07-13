@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.domain.repository.product;
 
-import com.outdoor.foodcalc.domain.model.product.Category;
+import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.Product;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface IProductRepo {
 
-    List<Category> getCategories();
+    List<ProductCategory> getCategories();
 
     List<Product> getAllProducts();
 }

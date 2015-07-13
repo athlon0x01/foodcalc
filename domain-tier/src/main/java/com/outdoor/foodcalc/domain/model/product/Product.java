@@ -1,7 +1,7 @@
 package com.outdoor.foodcalc.domain.model.product;
 
 /**
- * <description>
+ * Product entity (bread, butter, milk, etc.)
  *
  * @author Anton Borovyk
  */
@@ -9,20 +9,27 @@ public class Product {
 
     private final int productId;
     private String name;
-    private Category category;
+    private ProductCategory category;
     private float calorific;
     private float proteins;
     private float fats;
     private float carbs;
+    //default product item weight in gram
     private float defaultWeight;
 
-    public Product(int productId, String name, Category category) {
+    public Product(String name, ProductCategory category) {
+        this.productId = -1;
+        this.name = name;
+        this.category = category;
+    }
+
+    public Product(int productId, String name, ProductCategory category) {
         this.productId = productId;
         this.name = name;
         this.category = category;
     }
 
-    public Product(int productId, String name, Category category, float calorific, float proteins, float fats, float carbs, float defaultWeight) {
+    public Product(int productId, String name, ProductCategory category, float calorific, float proteins, float fats, float carbs, float defaultWeight) {
         this.productId = productId;
         this.name = name;
         this.category = category;
@@ -45,11 +52,11 @@ public class Product {
         this.name = name;
     }
 
-    public Category getCategory() {
+    public ProductCategory getCategory() {
         return category;
     }
 
-    public void setCategory(Category category) {
+    public void setCategory(ProductCategory category) {
         this.category = category;
     }
 

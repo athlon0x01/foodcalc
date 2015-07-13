@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.service;
 
-import com.outdoor.foodcalc.domain.model.product.Category;
+import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.CategoryModel;
@@ -26,7 +26,7 @@ public class ProductService {
 
     public List<CategoryModel> getAllProducts() {
         //load products & categories
-        final List<Category> categories = productDomainService.getCategories();
+        final List<ProductCategory> categories = productDomainService.getCategories();
         final List<Product> products = productDomainService.getAllProducts();
         //group products by categories
         final Map<Integer, List<Product>> productsMap = products.stream()

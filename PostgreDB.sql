@@ -27,12 +27,7 @@ CREATE TABLE dishes (
 	id serial PRIMARY KEY,
 	name varchar(64) NOT NULL,
 	description varchar(1024),
-	category smallint REFERENCES dish_categories,
-	calorific real DEFAULT 0.0,
-	proteins real DEFAULT 0.0,
-	fats real DEFAULT 0.0,
-	carbs real DEFAULT 0.0,
-	weight real DEFAULT 0.0
+	category smallint REFERENCES dish_categories
 );
 
 CREATE TABLE dish_products (

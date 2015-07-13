@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.domain.service.product;
 
-import com.outdoor.foodcalc.domain.model.product.Category;
+import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class ProductDomainService {
         this.productRepo = productRepo;
     }
 
-    public List<Category> getCategories() {
+    public List<ProductCategory> getCategories() {
         return productRepo.getCategories();
     }
 

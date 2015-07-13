@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.domain.repository.product;
 
-import com.outdoor.foodcalc.domain.model.product.Category;
+import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -27,10 +27,10 @@ public class ProductRepo implements IProductRepo {
     }
 
     @Override
-    public List<Category> getCategories() {
+    public List<ProductCategory> getCategories() {
         final String sql = "select * from product_categories";
         return jdbcTemplate.query(sql,
-                (resultSet, rowNum) -> new Category(resultSet.getInt("id"), resultSet.getString("name")));
+                (resultSet, rowNum) -> new ProductCategory(resultSet.getInt("id"), resultSet.getString("name")));
     }
 
     @Override
@@ -42,7 +42,7 @@ public class ProductRepo implements IProductRepo {
     }
 
     private Product mapProducts(ResultSet resultSet, long currentRow) throws SQLException {
-        final Category category = new Category(resultSet.getInt("catId"), resultSet.getString("catName"));
+        final ProductCategory category = new ProductCategory(resultSet.getInt("catId"), resultSet.getString("catName"));
         return new Product(resultSet.getInt("productId"),
                 resultSet.getString("productName"),
                 category,
