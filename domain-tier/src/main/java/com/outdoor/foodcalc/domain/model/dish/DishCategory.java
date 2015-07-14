@@ -31,6 +31,6 @@ public class DishCategory implements IDomainEntity<DishCategory> {
 
     @Override
     public boolean sameIdentityAs(DishCategory other) {
-        return categoryId == this.categoryId;
+        return categoryId == other.categoryId;
     }
 }

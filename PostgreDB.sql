@@ -48,12 +48,7 @@ CREATE TABLE grocery_layouts (
 	name varchar(64) NOT NULL,
 	members smallint NOT NULL,
 	duration smallint,
-	description varchar(2048),
-	calorific real DEFAULT 0.0,
-	proteins real DEFAULT 0.0,
-	fats real DEFAULT 0.0,
-	carbs real DEFAULT 0.0,
-	weight real DEFAULT 0.0
+	description varchar(2048)
 );
 
 CREATE TABLE layout_days (

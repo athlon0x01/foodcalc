@@ -1,19 +1,18 @@
-package com.outdoor.foodcalc.domain.model.dish;
+package com.outdoor.foodcalc.domain.model.product;
 
 import com.outdoor.foodcalc.domain.model.IValueObject;
-import com.outdoor.foodcalc.domain.model.product.Product;
 
 /**
  * Product items - components of the dish (building bricks for dish).
  *
  * @author Anton Borovyk
  */
-public class DishProduct implements IValueObject<DishProduct> {
+public class ProductRef implements IValueObject<ProductRef> {
     private final Product product;
     //product item weight in gram
     private final float weight;
 
-    public DishProduct(Product product, float weight) {
+    public ProductRef(Product product, float weight) {
         this.product = product;
         this.weight = weight;
     }
@@ -51,7 +50,7 @@ public class DishProduct implements IValueObject<DishProduct> {
     }
 
     @Override
-    public boolean sameValueAs(DishProduct other) {
+    public boolean sameValueAs(ProductRef other) {
         return product.getProductId() == other.getProductId() && weight == other.getWeight();
     }
 }

@@ -2,6 +2,7 @@ package com.outdoor.foodcalc.domain.model.dish;
 
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +18,7 @@ public class Dish implements IDomainEntity<Dish> {
     private String name;
     private String description;
     private DishCategory category;
-    private List<DishProduct> products;
+    private List<ProductRef> products;
 
     public Dish(String name, DishCategory category) {
         this.dishId = -1;
@@ -33,7 +34,7 @@ public class Dish implements IDomainEntity<Dish> {
         this.products = new ArrayList<>();
     }
 
-    public Dish(int dishId, String name, String description, DishCategory category, List<DishProduct> products) {
+    public Dish(int dishId, String name, String description, DishCategory category, List<ProductRef> products) {
         this.dishId = dishId;
         this.name = name;
         this.description = description;
@@ -69,11 +70,11 @@ public class Dish implements IDomainEntity<Dish> {
         this.category = category;
     }
 
-    public ImmutableList<DishProduct> getProducts() {
+    public ImmutableList<ProductRef> getProducts() {
         return ImmutableList.copyOf(products);
     }
 
-    public void setProducts(List<DishProduct> products) {
+    public void setProducts(List<ProductRef> products) {
         this.products = new ArrayList<>(products);
     }
 
