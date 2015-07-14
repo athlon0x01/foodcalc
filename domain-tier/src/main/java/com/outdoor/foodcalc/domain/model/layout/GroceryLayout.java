@@ -18,10 +18,10 @@ public class GroceryLayout implements IDomainEntity<GroceryLayout> {
     private String description;
     private int members;
     private int duration;
-    private List<LayoutDay> days;
+    private List<LayoutDayRef> days;
 
     public GroceryLayout(int layoutId, String name, String description,
-                         int members, int duration, List<LayoutDay> days) {
+                         int members, int duration, List<LayoutDayRef> days) {
         this.layoutId = layoutId;
         this.name = name;
         this.description = description;
@@ -66,11 +66,11 @@ public class GroceryLayout implements IDomainEntity<GroceryLayout> {
         this.duration = duration;
     }
 
-    public ImmutableList<LayoutDay> getDays() {
+    public ImmutableList<LayoutDayRef> getDays() {
         return ImmutableList.copyOf(days);
     }
 
-    public void setDays(List<LayoutDay> days) {
+    public void setDays(List<LayoutDayRef> days) {
         this.days = new ArrayList<>(days);
     }
 

@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.domain.model.layout;
+package com.outdoor.foodcalc.domain.model.meal;
 
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 

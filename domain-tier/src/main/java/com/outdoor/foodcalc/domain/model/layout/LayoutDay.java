@@ -2,6 +2,7 @@ package com.outdoor.foodcalc.domain.model.layout;
 
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
+import com.outdoor.foodcalc.domain.model.meal.MealRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import org.joda.time.LocalDate;
 
@@ -18,10 +19,10 @@ public class LayoutDay implements IDomainEntity<LayoutDay> {
     private final int dayId;
     private LocalDate date;
     private String description;
-    private List<Meal> meals;
+    private List<MealRef> meals;
     private List<ProductRef> products;
 
-    public LayoutDay(int dayId, LocalDate date, List<Meal> meals, List<ProductRef> products) {
+    public LayoutDay(int dayId, LocalDate date, List<MealRef> meals, List<ProductRef> products) {
         this.dayId = dayId;
         this.date = date;
         this.meals = new ArrayList<>(meals);
@@ -48,11 +49,11 @@ public class LayoutDay implements IDomainEntity<LayoutDay> {
         this.description = description;
     }
 
-    public ImmutableList<Meal> getMeals() {
+    public ImmutableList<MealRef> getMeals() {
         return ImmutableList.copyOf(meals);
     }
 
-    public void setMeals(List<Meal> meals) {
+    public void setMeals(List<MealRef> meals) {
         this.meals = new ArrayList<>(meals);
     }
 
