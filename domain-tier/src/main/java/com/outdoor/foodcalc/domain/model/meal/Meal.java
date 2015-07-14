@@ -13,6 +13,7 @@ import java.util.List;
  *
  * @author Anton Borovyk
  */
+//TODO implement FoodDetails
 public class Meal implements IDomainEntity<Meal> {
 
     private final int mealId;

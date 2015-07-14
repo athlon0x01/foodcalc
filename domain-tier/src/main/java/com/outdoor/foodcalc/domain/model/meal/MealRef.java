@@ -10,6 +10,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductRef;
  *
  * @author Anton Borovyk
  */
+//TODO implement FoodDetails
 public class MealRef implements IValueObject<MealRef> {
 
     private final Meal meal;

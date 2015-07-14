@@ -11,6 +11,7 @@ import java.util.List;
  *
  * @author Anton Borovyk
  */
+//TODO implement FoodDetails
 public class GroceryLayout implements IDomainEntity<GroceryLayout> {
 
     private final int layoutId;

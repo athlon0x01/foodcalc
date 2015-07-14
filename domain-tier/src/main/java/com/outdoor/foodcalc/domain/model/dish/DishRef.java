@@ -9,6 +9,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductRef;
  *
  * @author Anton Borovyk
  */
+//TODO implement FoodDetails
 public class DishRef implements IValueObject<DishRef> {
 
     private final Dish dish;

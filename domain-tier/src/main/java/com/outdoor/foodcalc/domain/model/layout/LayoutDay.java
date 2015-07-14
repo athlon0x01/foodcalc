@@ -14,6 +14,7 @@ import java.util.List;
  *
  * @author Anton Borovyk
  */
+//TODO implement FoodDetails
 public class LayoutDay implements IDomainEntity<LayoutDay> {
 
     private final int dayId;

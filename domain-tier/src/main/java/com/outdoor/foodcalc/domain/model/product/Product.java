@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.model.product;
 
+import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 
 /**
@@ -7,14 +8,18 @@ import com.outdoor.foodcalc.domain.model.IDomainEntity;
  *
  * @author Anton Borovyk
  */
-public class Product implements IDomainEntity<Product> {
+public class Product implements IDomainEntity<Product>, FoodDetails {
 
     private final int productId;
     private String name;
     private ProductCategory category;
+    //calorific in kCal
     private float calorific;
+    //proteins in gram
     private float proteins;
+    //fats in gram
     private float fats;
+    //carbonates in gram
     private float carbs;
     //default product item weight in gram
     private float defaultWeight;
@@ -62,6 +67,10 @@ public class Product implements IDomainEntity<Product> {
         this.category = category;
     }
 
+    /**
+     * @return calorific in kCal
+     */
+    @Override
     public float getCalorific() {
         return calorific;
     }
@@ -70,6 +79,10 @@ public class Product implements IDomainEntity<Product> {
         this.calorific = calorific;
     }
 
+    /**
+     * @return proteins in gram
+     */
+    @Override
     public float getProteins() {
         return proteins;
     }
@@ -78,6 +91,10 @@ public class Product implements IDomainEntity<Product> {
         this.proteins = proteins;
     }
 
+    /**
+     * @return fats in gram
+     */
+    @Override
     public float getFats() {
         return fats;
     }
@@ -86,6 +103,10 @@ public class Product implements IDomainEntity<Product> {
         this.fats = fats;
     }
 
+    /**
+     * @return carbonates in gram
+     */
+    @Override
     public float getCarbs() {
         return carbs;
     }
@@ -100,6 +121,14 @@ public class Product implements IDomainEntity<Product> {
 
     public void setDefaultWeight(float defaultWeight) {
         this.defaultWeight = defaultWeight;
+    }
+
+    /**
+     * @return weight in gram, Product entity doesn't nave real weight.
+     */
+    @Override
+    public float getWeight() {
+        return 0;
     }
 
     @Override

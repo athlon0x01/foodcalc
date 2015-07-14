@@ -11,6 +11,7 @@ import org.joda.time.LocalDate;
  *
  * @author Anton Borovyk
  */
+//TODO implement FoodDetails
 public class LayoutDayRef implements IValueObject<LayoutDay> {
 
     private final LayoutDay day;
