@@ -86,8 +86,12 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails {
         return dishId == other.dishId;
     }
 
-    //function to calculate product details, it sums specified parameters from product list
-    private float productDetailsCalculation(Function<ProductRef, Float> sp) {
+    /**
+     * Internal details summary calculation.
+     * @param sp - parameter for calculations, f.e. fats, proteins, etc.
+     * @return summarized parameter value
+     */
+    private float dishDetailsCalculation(Function<FoodDetails, Float> sp) {
         return products.stream().map(sp).reduce(FoodDetails::floatSum).get();
     }
 
@@ -96,7 +100,7 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails {
      */
     @Override
     public float getCalorific() {
-        return productDetailsCalculation(ProductRef::getCalorific);
+        return dishDetailsCalculation(FoodDetails::getCalorific);
     }
 
     /**
@@ -104,7 +108,7 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails {
      */
     @Override
     public float getProteins() {
-        return productDetailsCalculation(ProductRef::getProteins);
+        return dishDetailsCalculation(FoodDetails::getProteins);
     }
 
     /**
@@ -112,7 +116,7 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails {
      */
     @Override
     public float getFats() {
-        return productDetailsCalculation(ProductRef::getFats);
+        return dishDetailsCalculation(FoodDetails::getFats);
     }
 
     /**
@@ -120,7 +124,7 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails {
      */
     @Override
     public float getCarbs() {
-        return productDetailsCalculation(ProductRef::getCalorific);
+        return dishDetailsCalculation(FoodDetails::getCalorific);
     }
 
     /**
@@ -128,6 +132,6 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails {
      */
     @Override
     public float getWeight() {
-        return productDetailsCalculation(ProductRef::getWeight);
+        return dishDetailsCalculation(FoodDetails::getWeight);
     }
 }

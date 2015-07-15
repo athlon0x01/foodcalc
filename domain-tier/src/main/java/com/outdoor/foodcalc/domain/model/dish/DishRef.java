@@ -6,7 +6,7 @@ import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 /**
- * Dish Value Object, provides readonly access to Dish Entity.
+ * Dish Value Object, provides readonly access to {@Link Dish} Entity.
  *
  * @author Anton Borovyk
  */
