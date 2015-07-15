@@ -43,7 +43,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getCalorific() {
-        return product.getCalorific();
+        return product.getCalorific() * weight / 100;
     }
 
     /**
@@ -51,7 +51,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getProteins() {
-        return product.getProteins();
+        return product.getProteins() * weight / 100;
     }
 
     /**
@@ -59,7 +59,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getFats() {
-        return product.getFats();
+        return product.getFats() * weight / 100;
     }
 
     /**
@@ -67,7 +67,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getCarbs() {
-        return product.getCarbs();
+        return product.getCarbs() * weight / 100;
     }
 
     @Override

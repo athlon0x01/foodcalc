@@ -1,17 +1,18 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
 import com.google.common.collect.ImmutableList;
+import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 /**
- * <description>
+ * Dish Value Object, provides readonly access to Dish Entity.
  *
  * @author Anton Borovyk
  */
-//TODO implement FoodDetails
-public class DishRef implements IValueObject<DishRef> {
+public class DishRef implements IValueObject<DishRef>, FoodDetails {
 
+    //internal Dish entity
     private final Dish dish;
 
     public DishRef(Dish dish) {
@@ -41,5 +42,45 @@ public class DishRef implements IValueObject<DishRef> {
     @Override
     public boolean sameValueAs(DishRef other) {
         return dish.getDishId() == other.getDishId() && dish.getProducts().equals(other.getProducts());
+    }
+
+    /**
+     * @return calorific in kCal
+     */
+    @Override
+    public float getCalorific() {
+        return dish.getCalorific();
+    }
+
+    /**
+     * @return proteins in gram
+     */
+    @Override
+    public float getProteins() {
+        return dish.getProteins();
+    }
+
+    /**
+     * @return fats in gram
+     */
+    @Override
+    public float getFats() {
+        return dish.getFats();
+    }
+
+    /**
+     * @return carbonates in gram
+     */
+    @Override
+    public float getCarbs() {
+        return dish.getCarbs();
+    }
+
+    /**
+     * @return weight in gram
+     */
+    @Override
+    public float getWeight() {
+        return dish.getWeight();
     }
 }

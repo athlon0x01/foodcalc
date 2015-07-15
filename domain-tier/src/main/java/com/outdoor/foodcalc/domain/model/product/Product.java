@@ -13,13 +13,13 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     private final int productId;
     private String name;
     private ProductCategory category;
-    //calorific in kCal
+    //calorific in kCal per 100 gram
     private float calorific;
-    //proteins in gram
+    //proteins in gram per 100 gram
     private float proteins;
-    //fats in gram
+    //fats in gram per 100 gram
     private float fats;
-    //carbonates in gram
+    //carbonates in gram per 100 gram
     private float carbs;
     //default product item weight in gram
     private float defaultWeight;
@@ -68,7 +68,7 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     }
 
     /**
-     * @return calorific in kCal
+     * @return calorific in kCal per 100 gram
      */
     @Override
     public float getCalorific() {
@@ -80,7 +80,7 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     }
 
     /**
-     * @return proteins in gram
+     * @return proteins in gram per 100 gram
      */
     @Override
     public float getProteins() {
@@ -92,7 +92,7 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     }
 
     /**
-     * @return fats in gram
+     * @return fats in gram per 100 gram
      */
     @Override
     public float getFats() {
@@ -104,7 +104,7 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     }
 
     /**
-     * @return carbonates in gram
+     * @return carbonates in gram per 100 gram
      */
     @Override
     public float getCarbs() {

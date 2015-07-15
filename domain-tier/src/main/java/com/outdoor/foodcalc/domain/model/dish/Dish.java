@@ -1,24 +1,26 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
 import com.google.common.collect.ImmutableList;
+import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * Dish entity, like cream soup, lemon tea, etc.
  *
  * @author Anton Borovyk
  */
-//TODO implement FoodDetails
-public class Dish implements IDomainEntity<Dish> {
+public class Dish implements IDomainEntity<Dish>, FoodDetails {
 
     private final int dishId;
     private String name;
     private String description;
     private DishCategory category;
+    //dish components
     private List<ProductRef> products;
 
     public Dish(String name, DishCategory category) {
@@ -82,5 +84,50 @@ public class Dish implements IDomainEntity<Dish> {
     @Override
     public boolean sameIdentityAs(Dish other) {
         return dishId == other.dishId;
+    }
+
+    //function to calculate product details, it sums specified parameters from product list
+    private float productDetailsCalculation(Function<ProductRef, Float> sp) {
+        return products.stream().map(sp).reduce(FoodDetails::floatSum).get();
+    }
+
+    /**
+     * @return calorific in kCal
+     */
+    @Override
+    public float getCalorific() {
+        return productDetailsCalculation(ProductRef::getCalorific);
+    }
+
+    /**
+     * @return proteins in gram
+     */
+    @Override
+    public float getProteins() {
+        return productDetailsCalculation(ProductRef::getProteins);
+    }
+
+    /**
+     * @return fats in gram
+     */
+    @Override
+    public float getFats() {
+        return productDetailsCalculation(ProductRef::getFats);
+    }
+
+    /**
+     * @return carbonates in gram
+     */
+    @Override
+    public float getCarbs() {
+        return productDetailsCalculation(ProductRef::getCalorific);
+    }
+
+    /**
+     * @return weight in gram
+     */
+    @Override
+    public float getWeight() {
+        return productDetailsCalculation(ProductRef::getWeight);
     }
 }
