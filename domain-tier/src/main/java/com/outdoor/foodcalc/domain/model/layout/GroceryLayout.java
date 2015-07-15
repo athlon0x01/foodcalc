@@ -1,18 +1,19 @@
 package com.outdoor.foodcalc.domain.model.layout;
 
 import com.google.common.collect.ImmutableList;
+import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
- * <description>
+ * Grocery Layout entity represent typical layout for trekking trip splited to days, meals & dishes.
  *
  * @author Anton Borovyk
  */
-//TODO implement FoodDetails
-public class GroceryLayout implements IDomainEntity<GroceryLayout> {
+public class GroceryLayout implements IDomainEntity<GroceryLayout>, FoodDetails {
 
     private final int layoutId;
     private String name;
@@ -78,5 +79,54 @@ public class GroceryLayout implements IDomainEntity<GroceryLayout> {
     @Override
     public boolean sameIdentityAs(GroceryLayout other) {
         return layoutId == other.layoutId;
+    }
+
+    /**
+     * Internal details summary calculation.
+     * @param sp - parameter for calculations, f.e. fats, proteins, etc.
+     * @return summarized parameter value
+     */
+    private float detailsCalculation(Function<FoodDetails, Float> sp) {
+        return days.stream().map(sp).reduce(FoodDetails::floatSum).get();
+    }
+
+    /**
+     * @return calorific in kCal
+     */
+    @Override
+    public float getCalorific() {
+        return detailsCalculation(FoodDetails::getCalorific);
+    }
+
+    /**
+     * @return proteins in gram
+     */
+    @Override
+    public float getProteins() {
+        return detailsCalculation(FoodDetails::getProteins);
+    }
+
+    /**
+     * @return fats in gram
+     */
+    @Override
+    public float getFats() {
+        return detailsCalculation(FoodDetails::getFats);
+    }
+
+    /**
+     * @return carbonates in gram
+     */
+    @Override
+    public float getCarbs() {
+        return detailsCalculation(FoodDetails::getCarbs);
+    }
+
+    /**
+     * @return weight in gram
+     */
+    @Override
+    public float getWeight() {
+        return detailsCalculation(FoodDetails::getWeight);
     }
 }

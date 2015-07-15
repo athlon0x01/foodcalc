@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.domain.model.layout;
 
 import com.google.common.collect.ImmutableList;
+import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.meal.MealRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
@@ -8,14 +9,16 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 /**
- * <description>
+ * Day entity, that contains some meals and may be some additional products.
+ * Day doesn't include dishes. Dishes should be included into meals.
+ * F.e. Breakfast & Lunch (meals) & some nuts & sweets (products).
  *
  * @author Anton Borovyk
  */
-//TODO implement FoodDetails
-public class LayoutDay implements IDomainEntity<LayoutDay> {
+public class LayoutDay implements IDomainEntity<LayoutDay>, FoodDetails {
 
     private final int dayId;
     private LocalDate date;
@@ -69,5 +72,56 @@ public class LayoutDay implements IDomainEntity<LayoutDay> {
     @Override
     public boolean sameIdentityAs(LayoutDay other) {
         return dayId == other.dayId;
+    }
+
+    /**
+     * Internal details summary calculation.
+     * @param sp - parameter for calculations, f.e. fats, proteins, etc.
+     * @return summarized parameter value
+     */
+    private float dayDetailsCalculation(Function<FoodDetails, Float> sp) {
+        float mealValue = meals.stream().map(sp).reduce(FoodDetails::floatSum).get();
+        float productValue = products.stream().map(sp).reduce(FoodDetails::floatSum).get();
+        return mealValue + productValue;
+    }
+
+    /**
+     * @return calorific in kCal
+     */
+    @Override
+    public float getCalorific() {
+        return dayDetailsCalculation(FoodDetails::getCalorific);
+    }
+
+    /**
+     * @return proteins in gram
+     */
+    @Override
+    public float getProteins() {
+        return dayDetailsCalculation(FoodDetails::getProteins);
+    }
+
+    /**
+     * @return fats in gram
+     */
+    @Override
+    public float getFats() {
+        return dayDetailsCalculation(FoodDetails::getFats);
+    }
+
+    /**
+     * @return carbonates in gram
+     */
+    @Override
+    public float getCarbs() {
+        return dayDetailsCalculation(FoodDetails::getCarbs);
+    }
+
+    /**
+     * @return weight in gram
+     */
+    @Override
+    public float getWeight() {
+        return dayDetailsCalculation(FoodDetails::getWeight);
     }
 }

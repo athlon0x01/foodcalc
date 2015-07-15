@@ -1,18 +1,18 @@
 package com.outdoor.foodcalc.domain.model.layout;
 
 import com.google.common.collect.ImmutableList;
+import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.meal.MealRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import org.joda.time.LocalDate;
 
 /**
- * <description>
+ * Day Value Object, provides readonly access to {@Link Day} Entity.
  *
  * @author Anton Borovyk
  */
-//TODO implement FoodDetails
-public class LayoutDayRef implements IValueObject<LayoutDay> {
+public class LayoutDayRef implements IValueObject<LayoutDay>, FoodDetails {
 
     private final LayoutDay day;
 
@@ -43,5 +43,45 @@ public class LayoutDayRef implements IValueObject<LayoutDay> {
     @Override
     public boolean sameValueAs(LayoutDay other) {
         return day.getDayId() == other.getDayId();
+    }
+
+    /**
+     * @return calorific in kCal
+     */
+    @Override
+    public float getCalorific() {
+        return day.getCalorific();
+    }
+
+    /**
+     * @return proteins in gram
+     */
+    @Override
+    public float getProteins() {
+        return day.getProteins();
+    }
+
+    /**
+     * @return fats in gram
+     */
+    @Override
+    public float getFats() {
+        return day.getFats();
+    }
+
+    /**
+     * @return carbonates in gram
+     */
+    @Override
+    public float getCarbs() {
+        return day.getCarbs();
+    }
+
+    /**
+     * @return weight in gram
+     */
+    @Override
+    public float getWeight() {
+        return day.getWeight();
     }
 }
