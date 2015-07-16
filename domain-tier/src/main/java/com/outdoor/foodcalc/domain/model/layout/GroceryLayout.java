@@ -87,7 +87,7 @@ public class GroceryLayout implements IDomainEntity<GroceryLayout>, FoodDetails 
      * @return summarized parameter value
      */
     private float detailsCalculation(Function<FoodDetails, Float> sp) {
-        return days.stream().map(sp).reduce(FoodDetails::floatSum).get();
+        return members * days.stream().map(sp).reduce(FoodDetails::floatSum).get();
     }
 
     /**
