@@ -10,7 +10,7 @@ import com.outdoor.foodcalc.domain.model.IDomainEntity;
  */
 public class Product implements IDomainEntity<Product>, FoodDetails {
 
-    private final int productId;
+    private final long productId;
     private String name;
     private ProductCategory category;
     //calorific in kCal per 100 gram
@@ -30,13 +30,13 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
         this.category = category;
     }
 
-    public Product(int productId, String name, ProductCategory category) {
+    public Product(long productId, String name, ProductCategory category) {
         this.productId = productId;
         this.name = name;
         this.category = category;
     }
 
-    public Product(int productId, String name, ProductCategory category, float calorific, float proteins, float fats, float carbs, float defaultWeight) {
+    public Product(long productId, String name, ProductCategory category, float calorific, float proteins, float fats, float carbs, float defaultWeight) {
         this.productId = productId;
         this.name = name;
         this.category = category;
@@ -47,7 +47,7 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
         this.defaultWeight = defaultWeight;
     }
 
-    public int getProductId() {
+    public long getProductId() {
         return productId;
     }
 

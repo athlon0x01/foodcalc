@@ -19,7 +19,7 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails {
         this.meal = meal;
     }
 
-    public int getMealId() {
+    public long getMealId() {
         return meal.getMealId();
     }
 

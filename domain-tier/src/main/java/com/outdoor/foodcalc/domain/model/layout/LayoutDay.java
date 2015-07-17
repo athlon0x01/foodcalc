@@ -20,20 +20,20 @@ import java.util.function.Function;
  */
 public class LayoutDay implements IDomainEntity<LayoutDay>, FoodDetails {
 
-    private final int dayId;
+    private final long dayId;
     private LocalDate date;
     private String description;
     private List<MealRef> meals;
     private List<ProductRef> products;
 
-    public LayoutDay(int dayId, LocalDate date, List<MealRef> meals, List<ProductRef> products) {
+    public LayoutDay(long dayId, LocalDate date, List<MealRef> meals, List<ProductRef> products) {
         this.dayId = dayId;
         this.date = date;
         this.meals = new ArrayList<>(meals);
         this.products = new ArrayList<>(products);
     }
 
-    public int getDayId() {
+    public long getDayId() {
         return dayId;
     }
 

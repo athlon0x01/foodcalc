@@ -43,7 +43,7 @@ public class ProductRepo implements IProductRepo {
 
     private Product mapProducts(ResultSet resultSet, long currentRow) throws SQLException {
         final ProductCategory category = new ProductCategory(resultSet.getInt("catId"), resultSet.getString("catName"));
-        return new Product(resultSet.getInt("productId"),
+        return new Product(resultSet.getLong("productId"),
                 resultSet.getString("productName"),
                 category,
                 resultSet.getFloat("calorific"),

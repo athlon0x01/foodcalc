@@ -16,7 +16,7 @@ import java.util.function.Function;
  */
 public class Dish implements IDomainEntity<Dish>, FoodDetails {
 
-    private final int dishId;
+    private final long dishId;
     private String name;
     private String description;
     private DishCategory category;
@@ -30,14 +30,14 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails {
         this.products = new ArrayList<>();
     }
 
-    public Dish(int dishId, String name, DishCategory category) {
+    public Dish(long dishId, String name, DishCategory category) {
         this.dishId = dishId;
         this.name = name;
         this.category = category;
         this.products = new ArrayList<>();
     }
 
-    public Dish(int dishId, String name, String description, DishCategory category, List<ProductRef> products) {
+    public Dish(long dishId, String name, String description, DishCategory category, List<ProductRef> products) {
         this.dishId = dishId;
         this.name = name;
         this.description = description;
@@ -45,7 +45,7 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails {
         this.products = new ArrayList<>(products);
     }
 
-    public int getDishId() {
+    public long getDishId() {
         return dishId;
     }
 

@@ -26,7 +26,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
         return weight;
     }
 
-    public int getProductId() {
+    public long getProductId() {
         return product.getProductId();
     }
 

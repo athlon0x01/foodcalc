@@ -15,14 +15,14 @@ import java.util.function.Function;
  */
 public class GroceryLayout implements IDomainEntity<GroceryLayout>, FoodDetails {
 
-    private final int layoutId;
+    private final long layoutId;
     private String name;
     private String description;
     private int members;
     private int duration;
     private List<LayoutDayRef> days;
 
-    public GroceryLayout(int layoutId, String name, String description,
+    public GroceryLayout(long layoutId, String name, String description,
                          int members, int duration, List<LayoutDayRef> days) {
         this.layoutId = layoutId;
         this.name = name;
@@ -32,7 +32,7 @@ public class GroceryLayout implements IDomainEntity<GroceryLayout>, FoodDetails 
         this.days = days;
     }
 
-    public int getLayoutId() {
+    public long getLayoutId() {
         return layoutId;
     }
 

@@ -17,19 +17,19 @@ import java.util.function.Function;
  */
 public class Meal implements IDomainEntity<Meal>, FoodDetails {
 
-    private final int mealId;
+    private final long mealId;
     private MealType type;
     private List<DishRef> dishes;
     private List<ProductRef> products;
 
-    public Meal(int mealId, MealType type, List<DishRef> dishes, List<ProductRef> products) {
+    public Meal(long mealId, MealType type, List<DishRef> dishes, List<ProductRef> products) {
         this.mealId = mealId;
         this.type = type;
         this.dishes = new ArrayList<>(dishes);
         this.products = new ArrayList<>(products);
     }
 
-    public int getMealId() {
+    public long getMealId() {
         return mealId;
     }
 

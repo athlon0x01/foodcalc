@@ -20,7 +20,7 @@ public class LayoutDayRef implements IValueObject<LayoutDay>, FoodDetails {
         this.day = day;
     }
 
-    public int getDayId() {
+    public long getDayId() {
         return day.getDayId();
     }
 
