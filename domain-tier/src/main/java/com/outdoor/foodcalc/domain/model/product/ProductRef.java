@@ -10,10 +10,10 @@ import com.outdoor.foodcalc.domain.model.IValueObject;
  */
 public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
     private final Product product;
-    //product item weight in gram
-    private final float weight;
+    //product item weight in 0.1 grams
+    private final int weight;
 
-    public ProductRef(Product product, float weight) {
+    public ProductRef(Product product, int weight) {
         this.product = product;
         this.weight = weight;
     }
@@ -23,6 +23,10 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getWeight() {
+        return weight / 10;
+    }
+
+    public int getInternalWeight() {
         return weight;
     }
 
@@ -43,7 +47,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getCalorific() {
-        return product.getCalorific() * weight / 100;
+        return product.getCalorific() * weight / 1000;
     }
 
     /**
@@ -51,7 +55,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getProteins() {
-        return product.getProteins() * weight / 100;
+        return product.getProteins() * weight / 1000;
     }
 
     /**
@@ -59,7 +63,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getFats() {
-        return product.getFats() * weight / 100;
+        return product.getFats() * weight / 1000;
     }
 
     /**
@@ -67,7 +71,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getCarbs() {
-        return product.getCarbs() * weight / 100;
+        return product.getCarbs() * weight / 1000;
     }
 
     @Override

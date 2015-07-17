@@ -14,6 +14,7 @@ CREATE TABLE products (
 	proteins real DEFAULT 0.0,
 	fats real DEFAULT 0.0,
 	carbs real DEFAULT 0.0,
+--product default weight in grams
 	defweight real DEFAULT 0.0
 );
 
@@ -34,7 +35,8 @@ CREATE TABLE dish_products (
 	id bigserial PRIMARY KEY,
 	dish bigint REFERENCES dishes,
 	product bigint REFERENCES products,
-	weight real NOT NULL
+--product weight in 0.1 grams
+	weight integer NOT NULL
 );
 
 --product layout related tables
@@ -65,5 +67,6 @@ CREATE TABLE grocery_layouts_items (
 	meal bigint REFERENCES meals,
 	dish bigint REFERENCES dishes,
 	product bigint REFERENCES products,
-	weight real NOT NULL
+--product weight in 0.1 grams
+	weight integer NOT NULL
 );

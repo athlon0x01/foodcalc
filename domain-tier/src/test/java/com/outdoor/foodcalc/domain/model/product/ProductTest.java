@@ -19,7 +19,7 @@ public class ProductTest {
     @Before
     public void setup() {
         product = new Product(111, "Corn", new ProductCategory(22, "Cereals"), 119.f, 3.9f, 1.3f, 22.7f, 70.f);
-        productRef = new ProductRef(product, 80);
+        productRef = new ProductRef(product, 800);
     }
 
     @Test
@@ -28,6 +28,8 @@ public class ProductTest {
         assertEquals(0, product.getWeight(), DELTA);
         //ProductRef should contain real weight
         assertEquals(80, productRef.getWeight(), DELTA);
+        //ProductRef should contain internal weight in 0.1 grams
+        assertEquals(800, productRef.getInternalWeight());
     }
 
     @Test
