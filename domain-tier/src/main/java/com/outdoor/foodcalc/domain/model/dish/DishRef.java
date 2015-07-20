@@ -3,14 +3,17 @@ package com.outdoor.foodcalc.domain.model.dish;
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
+import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
+
+import java.util.Collection;
 
 /**
  * Dish Value Object, provides readonly access to {@Link Dish} Entity.
  *
  * @author Anton Borovyk
  */
-public class DishRef implements IValueObject<DishRef>, FoodDetails {
+public class DishRef implements IValueObject<DishRef>, FoodDetails, ProductsContainer {
 
     //internal Dish entity
     private final Dish dish;
@@ -82,5 +85,15 @@ public class DishRef implements IValueObject<DishRef>, FoodDetails {
     @Override
     public float getWeight() {
         return dish.getWeight();
+    }
+
+    /**
+     * Collect all products contained in this entity and nested entities and sums their weights
+     *
+     * @return aggregated products list(product weights are summed).
+     */
+    @Override
+    public Collection<ProductRef> getAllProducts() {
+        return dish.getAllProducts();
     }
 }

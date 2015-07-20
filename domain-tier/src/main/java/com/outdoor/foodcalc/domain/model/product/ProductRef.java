@@ -3,6 +3,10 @@ package com.outdoor.foodcalc.domain.model.product;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
 
+import java.util.Collection;
+
+import static java.util.stream.Collectors.summingInt;
+
 /**
  * Product items - components of the dish (building bricks for dish).
  *
@@ -77,5 +81,19 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
     @Override
     public boolean sameValueAs(ProductRef other) {
         return product.getProductId() == other.getProductId() && weight == other.getWeight();
+    }
+
+    /**
+     * Summarize weight of product list.
+     * @param products not empty product list, that contains same products
+     * @return product with summarized weight
+     */
+    public static ProductRef summarizeWeight(Collection<ProductRef> products) {
+        //get Product entity
+        Product product = products.iterator().next().product;
+        //summarize product weight
+        int weight = products.stream().collect(summingInt(ProductRef::getInternalWeight));
+        //return new Value Object
+        return new ProductRef(product, weight);
     }
 }

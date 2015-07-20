@@ -3,15 +3,18 @@ package com.outdoor.foodcalc.domain.model.meal;
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
+import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
+
+import java.util.Collection;
 
 /**
  * Meal Value Object, provides readonly access to {@link Meal} entity.
  *
  * @author Anton Borovyk
  */
-public class MealRef implements IValueObject<MealRef>, FoodDetails {
+public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsContainer {
 
     private final Meal meal;
 
@@ -78,5 +81,15 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails {
     @Override
     public float getWeight() {
         return meal.getWeight();
+    }
+
+    /**
+     * Collect all products contained in this entity and nested entities and sums their weights
+     *
+     * @return aggregated products list(product weights are summed).
+     */
+    @Override
+    public Collection<ProductRef> getAllProducts() {
+        return meal.getAllProducts();
     }
 }

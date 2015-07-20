@@ -3,9 +3,11 @@ package com.outdoor.foodcalc.domain.model.dish;
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
+import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Function;
 
@@ -14,7 +16,7 @@ import java.util.function.Function;
  *
  * @author Anton Borovyk
  */
-public class Dish implements IDomainEntity<Dish>, FoodDetails {
+public class Dish implements IDomainEntity<Dish>, FoodDetails, ProductsContainer {
 
     private final long dishId;
     private String name;
@@ -133,5 +135,15 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails {
     @Override
     public float getWeight() {
         return dishDetailsCalculation(FoodDetails::getWeight);
+    }
+
+    /**
+     * Collect all products contained in this entity and nested entities and sums their weights
+     *
+     * @return aggregated products list(product weights are summed).
+     */
+    @Override
+    public Collection<ProductRef> getAllProducts() {
+        return ImmutableList.copyOf(products);
     }
 }
