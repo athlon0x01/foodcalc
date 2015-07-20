@@ -2,6 +2,9 @@ package com.outdoor.foodcalc.domain.model.product;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.util.ReflectionUtils;
+
+import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertEquals;
 
@@ -29,7 +32,9 @@ public class ProductTest {
         //ProductRef should contain real weight
         assertEquals(80, productRef.getWeight(), DELTA);
         //ProductRef should contain internal weight in 0.1 grams
-        assertEquals(800, productRef.getInternalWeight());
+        final Method getInternalWeight = ReflectionUtils.findMethod(ProductRef.class, "getInternalWeight");
+        ReflectionUtils.makeAccessible(getInternalWeight);
+        assertEquals(800, ReflectionUtils.invokeMethod(getInternalWeight, productRef ));
     }
 
     @Test

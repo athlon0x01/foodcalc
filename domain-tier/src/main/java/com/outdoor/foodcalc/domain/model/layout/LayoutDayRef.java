@@ -3,16 +3,19 @@ package com.outdoor.foodcalc.domain.model.layout;
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
+import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.meal.MealRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import org.joda.time.LocalDate;
+
+import java.util.Collection;
 
 /**
  * Day Value Object, provides readonly access to {@Link Day} Entity.
  *
  * @author Anton Borovyk
  */
-public class LayoutDayRef implements IValueObject<LayoutDay>, FoodDetails {
+public class LayoutDayRef implements IValueObject<LayoutDay>, FoodDetails, ProductsContainer {
 
     private final LayoutDay day;
 
@@ -83,5 +86,15 @@ public class LayoutDayRef implements IValueObject<LayoutDay>, FoodDetails {
     @Override
     public float getWeight() {
         return day.getWeight();
+    }
+
+    /**
+     * Collect all products contained in this entity and nested entities and sums their weights
+     *
+     * @return aggregated products list(product weights are summed).
+     */
+    @Override
+    public Collection<ProductRef> getAllProducts() {
+        return day.getAllProducts();
     }
 }

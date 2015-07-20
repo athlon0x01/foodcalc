@@ -3,13 +3,19 @@ package com.outdoor.foodcalc.domain.model.layout;
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
+import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.meal.MealRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
+
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Day entity, that contains some meals and may be some additional products.
@@ -18,7 +24,7 @@ import java.util.function.Function;
  *
  * @author Anton Borovyk
  */
-public class LayoutDay implements IDomainEntity<LayoutDay>, FoodDetails {
+public class LayoutDay implements IDomainEntity<LayoutDay>, FoodDetails, ProductsContainer {
 
     private final long dayId;
     private LocalDate date;
@@ -123,5 +129,22 @@ public class LayoutDay implements IDomainEntity<LayoutDay>, FoodDetails {
     @Override
     public float getWeight() {
         return dayDetailsCalculation(FoodDetails::getWeight);
+    }
+
+    /**
+     * Collect all products contained in this entity and nested entities and sums their weights
+     *
+     * @return aggregated products list(product weights are summed).
+     */
+    @Override
+    public Collection<ProductRef> getAllProducts() {
+        //collect all meals products & products to one list
+        final List<Collection<ProductRef>> allProductsList = meals.stream().map(MealRef::getAllProducts).collect(toList());
+        allProductsList.add(products);
+        //map products by Id;
+        final Map<Long, List<ProductRef>> productsMap = allProductsList.stream().flatMap(Collection::stream)
+                .collect(groupingBy(ProductRef::getProductId));
+        //summarize weight of each product
+        return productsMap.values().stream().map(ProductRef::summarizeWeight).collect(toList());
     }
 }

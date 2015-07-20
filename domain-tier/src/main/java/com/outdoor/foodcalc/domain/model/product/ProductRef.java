@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.summingInt;
 public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
     private final Product product;
     //product item weight in 0.1 grams
-    private final int weight;
+    private int weight;
 
     public ProductRef(Product product, int weight) {
         this.product = product;
@@ -30,8 +30,12 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
         return weight / 10;
     }
 
-    public int getInternalWeight() {
+    private int getInternalWeight() {
         return weight;
+    }
+
+    public void setWeight(float weight) {
+        this.weight = Math.round(weight * 10);
     }
 
     public long getProductId() {
