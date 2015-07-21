@@ -30,13 +30,13 @@ public class GroceryLayout implements IDomainEntity<GroceryLayout>, FoodDetails,
     private List<LayoutDayRef> days;
 
     public GroceryLayout(long layoutId, String name, String description,
-                         int members, int duration, List<LayoutDayRef> days) {
+                         int members, int duration, Collection<LayoutDayRef> days) {
         this.layoutId = layoutId;
         this.name = name;
         this.description = description;
         this.members = members;
         this.duration = duration;
-        this.days = days;
+        this.days = new ArrayList<>(days);
     }
 
     public long getLayoutId() {

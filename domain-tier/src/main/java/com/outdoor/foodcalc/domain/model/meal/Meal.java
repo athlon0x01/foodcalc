@@ -28,7 +28,7 @@ public class Meal implements IDomainEntity<Meal>, FoodDetails, ProductsContainer
     private List<DishRef> dishes;
     private List<ProductRef> products;
 
-    public Meal(long mealId, MealType type, List<DishRef> dishes, List<ProductRef> products) {
+    public Meal(long mealId, MealType type, Collection<DishRef> dishes, Collection<ProductRef> products) {
         this.mealId = mealId;
         this.type = type;
         this.dishes = new ArrayList<>(dishes);

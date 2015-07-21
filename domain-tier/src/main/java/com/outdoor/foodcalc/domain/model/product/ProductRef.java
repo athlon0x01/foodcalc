@@ -12,11 +12,16 @@ import static java.util.stream.Collectors.summingInt;
  *
  * @author Anton Borovyk
  */
-public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
+public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Comparable<ProductRef> {
     private final Product product;
     //product item weight in 0.1 grams
     private int weight;
 
+    /**
+     * Product item constructor
+     * @param product product entity
+     * @param weight item weight in 0.1 grams
+     */
     public ProductRef(Product product, int weight) {
         this.product = product;
         this.weight = weight;
@@ -27,7 +32,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getWeight() {
-        return weight / 10;
+        return weight / 10.f;
     }
 
     private int getInternalWeight() {
@@ -55,7 +60,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getCalorific() {
-        return product.getCalorific() * weight / 1000;
+        return product.getCalorific() * weight / 1000.f;
     }
 
     /**
@@ -63,7 +68,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getProteins() {
-        return product.getProteins() * weight / 1000;
+        return product.getProteins() * weight / 1000.f;
     }
 
     /**
@@ -71,7 +76,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getFats() {
-        return product.getFats() * weight / 1000;
+        return product.getFats() * weight / 1000.f;
     }
 
     /**
@@ -79,7 +84,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
      */
     @Override
     public float getCarbs() {
-        return product.getCarbs() * weight / 1000;
+        return product.getCarbs() * weight / 1000.f;
     }
 
     @Override
@@ -99,5 +104,38 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails {
         int weight = products.stream().collect(summingInt(ProductRef::getInternalWeight));
         //return new Value Object
         return new ProductRef(product, weight);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProductRef)) return false;
+
+        ProductRef that = (ProductRef) o;
+
+        if (weight != that.weight) return false;
+        return !(product != null ? !product.equals(that.product) : that.product != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = product != null ? product.hashCode() : 0;
+        result = 31 * result + weight;
+        return result;
+    }
+
+    @Override
+    public int compareTo(ProductRef o) {
+        //compare productId first
+        if (getProductId() == o.getProductId()) {
+            return getInternalWeight() - o.getInternalWeight();
+        }
+        else return (getProductId() < o.getProductId()) ? -1 : 1;
+    }
+
+    @Override
+    public String toString() {
+        return "[id=" + getProductId() + ", Name='" + getName() + "', weight=" + getInternalWeight() + "]";
     }
 }

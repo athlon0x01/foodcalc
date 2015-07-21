@@ -32,7 +32,7 @@ public class LayoutDay implements IDomainEntity<LayoutDay>, FoodDetails, Product
     private List<MealRef> meals;
     private List<ProductRef> products;
 
-    public LayoutDay(long dayId, LocalDate date, List<MealRef> meals, List<ProductRef> products) {
+    public LayoutDay(long dayId, LocalDate date, List<MealRef> meals, Collection<ProductRef> products) {
         this.dayId = dayId;
         this.date = date;
         this.meals = new ArrayList<>(meals);

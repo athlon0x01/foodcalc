@@ -135,4 +135,25 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     public boolean sameIdentityAs(Product other) {
         return productId == other.productId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Product)) return false;
+
+        Product product = (Product) o;
+
+        if (productId != product.productId) return false;
+        if (name != null ? !name.equals(product.name) : product.name != null) return false;
+        return !(category != null ? !category.equals(product.category) : product.category != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (productId ^ (productId >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        return result;
+    }
 }

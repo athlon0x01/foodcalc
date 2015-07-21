@@ -39,7 +39,7 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails, ProductsContainer
         this.products = new ArrayList<>();
     }
 
-    public Dish(long dishId, String name, String description, DishCategory category, List<ProductRef> products) {
+    public Dish(long dishId, String name, String description, DishCategory category, Collection<ProductRef> products) {
         this.dishId = dishId;
         this.name = name;
         this.description = description;
@@ -126,7 +126,7 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails, ProductsContainer
      */
     @Override
     public float getCarbs() {
-        return dishDetailsCalculation(FoodDetails::getCalorific);
+        return dishDetailsCalculation(FoodDetails::getCarbs);
     }
 
     /**
