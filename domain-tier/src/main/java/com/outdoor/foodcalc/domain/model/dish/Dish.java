@@ -1,13 +1,14 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
 import com.google.common.collect.ImmutableList;
+import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
-import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -16,7 +17,7 @@ import java.util.function.Function;
  *
  * @author Anton Borovyk
  */
-public class Dish implements IDomainEntity<Dish>, FoodDetails, ProductsContainer {
+public class Dish extends ComplexFoodEntity implements IDomainEntity<Dish>, FoodDetails {
 
     private final long dishId;
     private String name;
@@ -135,6 +136,16 @@ public class Dish implements IDomainEntity<Dish>, FoodDetails, ProductsContainer
     @Override
     public float getWeight() {
         return dishDetailsCalculation(FoodDetails::getWeight);
+    }
+
+    /**
+     * For Dish this function in redundant
+     *
+     * @return collection of fields products collection
+     */
+    @Override
+    protected Collection<Collection<ProductRef>> getProductsCollections() {
+        return Collections.emptyList();
     }
 
     /**

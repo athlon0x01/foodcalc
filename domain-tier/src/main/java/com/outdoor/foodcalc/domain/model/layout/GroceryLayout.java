@@ -1,18 +1,16 @@
 package com.outdoor.foodcalc.domain.model.layout;
 
 import com.google.common.collect.ImmutableList;
+import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
-import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -20,7 +18,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @author Anton Borovyk
  */
-public class GroceryLayout implements IDomainEntity<GroceryLayout>, FoodDetails, ProductsContainer {
+public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<GroceryLayout>, FoodDetails {
 
     private final long layoutId;
     private String name;
@@ -138,20 +136,26 @@ public class GroceryLayout implements IDomainEntity<GroceryLayout>, FoodDetails,
     }
 
     /**
+     * Combine all collection of different food entities to complex products collection.
+     *
+     * @return collection of fields products collection
+     */
+    @Override
+    protected Collection<Collection<ProductRef>> getProductsCollections() {
+        //collect all day products to one list
+        return days.stream().map(LayoutDayRef::getAllProducts).collect(toList());
+    }
+
+    /**
      * Collect all products contained in this entity and nested entities and sums their weights
      *
      * @return aggregated products list(product weights are summed).
      */
     @Override
     public Collection<ProductRef> getAllProducts() {
-        final Map<Long, List<ProductRef>> productsMap = days.stream()
-                //collect all day products to one list
-                .map(LayoutDayRef::getAllProducts)
-                //map products by Id;
-                .flatMap(Collection::stream)
-                .collect(groupingBy(ProductRef::getProductId));
         //summarize weight of each product
-        final List<ProductRef> products = productsMap.values().stream().map(ProductRef::summarizeWeight).collect(toList());
+        final Collection<ProductRef> products = super.getAllProducts();
+        //multiply to members count
         products.forEach(p -> p.setWeight(p.getWeight() * members));
         return products;
     }
