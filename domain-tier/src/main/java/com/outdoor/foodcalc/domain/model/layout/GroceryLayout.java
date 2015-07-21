@@ -2,14 +2,12 @@ package com.outdoor.foodcalc.domain.model.layout;
 
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
-import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 
@@ -18,7 +16,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @author Anton Borovyk
  */
-public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<GroceryLayout>, FoodDetails {
+public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<GroceryLayout> {
 
     private final long layoutId;
     private String name;
@@ -84,55 +82,6 @@ public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<Gr
     @Override
     public boolean sameIdentityAs(GroceryLayout other) {
         return layoutId == other.layoutId;
-    }
-
-    /**
-     * Internal details summary calculation.
-     * @param sp - parameter for calculations, f.e. fats, proteins, etc.
-     * @return summarized parameter value
-     */
-    private float detailsCalculation(Function<FoodDetails, Float> sp) {
-        return members * days.stream().map(sp).reduce(FoodDetails::floatSum).get();
-    }
-
-    /**
-     * @return calorific in kCal
-     */
-    @Override
-    public float getCalorific() {
-        return detailsCalculation(FoodDetails::getCalorific);
-    }
-
-    /**
-     * @return proteins in gram
-     */
-    @Override
-    public float getProteins() {
-        return detailsCalculation(FoodDetails::getProteins);
-    }
-
-    /**
-     * @return fats in gram
-     */
-    @Override
-    public float getFats() {
-        return detailsCalculation(FoodDetails::getFats);
-    }
-
-    /**
-     * @return carbonates in gram
-     */
-    @Override
-    public float getCarbs() {
-        return detailsCalculation(FoodDetails::getCarbs);
-    }
-
-    /**
-     * @return weight in gram
-     */
-    @Override
-    public float getWeight() {
-        return detailsCalculation(FoodDetails::getWeight);
     }
 
     /**

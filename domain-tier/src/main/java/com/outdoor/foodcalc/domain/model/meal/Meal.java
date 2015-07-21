@@ -2,7 +2,6 @@ package com.outdoor.foodcalc.domain.model.meal;
 
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
-import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
@@ -10,7 +9,6 @@ import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 
@@ -19,7 +17,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @author Anton Borovyk
  */
-public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal>, FoodDetails {
+public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal> {
 
     private final long mealId;
     private MealType type;
@@ -64,57 +62,6 @@ public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal>, Food
     @Override
     public boolean sameIdentityAs(Meal other) {
         return mealId == other.mealId;
-    }
-
-    /**
-     * Internal details summary calculation.
-     * @param sp - parameter for calculations, f.e. fats, proteins, etc.
-     * @return summarized parameter value
-     */
-    private float mealDetailsCalculation(Function<FoodDetails, Float> sp) {
-        float productValue = products.stream().map(sp).reduce(FoodDetails::floatSum).get();
-        float dishesValue = dishes.stream().map(sp).reduce(FoodDetails::floatSum).get();
-        return productValue + dishesValue;
-    }
-
-    /**
-     * @return calorific in kCal
-     */
-    @Override
-    public float getCalorific() {
-        return mealDetailsCalculation(FoodDetails::getCalorific);
-    }
-
-    /**
-     * @return proteins in gram
-     */
-    @Override
-    public float getProteins() {
-        return mealDetailsCalculation(FoodDetails::getProteins);
-    }
-
-    /**
-     * @return fats in gram
-     */
-    @Override
-    public float getFats() {
-        return mealDetailsCalculation(FoodDetails::getFats);
-    }
-
-    /**
-     * @return carbonates in gram
-     */
-    @Override
-    public float getCarbs() {
-        return mealDetailsCalculation(FoodDetails::getCarbs);
-    }
-
-    /**
-     * @return weight in gram
-     */
-    @Override
-    public float getWeight() {
-        return mealDetailsCalculation(FoodDetails::getWeight);
     }
 
     /**
