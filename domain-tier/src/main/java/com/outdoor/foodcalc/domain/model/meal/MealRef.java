@@ -10,7 +10,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import java.util.Collection;
 
 /**
- * Meal Value Object, provides readonly access to {@link Meal} entity.
+ * Meal Value Object, provides readonly access to {@link com.outdoor.foodcalc.domain.model.meal.Meal} entity.
  *
  * @author Anton Borovyk
  */
@@ -19,6 +19,8 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsCont
     private final Meal meal;
 
     public MealRef(Meal meal) {
+        if (meal == null)
+            throw new IllegalArgumentException("Constructor doesn't allow null parameters!");
         this.meal = meal;
     }
 
@@ -40,7 +42,7 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsCont
 
     @Override
     public boolean sameValueAs(MealRef other) {
-        return meal.getMealId() == other.getMealId();
+        return meal.equals(other.meal);
     }
 
     /**
@@ -91,5 +93,21 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsCont
     @Override
     public Collection<ProductRef> getAllProducts() {
         return meal.getAllProducts();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MealRef)) return false;
+
+        MealRef mealRef = (MealRef) o;
+
+        return meal.equals(mealRef.meal);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return meal.hashCode();
     }
 }

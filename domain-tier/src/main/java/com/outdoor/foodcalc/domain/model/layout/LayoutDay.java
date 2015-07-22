@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.domain.model.layout;
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
+import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.meal.MealRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import org.joda.time.LocalDate;
@@ -74,6 +75,27 @@ public class LayoutDay extends ComplexFoodEntity implements IDomainEntity<Layout
     @Override
     public boolean sameIdentityAs(LayoutDay other) {
         return dayId == other.dayId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LayoutDay)) return false;
+
+        LayoutDay layoutDay = (LayoutDay) o;
+
+        if (dayId != layoutDay.dayId) return false;
+        if (date != null ? !date.equals(layoutDay.date) : layoutDay.date != null) return false;
+        if (!IValueObject.sameCollectionAs(meals, layoutDay.meals)) return false;
+        return IValueObject.sameCollectionAs(products, layoutDay.products);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (dayId ^ (dayId >>> 32));
+        result = 31 * result + (date != null ? date.hashCode() : 0);
+        return result;
     }
 
     /**

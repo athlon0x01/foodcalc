@@ -31,9 +31,4 @@ public interface FoodDetails {
      * @return weight in gram
      */
     float getWeight();
-
-    //util function for FoodDetails calculation
-    static Float floatSum(Float a, Float b) {
-        return a + b;
-    }
 }

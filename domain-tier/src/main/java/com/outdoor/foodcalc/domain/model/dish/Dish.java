@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.domain.model.dish;
 import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
+import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
@@ -105,5 +106,27 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity<Dish> {
     @Override
     public Collection<ProductRef> getAllProducts() {
         return ImmutableList.copyOf(products);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Dish)) return false;
+
+        Dish dish = (Dish) o;
+
+        if (dishId != dish.dishId) return false;
+        if (name != null ? !name.equals(dish.name) : dish.name != null) return false;
+        if (category != null ? !category.equals(dish.category) : dish.category != null) return false;
+        return IValueObject.sameCollectionAs(products, dish.products);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (dishId ^ (dishId >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (category != null ? category.hashCode() : 0);
+        return result;
     }
 }

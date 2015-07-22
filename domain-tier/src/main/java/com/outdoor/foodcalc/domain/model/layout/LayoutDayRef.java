@@ -11,15 +11,17 @@ import org.joda.time.LocalDate;
 import java.util.Collection;
 
 /**
- * Day Value Object, provides readonly access to {@Link Day} Entity.
+ * Day Value Object, provides readonly access to {@link com.outdoor.foodcalc.domain.model.layout.LayoutDay Day} Entity.
  *
  * @author Anton Borovyk
  */
-public class LayoutDayRef implements IValueObject<LayoutDay>, FoodDetails, ProductsContainer {
+public class LayoutDayRef implements IValueObject<LayoutDayRef>, FoodDetails, ProductsContainer {
 
     private final LayoutDay day;
 
     public LayoutDayRef(LayoutDay day) {
+        if (day == null)
+            throw new IllegalArgumentException("Constructor doesn't allow null parameters!");
         this.day = day;
     }
 
@@ -44,8 +46,8 @@ public class LayoutDayRef implements IValueObject<LayoutDay>, FoodDetails, Produ
     }
 
     @Override
-    public boolean sameValueAs(LayoutDay other) {
-        return day.getDayId() == other.getDayId();
+    public boolean sameValueAs(LayoutDayRef other) {
+        return day.equals(other.day);
     }
 
     /**
@@ -96,5 +98,21 @@ public class LayoutDayRef implements IValueObject<LayoutDay>, FoodDetails, Produ
     @Override
     public Collection<ProductRef> getAllProducts() {
         return day.getAllProducts();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof LayoutDayRef)) return false;
+
+        LayoutDayRef that = (LayoutDayRef) o;
+
+        return day.equals(that.day);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return day.hashCode();
     }
 }

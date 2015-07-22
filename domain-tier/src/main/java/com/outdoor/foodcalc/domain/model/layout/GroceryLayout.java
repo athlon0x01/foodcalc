@@ -108,4 +108,28 @@ public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<Gr
         products.forEach(p -> p.setWeight(p.getWeight() * members));
         return products;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof GroceryLayout)) return false;
+
+        GroceryLayout that = (GroceryLayout) o;
+
+        if (layoutId != that.layoutId) return false;
+        if (members != that.members) return false;
+        if (duration != that.duration) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        return days.equals(that.days);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = (int) (layoutId ^ (layoutId >>> 32));
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + members;
+        result = 31 * result + duration;
+        return result;
+    }
 }

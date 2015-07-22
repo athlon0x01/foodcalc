@@ -23,6 +23,8 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
      * @param weight item weight in 0.1 grams
      */
     public ProductRef(Product product, int weight) {
+        if (product == null)
+            throw new IllegalArgumentException("Constructor doesn't allow null parameters!");
         this.product = product;
         this.weight = weight;
     }
@@ -114,13 +116,16 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
         ProductRef that = (ProductRef) o;
 
         if (weight != that.weight) return false;
-        return !(product != null ? !product.equals(that.product) : that.product != null);
+        if (getProductId() != that.getProductId()) return false;
+        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
+        return !(getProductCategoryName() != null ? !getProductCategoryName().equals(that.getProductCategoryName())
+                : that.getProductCategoryName() != null);
 
     }
 
     @Override
     public int hashCode() {
-        int result = product != null ? product.hashCode() : 0;
+        int result = product.hashCode();
         result = 31 * result + weight;
         return result;
     }

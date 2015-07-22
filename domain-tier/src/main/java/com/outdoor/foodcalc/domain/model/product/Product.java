@@ -144,6 +144,10 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
         Product product = (Product) o;
 
         if (productId != product.productId) return false;
+        if (Float.compare(product.calorific, calorific) != 0) return false;
+        if (Float.compare(product.proteins, proteins) != 0) return false;
+        if (Float.compare(product.fats, fats) != 0) return false;
+        if (Float.compare(product.carbs, carbs) != 0) return false;
         if (name != null ? !name.equals(product.name) : product.name != null) return false;
         return !(category != null ? !category.equals(product.category) : product.category != null);
 
@@ -154,6 +158,10 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
         int result = (int) (productId ^ (productId >>> 32));
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (category != null ? category.hashCode() : 0);
+        result = 31 * result + (calorific != +0.0f ? Float.floatToIntBits(calorific) : 0);
+        result = 31 * result + (proteins != +0.0f ? Float.floatToIntBits(proteins) : 0);
+        result = 31 * result + (fats != +0.0f ? Float.floatToIntBits(fats) : 0);
+        result = 31 * result + (carbs != +0.0f ? Float.floatToIntBits(carbs) : 0);
         return result;
     }
 }

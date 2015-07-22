@@ -33,4 +33,23 @@ public class MealType implements IDomainEntity<MealType> {
     public boolean sameIdentityAs(MealType other) {
         return typeId == other.typeId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MealType)) return false;
+
+        MealType mealType = (MealType) o;
+
+        if (typeId != mealType.typeId) return false;
+        return !(name != null ? !name.equals(mealType.name) : mealType.name != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = typeId;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
 }

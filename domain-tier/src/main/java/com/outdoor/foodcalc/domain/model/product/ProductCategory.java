@@ -33,4 +33,23 @@ public class ProductCategory implements IDomainEntity<ProductCategory> {
     public boolean sameIdentityAs(ProductCategory other) {
         return categoryId == other.categoryId;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProductCategory)) return false;
+
+        ProductCategory category = (ProductCategory) o;
+
+        if (categoryId != category.categoryId) return false;
+        return !(name != null ? !name.equals(category.name) : category.name != null);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = categoryId;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        return result;
+    }
 }

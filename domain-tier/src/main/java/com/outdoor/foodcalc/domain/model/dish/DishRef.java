@@ -9,7 +9,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import java.util.Collection;
 
 /**
- * Dish Value Object, provides readonly access to {@Link Dish} Entity.
+ * Dish Value Object, provides readonly access to {@link com.outdoor.foodcalc.domain.model.dish.Dish} Entity.
  *
  * @author Anton Borovyk
  */
@@ -19,6 +19,8 @@ public class DishRef implements IValueObject<DishRef>, FoodDetails, ProductsCont
     private final Dish dish;
 
     public DishRef(Dish dish) {
+        if (dish == null)
+            throw new IllegalArgumentException("Constructor doesn't allow null parameters!");
         this.dish = dish;
     }
 
@@ -44,7 +46,9 @@ public class DishRef implements IValueObject<DishRef>, FoodDetails, ProductsCont
 
     @Override
     public boolean sameValueAs(DishRef other) {
-        return dish.getDishId() == other.getDishId() && dish.getProducts().equals(other.getProducts());
+        if (getDishId() != other.getDishId()) return false;
+        if (getName() != null ? !getName().equals(other.getName()) : other.getName() != null) return false;
+        return IValueObject.sameCollectionAs(getProducts(), other.getProducts());
     }
 
     /**
@@ -95,5 +99,21 @@ public class DishRef implements IValueObject<DishRef>, FoodDetails, ProductsCont
     @Override
     public Collection<ProductRef> getAllProducts() {
         return dish.getAllProducts();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DishRef)) return false;
+
+        DishRef dishRef = (DishRef) o;
+
+        return dish.equals(dishRef.dish);
+
+    }
+
+    @Override
+    public int hashCode() {
+        return dish.hashCode();
     }
 }
