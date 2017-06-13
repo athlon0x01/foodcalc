@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.domain.model.meal;
 
-import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.IValueObject;
@@ -9,6 +8,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -44,16 +44,16 @@ public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal> {
         this.type = type;
     }
 
-    public ImmutableList<DishRef> getDishes() {
-        return ImmutableList.copyOf(dishes);
+    public List<DishRef> getDishes() {
+        return Collections.unmodifiableList(dishes);
     }
 
     public void setDishes(List<DishRef> dishes) {
         this.dishes = new ArrayList<>(dishes);
     }
 
-    public ImmutableList<ProductRef> getProducts() {
-        return ImmutableList.copyOf(products);
+    public List<ProductRef> getProducts() {
+        return Collections.unmodifiableList(products);
     }
 
     public void setProducts(List<ProductRef> products) {

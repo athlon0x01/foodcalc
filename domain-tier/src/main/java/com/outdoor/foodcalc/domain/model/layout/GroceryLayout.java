@@ -1,12 +1,12 @@
 package com.outdoor.foodcalc.domain.model.layout;
 
-import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -71,8 +71,8 @@ public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<Gr
         this.duration = duration;
     }
 
-    public ImmutableList<LayoutDayRef> getDays() {
-        return ImmutableList.copyOf(days);
+    public List<LayoutDayRef> getDays() {
+        return Collections.unmodifiableList(days);
     }
 
     public void setDays(List<LayoutDayRef> days) {

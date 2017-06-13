@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.domain.model.meal;
 
-import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.ProductsContainer;
@@ -8,6 +7,8 @@ import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Meal Value Object, provides readonly access to {@link com.outdoor.foodcalc.domain.model.meal.Meal} entity.
@@ -32,12 +33,12 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsCont
         return meal.getType().getName();
     }
 
-    public ImmutableList<DishRef> getDishes() {
-        return ImmutableList.copyOf(meal.getDishes());
+    public List<DishRef> getDishes() {
+        return Collections.unmodifiableList(meal.getDishes());
     }
 
-    public ImmutableList<ProductRef> getProducts() {
-        return ImmutableList.copyOf(meal.getProducts());
+    public List<ProductRef> getProducts() {
+        return Collections.unmodifiableList(meal.getProducts());
     }
 
     @Override

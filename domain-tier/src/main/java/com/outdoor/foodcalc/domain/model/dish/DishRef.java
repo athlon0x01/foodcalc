@@ -1,12 +1,13 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
-import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Dish Value Object, provides readonly access to {@link com.outdoor.foodcalc.domain.model.dish.Dish} Entity.
@@ -40,8 +41,8 @@ public class DishRef implements IValueObject<DishRef>, FoodDetails, ProductsCont
         return dish.getCategory().getName();
     }
 
-    public ImmutableList<ProductRef> getProducts() {
-        return ImmutableList.copyOf(dish.getProducts());
+    public List<ProductRef> getProducts() {
+        return Collections.unmodifiableList(dish.getProducts());
     }
 
     @Override

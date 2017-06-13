@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.domain.model.layout;
 
-import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.ProductsContainer;
@@ -9,6 +8,8 @@ import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import org.joda.time.LocalDate;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Day Value Object, provides readonly access to {@link com.outdoor.foodcalc.domain.model.layout.LayoutDay Day} Entity.
@@ -37,12 +38,12 @@ public class LayoutDayRef implements IValueObject<LayoutDayRef>, FoodDetails, Pr
         return day.getDescription();
     }
 
-    public ImmutableList<MealRef> getMeals() {
-        return ImmutableList.copyOf(day.getMeals());
+    public List<MealRef> getMeals() {
+        return Collections.unmodifiableList(day.getMeals());
     }
 
-    public ImmutableList<ProductRef> getProducts() {
-        return ImmutableList.copyOf(day.getProducts());
+    public List<ProductRef> getProducts() {
+        return Collections.unmodifiableList(day.getProducts());
     }
 
     @Override

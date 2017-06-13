@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.domain.model.layout;
 
-import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.IValueObject;
@@ -10,6 +9,7 @@ import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -56,16 +56,16 @@ public class LayoutDay extends ComplexFoodEntity implements IDomainEntity<Layout
         this.description = description;
     }
 
-    public ImmutableList<MealRef> getMeals() {
-        return ImmutableList.copyOf(meals);
+    public List<MealRef> getMeals() {
+        return Collections.unmodifiableList(meals);
     }
 
     public void setMeals(List<MealRef> meals) {
         this.meals = new ArrayList<>(meals);
     }
 
-    public ImmutableList<ProductRef> getProducts() {
-        return ImmutableList.copyOf(products);
+    public List<ProductRef> getProducts() {
+        return Collections.unmodifiableList(products);
     }
 
     public void setProducts(List<ProductRef> products) {

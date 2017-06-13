@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
-import com.google.common.collect.ImmutableList;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.IValueObject;
@@ -75,8 +74,8 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity<Dish> {
         this.category = category;
     }
 
-    public ImmutableList<ProductRef> getProducts() {
-        return ImmutableList.copyOf(products);
+    public List<ProductRef> getProducts() {
+        return Collections.unmodifiableList(products);
     }
 
     public void setProducts(List<ProductRef> products) {
@@ -105,7 +104,7 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity<Dish> {
      */
     @Override
     public Collection<ProductRef> getAllProducts() {
-        return ImmutableList.copyOf(products);
+        return Collections.unmodifiableList(products);
     }
 
     @Override
