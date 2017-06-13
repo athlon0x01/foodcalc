@@ -3,7 +3,7 @@
 --product related tables
 CREATE TABLE product_categories (
 	id serial PRIMARY KEY,
-	name varchar(64) NOT NULL
+	name varchar(64) UNIQUE NOT NULL
 );
 
 CREATE TABLE products (
@@ -21,7 +21,7 @@ CREATE TABLE products (
 --dish related tables
 CREATE TABLE dish_categories (
 	id serial PRIMARY KEY,
-	name varchar(64) NOT NULL
+	name varchar(64) UNIQUE NOT NULL
 );
 
 CREATE TABLE dishes (
@@ -42,7 +42,7 @@ CREATE TABLE dish_products (
 --product layout related tables
 CREATE TABLE meals (
 	id bigserial PRIMARY KEY,
-	name varchar(64) NOT NULL
+	name varchar(64) UNIQUE NOT NULL
 );
 
 CREATE TABLE grocery_layouts (

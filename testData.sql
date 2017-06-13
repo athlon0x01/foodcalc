@@ -1,6 +1,6 @@
 insert into product_categories (name) values('Fruits');
 insert into product_categories (name) values('Vegetables');
-insert into product_categories (name) values('Empty');
+insert into product_categories (name) values('Meat');
 
 insert into products (name, category, calorific, proteins, fats, carbs, defweight) values('Apple', (select id from product_categories where name = 'Fruits'), 57, 4, 1, 17.5, 23);
 insert into products (name, category, proteins, fats, carbs, defweight) values('Banana', (select id from product_categories where name = 'Fruits'), 8.6, 1.4, 6.7, 15);

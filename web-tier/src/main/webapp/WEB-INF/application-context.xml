@@ -19,6 +19,6 @@
         <property name="driverClassName" value="org.postgresql.Driver"/>
         <property name="url" value="jdbc:postgresql://localhost:5432/foodcalc"/>
         <property name="username" value="postgres"/>
-        <property name="password" value="123456"/>
+        <property name="password" value="ABCabc123"/>
     </bean>
 </beans>
