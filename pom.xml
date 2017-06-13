@@ -13,7 +13,7 @@
     <modules>
         <module>web-tier</module>
         <module>domain-tier</module>
-        <module>postgres-repository</module>
+        <module>repository</module>
     </modules>
 
     <build>

@@ -10,7 +10,7 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>postgres-repository</artifactId>
+    <artifactId>repository</artifactId>
     <version>0.1-SNAPSHOT</version>
 
     <dependencies>
