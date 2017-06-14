@@ -12,12 +12,16 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * <description>
+ * Product repository implementation responsible for {@link Product} persistence.
  *
  * @author Anton Borovyk
  */
 @Repository
 public class ProductRepo implements IProductRepo {
+
+    static final String SELECT_ALL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, c.id as catId, c.name as catName, p.calorific as calorific, " +
+        "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight " +
+        "from products p join product_categories c on p.category = c.id";
 
     private NamedParameterJdbcTemplate jdbcTemplate;
 
@@ -35,10 +39,7 @@ public class ProductRepo implements IProductRepo {
 
     @Override
     public List<Product> getAllProducts() {
-        final String sql = "select p.id as productId, p.name as productName, c.id as catId, c.name as catName, p.calorific as calorific, " +
-                "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight " +
-                "from products p join product_categories c on p.category = c.id";
-        return jdbcTemplate.query(sql, this::mapProducts);
+        return jdbcTemplate.query(SELECT_ALL_PRODUCTS_SQL, this::mapProducts);
     }
 
     private Product mapProducts(ResultSet resultSet, long currentRow) throws SQLException {
