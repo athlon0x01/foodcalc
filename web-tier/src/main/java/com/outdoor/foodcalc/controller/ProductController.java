@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.controller;
 
-import com.outdoor.foodcalc.model.CategoryModel;
+import com.outdoor.foodcalc.model.CategoryWithProducts;
 import com.outdoor.foodcalc.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -22,7 +22,7 @@ public class ProductController {
 
     @RequestMapping("/products")
     public String allProducts(ModelMap model) {
-        List<CategoryModel> categories = productService.getAllProducts();
+        List<CategoryWithProducts> categories = productService.getAllProducts();
         model.addAttribute("categories", categories);
         return "products";
     }

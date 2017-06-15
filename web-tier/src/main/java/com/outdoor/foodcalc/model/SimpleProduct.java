@@ -1,11 +1,12 @@
 package com.outdoor.foodcalc.model;
 
 /**
- * <description>
+ * Simplified view model for {@link com.outdoor.foodcalc.domain.model.product.Product} class.
  *
  * @author Anton Borovyk
  */
-public class ProductModel {
+public class SimpleProduct {
+    public long id;
     public String name;
     public float calorific;
     public float proteins;

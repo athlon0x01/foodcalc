@@ -4,8 +4,8 @@ import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
-import com.outdoor.foodcalc.model.CategoryModel;
-import com.outdoor.foodcalc.model.ProductModel;
+import com.outdoor.foodcalc.model.CategoryWithProducts;
+import com.outdoor.foodcalc.model.SimpleProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * <description>
+ * Service for all operations with {@link Product} objects,
+ * including transformation domain objects to view models and vise versa.
  *
  * @author Anton Borovyk
  */
@@ -32,7 +33,7 @@ public class ProductService {
         this.productCategoryDomainService = productCategoryDomainService;
     }
 
-    public List<CategoryModel> getAllProducts() {
+    public List<CategoryWithProducts> getAllProducts() {
         //load products & categories
         final List<ProductCategory> categories = productCategoryDomainService.getCategories();
         final List<Product> products = productDomainService.getAllProducts();
@@ -42,12 +43,14 @@ public class ProductService {
         //map domain classes to UI model
         return categories.stream()
                 .map(c -> {
-                    final CategoryModel cm = new CategoryModel();
+                    final CategoryWithProducts cm = new CategoryWithProducts();
+                    cm.id = c.getCategoryId();
                     cm.name = c.getName();
                     final List<Product> productList = productsMap.get(c.getCategoryId());
                     cm.products = (productList == null) ? new ArrayList<>() : productList.stream()
                             .map(p -> {
-                                final ProductModel pm = new ProductModel();
+                                final SimpleProduct pm = new SimpleProduct();
+                                pm.id = p.getProductId();
                                 pm.name = p.getName();
                                 pm.calorific = p.getCalorific();
                                 pm.proteins = p.getProteins();
