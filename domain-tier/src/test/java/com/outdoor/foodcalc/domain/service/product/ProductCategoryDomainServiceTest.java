@@ -2,7 +2,7 @@ package com.outdoor.foodcalc.domain.service.product;
 
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
-import com.outdoor.foodcalc.domain.service.DomainServicesTestsConfig;
+import com.outdoor.foodcalc.domain.service.DomainServiceTestsConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
  * @author Anton Borovyk
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DomainServicesTestsConfig.class)
+@ContextConfiguration(classes = DomainServiceTestsConfig.class)
 public class ProductCategoryDomainServiceTest {
 
     private static final ProductCategory dummyCategory = new ProductCategory(12345, "dummyCategory");

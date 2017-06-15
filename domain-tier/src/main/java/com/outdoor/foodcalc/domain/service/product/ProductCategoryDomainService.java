@@ -36,7 +36,7 @@ public class ProductCategoryDomainService {
      *
      * @param category category to add
      */
-    boolean addCategory(ProductCategory category) {
+    public boolean addCategory(ProductCategory category) {
         return categoryRepo.addCategory(category);
     }
 
@@ -46,7 +46,7 @@ public class ProductCategoryDomainService {
      *
      * @param category updated category
      */
-    boolean updateCategory(ProductCategory category) {
+    public boolean updateCategory(ProductCategory category) {
         return categoryRepo.updateCategory(category);
     }
 
@@ -55,7 +55,7 @@ public class ProductCategoryDomainService {
      *
      * @param category category to delete
      */
-    boolean deleteCategory(ProductCategory category) {
+    public boolean deleteCategory(ProductCategory category) {
         return categoryRepo.deleteCategory(category);
     }
 }

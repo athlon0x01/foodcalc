@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.domain.service.product;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
-import com.outdoor.foodcalc.domain.service.DomainServicesTestsConfig;
+import com.outdoor.foodcalc.domain.service.DomainServiceTestsConfig;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
  * @author Anton Borovyk
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DomainServicesTestsConfig.class)
+@ContextConfiguration(classes = DomainServiceTestsConfig.class)
 public class ProductDomainServiceTest {
 
     @Autowired

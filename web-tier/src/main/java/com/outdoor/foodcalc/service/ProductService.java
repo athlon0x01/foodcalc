@@ -1,7 +1,7 @@
 package com.outdoor.foodcalc.service;
 
-import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.Product;
+import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.CategoryModel;
@@ -22,11 +22,15 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-    @Autowired
     private ProductDomainService productDomainService;
 
-    @Autowired
     private ProductCategoryDomainService productCategoryDomainService;
+
+    @Autowired
+    public ProductService(ProductDomainService productDomainService, ProductCategoryDomainService productCategoryDomainService) {
+        this.productDomainService = productDomainService;
+        this.productCategoryDomainService = productCategoryDomainService;
+    }
 
     public List<CategoryModel> getAllProducts() {
         //load products & categories

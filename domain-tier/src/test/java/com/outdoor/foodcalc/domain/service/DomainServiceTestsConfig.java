@@ -10,13 +10,13 @@ import org.springframework.context.annotation.Primary;
 import static org.mockito.Mockito.mock;
 
 /**
- * Spring beans configuration for unit tests
+ * Spring beans configuration for Domain services unit tests
  *
  * @author Anton Borovyk.
  */
 @Configuration
 @ComponentScan(basePackages = "com.outdoor.foodcalc")
-public class DomainServicesTestsConfig {
+public class DomainServiceTestsConfig {
 
     @Bean
     @Primary
