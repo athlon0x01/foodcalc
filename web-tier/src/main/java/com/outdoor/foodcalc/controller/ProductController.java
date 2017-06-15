@@ -17,8 +17,12 @@ import java.util.List;
 @Controller
 public class ProductController {
 
+    private ProductService productService;
+
     @Autowired
-    ProductService productService;
+    public ProductController(ProductService productService) {
+        this.productService = productService;
+    }
 
     @RequestMapping("/products")
     public String allProducts(ModelMap model) {

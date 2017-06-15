@@ -6,11 +6,13 @@ import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.CategoryWithProducts;
 import com.outdoor.foodcalc.model.SimpleProduct;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,11 +40,16 @@ public class ProductServiceTest {
     @Autowired
     private ProductService productService;
 
-    @Autowired
     private ProductDomainService productDomainService;
-
-    @Autowired
     private ProductCategoryDomainService categoryDomainService;
+
+    @Before
+    public void setUp() throws Exception {
+        productDomainService = mock(ProductDomainService.class);
+        categoryDomainService = mock(ProductCategoryDomainService.class);
+        ReflectionTestUtils.setField(productService, "productDomainService", productDomainService);
+        ReflectionTestUtils.setField(productService, "productCategoryDomainService", categoryDomainService);
+    }
 
     @Test
     public void getAllProductsTest() {

@@ -3,19 +3,20 @@ package com.outdoor.foodcalc.service;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.model.SimpleProductCategory;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 /**
  * JUnit tests for {@link ProductCategoryService} class
@@ -34,8 +35,13 @@ public class ProductCategoryServiceTest {
     @Autowired
     private ProductCategoryService categoryService;
 
-    @Autowired
     private ProductCategoryDomainService categoryDomainService;
+
+    @Before
+    public void setUp() throws Exception {
+        categoryDomainService = mock(ProductCategoryDomainService.class);
+        ReflectionTestUtils.setField(categoryService, "categoryDomainService", categoryDomainService);
+    }
 
     @Test
     public void getCategories() throws Exception {
