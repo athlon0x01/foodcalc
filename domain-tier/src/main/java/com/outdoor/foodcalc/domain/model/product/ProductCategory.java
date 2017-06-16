@@ -9,15 +9,15 @@ import com.outdoor.foodcalc.domain.model.IDomainEntity;
  */
 public class ProductCategory implements IDomainEntity<ProductCategory> {
 
-    private final int categoryId;
+    private final long categoryId;
     private String name;
 
-    public ProductCategory(int categoryId, String name) {
+    public ProductCategory(long categoryId, String name) {
         this.categoryId = categoryId;
         this.name = name;
     }
 
-    public int getCategoryId() {
+    public long getCategoryId() {
         return categoryId;
     }
 
@@ -37,18 +37,17 @@ public class ProductCategory implements IDomainEntity<ProductCategory> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProductCategory)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         ProductCategory category = (ProductCategory) o;
 
         if (categoryId != category.categoryId) return false;
-        return !(name != null ? !name.equals(category.name) : category.name != null);
-
+        return name != null ? name.equals(category.name) : category.name == null;
     }
 
     @Override
     public int hashCode() {
-        int result = categoryId;
+        int result = (int) (categoryId ^ (categoryId >>> 32));
         result = 31 * result + (name != null ? name.hashCode() : 0);
         return result;
     }

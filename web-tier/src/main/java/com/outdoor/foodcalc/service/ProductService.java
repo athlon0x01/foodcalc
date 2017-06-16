@@ -38,7 +38,7 @@ public class ProductService {
         final List<ProductCategory> categories = productCategoryDomainService.getCategories();
         final List<Product> products = productDomainService.getAllProducts();
         //group products by categories
-        final Map<Integer, List<Product>> productsMap = products.stream()
+        final Map<Long, List<Product>> productsMap = products.stream()
                 .collect(Collectors.groupingBy(p -> p.getCategory().getCategoryId()));
         //map domain classes to UI model
         return categories.stream()

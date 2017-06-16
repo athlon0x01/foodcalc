@@ -105,7 +105,7 @@ public class DishRef implements IValueObject<DishRef>, FoodDetails, ProductsCont
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof DishRef)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         DishRef dishRef = (DishRef) o;
 

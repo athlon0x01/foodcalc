@@ -139,7 +139,7 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Product)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Product product = (Product) o;
 

@@ -112,7 +112,7 @@ public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<Gr
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof GroceryLayout)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         GroceryLayout that = (GroceryLayout) o;
 

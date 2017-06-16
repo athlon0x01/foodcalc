@@ -37,7 +37,7 @@ public class MealType implements IDomainEntity<MealType> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MealType)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         MealType mealType = (MealType) o;
 

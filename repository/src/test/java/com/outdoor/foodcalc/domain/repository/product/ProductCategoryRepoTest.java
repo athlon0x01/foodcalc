@@ -32,7 +32,7 @@ import static org.mockito.Mockito.*;
 public class ProductCategoryRepoTest {
 
 
-    private static final int CATEGORY_ID = 12345;
+    private static final long CATEGORY_ID = 12345;
     private static final String DUMMY_CATEGORY = "Dummy category";
 
     private static final ProductCategory dummyCategory = new ProductCategory(CATEGORY_ID, DUMMY_CATEGORY);

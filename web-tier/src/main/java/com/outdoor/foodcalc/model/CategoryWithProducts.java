@@ -8,7 +8,7 @@ import java.util.List;
  * @author Anton Borovyk
  */
 public class CategoryWithProducts {
-    public int id;
+    public long id;
     public String name;
     public List<SimpleProduct> products;
 

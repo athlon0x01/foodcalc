@@ -32,7 +32,7 @@ public class ProductCategoryRepo implements IProductCategoryRepo {
     @Override
     public List<ProductCategory> getCategories() {
         return jdbcTemplate.query(SELECT_ALL_CATEGORIES_SQL,
-            (resultSet, rowNum) -> new ProductCategory(resultSet.getInt("id"), resultSet.getString("name")));
+            (resultSet, rowNum) -> new ProductCategory(resultSet.getLong("id"), resultSet.getString("name")));
     }
 
     @Override

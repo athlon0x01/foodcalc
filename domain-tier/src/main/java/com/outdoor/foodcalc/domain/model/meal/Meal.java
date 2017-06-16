@@ -81,7 +81,7 @@ public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Meal)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Meal meal = (Meal) o;
 

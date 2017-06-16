@@ -80,7 +80,7 @@ public class LayoutDay extends ComplexFoodEntity implements IDomainEntity<Layout
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof LayoutDay)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         LayoutDay layoutDay = (LayoutDay) o;
 

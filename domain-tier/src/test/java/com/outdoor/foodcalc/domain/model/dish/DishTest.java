@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class DishTest {
 
-    public static final double DELTA = 0.00001;
+    private static final double DELTA = 0.00001;
     private Dish dish;
     private DishRef dishRef;
     private Collection<ProductRef> products;

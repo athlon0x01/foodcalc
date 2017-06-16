@@ -7,6 +7,6 @@ package com.outdoor.foodcalc.model;
  */
 public class SimpleProductCategory {
 
-    public int id;
+    public long id;
     public String name;
 }

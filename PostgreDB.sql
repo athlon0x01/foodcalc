@@ -2,7 +2,7 @@
 
 --product related tables
 CREATE TABLE product_categories (
-	id serial PRIMARY KEY,
+	id bigserial PRIMARY KEY,
 	name varchar(64) UNIQUE NOT NULL
 );
 
@@ -20,7 +20,7 @@ CREATE TABLE products (
 
 --dish related tables
 CREATE TABLE dish_categories (
-	id serial PRIMARY KEY,
+	id bigserial PRIMARY KEY,
 	name varchar(64) UNIQUE NOT NULL
 );
 

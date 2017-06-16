@@ -110,7 +110,7 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity<Dish> {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Dish)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Dish dish = (Dish) o;
 

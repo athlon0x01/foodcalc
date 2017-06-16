@@ -21,7 +21,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class MealTest {
 
-    public static final double DELTA = 0.00001;
+    private static final double DELTA = 0.00001;
     private List<ProductRef> products;
     private Meal meal;
     private MealRef mealRef;

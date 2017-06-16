@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
  */
 public class ProductTest {
 
-    public static final double DELTA = 0.00001;
+    private static final double DELTA = 0.00001;
     private Product product;
     private ProductRef productRef;
 

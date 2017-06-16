@@ -99,7 +99,7 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsCont
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof MealRef)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         MealRef mealRef = (MealRef) o;
 

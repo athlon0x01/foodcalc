@@ -27,8 +27,8 @@ import static org.mockito.Mockito.mock;
 @ContextConfiguration(classes = ServiceTestsConfig.class)
 public class ProductCategoryServiceTest {
 
-    private static final int CATEGORY_1_ID = 12345;
-    private static final int CATEGORY_2_ID = 54321;
+    private static final long CATEGORY_1_ID = 12345;
+    private static final long CATEGORY_2_ID = 54321;
     private static final String CATEGORY_1_NAME = "First category";
     private static final String CATEGORY_2_NAME = "Second category";
 
