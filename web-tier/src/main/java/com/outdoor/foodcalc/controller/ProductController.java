@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 
 /**
- * <description>
+ * Spring MVC controller for Product related operations
  *
  * @author Anton Borovyk
  */

@@ -9,4 +9,8 @@ public class SimpleProductCategory {
 
     public long id;
     public String name;
+
+    public String getName() {
+        return name;
+    }
 }
