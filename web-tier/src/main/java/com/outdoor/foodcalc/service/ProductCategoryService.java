@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -26,7 +27,7 @@ public class ProductCategoryService {
     }
 
     /**
-     * Gets all {@link ProductCategory} objects.
+     * Gets all {@link ProductCategory} objects mapped to {@link SimpleProductCategory}.
      *
      * @return list of categories
      */
@@ -42,11 +43,30 @@ public class ProductCategoryService {
     }
 
     /**
+     * Gets all {@link ProductCategory} objects mapped to {@link SimpleProductCategory}.
+     *
+     * @param id category Id to load
+     * @return loaded category
+     */
+    public Optional<SimpleProductCategory> getCategory(long id) {
+        Optional<SimpleProductCategory> result = Optional.empty();
+        Optional<ProductCategory> category = categoryDomainService.getCategory(id);
+        if (category.isPresent()) {
+            final SimpleProductCategory model = new SimpleProductCategory();
+            model.id = category.get().getCategoryId();
+            model.name = category.get().getName();
+            result = Optional.of(model);
+        }
+        return result;
+    }
+
+    /**
      * Add new {@link ProductCategory}.
      *
      * @param categoryName name of new category
+     * @return auto generated Id
      */
-    public boolean addCategory(String categoryName) {
+    public long addCategory(String categoryName) {
         return categoryDomainService.addCategory(new ProductCategory(-1, categoryName));
     }
 
@@ -63,9 +83,9 @@ public class ProductCategoryService {
     /**
      * Removes selected {@link ProductCategory}.
      *
-     * @param model category to delete
+     * @param id category Id to delete
      */
-    public boolean deleteCategory(SimpleProductCategory model) {
-        return categoryDomainService.deleteCategory(new ProductCategory(model.id, model.name));
+    public boolean deleteCategory(long id) {
+        return categoryDomainService.deleteCategory(id);
     }
 }

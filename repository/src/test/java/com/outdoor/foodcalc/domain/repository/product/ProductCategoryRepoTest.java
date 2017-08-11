@@ -6,16 +6,20 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,16 +41,34 @@ public class ProductCategoryRepoTest {
 
     private static final ProductCategory dummyCategory = new ProductCategory(CATEGORY_ID, DUMMY_CATEGORY);
 
-    private static final class CategorySqlParameterMatcher implements ArgumentMatcher<SqlParameterSource> {
+    private static class CategoryIdSqlParameterMatcher implements ArgumentMatcher<SqlParameterSource> {
+        private long id;
+
+        CategoryIdSqlParameterMatcher(long id) {
+            this.id = id;
+        }
+
         @Override
         public boolean matches(SqlParameterSource params) {
-            return params.getValue("categoryId").equals(CATEGORY_ID)
-                && DUMMY_CATEGORY.equals(params.getValue("name"));
+            return params.getValue("categoryId").equals(id);
         }
     }
 
-    private static final CategorySqlParameterMatcher matcher = new CategorySqlParameterMatcher();
+    private static class CategorySqlParameterMatcher extends CategoryIdSqlParameterMatcher {
+        private ProductCategory category;
 
+        CategorySqlParameterMatcher(ProductCategory category) {
+            super(category.getCategoryId());
+            this.category = category;
+        }
+
+        @Override
+        public boolean matches(SqlParameterSource params) {
+            return super.matches(params) && category.getName().equals(params.getValue("name"));
+        }
+    }
+
+    @Mock
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @Autowired
@@ -54,7 +76,7 @@ public class ProductCategoryRepoTest {
 
     @Before
     public void setUp() throws Exception {
-        jdbcTemplate = mock(NamedParameterJdbcTemplate.class);
+        MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(repo, "jdbcTemplate", jdbcTemplate);
     }
 
@@ -71,21 +93,54 @@ public class ProductCategoryRepoTest {
     }
 
     @Test
-    public void addCategoryTest() throws Exception {
-        when(jdbcTemplate.update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL), argThat(matcher))).thenReturn(1);
-        assertTrue(repo.addCategory(dummyCategory));
-        verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL), argThat(matcher));
+    public void getCategoryTest() throws Exception {
+        List<Object> expected = Collections.singletonList(dummyCategory);
+        CategoryIdSqlParameterMatcher idMatcher = new CategoryIdSqlParameterMatcher(CATEGORY_ID);
+
+        when(jdbcTemplate.query(eq(ProductCategoryRepo.SELECT_CATEGORY_SQL), argThat(idMatcher), any(RowMapper.class))).thenReturn(expected);
+
+        Optional<ProductCategory> actual = repo.getCategory(CATEGORY_ID);
+        assertTrue(actual.isPresent());
+        assertEquals(dummyCategory, actual.get());
+
+        verify(jdbcTemplate, times(1)).query(eq(ProductCategoryRepo.SELECT_CATEGORY_SQL), argThat(idMatcher), any(RowMapper.class));
     }
 
     @Test
-    public void addCategoryFailTest() throws Exception {
-        when(jdbcTemplate.update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL), argThat(matcher))).thenReturn(0);
-        assertFalse(repo.addCategory(dummyCategory));
-        verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL), argThat(matcher));
+    public void getCategoryNotFountTest() throws Exception {
+        CategoryIdSqlParameterMatcher idMatcher = new CategoryIdSqlParameterMatcher(CATEGORY_ID);
+
+        when(jdbcTemplate.query(eq(ProductCategoryRepo.SELECT_CATEGORY_SQL), argThat(idMatcher), any(RowMapper.class))).thenReturn(Collections.emptyList());
+
+        Optional<ProductCategory> actual = repo.getCategory(CATEGORY_ID);
+        assertFalse(actual.isPresent());
+
+        verify(jdbcTemplate, times(1)).query(eq(ProductCategoryRepo.SELECT_CATEGORY_SQL), argThat(idMatcher), any(RowMapper.class));
+    }
+
+    @Test
+    public void addCategoryTest() throws Exception {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_CATEGORY.equals(params.getValue("name"));
+        Long expectedId = 54321L;
+        String[] keyColumns = new String[]{"id"};
+        KeyHolder holder = mock(KeyHolder.class);
+        ProductCategoryRepo spyRepo = spy(repo);
+
+        when(holder.getKey()).thenReturn(expectedId);
+        doReturn(holder).when(spyRepo).getKeyHolder();
+        when(jdbcTemplate.update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL),
+            argThat(matcher), eq(holder), eq(keyColumns))).thenReturn(1);
+
+        assertEquals(expectedId.longValue(), spyRepo.addCategory(dummyCategory));
+
+        verify(holder, times(1)).getKey();
+        verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL),
+            argThat(matcher), eq(holder), eq(keyColumns));
     }
 
     @Test
     public void updateCategoryTest() throws Exception {
+        CategorySqlParameterMatcher matcher = new CategorySqlParameterMatcher(dummyCategory);
         when(jdbcTemplate.update(eq(ProductCategoryRepo.UPDATE_CATEGORY_SQL), argThat(matcher))).thenReturn(1);
         assertTrue(repo.updateCategory(dummyCategory));
         verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.UPDATE_CATEGORY_SQL), argThat(matcher));
@@ -93,6 +148,7 @@ public class ProductCategoryRepoTest {
 
     @Test
     public void updateCategoryFailTest() throws Exception {
+        CategorySqlParameterMatcher matcher = new CategorySqlParameterMatcher(dummyCategory);
         when(jdbcTemplate.update(eq(ProductCategoryRepo.UPDATE_CATEGORY_SQL), argThat(matcher))).thenReturn(0);
         assertFalse(repo.updateCategory(dummyCategory));
         verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.UPDATE_CATEGORY_SQL), argThat(matcher));
@@ -100,15 +156,17 @@ public class ProductCategoryRepoTest {
 
     @Test
     public void deleteCategoryTest() throws Exception {
-        when(jdbcTemplate.update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(matcher))).thenReturn(1);
-        assertTrue(repo.deleteCategory(dummyCategory));
-        verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(matcher));
+        CategoryIdSqlParameterMatcher idMatcher = new CategoryIdSqlParameterMatcher(CATEGORY_ID);
+        when(jdbcTemplate.update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(idMatcher))).thenReturn(1);
+        assertTrue(repo.deleteCategory(CATEGORY_ID));
+        verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(idMatcher));
     }
 
     @Test
     public void deleteCategoryFailTest() throws Exception {
-        when(jdbcTemplate.update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(matcher))).thenReturn(0);
-        assertFalse(repo.deleteCategory(dummyCategory));
-        verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(matcher));
+        CategoryIdSqlParameterMatcher idMatcher = new CategoryIdSqlParameterMatcher(CATEGORY_ID);
+        when(jdbcTemplate.update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(idMatcher))).thenReturn(0);
+        assertFalse(repo.deleteCategory(CATEGORY_ID));
+        verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(idMatcher));
     }
 }

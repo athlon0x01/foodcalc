@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Domain service for all operations with {@link ProductCategory} objects.
@@ -32,11 +33,22 @@ public class ProductCategoryDomainService {
     }
 
     /**
+     * Loads {@link ProductCategory} object by Id.
+     *
+     * @param id category Id to load
+     * @return loaded category
+     */
+    public Optional<ProductCategory> getCategory(long id) {
+        return categoryRepo.getCategory(id);
+    }
+
+    /**
      * Add new {@link ProductCategory}.
      *
      * @param category category to add
+     * @return auto generated Id
      */
-    public boolean addCategory(ProductCategory category) {
+    public long addCategory(ProductCategory category) {
         return categoryRepo.addCategory(category);
     }
 
@@ -53,9 +65,9 @@ public class ProductCategoryDomainService {
     /**
      * Removes selected {@link ProductCategory}.
      *
-     * @param category category to delete
+     * @param id category Id to delete
      */
-    public boolean deleteCategory(ProductCategory category) {
-        return categoryRepo.deleteCategory(category);
+    public boolean deleteCategory(long id) {
+        return categoryRepo.deleteCategory(id);
     }
 }
