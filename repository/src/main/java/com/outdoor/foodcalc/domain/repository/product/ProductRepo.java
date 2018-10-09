@@ -2,11 +2,10 @@ package com.outdoor.foodcalc.domain.repository.product;
 
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import com.outdoor.foodcalc.domain.repository.AbstractRepository;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
@@ -17,33 +16,28 @@ import java.util.List;
  * @author Anton Borovyk
  */
 @Repository
-public class ProductRepo implements IProductRepo {
+public class ProductRepo extends AbstractRepository<Product>
+    implements IProductRepo, RowMapper<Product> {
 
     static final String SELECT_ALL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, c.id as catId, c.name as catName, p.calorific as calorific, " +
         "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight " +
         "from products p join product_categories c on p.category = c.id";
 
-    private NamedParameterJdbcTemplate jdbcTemplate;
-
-    @Autowired
-    public void setDataSource(DataSource dataSource) {
-        this.jdbcTemplate = new NamedParameterJdbcTemplate(dataSource);
+    @Override
+    public List<Product> getAllProducts() {
+        return jdbcTemplate.query(SELECT_ALL_PRODUCTS_SQL, this);
     }
 
     @Override
-    public List<Product> getAllProducts() {
-        return jdbcTemplate.query(SELECT_ALL_PRODUCTS_SQL, this::mapProducts);
-    }
-
-    private Product mapProducts(ResultSet resultSet, long currentRow) throws SQLException {
+    public Product mapRow(ResultSet resultSet, int i) throws SQLException {
         final ProductCategory category = new ProductCategory(resultSet.getLong("catId"), resultSet.getString("catName"));
         return new Product(resultSet.getLong("productId"),
-                resultSet.getString("productName"),
-                category,
-                resultSet.getFloat("calorific"),
-                resultSet.getFloat("proteins"),
-                resultSet.getFloat("fats"),
-                resultSet.getFloat("carbs"),
-                resultSet.getFloat("defWeight"));
+            resultSet.getString("productName"),
+            category,
+            resultSet.getFloat("calorific"),
+            resultSet.getFloat("proteins"),
+            resultSet.getFloat("fats"),
+            resultSet.getFloat("carbs"),
+            resultSet.getFloat("defWeight"));
     }
 }
