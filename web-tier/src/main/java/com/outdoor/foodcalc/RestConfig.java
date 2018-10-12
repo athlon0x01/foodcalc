@@ -8,6 +8,6 @@ import javax.ws.rs.core.Application;
  *
  * @author Anton Borovyk.
  */
-@ApplicationPath("/")
+@ApplicationPath("/api")
 public class RestConfig extends Application {
 }
