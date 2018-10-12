@@ -11,6 +11,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>frontend</module>
         <module>web-tier</module>
         <module>domain-tier</module>
         <module>repository</module>

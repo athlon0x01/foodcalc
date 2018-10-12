@@ -3,5 +3,12 @@ idea/
 *.iml
 *.ipr
 *.iws
-target/
-*.log
+target
+*.log*
+.DS_Store
+.vscode
+node_modules
+/dist/
+webapp
+/test/unit/coverage/
+node
