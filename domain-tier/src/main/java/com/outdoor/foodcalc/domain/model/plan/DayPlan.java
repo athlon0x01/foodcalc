@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.domain.model.layout;
+package com.outdoor.foodcalc.domain.model.plan;
 
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
@@ -15,13 +15,13 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Day entity, that contains some meals and may be some additional products.
+ * Day Plan entity, that contains some meals and may be some additional products.
  * Day doesn't include dishes. Dishes should be included into meals.
  * F.e. Breakfast & Lunch (meals) & some nuts & sweets (products).
  *
  * @author Anton Borovyk
  */
-public class LayoutDay extends ComplexFoodEntity implements IDomainEntity<LayoutDay> {
+public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan> {
 
     private final long dayId;
     private LocalDate date;
@@ -29,7 +29,7 @@ public class LayoutDay extends ComplexFoodEntity implements IDomainEntity<Layout
     private List<MealRef> meals;
     private List<ProductRef> products;
 
-    public LayoutDay(long dayId, LocalDate date, List<MealRef> meals, Collection<ProductRef> products) {
+    public DayPlan(long dayId, LocalDate date, List<MealRef> meals, Collection<ProductRef> products) {
         this.dayId = dayId;
         this.date = date;
         this.meals = new ArrayList<>(meals);
@@ -73,7 +73,7 @@ public class LayoutDay extends ComplexFoodEntity implements IDomainEntity<Layout
     }
 
     @Override
-    public boolean sameIdentityAs(LayoutDay other) {
+    public boolean sameIdentityAs(DayPlan other) {
         return dayId == other.dayId;
     }
 
@@ -82,12 +82,12 @@ public class LayoutDay extends ComplexFoodEntity implements IDomainEntity<Layout
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        LayoutDay layoutDay = (LayoutDay) o;
+        DayPlan dayPlan = (DayPlan) o;
 
-        if (dayId != layoutDay.dayId) return false;
-        if (date != null ? !date.equals(layoutDay.date) : layoutDay.date != null) return false;
-        if (!IValueObject.sameCollectionAs(meals, layoutDay.meals)) return false;
-        return IValueObject.sameCollectionAs(products, layoutDay.products);
+        if (dayId != dayPlan.dayId) return false;
+        if (date != null ? !date.equals(dayPlan.date) : dayPlan.date != null) return false;
+        if (!IValueObject.sameCollectionAs(meals, dayPlan.meals)) return false;
+        return IValueObject.sameCollectionAs(products, dayPlan.products);
 
     }
 

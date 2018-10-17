@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.domain.model.layout;
+package com.outdoor.foodcalc.domain.model.plan;
 
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
@@ -12,15 +12,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Day Value Object, provides readonly access to {@link com.outdoor.foodcalc.domain.model.layout.LayoutDay Day} Entity.
+ * Day Plan Value Object, provides readonly access to {@link DayPlan Day Plan} Entity.
  *
  * @author Anton Borovyk
  */
-public class LayoutDayRef implements IValueObject<LayoutDayRef>, FoodDetails, ProductsContainer {
+public class DayPlanRef implements IValueObject<DayPlanRef>, FoodDetails, ProductsContainer {
 
-    private final LayoutDay day;
+    private final DayPlan day;
 
-    public LayoutDayRef(LayoutDay day) {
+    public DayPlanRef(DayPlan day) {
         if (day == null)
             throw new IllegalArgumentException("Constructor doesn't allow null parameters!");
         this.day = day;
@@ -47,7 +47,7 @@ public class LayoutDayRef implements IValueObject<LayoutDayRef>, FoodDetails, Pr
     }
 
     @Override
-    public boolean sameValueAs(LayoutDayRef other) {
+    public boolean sameValueAs(DayPlanRef other) {
         return day.equals(other.day);
     }
 
@@ -106,7 +106,7 @@ public class LayoutDayRef implements IValueObject<LayoutDayRef>, FoodDetails, Pr
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        LayoutDayRef that = (LayoutDayRef) o;
+        DayPlanRef that = (DayPlanRef) o;
 
         return day.equals(that.day);
 

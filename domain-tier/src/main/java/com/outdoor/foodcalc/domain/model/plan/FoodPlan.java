@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.domain.model.layout;
+package com.outdoor.foodcalc.domain.model.plan;
 
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
@@ -12,21 +12,21 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Grocery Layout entity represent typical layout for trekking trip splited to days, meals & dishes.
+ * Food Plan entity represent typical food carrying plan for trekking trip split to days, meals & dishes.
  *
  * @author Anton Borovyk
  */
-public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<GroceryLayout> {
+public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPlan> {
 
     private final long layoutId;
     private String name;
     private String description;
     private int members;
     private int duration;
-    private List<LayoutDayRef> days;
+    private List<DayPlanRef> days;
 
-    public GroceryLayout(long layoutId, String name, String description,
-                         int members, int duration, Collection<LayoutDayRef> days) {
+    public FoodPlan(long layoutId, String name, String description,
+                    int members, int duration, Collection<DayPlanRef> days) {
         this.layoutId = layoutId;
         this.name = name;
         this.description = description;
@@ -71,16 +71,16 @@ public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<Gr
         this.duration = duration;
     }
 
-    public List<LayoutDayRef> getDays() {
+    public List<DayPlanRef> getDays() {
         return Collections.unmodifiableList(days);
     }
 
-    public void setDays(List<LayoutDayRef> days) {
+    public void setDays(List<DayPlanRef> days) {
         this.days = new ArrayList<>(days);
     }
 
     @Override
-    public boolean sameIdentityAs(GroceryLayout other) {
+    public boolean sameIdentityAs(FoodPlan other) {
         return layoutId == other.layoutId;
     }
 
@@ -92,7 +92,7 @@ public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<Gr
     @Override
     protected Collection<Collection<ProductRef>> getProductsCollections() {
         //collect all day products to one list
-        return days.stream().map(LayoutDayRef::getAllProducts).collect(toList());
+        return days.stream().map(DayPlanRef::getAllProducts).collect(toList());
     }
 
     /**
@@ -114,7 +114,7 @@ public class GroceryLayout extends ComplexFoodEntity implements IDomainEntity<Gr
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        GroceryLayout that = (GroceryLayout) o;
+        FoodPlan that = (FoodPlan) o;
 
         if (layoutId != that.layoutId) return false;
         if (members != that.members) return false;
