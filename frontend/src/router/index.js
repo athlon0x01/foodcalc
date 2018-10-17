@@ -1,7 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import HelloWorld from '@/components/HelloWorld'
-import HomeView from '@/components/HomeView'
+import HomePage from '@/components/HomePage'
+import AboutPage from '@/components/AboutPage'
+import DirectoryPage from '@/components/directory/DirectoryPage'
 import Products from '@/components/directory/Products'
 import ProductCategories from '@/components/directory/ProductCategories'
 
@@ -9,25 +10,34 @@ Vue.use(Router)
 
 export default new Router({
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'HelloWorld',
-    //   component: HelloWorld
-    // },
     {
       path: '/',
-      name: 'HomeView',
-      component: HomeView
+      name: 'HomePage',
+      component: HomePage
     },
     {
-      path: '/products',
-      name: 'Products',
-      component: Products
+      path: '/about',
+      name: 'AboutPage',
+      component: AboutPage
     },
     {
-      path: '/categories',
-      name: 'ProductCategories',
-      component: ProductCategories
+      path: '/directory',
+      component: DirectoryPage,
+      redirect: {
+        name: 'Products'
+      },
+      children: [
+        {
+          path: 'products',
+          name: 'Products',
+          component: Products
+        },
+        {
+          path: 'categories',
+          name: 'ProductCategories',
+          component: ProductCategories
+        }
+      ]
     }
   ]
 })
