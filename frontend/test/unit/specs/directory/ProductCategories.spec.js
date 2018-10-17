@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import ProductCategories from '@/components/directory/ProductCategories'
+import ProductCategories from 'src/components/directory/ProductCategories'
 
 describe('ProductCategories.vue', () => {
   it('should render correct contents', () => {

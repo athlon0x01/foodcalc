@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import Products from '@/components/directory/Products'
+import Products from 'src/components/directory/Products'
 
 describe('Products.vue', () => {
   it('should render correct contents', () => {

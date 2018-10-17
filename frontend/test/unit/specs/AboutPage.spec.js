@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import AboutPage from '@/components/AboutPage'
+import AboutPage from 'src/components/AboutPage'
 
 describe('AboutPage.vue', () => {
   it('should render correct contents', () => {
