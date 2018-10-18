@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import HomePage from '@/components/HomePage'
-import AboutPage from '@/components/AboutPage'
-import DirectoryPage from '@/components/directory/DirectoryPage'
-import Products from '@/components/directory/Products'
-import ProductCategories from '@/components/directory/ProductCategories'
+import HomePage from 'src/components/HomePage'
+import AboutPage from 'src/components/AboutPage'
+import DirectoryPage from 'src/components/directory/DirectoryPage'
+import Products from 'src/components/directory/Products'
+import ProductCategories from 'src/components/directory/ProductCategories'
 
 Vue.use(Router)
 
@@ -24,17 +24,17 @@ export default new Router({
       path: '/directory',
       component: DirectoryPage,
       redirect: {
-        name: 'Products'
+        name: 'ProductsPage'
       },
       children: [
         {
           path: 'products',
-          name: 'Products',
+          name: 'ProductsPage',
           component: Products
         },
         {
           path: 'categories',
-          name: 'ProductCategories',
+          name: 'ProductCategoriesPage',
           component: ProductCategories
         }
       ]

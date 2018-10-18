@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 align="center">Product categories:</h2>
+    <h2 class="directory-header">Product categories:</h2>
 
     <!--Categories table-->
     <table v-if="categories.length > 0" align="center" border="1" width="300px">
@@ -44,8 +44,4 @@ export default {
 </script>
 
 <style scoped>
-  .alert {
-    color: red;
-    width: 100%;
-  }
 </style>
