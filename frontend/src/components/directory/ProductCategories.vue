@@ -3,18 +3,43 @@
     <h2 class="directory-header">Product categories:</h2>
 
     <!--Categories table-->
-    <table v-if="categories.length > 0" align="center" border="1" width="300px">
-      <tr><th>Name</th></tr>
-      <tr v-for="category in categories" :key="category.id">
-        <td><i>{{category.name}}</i></td>
-      </tr>
-    </table>
+    <div v-if="categories.length > 0" class="container">
+      <div class="row headerRow">
+        <div class="col-sm-10"><strong>Name</strong></div>
+      </div>
+      <div v-for="(category, index) in categories" :key="category.id" class="row">
+        <template v-if="editCategory === category.id">
+          <div class="col-sm-10" style="text-align: left">
+            <input v-on:keyup.13="updateCategory(category)" v-model="category.name" style="width: 100%"/>
+          </div>
+          <div class="col-sm-1">
+            <b-button variant="outline-success" size="sm" v-on:click="updateCategory(category)">Update</b-button>
+          </div>
+        </template>
+        <template v-else>
+          <div class="col-sm-10 text-left"><i>{{category.name}}</i></div>
+          <div class="col-sm-1">
+            <b-button variant="outline-success" size="sm" v-on:click="editCategory = category.id">Edit</b-button>
+          </div>
+          <div class="col-sm-1">
+            <b-button variant="outline-danger" size="sm" v-on:click="deleteCategory(category.id, index)">Delete</b-button>
+          </div>
+        </template>
+      </div>
+    </div>
     <div v-else>
       <p><i>No Categories loaded</i></p>
     </div>
     <!--Errors output-->
     <div v-if="errors.length > 0" class="alert">
       <p v-for="(error, index) in errors" :key="index">{{error}}</p>
+    </div>
+
+    <!--Add new category section-->
+    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Add new category</b-button>
+    <div v-if="addMode !== undefined && addMode">
+      <input v-on:keyup.13="addCategory()" v-model="newName"/>
+      <b-button variant="outline-success" size="sm" v-on:click="addCategory()">Add</b-button>
     </div>
   </div>
 </template>
@@ -26,10 +51,35 @@ export default {
   name: 'ProductCategories',
   data () {
     return {
+      addMode: false,
+      newName: '',
+      editCategory: null,
       categories: [],
       errors: []
     }
   },
+
+  methods: {
+    addCategory () {
+      var newCategory = {
+        id: 22,
+        name: this.newName
+      }
+      console.log('category added ' + newCategory)
+      this.categories.push(newCategory)
+      this.addMode = false
+      this.newName = ''
+    },
+    updateCategory (category) {
+      console.log('category updated ' + category.name)
+      this.editCategory = null
+    },
+    deleteCategory (id, index) {
+      console.log('category deleted ' + id)
+      this.categories.splice(index, 1)
+    }
+  },
+
   mounted () {
     // load product categories on page init
     axios.get('/api/product-categories')
