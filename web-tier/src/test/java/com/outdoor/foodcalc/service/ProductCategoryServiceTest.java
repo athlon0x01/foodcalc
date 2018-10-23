@@ -5,13 +5,9 @@ import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.model.SimpleProductCategory;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,8 +21,6 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ServiceTestsConfig.class)
 public class ProductCategoryServiceTest {
 
     private static final long CATEGORY_1_ID = 12345;
@@ -34,20 +28,19 @@ public class ProductCategoryServiceTest {
     private static final String CATEGORY_1_NAME = "First category";
     private static final String CATEGORY_2_NAME = "Second category";
 
-    @Autowired
+    @InjectMocks
     private ProductCategoryService categoryService;
 
     @Mock
     private ProductCategoryDomainService categoryDomainService;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(categoryService, "categoryDomainService", categoryDomainService);
     }
 
     @Test
-    public void getCategories() throws Exception {
+    public void getCategories() {
         List<ProductCategory> domainCategories = Arrays.asList(
             new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME),
             new ProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME)
@@ -73,7 +66,7 @@ public class ProductCategoryServiceTest {
     }
 
     @Test
-    public void getCategory() throws Exception {
+    public void getCategory() {
         ProductCategory category = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
         Optional<ProductCategory> domainCategory = Optional.of(category);
         SimpleProductCategory category1 = new SimpleProductCategory();
@@ -91,7 +84,7 @@ public class ProductCategoryServiceTest {
     }
 
     @Test
-    public void getEmptyCategory() throws Exception {
+    public void getEmptyCategory() {
         Optional<ProductCategory> domainCategory = Optional.empty();
         when(categoryDomainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
 
@@ -102,16 +95,20 @@ public class ProductCategoryServiceTest {
     }
 
     @Test
-    public void addCategory() throws Exception {
+    public void addCategory() {
         ProductCategory domainCategory = new ProductCategory(-1, CATEGORY_1_NAME);
-        long newId = 54321;
-        when(categoryDomainService.addCategory(domainCategory)).thenReturn(newId);
-        assertEquals(newId, categoryService.addCategory(CATEGORY_1_NAME));
+        ProductCategory returnedCategory = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+        when(categoryDomainService.addCategory(domainCategory)).thenReturn(returnedCategory);
+
+        SimpleProductCategory category = categoryService.addCategory(CATEGORY_1_NAME);
+        assertEquals(CATEGORY_1_ID, category.id);
+        assertEquals(CATEGORY_1_NAME, category.name);
+
         verify(categoryDomainService, times(1)).addCategory(domainCategory);
     }
 
     @Test
-    public void updateCategory() throws Exception {
+    public void updateCategory() {
         ProductCategory domainCategory = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
         SimpleProductCategory model = new SimpleProductCategory();
         model.id = CATEGORY_1_ID;
@@ -123,7 +120,7 @@ public class ProductCategoryServiceTest {
     }
 
     @Test
-    public void deleteCategory() throws Exception {
+    public void deleteCategory() {
         when(categoryDomainService.deleteCategory(CATEGORY_1_ID)).thenReturn(true);
         assertTrue(categoryService.deleteCategory(CATEGORY_1_ID));
         verify(categoryDomainService, times(1)).deleteCategory(CATEGORY_1_ID);

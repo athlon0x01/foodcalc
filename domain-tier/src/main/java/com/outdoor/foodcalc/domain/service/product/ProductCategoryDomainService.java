@@ -46,10 +46,11 @@ public class ProductCategoryDomainService {
      * Add new {@link ProductCategory}.
      *
      * @param category category to add
-     * @return auto generated Id
+     * @return instance of new {@link ProductCategory}
      */
-    public long addCategory(ProductCategory category) {
-        return categoryRepo.addCategory(category);
+    public ProductCategory addCategory(ProductCategory category) {
+        long id = categoryRepo.addCategory(category);
+        return new ProductCategory(id, category.getName());
     }
 
 

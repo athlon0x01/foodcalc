@@ -4,9 +4,9 @@ import com.outdoor.foodcalc.model.CategoryWithProducts;
 import com.outdoor.foodcalc.service.ProductService;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
 import java.util.List;
@@ -19,21 +19,21 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk.
  */
-@RunWith(MockitoJUnitRunner.class)
 public class ProductEndpointTest {
 
+    @InjectMocks
     private ProductEndpoint endpoint;
 
     @Mock
     private ProductService service;
 
     @Before
-    public void setUp() throws Exception {
-        endpoint = new ProductEndpoint(service);
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test
-    public void allProducts() throws Exception {
+    public void allProducts() {
         CategoryWithProducts category = new CategoryWithProducts();
         category.id = 12345;
         category.name = "Test";

@@ -2,16 +2,11 @@ package com.outdoor.foodcalc.domain.service.product;
 
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
-import com.outdoor.foodcalc.domain.service.DomainServiceTestsConfig;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,27 +20,24 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = DomainServiceTestsConfig.class)
 public class ProductCategoryDomainServiceTest {
 
     private static final long CATEGORY_ID = 12345;
     private static final ProductCategory dummyCategory = new ProductCategory(CATEGORY_ID, "dummyCategory");
 
-    @Autowired
+    @InjectMocks
     private ProductCategoryDomainService categoryService;
 
     @Mock
     private IProductCategoryRepo categoryRepo;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(categoryService, "categoryRepo", categoryRepo);
     }
 
     @Test
-    public void getCategoriesTest() throws Exception {
+    public void getCategoriesTest() {
         List<ProductCategory> expected = Collections.singletonList(dummyCategory);
 
         when(categoryRepo.getCategories()).thenReturn(expected);
@@ -57,7 +49,7 @@ public class ProductCategoryDomainServiceTest {
     }
 
     @Test
-    public void getCategoryTest() throws Exception {
+    public void getCategoryTest() {
         Optional<ProductCategory> expected = Optional.of(dummyCategory);
 
         when(categoryRepo.getCategory(CATEGORY_ID)).thenReturn(expected);
@@ -69,22 +61,21 @@ public class ProductCategoryDomainServiceTest {
     }
 
     @Test
-    public void addCategoryTest() throws Exception {
-        long newId = 54321;
-        when(categoryRepo.addCategory(dummyCategory)).thenReturn(newId);
-        assertEquals(newId, categoryService.addCategory(dummyCategory));
+    public void addCategoryTest() {
+        when(categoryRepo.addCategory(dummyCategory)).thenReturn(CATEGORY_ID);
+        assertEquals(dummyCategory, categoryService.addCategory(dummyCategory));
         verify(categoryRepo, times(1)).addCategory(dummyCategory);
     }
 
     @Test
-    public void updateCategoryTest() throws Exception {
+    public void updateCategoryTest() {
         when(categoryRepo.updateCategory(dummyCategory)).thenReturn(false);
         assertFalse(categoryService.updateCategory(dummyCategory));
         verify(categoryRepo, times(1)).updateCategory(dummyCategory);
     }
 
     @Test
-    public void deleteCategoryTest() throws Exception {
+    public void deleteCategoryTest() {
         when(categoryRepo.deleteCategory(CATEGORY_ID)).thenReturn(true);
         assertTrue(categoryService.deleteCategory(CATEGORY_ID));
         verify(categoryRepo, times(1)).deleteCategory(CATEGORY_ID);

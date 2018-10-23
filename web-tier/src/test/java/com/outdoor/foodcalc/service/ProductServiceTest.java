@@ -8,11 +8,9 @@ import com.outdoor.foodcalc.model.CategoryWithProducts;
 import com.outdoor.foodcalc.model.SimpleProduct;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,8 +23,6 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = ServiceTestsConfig.class)
 public class ProductServiceTest {
 
     private static final double DELTA = 0.00001;
@@ -37,18 +33,17 @@ public class ProductServiceTest {
     private static final String CATEGORY_2_NAME = "Second category";
     private static final String CATEGORY_3_NAME = "Empty";
 
-    @Autowired
+    @InjectMocks
     private ProductService productService;
 
+    @Mock
     private ProductDomainService productDomainService;
+    @Mock
     private ProductCategoryDomainService categoryDomainService;
 
     @Before
-    public void setUp() throws Exception {
-        productDomainService = mock(ProductDomainService.class);
-        categoryDomainService = mock(ProductCategoryDomainService.class);
-        ReflectionTestUtils.setField(productService, "productDomainService", productDomainService);
-        ReflectionTestUtils.setField(productService, "productCategoryDomainService", categoryDomainService);
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
     }
 
     @Test

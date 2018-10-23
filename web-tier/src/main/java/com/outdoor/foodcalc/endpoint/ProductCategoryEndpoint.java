@@ -49,9 +49,10 @@ public class ProductCategoryEndpoint {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response addCategory(SimpleProductCategory category, @Context UriInfo uriInfo) {
-        long newId = categoryService.addCategory(category.name);
-        return Response.created(URI.create(uriInfo.getAbsolutePath().toString() + "/" + newId)).build();
+        SimpleProductCategory newCategory = categoryService.addCategory(category.name);
+        return Response.ok(newCategory).build();
     }
 
     @PUT

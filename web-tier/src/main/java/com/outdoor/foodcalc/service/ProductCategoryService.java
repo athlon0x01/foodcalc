@@ -33,12 +33,7 @@ public class ProductCategoryService {
      */
     public List<SimpleProductCategory> getCategories() {
         return categoryDomainService.getCategories().stream()
-            .map(category -> {
-                final SimpleProductCategory model = new SimpleProductCategory();
-                model.id = category.getCategoryId();
-                model.name = category.getName();
-                return model;
-            })
+            .map(this::mapProductCategory)
             .collect(Collectors.toList());
     }
 
@@ -52,22 +47,28 @@ public class ProductCategoryService {
         Optional<SimpleProductCategory> result = Optional.empty();
         Optional<ProductCategory> category = categoryDomainService.getCategory(id);
         if (category.isPresent()) {
-            final SimpleProductCategory model = new SimpleProductCategory();
-            model.id = category.get().getCategoryId();
-            model.name = category.get().getName();
-            result = Optional.of(model);
+            result = Optional.of(mapProductCategory(category.get()));
         }
         return result;
+    }
+
+    private SimpleProductCategory mapProductCategory(ProductCategory productCategory) {
+        final SimpleProductCategory model = new SimpleProductCategory();
+        model.id = productCategory.getCategoryId();
+        model.name = productCategory.getName();
+        return model;
     }
 
     /**
      * Add new {@link ProductCategory}.
      *
      * @param categoryName name of new category
-     * @return auto generated Id
+     * @return new category
      */
-    public long addCategory(String categoryName) {
-        return categoryDomainService.addCategory(new ProductCategory(-1, categoryName));
+    public SimpleProductCategory addCategory(String categoryName) {
+        return mapProductCategory(
+            categoryDomainService.addCategory(
+                new ProductCategory(-1, categoryName)));
     }
 
 

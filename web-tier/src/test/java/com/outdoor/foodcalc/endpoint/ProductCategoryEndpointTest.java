@@ -4,13 +4,12 @@ import com.outdoor.foodcalc.model.SimpleProductCategory;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockitoAnnotations;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
-import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -24,7 +23,6 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk.
  */
-@RunWith(MockitoJUnitRunner.class)
 public class ProductCategoryEndpointTest {
 
     private static final long CATEGORY_ID = 12345;
@@ -32,21 +30,22 @@ public class ProductCategoryEndpointTest {
 
     private SimpleProductCategory dummyCategory;
 
+    @InjectMocks
     private ProductCategoryEndpoint endpoint;
 
     @Mock
     private ProductCategoryService service;
 
     @Before
-    public void setUp() throws Exception {
-        endpoint = new ProductCategoryEndpoint(service);
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
         dummyCategory = new SimpleProductCategory();
         dummyCategory.id = CATEGORY_ID;
         dummyCategory.name = CATEGORY_NAME;
     }
 
     @Test
-    public void getCategoriesTest() throws Exception {
+    public void getCategoriesTest() {
         List<SimpleProductCategory> expected = Collections.singletonList(dummyCategory);
 
         when(service.getCategories()).thenReturn(expected);
@@ -58,7 +57,7 @@ public class ProductCategoryEndpointTest {
     }
 
     @Test
-    public void getCategoryTest() throws Exception {
+    public void getCategoryTest() {
         Optional<SimpleProductCategory> expected = Optional.of(dummyCategory);
 
         when(service.getCategory(CATEGORY_ID)).thenReturn(expected);
@@ -72,7 +71,7 @@ public class ProductCategoryEndpointTest {
     }
 
     @Test
-    public void getCategoryNotFoundTest() throws Exception {
+    public void getCategoryNotFoundTest() {
         Optional<SimpleProductCategory> expected = Optional.empty();
 
         when(service.getCategory(CATEGORY_ID)).thenReturn(expected);
@@ -84,27 +83,23 @@ public class ProductCategoryEndpointTest {
     }
 
     @Test
-    public void addCategoryTest() throws Exception {
+    public void addCategoryTest() {
         SimpleProductCategory category = new SimpleProductCategory();
         category.name = CATEGORY_NAME;
-        long newId = 54321;
-        URI uri = new URI("https://foodcalc.com/product-category");
-        URI expectedUri = new URI("https://foodcalc.com/product-category/54321");
 
         UriInfo uriInfo = mock(UriInfo.class);
-        when(uriInfo.getAbsolutePath()).thenReturn(uri);
-        when(service.addCategory(CATEGORY_NAME)).thenReturn(newId);
+        when(service.addCategory(CATEGORY_NAME)).thenReturn(dummyCategory);
 
         Response response = endpoint.addCategory(category, uriInfo);
-        assertEquals(201, response.getStatus());
-        assertEquals(expectedUri, response.getLocation());
+        assertEquals(200, response.getStatus());
+        assertTrue(response.getEntity() instanceof SimpleProductCategory);
+        assertEquals(dummyCategory, response.getEntity());
 
-        verify(uriInfo, times(1)).getAbsolutePath();
         verify(service, times(1)).addCategory(CATEGORY_NAME);
     }
 
     @Test
-    public void updateCategoryTest() throws Exception {
+    public void updateCategoryTest() {
         when(service.updateCategory(dummyCategory)).thenReturn(true);
 
         Response response = endpoint.updateCategory(dummyCategory);
@@ -116,7 +111,7 @@ public class ProductCategoryEndpointTest {
     }
 
     @Test
-    public void updateCategoryNotFoundTest() throws Exception {
+    public void updateCategoryNotFoundTest() {
         when(service.updateCategory(dummyCategory)).thenReturn(false);
 
         Response response = endpoint.updateCategory(dummyCategory);
@@ -126,7 +121,7 @@ public class ProductCategoryEndpointTest {
     }
 
     @Test
-    public void deleteCategoryTest() throws Exception {
+    public void deleteCategoryTest() {
         when(service.deleteCategory(CATEGORY_ID)).thenReturn(true);
 
         Response response = endpoint.deleteCategory(CATEGORY_ID);
@@ -136,7 +131,7 @@ public class ProductCategoryEndpointTest {
     }
 
     @Test
-    public void deleteCategoryNotFoundTest() throws Exception {
+    public void deleteCategoryNotFoundTest() {
         when(service.deleteCategory(CATEGORY_ID)).thenReturn(false);
 
         Response response = endpoint.deleteCategory(CATEGORY_ID);
