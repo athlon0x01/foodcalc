@@ -61,22 +61,38 @@ export default {
 
   methods: {
     addCategory () {
-      var newCategory = {
-        id: 22,
+      let newCategory = {
         name: this.newName
       }
-      console.log('category added ' + newCategory)
-      this.categories.push(newCategory)
-      this.addMode = false
-      this.newName = ''
+      axios.post('/api/product-categories', newCategory)
+        .then(response => {
+          this.categories.push(response.data)
+          this.addMode = false
+          this.newName = ''
+        })
+        .catch(e => {
+          this.errors.push(e)
+        })
     },
+
     updateCategory (category) {
-      console.log('category updated ' + category.name)
-      this.editCategory = null
+      axios.put('/api/product-categories/' + category.id, category)
+        .then(() => {
+          this.editCategory = null
+        })
+        .catch(e => {
+          this.errors.push(e)
+        })
     },
+
     deleteCategory (id, index) {
-      console.log('category deleted ' + id)
-      this.categories.splice(index, 1)
+      axios.delete('/api/product-categories/' + id)
+        .then(() => {
+          this.categories.splice(index, 1)
+        })
+        .catch(e => {
+          this.errors.push(e)
+        })
     }
   },
 

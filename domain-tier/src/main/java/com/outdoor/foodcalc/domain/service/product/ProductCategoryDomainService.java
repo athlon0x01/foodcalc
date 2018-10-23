@@ -69,6 +69,7 @@ public class ProductCategoryDomainService {
      * @param id category Id to delete
      */
     public boolean deleteCategory(long id) {
+        //TODO check if the category is empty
         return categoryRepo.deleteCategory(id);
     }
 }
