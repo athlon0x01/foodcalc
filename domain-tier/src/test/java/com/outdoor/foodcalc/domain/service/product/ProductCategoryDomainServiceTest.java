@@ -2,6 +2,7 @@ package com.outdoor.foodcalc.domain.service.product;
 
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
+import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -30,6 +31,9 @@ public class ProductCategoryDomainServiceTest {
 
     @Mock
     private IProductCategoryRepo categoryRepo;
+
+    @Mock
+    private IProductRepo productRepo;
 
     @Before
     public void setUp() {
@@ -77,8 +81,22 @@ public class ProductCategoryDomainServiceTest {
     @Test
     public void deleteCategoryTest() {
         when(categoryRepo.deleteCategory(CATEGORY_ID)).thenReturn(true);
+        when(productRepo.countProductsInCategory(CATEGORY_ID)).thenReturn(0L);
+
         assertTrue(categoryService.deleteCategory(CATEGORY_ID));
+
         verify(categoryRepo, times(1)).deleteCategory(CATEGORY_ID);
+        verify(productRepo, times(1)).countProductsInCategory(CATEGORY_ID);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteNotEmptyCategoryTest() {
+        when(productRepo.countProductsInCategory(CATEGORY_ID)).thenReturn(1L);
+
+        assertTrue(categoryService.deleteCategory(CATEGORY_ID));
+
+        verify(categoryRepo, never()).deleteCategory(CATEGORY_ID);
+        verify(productRepo, times(1)).countProductsInCategory(CATEGORY_ID);
     }
 
 }

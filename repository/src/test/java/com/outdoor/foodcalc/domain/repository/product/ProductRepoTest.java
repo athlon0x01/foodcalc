@@ -4,10 +4,12 @@ import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.ResultSet;
@@ -24,6 +26,8 @@ import static org.mockito.Mockito.*;
  * @author Anton Borovyk
  */
 public class ProductRepoTest {
+
+    private static final Long CATEGORY_ID = 12345L;
 
     @Mock
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -88,5 +92,34 @@ public class ProductRepoTest {
         assertEquals(expected, actual);
 
         verify(jdbcTemplate, times(1)).query(ProductRepo.SELECT_ALL_PRODUCTS_SQL, repo);
+    }
+
+    @Test
+    public void productsCountInCategoryTest() {
+        Long expected = 1L;
+        ArgumentMatcher<SqlParameterSource> matcher = params -> CATEGORY_ID.equals(params.getValue("categoryId"));
+
+        when(jdbcTemplate.queryForObject(
+            eq(ProductRepo.SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL), argThat(matcher), eq(Long.class)))
+            .thenReturn(expected);
+
+        assertEquals(expected.longValue(), repo.countProductsInCategory(CATEGORY_ID));
+
+        verify(jdbcTemplate, times(1)).queryForObject(
+            eq(ProductRepo.SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
+    public void productsCountInCategoryNullTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> CATEGORY_ID.equals(params.getValue("categoryId"));
+
+        when(jdbcTemplate.queryForObject(
+            eq(ProductRepo.SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL), argThat(matcher), eq(Long.class)))
+            .thenReturn(null);
+
+        assertEquals(0L, repo.countProductsInCategory(CATEGORY_ID));
+
+        verify(jdbcTemplate, times(1)).queryForObject(
+            eq(ProductRepo.SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL), argThat(matcher), eq(Long.class));
     }
 }

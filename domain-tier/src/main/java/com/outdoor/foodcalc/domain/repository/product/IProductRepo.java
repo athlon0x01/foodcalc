@@ -17,4 +17,11 @@ public interface IProductRepo {
      * @return list of products
      */
     List<Product> getAllProducts();
+
+    /**
+     * Count products number in the product category
+     * @param categoryId product category Id
+     * @return products number
+     */
+    long countProductsInCategory(long categoryId);
 }

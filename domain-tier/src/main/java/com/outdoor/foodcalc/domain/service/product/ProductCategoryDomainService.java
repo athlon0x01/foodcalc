@@ -2,6 +2,7 @@ package com.outdoor.foodcalc.domain.service.product;
 
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
+import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,10 +18,12 @@ import java.util.Optional;
 public class ProductCategoryDomainService {
 
     private IProductCategoryRepo categoryRepo;
+    private IProductRepo productRepo;
 
     @Autowired
-    public ProductCategoryDomainService(IProductCategoryRepo productCategoryRepo) {
-        this.categoryRepo = productCategoryRepo;
+    public ProductCategoryDomainService(IProductCategoryRepo categoryRepo, IProductRepo productRepo) {
+        this.categoryRepo = categoryRepo;
+        this.productRepo = productRepo;
     }
 
     /**
@@ -69,7 +72,10 @@ public class ProductCategoryDomainService {
      * @param id category Id to delete
      */
     public boolean deleteCategory(long id) {
-        //TODO check if the category is empty
-        return categoryRepo.deleteCategory(id);
+        if (productRepo.countProductsInCategory(id) == 0) {
+            return categoryRepo.deleteCategory(id);
+        } else {
+            throw new IllegalArgumentException("Category is not empty");
+        }
     }
 }

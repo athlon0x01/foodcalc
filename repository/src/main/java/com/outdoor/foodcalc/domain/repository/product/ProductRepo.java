@@ -4,6 +4,8 @@ import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.AbstractRepository;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
@@ -23,9 +25,19 @@ public class ProductRepo extends AbstractRepository<Product>
         "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight " +
         "from products p join product_categories c on p.category = c.id";
 
+    static final String SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL = "select count(*) " +
+        "from products p join product_categories c on p.category = c.id and c.id = :categoryId";
+
     @Override
     public List<Product> getAllProducts() {
         return jdbcTemplate.query(SELECT_ALL_PRODUCTS_SQL, this);
+    }
+
+    @Override
+    public long countProductsInCategory(long categoryId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("categoryId", categoryId);
+        Long productsCount = jdbcTemplate.queryForObject(SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL, parameters, Long.class);
+        return productsCount == null ? 0 : productsCount;
     }
 
     @Override
