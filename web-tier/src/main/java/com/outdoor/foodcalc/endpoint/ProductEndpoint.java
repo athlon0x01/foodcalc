@@ -3,20 +3,21 @@ package com.outdoor.foodcalc.endpoint;
 import com.outdoor.foodcalc.model.CategoryWithProducts;
 import com.outdoor.foodcalc.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.util.List;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * REST Endpoint for Product related operations
  *
  * @author Anton Borovyk
  */
-@Path("/products")
+@RestController
+@RequestMapping("${spring.data.rest.basePath}/products")
 public class ProductEndpoint {
 
     private ProductService productService;
@@ -26,8 +27,8 @@ public class ProductEndpoint {
         this.productService = productService;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @GetMapping
+    @RequestMapping(produces = APPLICATION_JSON_VALUE)
     public List<CategoryWithProducts> allProducts() {
         return productService.getAllProducts();
     }

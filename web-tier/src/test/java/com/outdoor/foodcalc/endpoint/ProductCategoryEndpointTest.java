@@ -7,15 +7,14 @@ import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
@@ -62,10 +61,9 @@ public class ProductCategoryEndpointTest {
 
         when(service.getCategory(CATEGORY_ID)).thenReturn(expected);
 
-        Response response = endpoint.getCategory(CATEGORY_ID);
-        assertEquals(200, response.getStatus());
-        assertTrue(response.getEntity() instanceof SimpleProductCategory);
-        assertEquals(dummyCategory, response.getEntity());
+        ResponseEntity<SimpleProductCategory> response = endpoint.getCategory(CATEGORY_ID);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dummyCategory, response.getBody());
 
         verify(service, times(1)).getCategory(CATEGORY_ID);
     }
@@ -76,8 +74,8 @@ public class ProductCategoryEndpointTest {
 
         when(service.getCategory(CATEGORY_ID)).thenReturn(expected);
 
-        Response response = endpoint.getCategory(CATEGORY_ID);
-        assertEquals(404, response.getStatus());
+        ResponseEntity<SimpleProductCategory> response = endpoint.getCategory(CATEGORY_ID);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
         verify(service, times(1)).getCategory(CATEGORY_ID);
     }
@@ -87,13 +85,10 @@ public class ProductCategoryEndpointTest {
         SimpleProductCategory category = new SimpleProductCategory();
         category.name = CATEGORY_NAME;
 
-        UriInfo uriInfo = mock(UriInfo.class);
         when(service.addCategory(CATEGORY_NAME)).thenReturn(dummyCategory);
 
-        Response response = endpoint.addCategory(category, uriInfo);
-        assertEquals(200, response.getStatus());
-        assertTrue(response.getEntity() instanceof SimpleProductCategory);
-        assertEquals(dummyCategory, response.getEntity());
+        SimpleProductCategory response = endpoint.addCategory(category);
+        assertEquals(dummyCategory, response);
 
         verify(service, times(1)).addCategory(CATEGORY_NAME);
     }
@@ -102,10 +97,9 @@ public class ProductCategoryEndpointTest {
     public void updateCategoryTest() {
         when(service.updateCategory(dummyCategory)).thenReturn(true);
 
-        Response response = endpoint.updateCategory(dummyCategory);
-        assertEquals(200, response.getStatus());
-        assertTrue(response.getEntity() instanceof SimpleProductCategory);
-        assertEquals(dummyCategory, response.getEntity());
+        ResponseEntity<SimpleProductCategory> response = endpoint.updateCategory(dummyCategory);
+        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(dummyCategory, response.getBody());
 
         verify(service, times(1)).updateCategory(dummyCategory);
     }
@@ -114,8 +108,8 @@ public class ProductCategoryEndpointTest {
     public void updateCategoryNotFoundTest() {
         when(service.updateCategory(dummyCategory)).thenReturn(false);
 
-        Response response = endpoint.updateCategory(dummyCategory);
-        assertEquals(404, response.getStatus());
+        ResponseEntity<SimpleProductCategory> response = endpoint.updateCategory(dummyCategory);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
         verify(service, times(1)).updateCategory(dummyCategory);
     }
@@ -124,8 +118,8 @@ public class ProductCategoryEndpointTest {
     public void deleteCategoryTest() {
         when(service.deleteCategory(CATEGORY_ID)).thenReturn(true);
 
-        Response response = endpoint.deleteCategory(CATEGORY_ID);
-        assertEquals(204, response.getStatus());
+        ResponseEntity<SimpleProductCategory> response = endpoint.deleteCategory(CATEGORY_ID);
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
 
         verify(service, times(1)).deleteCategory(CATEGORY_ID);
     }
@@ -134,8 +128,8 @@ public class ProductCategoryEndpointTest {
     public void deleteCategoryNotFoundTest() {
         when(service.deleteCategory(CATEGORY_ID)).thenReturn(false);
 
-        Response response = endpoint.deleteCategory(CATEGORY_ID);
-        assertEquals(404, response.getStatus());
+        ResponseEntity<SimpleProductCategory> response = endpoint.deleteCategory(CATEGORY_ID);
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
         verify(service, times(1)).deleteCategory(CATEGORY_ID);
     }

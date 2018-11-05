@@ -9,6 +9,6 @@ target
 .vscode
 node_modules
 /dist/
-webapp
+/web-tier/**/resources/public
 /test/unit/coverage/
 node

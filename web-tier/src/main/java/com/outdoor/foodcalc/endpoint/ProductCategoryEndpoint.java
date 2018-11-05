@@ -3,24 +3,22 @@ package com.outdoor.foodcalc.endpoint;
 import com.outdoor.foodcalc.model.SimpleProductCategory;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * REST Endpoint for Product Category related operations
  *
  * @author Anton Borovyk.
  */
-@Path("/product-categories")
+@RestController
+@RequestMapping("${spring.data.rest.basePath}/product-categories")
 public class ProductCategoryEndpoint {
 
     private ProductCategoryService categoryService;
@@ -30,48 +28,43 @@ public class ProductCategoryEndpoint {
         this.categoryService = categoryService;
     }
 
-    @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @GetMapping
+    @RequestMapping(produces = APPLICATION_JSON_VALUE)
     public List<SimpleProductCategory> getCategories() {
         return categoryService.getCategories();
     }
 
-    @GET
-    @Path("/{id}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getCategory(@PathParam("id") long id) {
+    @GetMapping
+    @RequestMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<SimpleProductCategory> getCategory(@PathVariable("id") long id) {
         Optional<SimpleProductCategory> category = categoryService.getCategory(id);
         if (!category.isPresent()) {
-            return Response.status(NOT_FOUND).build();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return Response.ok(category.get()).build();
+        return new ResponseEntity<>(category.get(), HttpStatus.OK);
     }
 
-    @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response addCategory(SimpleProductCategory category, @Context UriInfo uriInfo) {
-        SimpleProductCategory newCategory = categoryService.addCategory(category.name);
-        return Response.ok(newCategory).build();
+    @PostMapping
+    @RequestMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public SimpleProductCategory addCategory(@RequestBody SimpleProductCategory category) {
+        return categoryService.addCategory(category.name);
     }
 
-    @PUT
-    @Path("/{id}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response updateCategory(SimpleProductCategory category) {
+    @PutMapping
+    @RequestMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public ResponseEntity<SimpleProductCategory> updateCategory(@RequestBody SimpleProductCategory category) {
         if (!categoryService.updateCategory(category)){
-            return Response.status(NOT_FOUND).build();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return Response.ok(category).build();
+        return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
-    @DELETE
-    @Path("/{id}")
-    public Response deleteCategory(@PathParam("id") long id) {
+    @DeleteMapping
+    @RequestMapping("/{id}")
+    public ResponseEntity<SimpleProductCategory> deleteCategory(@PathVariable("id") long id) {
         if(!categoryService.deleteCategory(id)) {
-            return Response.status(NOT_FOUND).build();
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return Response.noContent().build();
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
