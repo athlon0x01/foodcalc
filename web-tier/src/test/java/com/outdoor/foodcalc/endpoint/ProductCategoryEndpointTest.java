@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 /**
@@ -63,6 +64,7 @@ public class ProductCategoryEndpointTest {
 
         ResponseEntity<SimpleProductCategory> response = endpoint.getCategory(CATEGORY_ID);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertEquals(dummyCategory, response.getBody());
 
         verify(service, times(1)).getCategory(CATEGORY_ID);
@@ -97,8 +99,9 @@ public class ProductCategoryEndpointTest {
     public void updateCategoryTest() {
         when(service.updateCategory(dummyCategory)).thenReturn(true);
 
-        ResponseEntity<SimpleProductCategory> response = endpoint.updateCategory(dummyCategory);
+        ResponseEntity<SimpleProductCategory> response = endpoint.updateCategory(CATEGORY_ID, dummyCategory);
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertNotNull(response.getBody());
         assertEquals(dummyCategory, response.getBody());
 
         verify(service, times(1)).updateCategory(dummyCategory);
@@ -108,7 +111,7 @@ public class ProductCategoryEndpointTest {
     public void updateCategoryNotFoundTest() {
         when(service.updateCategory(dummyCategory)).thenReturn(false);
 
-        ResponseEntity<SimpleProductCategory> response = endpoint.updateCategory(dummyCategory);
+        ResponseEntity<SimpleProductCategory> response = endpoint.updateCategory(CATEGORY_ID, dummyCategory);
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
         verify(service, times(1)).updateCategory(dummyCategory);

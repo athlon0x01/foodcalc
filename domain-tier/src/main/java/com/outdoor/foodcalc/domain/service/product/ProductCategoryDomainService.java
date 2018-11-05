@@ -3,6 +3,8 @@ package com.outdoor.foodcalc.domain.service.product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,6 +18,8 @@ import java.util.Optional;
  */
 @Service
 public class ProductCategoryDomainService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProductCategoryDomainService.class);
 
     private IProductCategoryRepo categoryRepo;
     private IProductRepo productRepo;
@@ -75,6 +79,7 @@ public class ProductCategoryDomainService {
         if (productRepo.countProductsInCategory(id) == 0) {
             return categoryRepo.deleteCategory(id);
         } else {
+            LOG.error("Category with id = {} is not empty", id);
             throw new IllegalArgumentException("Category is not empty");
         }
     }

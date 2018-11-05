@@ -2,6 +2,8 @@ package com.outdoor.foodcalc.endpoint;
 
 import com.outdoor.foodcalc.model.CategoryWithProducts;
 import com.outdoor.foodcalc.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,6 +22,8 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequestMapping("${spring.data.rest.basePath}/products")
 public class ProductEndpoint {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ProductEndpoint.class);
+
     private ProductService productService;
 
     @Autowired
@@ -30,6 +34,7 @@ public class ProductEndpoint {
     @GetMapping
     @RequestMapping(produces = APPLICATION_JSON_VALUE)
     public List<CategoryWithProducts> allProducts() {
+        LOG.info("Getting all products");
         return productService.getAllProducts();
     }
 }

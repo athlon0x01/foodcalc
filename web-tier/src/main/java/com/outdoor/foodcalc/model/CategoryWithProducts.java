@@ -11,12 +11,4 @@ public class CategoryWithProducts {
     public long id;
     public String name;
     public List<SimpleProduct> products;
-
-    public String getName() {
-        return name;
-    }
-
-    public List<SimpleProduct> getProducts() {
-        return products;
-    }
 }
