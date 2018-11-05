@@ -14,12 +14,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 @ControllerAdvice
 public class ExceptionHandlers {
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorMessage> illegalArgumentException(final IllegalArgumentException e) {
+    String getErrorMessage(Exception e) {
         String message = e.getMessage();
         if (message == null) {
             message = e.getClass().getSimpleName();
         }
-        return new ResponseEntity<>(new ErrorMessage(message), HttpStatus.BAD_REQUEST);
+        return message;
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorMessage> validationException(final IllegalArgumentException e) {
+        return new ResponseEntity<>(new ErrorMessage(getErrorMessage(e)), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorMessage> runtimeException(final RuntimeException e) {
+        return new ResponseEntity<>(new ErrorMessage(getErrorMessage(e)), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

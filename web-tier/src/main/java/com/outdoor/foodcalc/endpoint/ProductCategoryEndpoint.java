@@ -33,15 +33,13 @@ public class ProductCategoryEndpoint {
         this.categoryService = categoryService;
     }
 
-    @GetMapping
-    @RequestMapping(produces = APPLICATION_JSON_VALUE)
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<SimpleProductCategory> getCategories() {
         LOG.info("Getting all product categories");
         return categoryService.getCategories();
     }
 
-    @GetMapping
-    @RequestMapping(path = "/{id}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<SimpleProductCategory> getCategory(@PathVariable("id") long id) {
         LOG.info("Getting product category id = {}", id);
         Optional<SimpleProductCategory> category = categoryService.getCategory(id);
@@ -52,15 +50,13 @@ public class ProductCategoryEndpoint {
         return new ResponseEntity<>(category.get(), HttpStatus.OK);
     }
 
-    @PostMapping
-    @RequestMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public SimpleProductCategory addCategory(@RequestBody SimpleProductCategory category) {
         LOG.info("Adding new product category");
         return categoryService.addCategory(category.name);
     }
 
-    @PutMapping
-    @RequestMapping(path = "/{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<SimpleProductCategory> updateCategory(@PathVariable("id") long id,
                                                                 @RequestBody SimpleProductCategory category) {
         LOG.info("Updating product category id = {}", id);
@@ -71,8 +67,7 @@ public class ProductCategoryEndpoint {
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
-    @DeleteMapping
-    @RequestMapping("/{id}")
+    @DeleteMapping("{id}")
     public ResponseEntity<SimpleProductCategory> deleteCategory(@PathVariable("id") long id) {
         LOG.info("Deleting product category id = {}", id);
         if(!categoryService.deleteCategory(id)) {

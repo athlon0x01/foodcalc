@@ -31,8 +31,7 @@ public class ProductEndpoint {
         this.productService = productService;
     }
 
-    @GetMapping
-    @RequestMapping(produces = APPLICATION_JSON_VALUE)
+    @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<CategoryWithProducts> allProducts() {
         LOG.info("Getting all products");
         return productService.getAllProducts();
