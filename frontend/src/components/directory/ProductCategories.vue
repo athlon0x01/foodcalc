@@ -15,6 +15,9 @@
           <div class="col-sm-1">
             <b-button variant="outline-success" size="sm" v-on:click="updateCategory(category)">Update</b-button>
           </div>
+          <div class="col-sm-1">
+            <b-button variant="outline-danger" size="sm" v-on:click="editCategory = null">Cancel</b-button>
+          </div>
         </template>
         <template v-else>
           <div class="col-sm-10 text-left"><i>{{category.name}}</i></div>
@@ -27,12 +30,12 @@
         </template>
       </div>
     </div>
-    <div v-else>
+    <div v-if="categories.length === 0 && errorMessage === null">
       <p><i>No Categories loaded</i></p>
     </div>
     <!--Errors output-->
-    <div v-if="errors.length > 0" class="alert">
-      <p v-for="(error, index) in errors" :key="index">{{error}}</p>
+    <div v-if="errorMessage !== null" class="alert">
+      <p>{{errorMessage}}</p>
     </div>
 
     <!--Add new category section-->
@@ -55,11 +58,21 @@ export default {
       newName: '',
       editCategory: null,
       categories: [],
-      errors: []
+      errorMessage: null
     }
   },
 
   methods: {
+    getErrorMessage (error, defaultMessage) {
+      if (error.response !== undefined && error.response.data !== undefined &&
+        error.response.data.message !== undefined) {
+        this.errorMessage = error.response.data.message
+      } else {
+        console.log(error)
+        this.errorMessage = defaultMessage
+      }
+    },
+
     addCategory () {
       let newCategory = {
         name: this.newName
@@ -69,9 +82,10 @@ export default {
           this.categories.push(response.data)
           this.addMode = false
           this.newName = ''
+          this.errorMessage = null
         })
         .catch(e => {
-          this.errors.push(e)
+          this.getErrorMessage(e, 'Failed to add new Product Category ' + this.newName)
         })
     },
 
@@ -79,9 +93,11 @@ export default {
       axios.put('/api/product-categories/' + category.id, category)
         .then(() => {
           this.editCategory = null
+          this.errorMessage = null
         })
         .catch(e => {
-          this.errors.push(e)
+          this.getErrorMessage(e, 'Failed to update Product Category ' + category.name)
+          this.editCategory = null
         })
     },
 
@@ -89,9 +105,10 @@ export default {
       axios.delete('/api/product-categories/' + id)
         .then(() => {
           this.categories.splice(index, 1)
+          this.errorMessage = null
         })
         .catch(e => {
-          this.errors.push(e)
+          this.getErrorMessage(e, 'Failed to delete Product Category ' + this.categories[index].name)
         })
     }
   },
@@ -101,9 +118,10 @@ export default {
     axios.get('/api/product-categories')
       .then(response => {
         this.categories = response.data
+        this.errorMessage = null
       })
       .catch(e => {
-        this.errors.push(e)
+        this.getErrorMessage(e, 'Failed to load Product categories...')
       })
   }
 }

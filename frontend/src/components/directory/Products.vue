@@ -28,13 +28,13 @@
         </template>
       </template>
     </div>
-    <div v-else>
+    <div v-if="categories.length === 0 && errorMessage === null">
       <p><i>No Products loaded</i></p>
     </div>
 
     <!--Errors output-->
-    <div v-if="errors.length > 0" class="alert">
-      <p v-for="(error, index) in errors" :key="index">{{error}}</p>
+    <div v-if="errorMessage !== null" class="alert">
+      <p>{{errorMessage}}</p>
     </div>
   </div>
 </template>
@@ -47,7 +47,19 @@ export default {
   data () {
     return {
       categories: [],
-      errors: []
+      errorMessage: null
+    }
+  },
+
+  methods: {
+    getErrorMessage (error, defaultMessage) {
+      if (error.response !== undefined && error.response.data !== undefined &&
+        error.response.data.message !== undefined) {
+        this.errorMessage = error.response.data.message
+      } else {
+        console.log(error)
+        this.errorMessage = defaultMessage
+      }
     }
   },
 
@@ -58,7 +70,7 @@ export default {
         this.categories = response.data
       })
       .catch(e => {
-        this.errors.push(e)
+        this.getErrorMessage(e, 'Failed to load Products...')
       })
   }
 }
