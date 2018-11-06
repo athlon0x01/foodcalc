@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc;
 
 import com.outdoor.foodcalc.model.ErrorMessage;
+import com.outdoor.foodcalc.model.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -22,8 +23,8 @@ public class ExceptionHandlers {
         return message;
     }
 
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<ErrorMessage> validationException(final IllegalArgumentException e) {
+    @ExceptionHandler(value = {IllegalArgumentException.class, ValidationException.class})
+    public ResponseEntity<ErrorMessage> validationException(final RuntimeException e) {
         return new ResponseEntity<>(new ErrorMessage(getErrorMessage(e)), HttpStatus.BAD_REQUEST);
     }
 

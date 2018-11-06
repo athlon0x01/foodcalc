@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.endpoint;
 
 import com.outdoor.foodcalc.model.SimpleProductCategory;
+import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,14 +53,19 @@ public class ProductCategoryEndpoint {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public SimpleProductCategory addCategory(@RequestBody SimpleProductCategory category) {
+    public SimpleProductCategory addCategory(@RequestBody @Valid SimpleProductCategory category) {
         LOG.info("Adding new product category");
         return categoryService.addCategory(category.name);
     }
 
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<SimpleProductCategory> updateCategory(@PathVariable("id") long id,
-                                                                @RequestBody SimpleProductCategory category) {
+                                                                @RequestBody @Valid SimpleProductCategory category) {
+        if (id != category.id) {
+            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.id);
+            throw new ValidationException("Path variable Id = " + id
+                + " doesn't match with request body Id = " + category.id);
+        }
         LOG.info("Updating product category id = {}", id);
         if (!categoryService.updateCategory(category)){
             LOG.warn(CATEGORY_ID_WAS_NOT_FOUND, id);
