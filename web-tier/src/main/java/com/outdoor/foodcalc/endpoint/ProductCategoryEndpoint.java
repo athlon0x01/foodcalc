@@ -53,6 +53,7 @@ public class ProductCategoryEndpoint {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
     public SimpleProductCategory addCategory(@RequestBody @Valid SimpleProductCategory category) {
         LOG.info("Adding new product category");
         return categoryService.addCategory(category.name);

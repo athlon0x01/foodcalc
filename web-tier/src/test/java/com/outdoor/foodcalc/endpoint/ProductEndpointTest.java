@@ -1,50 +1,75 @@
 package com.outdoor.foodcalc.endpoint;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.outdoor.foodcalc.model.CategoryWithProducts;
+import com.outdoor.foodcalc.model.SimpleProduct;
 import com.outdoor.foodcalc.service.ProductService;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Collections;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 /**
  * JUnit tests for {@link ProductEndpoint} class
  *
  * @author Anton Borovyk.
  */
-public class ProductEndpointTest {
+@RunWith(SpringRunner.class)
+@SpringBootTest
+public class ProductEndpointTest extends ApiUnitTest {
 
-    @InjectMocks
-    private ProductEndpoint endpoint;
-
-    @Mock
+    @MockBean
     private ProductService service;
+
+    @Autowired
+    private WebApplicationContext webApplicationContext;
+
+    @Autowired
+    @Override
+    public void setMapper(ObjectMapper mapper) {
+        super.setMapper(mapper);
+    }
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
     }
 
     @Test
-    public void allProducts() {
+    public void allProducts() throws Exception {
         CategoryWithProducts category = new CategoryWithProducts();
+        SimpleProduct product = new SimpleProduct();
+        product.id = 357891;
+        product.name = "Sugar";
         category.id = 12345;
-        category.name = "Test";
-        category.products = Collections.emptyList();
+        category.name = "Sweets";
+        category.products = Collections.singletonList(product);
         List<CategoryWithProducts> products = Collections.singletonList(category);
 
         when(service.getAllProducts()).thenReturn(products);
 
-        assertEquals(products, endpoint.allProducts());
+        get("/products")
+            .andExpect(jsonPath("$", hasSize(1)))
+            .andExpect(jsonPath("$[0].id", is(12345)))
+            .andExpect(jsonPath("$[0].name", is("Sweets")))
+            .andExpect(jsonPath("$[0].products", hasSize(1)))
+            .andExpect(jsonPath("$[0].products[0].id", is(357891)))
+            .andExpect(jsonPath("$[0].products[0].name", is("Sugar")));
 
-        verify(service, times(1)).getAllProducts();
+        verify(service).getAllProducts();
     }
 
 }
