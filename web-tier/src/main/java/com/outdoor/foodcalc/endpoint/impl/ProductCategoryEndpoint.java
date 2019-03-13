@@ -1,5 +1,6 @@
-package com.outdoor.foodcalc.endpoint;
+package com.outdoor.foodcalc.endpoint.impl;
 
+import com.outdoor.foodcalc.endpoint.ProductCategoriesApi;
 import com.outdoor.foodcalc.model.SimpleProductCategory;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.service.ProductCategoryService;
@@ -14,16 +15,13 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
-
 /**
  * REST Endpoint for Product Category related operations
  *
  * @author Anton Borovyk.
  */
 @RestController
-@RequestMapping("${spring.data.rest.basePath}/product-categories")
-public class ProductCategoryEndpoint {
+public class ProductCategoryEndpoint implements ProductCategoriesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductCategoryEndpoint.class);
     private static final String CATEGORY_ID_WAS_NOT_FOUND = "Product category id = {} was not found!";
@@ -35,13 +33,11 @@ public class ProductCategoryEndpoint {
         this.categoryService = categoryService;
     }
 
-    @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<SimpleProductCategory> getCategories() {
         LOG.info("Getting all product categories");
         return categoryService.getCategories();
     }
 
-    @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<SimpleProductCategory> getCategory(@PathVariable("id") long id) {
         LOG.info("Getting product category id = {}", id);
         Optional<SimpleProductCategory> category = categoryService.getCategory(id);
@@ -52,14 +48,11 @@ public class ProductCategoryEndpoint {
         return new ResponseEntity<>(category.get(), HttpStatus.OK);
     }
 
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
     public SimpleProductCategory addCategory(@RequestBody @Valid SimpleProductCategory category) {
         LOG.info("Adding new product category");
         return categoryService.addCategory(category.name);
     }
 
-    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<SimpleProductCategory> updateCategory(@PathVariable("id") long id,
                                                                 @RequestBody @Valid SimpleProductCategory category) {
         if (id != category.id) {
@@ -75,7 +68,6 @@ public class ProductCategoryEndpoint {
         return new ResponseEntity<>(category, HttpStatus.OK);
     }
 
-    @DeleteMapping("{id}")
     public ResponseEntity<SimpleProductCategory> deleteCategory(@PathVariable("id") long id) {
         LOG.info("Deleting product category id = {}", id);
         if(!categoryService.deleteCategory(id)) {
