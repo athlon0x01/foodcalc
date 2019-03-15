@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.service;
 
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.model.SimpleProductCategory;
@@ -62,7 +63,7 @@ public class ProductCategoryServiceTest {
         assertEquals(CATEGORY_2_ID, actual.get(1).id);
         assertEquals(CATEGORY_2_NAME, actual.get(1).name);
 
-        verify(categoryDomainService, times(1)).getCategories();
+        verify(categoryDomainService).getCategories();
     }
 
     @Test
@@ -75,23 +76,20 @@ public class ProductCategoryServiceTest {
 
         when(categoryDomainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
 
-        Optional<SimpleProductCategory> actual = categoryService.getCategory(CATEGORY_1_ID);
-        assertTrue(actual.isPresent());
-        assertEquals(CATEGORY_1_ID, actual.get().id);
-        assertEquals(CATEGORY_1_NAME, actual.get().name);
+        SimpleProductCategory actual = categoryService.getCategory(CATEGORY_1_ID);
+        assertNotNull(actual);
+        assertEquals(CATEGORY_1_ID, actual.id);
+        assertEquals(CATEGORY_1_NAME, actual.name);
 
-        verify(categoryDomainService, times(1)).getCategory(CATEGORY_1_ID);
+        verify(categoryDomainService).getCategory(CATEGORY_1_ID);
     }
 
-    @Test
-    public void getEmptyCategory() {
+    @Test(expected = NotFoundException.class)
+    public void getNotExistingCategory() {
         Optional<ProductCategory> domainCategory = Optional.empty();
         when(categoryDomainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
 
-        Optional<SimpleProductCategory> actual = categoryService.getCategory(CATEGORY_1_ID);
-        assertFalse(actual.isPresent());
-
-        verify(categoryDomainService, times(1)).getCategory(CATEGORY_1_ID);
+        categoryService.getCategory(CATEGORY_1_ID);
     }
 
     @Test
@@ -104,7 +102,7 @@ public class ProductCategoryServiceTest {
         assertEquals(CATEGORY_1_ID, category.id);
         assertEquals(CATEGORY_1_NAME, category.name);
 
-        verify(categoryDomainService, times(1)).addCategory(domainCategory);
+        verify(categoryDomainService).addCategory(domainCategory);
     }
 
     @Test
@@ -116,14 +114,14 @@ public class ProductCategoryServiceTest {
 
         when(categoryDomainService.updateCategory(domainCategory)).thenReturn(false);
         assertFalse(categoryService.updateCategory(model));
-        verify(categoryDomainService, times(1)).updateCategory(domainCategory);
+        verify(categoryDomainService).updateCategory(domainCategory);
     }
 
     @Test
     public void deleteCategory() {
         when(categoryDomainService.deleteCategory(CATEGORY_1_ID)).thenReturn(true);
         assertTrue(categoryService.deleteCategory(CATEGORY_1_ID));
-        verify(categoryDomainService, times(1)).deleteCategory(CATEGORY_1_ID);
+        verify(categoryDomainService).deleteCategory(CATEGORY_1_ID);
     }
 
 }

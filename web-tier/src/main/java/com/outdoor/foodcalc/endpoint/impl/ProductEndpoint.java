@@ -28,7 +28,7 @@ public class ProductEndpoint implements ProductsApi {
     }
 
     public List<CategoryWithProducts> allProducts() {
-        LOG.info("Getting all products");
+        LOG.debug("Getting all products");
         return productService.getAllProducts();
     }
 }

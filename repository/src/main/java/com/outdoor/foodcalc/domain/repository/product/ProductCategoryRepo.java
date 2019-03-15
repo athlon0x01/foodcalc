@@ -26,6 +26,7 @@ public class ProductCategoryRepo extends AbstractRepository<ProductCategory>
 
     static final String SELECT_ALL_CATEGORIES_SQL = "SELECT * FROM product_categories";
     static final String SELECT_CATEGORY_SQL = "SELECT * FROM product_categories WHERE id = :categoryId";
+    static final String SELECT_CATEGORY_EXISTS_SQL = "SELECT count(*) FROM product_categories WHERE id = :categoryId";
     static final String INSERT_CATEGORY_SQL = "INSERT INTO product_categories (name) VALUES (:name)";
     static final String UPDATE_CATEGORY_SQL = "UPDATE product_categories SET name = :name WHERE id = :categoryId";
     static final String DELETE_CATEGORY_SQL = "DELETE FROM product_categories WHERE id = :categoryId";
@@ -59,6 +60,13 @@ public class ProductCategoryRepo extends AbstractRepository<ProductCategory>
     public boolean deleteCategory(long id) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("categoryId", id);
         return jdbcTemplate.update(DELETE_CATEGORY_SQL, parameters) > 0;
+    }
+
+    @Override
+    public boolean exist(long id) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("categoryId", id);
+        Long count = jdbcTemplate.queryForObject(SELECT_CATEGORY_EXISTS_SQL, parameters, Long.class);
+        return count != null && count > 0;
     }
 
     @Override

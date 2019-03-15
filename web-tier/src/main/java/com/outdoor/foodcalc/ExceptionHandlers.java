@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc;
 
-import com.outdoor.foodcalc.model.ErrorMessage;
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.model.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,12 +24,17 @@ public class ExceptionHandlers {
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class, ValidationException.class})
-    public ResponseEntity<ErrorMessage> validationException(final RuntimeException e) {
-        return new ResponseEntity<>(new ErrorMessage(getErrorMessage(e)), HttpStatus.BAD_REQUEST);
+    public ResponseEntity<String> validationException(final RuntimeException e) {
+        return new ResponseEntity<>(getErrorMessage(e), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<String> notFoundException(final NotFoundException e) {
+        return new ResponseEntity<>(getErrorMessage(e), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ErrorMessage> runtimeException(final RuntimeException e) {
-        return new ResponseEntity<>(new ErrorMessage(getErrorMessage(e)), HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<String> runtimeException(final RuntimeException e) {
+        return new ResponseEntity<>(getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

@@ -82,8 +82,8 @@ public class ProductServiceTest {
         assertEquals(CATEGORY_3_NAME, model3.name);
         assertTrue(model3.products.isEmpty());
 
-        verify(categoryDomainService, times(1)).getCategories();
-        verify(productDomainService, times(1)).getAllProducts();
+        verify(categoryDomainService).getCategories();
+        verify(productDomainService).getAllProducts();
     }
 
     private void assertProducts(Product product, SimpleProduct model) {

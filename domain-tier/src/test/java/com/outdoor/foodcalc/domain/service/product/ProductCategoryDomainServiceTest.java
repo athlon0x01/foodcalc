@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.service.product;
 
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
@@ -49,7 +50,7 @@ public class ProductCategoryDomainServiceTest {
         List<ProductCategory> actual = categoryService.getCategories();
         assertEquals(expected, actual);
 
-        verify(categoryRepo, times(1)).getCategories();
+        verify(categoryRepo).getCategories();
     }
 
     @Test
@@ -61,42 +62,59 @@ public class ProductCategoryDomainServiceTest {
         Optional<ProductCategory> actual = categoryService.getCategory(CATEGORY_ID);
         assertEquals(expected, actual);
 
-        verify(categoryRepo, times(1)).getCategory(CATEGORY_ID);
+        verify(categoryRepo).getCategory(CATEGORY_ID);
     }
 
     @Test
     public void addCategoryTest() {
         when(categoryRepo.addCategory(dummyCategory)).thenReturn(CATEGORY_ID);
         assertEquals(dummyCategory, categoryService.addCategory(dummyCategory));
-        verify(categoryRepo, times(1)).addCategory(dummyCategory);
+        verify(categoryRepo).addCategory(dummyCategory);
     }
 
     @Test
     public void updateCategoryTest() {
+        when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
         when(categoryRepo.updateCategory(dummyCategory)).thenReturn(false);
+
         assertFalse(categoryService.updateCategory(dummyCategory));
-        verify(categoryRepo, times(1)).updateCategory(dummyCategory);
+
+        verify(categoryRepo).exist(CATEGORY_ID);
+        verify(categoryRepo).updateCategory(dummyCategory);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void updateNotExistingCategoryTest() {
+        when(categoryRepo.exist(CATEGORY_ID)).thenReturn(false);
+
+        categoryService.updateCategory(dummyCategory);
     }
 
     @Test
     public void deleteCategoryTest() {
+        when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
         when(categoryRepo.deleteCategory(CATEGORY_ID)).thenReturn(true);
         when(productRepo.countProductsInCategory(CATEGORY_ID)).thenReturn(0L);
 
         assertTrue(categoryService.deleteCategory(CATEGORY_ID));
 
-        verify(categoryRepo, times(1)).deleteCategory(CATEGORY_ID);
-        verify(productRepo, times(1)).countProductsInCategory(CATEGORY_ID);
+        verify(categoryRepo).deleteCategory(CATEGORY_ID);
+        verify(productRepo).countProductsInCategory(CATEGORY_ID);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteNotExistingCategoryTest() {
+        when(categoryRepo.exist(CATEGORY_ID)).thenReturn(false);
+
+        categoryService.deleteCategory(CATEGORY_ID);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void deleteNotEmptyCategoryTest() {
+        when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
         when(productRepo.countProductsInCategory(CATEGORY_ID)).thenReturn(1L);
 
-        assertTrue(categoryService.deleteCategory(CATEGORY_ID));
-
-        verify(categoryRepo, never()).deleteCategory(CATEGORY_ID);
-        verify(productRepo, times(1)).countProductsInCategory(CATEGORY_ID);
+        categoryService.deleteCategory(CATEGORY_ID);
     }
 
 }

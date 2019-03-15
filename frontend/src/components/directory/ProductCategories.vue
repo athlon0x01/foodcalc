@@ -81,8 +81,8 @@ export default {
   methods: {
     getErrorMessage (error, defaultMessage) {
       if (error.response !== undefined && error.response.data !== undefined &&
-        error.response.data.message !== undefined) {
-        this.errorMessage = error.response.data.message
+        (typeof error.response.data === 'string' || error.response.data instanceof String)) {
+        this.errorMessage = error.response.data
       } else {
         console.log(error)
         this.errorMessage = defaultMessage

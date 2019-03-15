@@ -40,6 +40,7 @@ public interface IProductCategoryRepo {
      * Updates selected {@link ProductCategory} with new value.
      *
      * @param category updated category
+     * @return if category was updated
      */
     boolean updateCategory(ProductCategory category);
 
@@ -47,6 +48,15 @@ public interface IProductCategoryRepo {
      * Removes selected {@link ProductCategory}.
      *
      * @param id category Id to delete
+     * @return if category was deleted
      */
     boolean deleteCategory(long id);
+
+    /**
+     * Check if specified {@link ProductCategory} exists.
+     *
+     * @param id category Id to delete
+     * @return is product category exists.
+     */
+    boolean exist(long id);
 }

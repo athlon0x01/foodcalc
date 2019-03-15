@@ -10,7 +10,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,7 +37,6 @@ public class ProductRepoTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(repo, "jdbcTemplate", jdbcTemplate);
     }
 
     @Test
@@ -70,15 +68,15 @@ public class ProductRepoTest {
         Product product = repo.mapRow(resultSet, 2);
         assertEquals(dummyProduct, product);
 
-        verify(resultSet, times(1)).getString("productName");
-        verify(resultSet, times(1)).getString("catName");
-        verify(resultSet, times(1)).getLong("productId");
-        verify(resultSet, times(1)).getLong("catId");
-        verify(resultSet, times(1)).getFloat("calorific");
-        verify(resultSet, times(1)).getFloat("proteins");
-        verify(resultSet, times(1)).getFloat("fats");
-        verify(resultSet, times(1)).getFloat("carbs");
-        verify(resultSet, times(1)).getFloat("defWeight");
+        verify(resultSet).getString("productName");
+        verify(resultSet).getString("catName");
+        verify(resultSet).getLong("productId");
+        verify(resultSet).getLong("catId");
+        verify(resultSet).getFloat("calorific");
+        verify(resultSet).getFloat("proteins");
+        verify(resultSet).getFloat("fats");
+        verify(resultSet).getFloat("carbs");
+        verify(resultSet).getFloat("defWeight");
     }
 
     @Test
@@ -91,7 +89,7 @@ public class ProductRepoTest {
         List<Product> actual = repo.getAllProducts();
         assertEquals(expected, actual);
 
-        verify(jdbcTemplate, times(1)).query(ProductRepo.SELECT_ALL_PRODUCTS_SQL, repo);
+        verify(jdbcTemplate).query(ProductRepo.SELECT_ALL_PRODUCTS_SQL, repo);
     }
 
     @Test
@@ -105,7 +103,7 @@ public class ProductRepoTest {
 
         assertEquals(expected.longValue(), repo.countProductsInCategory(CATEGORY_ID));
 
-        verify(jdbcTemplate, times(1)).queryForObject(
+        verify(jdbcTemplate).queryForObject(
             eq(ProductRepo.SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL), argThat(matcher), eq(Long.class));
     }
 
@@ -119,7 +117,7 @@ public class ProductRepoTest {
 
         assertEquals(0L, repo.countProductsInCategory(CATEGORY_ID));
 
-        verify(jdbcTemplate, times(1)).queryForObject(
+        verify(jdbcTemplate).queryForObject(
             eq(ProductRepo.SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL), argThat(matcher), eq(Long.class));
     }
 }

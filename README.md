@@ -16,6 +16,7 @@ Web application to simplify Food carrying plan composition, modification and pri
  * run _testData.sql_ on **foodcalc** DB to insert initial data set;
  * go to project root directory and build in with maven - _mvn clean install_
  * go to web-tier directory and run project with maven - _mvn spring-boot:run_
+ * Server will be listening on 8080. "http://localhost:8080/"
  
  ##Development tips
  * run dev Node JS server with hot reload at localhost:8080 - _npm run dev_

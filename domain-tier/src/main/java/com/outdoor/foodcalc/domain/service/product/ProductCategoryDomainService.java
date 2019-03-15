@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.service.product;
 
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
@@ -67,6 +68,10 @@ public class ProductCategoryDomainService {
      * @param category updated category
      */
     public boolean updateCategory(ProductCategory category) {
+        if (!categoryRepo.exist(category.getCategoryId())){
+            LOG.error("Product category with id={} doesn't exist", category.getCategoryId());
+            throw new NotFoundException("Product category doesn't exist");
+        }
         return categoryRepo.updateCategory(category);
     }
 
@@ -76,11 +81,15 @@ public class ProductCategoryDomainService {
      * @param id category Id to delete
      */
     public boolean deleteCategory(long id) {
+        if (!categoryRepo.exist(id)){
+            LOG.error("Product category with id={} doesn't exist", id);
+            throw new NotFoundException("Product category doesn't exist");
+        }
         if (productRepo.countProductsInCategory(id) == 0) {
             return categoryRepo.deleteCategory(id);
         } else {
-            LOG.error("Category with id = {} is not empty", id);
-            throw new IllegalArgumentException("Category is not empty");
+            LOG.error("Product category with id = {} is not empty", id);
+            throw new IllegalArgumentException("Product category is not empty");
         }
     }
 }

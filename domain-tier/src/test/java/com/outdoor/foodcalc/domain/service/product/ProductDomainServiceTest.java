@@ -45,6 +45,6 @@ public class ProductDomainServiceTest {
         List<Product> actual = productService.getAllProducts();
         assertEquals(expected, actual);
 
-        verify(productRepo, times(1)).getAllProducts();
+        verify(productRepo).getAllProducts();
     }
 }

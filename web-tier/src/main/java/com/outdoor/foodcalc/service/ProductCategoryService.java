@@ -1,8 +1,11 @@
 package com.outdoor.foodcalc.service;
 
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.model.SimpleProductCategory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +21,8 @@ import java.util.stream.Collectors;
  */
 @Service
 public class ProductCategoryService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(ProductCategoryService.class);
 
     private ProductCategoryDomainService categoryDomainService;
 
@@ -43,13 +48,13 @@ public class ProductCategoryService {
      * @param id category Id to load
      * @return loaded category
      */
-    public Optional<SimpleProductCategory> getCategory(long id) {
-        Optional<SimpleProductCategory> result = Optional.empty();
+    public SimpleProductCategory getCategory(long id) {
         Optional<ProductCategory> category = categoryDomainService.getCategory(id);
-        if (category.isPresent()) {
-            result = Optional.of(mapProductCategory(category.get()));
+        if (!category.isPresent()) {
+            LOG.error("Product category with id={} wasn't found", id);
+            throw new NotFoundException("Product category wasn't found");
         }
-        return result;
+        return mapProductCategory(category.get());
     }
 
     private SimpleProductCategory mapProductCategory(ProductCategory productCategory) {

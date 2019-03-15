@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.KeyHolder;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.*;
 
@@ -38,7 +37,6 @@ public class ProductCategoryRepoTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        ReflectionTestUtils.setField(repo, "jdbcTemplate", jdbcTemplate);
     }
 
     @Test
@@ -50,7 +48,7 @@ public class ProductCategoryRepoTest {
         List<ProductCategory> actual = repo.getCategories();
         assertEquals(expected, actual);
 
-        verify(jdbcTemplate, times(1)).query(ProductCategoryRepo.SELECT_ALL_CATEGORIES_SQL, repo);
+        verify(jdbcTemplate).query(ProductCategoryRepo.SELECT_ALL_CATEGORIES_SQL, repo);
     }
 
     @Test
@@ -64,7 +62,7 @@ public class ProductCategoryRepoTest {
         assertTrue(actual.isPresent());
         assertEquals(dummyCategory, actual.get());
 
-        verify(jdbcTemplate, times(1)).queryForObject(
+        verify(jdbcTemplate).queryForObject(
             eq(ProductCategoryRepo.SELECT_CATEGORY_SQL), argThat(matcher), Mockito.<RowMapper<ProductCategory>>any());
     }
 
@@ -83,8 +81,8 @@ public class ProductCategoryRepoTest {
 
         assertEquals(expectedId.longValue(), spyRepo.addCategory(dummyCategory));
 
-        verify(holder, times(1)).getKey();
-        verify(jdbcTemplate, times(1)).update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL),
+        verify(holder).getKey();
+        verify(jdbcTemplate).update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL),
             argThat(matcher), eq(holder), eq(keyColumns));
     }
 
@@ -96,7 +94,7 @@ public class ProductCategoryRepoTest {
 
         assertTrue(repo.updateCategory(dummyCategory));
 
-        verify(jdbcTemplate, times(1))
+        verify(jdbcTemplate)
             .update(eq(ProductCategoryRepo.UPDATE_CATEGORY_SQL), argThat(matcher));
     }
 
@@ -108,7 +106,7 @@ public class ProductCategoryRepoTest {
 
         assertFalse(repo.updateCategory(dummyCategory));
 
-        verify(jdbcTemplate, times(1))
+        verify(jdbcTemplate)
             .update(eq(ProductCategoryRepo.UPDATE_CATEGORY_SQL), argThat(matcher));
     }
 
@@ -119,7 +117,7 @@ public class ProductCategoryRepoTest {
 
         assertTrue(repo.deleteCategory(CATEGORY_ID));
 
-        verify(jdbcTemplate, times(1))
+        verify(jdbcTemplate)
             .update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(matcher));
     }
 
@@ -130,7 +128,36 @@ public class ProductCategoryRepoTest {
 
         assertFalse(repo.deleteCategory(CATEGORY_ID));
 
-        verify(jdbcTemplate, times(1))
+        verify(jdbcTemplate)
             .update(eq(ProductCategoryRepo.DELETE_CATEGORY_SQL), argThat(matcher));
+    }
+
+    @Test
+    public void existsTest() {
+        Long expected = 1L;
+        ArgumentMatcher<SqlParameterSource> matcher = params -> CATEGORY_ID.equals(params.getValue("categoryId"));
+
+        when(jdbcTemplate.queryForObject(
+                eq(ProductCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class)))
+                .thenReturn(expected);
+
+        assertTrue(repo.exist(CATEGORY_ID));
+
+        verify(jdbcTemplate).queryForObject(
+                eq(ProductCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
+    public void existsNullTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> CATEGORY_ID.equals(params.getValue("categoryId"));
+
+        when(jdbcTemplate.queryForObject(
+                eq(ProductCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class)))
+                .thenReturn(null);
+
+        assertFalse(repo.exist(CATEGORY_ID));
+
+        verify(jdbcTemplate).queryForObject(
+                eq(ProductCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class));
     }
 }

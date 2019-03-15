@@ -3,7 +3,6 @@ package com.outdoor.foodcalc.endpoint;
 import com.outdoor.foodcalc.model.SimpleProductCategory;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -38,7 +37,7 @@ public interface ProductCategoriesApi {
         @ApiResponse(code = 404, message = "Product category not found")
     })
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<SimpleProductCategory> getCategory(@ApiParam(value = "ID of the product category", required = true)
+    SimpleProductCategory getCategory(@ApiParam(value = "ID of the product category", required = true)
                                                       @PathVariable("id") long id);
 
 
@@ -48,8 +47,7 @@ public interface ProductCategoriesApi {
     )
     @ApiResponses(value = {
         @ApiResponse(code = 201, message = "New product category created", response = SimpleProductCategory.class),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 404, message = "Product category not found")
+        @ApiResponse(code = 400, message = "Bad request")
     })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -58,27 +56,28 @@ public interface ProductCategoriesApi {
 
 
     @ApiOperation(value = "Update product category by ID",
-        notes = "Updates product category and returns updated value",
-        response = SimpleProductCategory.class
+            notes = "Updates product category and returns updated value",
+            response = SimpleProductCategory.class
     )
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Product category updated", response = SimpleProductCategory.class),
-        @ApiResponse(code = 400, message = "Bad request"),
-        @ApiResponse(code = 404, message = "Product category not found")
+            @ApiResponse(code = 200, message = "Product category updated", response = SimpleProductCategory.class),
+            @ApiResponse(code = 400, message = "Bad request"),
+            @ApiResponse(code = 404, message = "Product category not found")
     })
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ResponseEntity<SimpleProductCategory> updateCategory(@ApiParam(value = "ID of the product category", required = true)
-                                                         @PathVariable("id") long id,
-                                                         @ApiParam(value = "Product category", required = true)
-                                                         @RequestBody SimpleProductCategory category);
+    SimpleProductCategory updateCategory(@ApiParam(value = "ID of the product category", required = true)
+                                         @PathVariable("id") long id,
+                                         @ApiParam(value = "Product category", required = true)
+                                         @RequestBody SimpleProductCategory category);
 
     @ApiOperation(value = "Delete product category by ID"
     )
     @ApiResponses(value = {
-        @ApiResponse(code = 204, message = "Product category deleted"),
-        @ApiResponse(code = 404, message = "Product category not found")
+            @ApiResponse(code = 204, message = "Product category deleted"),
+            @ApiResponse(code = 404, message = "Product category not found")
     })
     @DeleteMapping("{id}")
-    ResponseEntity<SimpleProductCategory> deleteCategory(@ApiParam(value = "ID of the product category", required = true)
-                                                         @PathVariable("id") long id);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void deleteCategory(@ApiParam(value = "ID of the product category", required = true)
+                        @PathVariable("id") long id);
 }

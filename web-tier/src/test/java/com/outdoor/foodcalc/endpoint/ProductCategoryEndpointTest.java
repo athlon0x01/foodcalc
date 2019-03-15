@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.endpoint.impl.ProductCategoryEndpoint;
 import com.outdoor.foodcalc.model.SimpleProductCategory;
 import com.outdoor.foodcalc.service.ProductCategoryService;
@@ -18,12 +19,13 @@ import org.springframework.web.context.WebApplicationContext;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  * JUnit tests for {@link ProductCategoryEndpoint} class
@@ -77,7 +79,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void getCategoryTest() throws Exception {
-        Optional<SimpleProductCategory> expected = Optional.of(dummyCategory);
+        SimpleProductCategory expected = dummyCategory;
 
         when(service.getCategory(CATEGORY_ID)).thenReturn(expected);
 
@@ -85,18 +87,18 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
             .andReturn();
 
         SimpleProductCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleProductCategory.class);
-        assertEquals(expected.get(), actual);
+        assertEquals(expected, actual);
 
         verify(service).getCategory(CATEGORY_ID);
     }
 
     @Test
     public void getCategoryNotFoundTest() throws Exception {
-        Optional<SimpleProductCategory> expected = Optional.empty();
+        String message = "Product category wasn't found";
+        when(service.getCategory(CATEGORY_ID)).thenThrow(new NotFoundException(message));
 
-        when(service.getCategory(CATEGORY_ID)).thenReturn(expected);
-
-        get404("/product-categories/" + CATEGORY_ID);
+        get404("/product-categories/" + CATEGORY_ID)
+                .andExpect(jsonPath("$", is(message)));
 
         verify(service).getCategory(CATEGORY_ID);
     }
@@ -140,10 +142,23 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
     }
 
     @Test
-    public void updateCategoryNotFoundTest() throws Exception {
+    public void updateCategoryValidationTest() throws Exception {
+        String message = "Path variable Id = 55 doesn't match with request body Id = " + CATEGORY_ID;
+
+        put400("/product-categories/55", dummyCategory)
+                .andExpect(jsonPath("$", is(message)));
+
+        verify(service, never()).updateCategory(dummyCategory);
+    }
+
+    @Test
+    public void updateCategoryInternalErrorTest() throws Exception {
+        String message = "Product category failed to update";
         when(service.updateCategory(dummyCategory)).thenReturn(false);
 
-        put404("/product-categories/" + CATEGORY_ID, dummyCategory);
+        putJson("/product-categories/" + CATEGORY_ID, dummyCategory)
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$", is(message)));
 
         verify(service).updateCategory(dummyCategory);
     }
@@ -159,9 +174,24 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void deleteCategoryNotFoundTest() throws Exception {
+        String message = "Product category doesn't exist";
+        when(service.deleteCategory(CATEGORY_ID)).thenThrow(new NotFoundException(message));
+
+        delete404("/product-categories/" + CATEGORY_ID)
+                .andExpect(jsonPath("$", is(message)));
+
+        verify(service).deleteCategory(CATEGORY_ID);
+    }
+
+
+    @Test
+    public void deleteInternalErrorTest() throws Exception {
+        String message = "Product category failed to delete";
         when(service.deleteCategory(CATEGORY_ID)).thenReturn(false);
 
-        delete404("/product-categories/" + CATEGORY_ID);
+        deleteJson("/product-categories/" + CATEGORY_ID)
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$", is(message)));
 
         verify(service).deleteCategory(CATEGORY_ID);
     }
