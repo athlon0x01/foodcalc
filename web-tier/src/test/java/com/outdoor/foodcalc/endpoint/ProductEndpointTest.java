@@ -2,8 +2,8 @@ package com.outdoor.foodcalc.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.outdoor.foodcalc.endpoint.impl.ProductEndpoint;
-import com.outdoor.foodcalc.model.CategoryWithProducts;
-import com.outdoor.foodcalc.model.SimpleProduct;
+import com.outdoor.foodcalc.model.product.CategoryWithProducts;
+import com.outdoor.foodcalc.model.product.SimpleProduct;
 import com.outdoor.foodcalc.service.ProductService;
 import org.junit.Before;
 import org.junit.Test;

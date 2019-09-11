@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.endpoint;
 
-import com.outdoor.foodcalc.model.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;

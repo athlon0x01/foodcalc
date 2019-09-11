@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.service;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
-import com.outdoor.foodcalc.model.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

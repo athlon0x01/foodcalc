@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.endpoint;
 
-import com.outdoor.foodcalc.model.CategoryWithProducts;
+import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;

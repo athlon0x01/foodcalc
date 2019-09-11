@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.endpoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.endpoint.impl.ProductCategoryEndpoint;
-import com.outdoor.foodcalc.model.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.junit.Before;
 import org.junit.Test;

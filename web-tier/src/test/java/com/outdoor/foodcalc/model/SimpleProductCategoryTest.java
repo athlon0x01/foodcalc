@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.model;
 
+import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import org.junit.Test;
 
 import javax.validation.ConstraintViolation;

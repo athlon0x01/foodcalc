@@ -2,7 +2,7 @@ package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.endpoint.ProductCategoriesApi;
-import com.outdoor.foodcalc.model.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public class ProductCategoryEndpoint implements ProductCategoriesApi {
     }
 
     public SimpleProductCategory addCategory(@RequestBody @Valid SimpleProductCategory category) {
-        LOG.debug("Adding new product category");
+        LOG.debug("Adding new product category - {}", category);
         return categoryService.addCategory(category.name);
     }
 
@@ -52,7 +52,7 @@ public class ProductCategoryEndpoint implements ProductCategoriesApi {
             throw new ValidationException("Path variable Id = " + id
                     + " doesn't match with request body Id = " + category.id);
         }
-        LOG.debug("Updating product category id = {}", id);
+        LOG.debug("Updating product category {}", category);
         if (!categoryService.updateCategory(category)) {
             throw new FoodcalcException("Product category failed to update");
         }

@@ -4,8 +4,8 @@ import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
-import com.outdoor.foodcalc.model.CategoryWithProducts;
-import com.outdoor.foodcalc.model.SimpleProduct;
+import com.outdoor.foodcalc.model.product.CategoryWithProducts;
+import com.outdoor.foodcalc.model.product.SimpleProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

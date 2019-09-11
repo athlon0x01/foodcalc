@@ -1,7 +1,7 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.endpoint.ProductsApi;
-import com.outdoor.foodcalc.model.CategoryWithProducts;
+import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

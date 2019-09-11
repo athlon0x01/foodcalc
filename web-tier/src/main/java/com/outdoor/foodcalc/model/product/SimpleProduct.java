@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.model;
+package com.outdoor.foodcalc.model.product;
 
 /**
  * Simplified view model for {@link com.outdoor.foodcalc.domain.model.product.Product} class.

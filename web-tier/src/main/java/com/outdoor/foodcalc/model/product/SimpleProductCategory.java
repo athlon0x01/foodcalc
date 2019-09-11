@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.model;
+package com.outdoor.foodcalc.model.product;
 
 import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
