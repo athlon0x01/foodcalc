@@ -5,6 +5,7 @@ import AboutPage from 'src/components/AboutPage'
 import DirectoryPage from 'src/components/directory/DirectoryPage'
 import Products from 'src/components/directory/Products'
 import ProductCategories from 'src/components/directory/ProductCategories'
+import MealTypes from 'src/components/directory/MealTypes'
 
 Vue.use(Router)
 
@@ -36,6 +37,11 @@ export default new Router({
           path: 'categories',
           name: 'ProductCategoriesPage',
           component: ProductCategories
+        },
+        {
+          path: 'meal-types',
+          name: 'MealTypesPage',
+          component: MealTypes
         }
       ]
     }
