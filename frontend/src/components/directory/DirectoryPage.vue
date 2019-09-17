@@ -8,6 +8,9 @@
         <router-link :to="{ name : 'ProductCategoriesPage' }">Product Categories</router-link>
       </b-nav-item>
       <b-nav-item>
+        <router-link :to="{ name : 'DishCategoriesPage' }">Dish Categories</router-link>
+      </b-nav-item>
+      <b-nav-item>
         <router-link :to="{ name : 'MealTypesPage' }">Meal Types</router-link>
       </b-nav-item>
     </b-nav>

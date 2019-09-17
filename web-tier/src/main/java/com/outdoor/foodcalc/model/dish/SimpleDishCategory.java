@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.model.meal;
+package com.outdoor.foodcalc.model.dish;
 
 import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 
@@ -6,11 +6,11 @@ import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 
 /**
- * View model for {@link com.outdoor.foodcalc.domain.model.meal.MealType} class.
+ * View model for {@link com.outdoor.foodcalc.domain.model.dish.DishCategory} class.
  *
  * @author Anton Borovyk.
  */
-public class MealType {
+public class SimpleDishCategory {
 
     public long id;
 
