@@ -1,5 +1,5 @@
 <template>
-  <directory-list v-bind:endpoint-url="url" v-bind:title="title" v-bind:no-items-msg="noItemsMsg"/>
+  <directory-list v-bind:endpoint-url="url" v-bind:title="title"/>
 </template>
 
 <script>
@@ -11,8 +11,7 @@ export default {
   data () {
     return {
       url: '/api/dish-categories/',
-      title: 'Dish categories:',
-      noItemsMsg: 'No dish categories yet...'
+      title: 'Dish Categories'
     }
   }
 }

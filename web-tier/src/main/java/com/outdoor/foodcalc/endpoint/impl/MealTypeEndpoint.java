@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcException;
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.meal.MealType;
 import org.slf4j.Logger;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -36,14 +38,21 @@ public class MealTypeEndpoint {
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
     public MealType getMealType(@PathVariable("id") long id) {
         LOG.debug("Getting meal type id = {}", id);
-        return meals.get((int) id);
+        final Optional<MealType> first = meals.stream()
+                .filter(c -> c.id == id)
+                .findFirst();
+        return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     public MealType addMealType(@RequestBody @Valid MealType mealType) {
         LOG.debug("Adding new meal type - {}", mealType);
-        mealType.id = meals.size();
+        mealType.id = meals.stream()
+                .map(c -> c.id)
+                .max(Long::compareTo)
+                .orElse((long) meals.size())
+                + 1;
         meals.add(mealType);
         return mealType;
     }
@@ -57,11 +66,12 @@ public class MealTypeEndpoint {
                     + " doesn't match with request body Id = " + mealType.id);
         }
         LOG.debug("Updating meal type {}", mealType);
-        if (meals.size() <= id) {
-            throw new FoodcalcException("Meal type not found");
-        }
-        meals.set((int) id, mealType);
-        return mealType;
+        final Optional<MealType> first = meals.stream()
+                .filter(c -> c.id == id)
+                .findFirst();
+        MealType original = first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
+        original.name = mealType.name;
+        return original;
     }
 
     @DeleteMapping("{id}")
@@ -71,9 +81,13 @@ public class MealTypeEndpoint {
         if (meals.size() <= id) {
             throw new FoodcalcException("Meal type not found");
         }
-        meals.remove((int)id);
-        for (int i = 0; i < meals.size(); i++) {
-            meals.get(i).id = i;
+        int index = 0;
+        while (index < meals.size()) {
+            if (meals.get(index).id == id) {
+                meals.remove(index);
+                break;
+            }
+            index++;
         }
     }
 }

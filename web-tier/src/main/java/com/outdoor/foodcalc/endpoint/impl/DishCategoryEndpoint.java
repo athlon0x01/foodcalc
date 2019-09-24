@@ -24,19 +24,7 @@ public class DishCategoryEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(DishCategoryEndpoint.class);
 
-    private final List<SimpleDishCategory> categories;// = new ArrayList<>();
-
-    public DishCategoryEndpoint() {
-        this.categories = new ArrayList<>();
-        SimpleDishCategory category1 = new SimpleDishCategory();
-        category1.id = 1;
-        category1.name = "Soups";
-        this.categories.add(category1);
-        SimpleDishCategory category2 = new SimpleDishCategory();
-        category2.id = 2;
-        category2.name = "Drinks";
-        this.categories.add(category2);
-    }
+    private final List<SimpleDishCategory> categories = new ArrayList<>();
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<SimpleDishCategory> getDishCategories() {

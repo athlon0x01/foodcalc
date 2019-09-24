@@ -12,7 +12,7 @@
       </div>
     </div>
     <div v-if="items.length === 0 && errorMessage === null">
-      <p><i>{{noItemsMsg}}</i></p>
+      <p><i>No {{title}} yet...</i></p>
     </div>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
@@ -43,10 +43,6 @@ export default {
       required: true
     },
     title: {
-      type: String,
-      required: true
-    },
-    noItemsMsg: {
       type: String,
       required: true
     }
