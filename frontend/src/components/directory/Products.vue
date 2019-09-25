@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="directory-header">Products list:</h2>
+    <h2 class="directory-header">Products list</h2>
 
     <!--Products list-->
     <div v-if="categoriesWithProducts.length > 0" class="container border">
