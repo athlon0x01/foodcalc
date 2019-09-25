@@ -22,7 +22,7 @@
     <!--Add new item section-->
     <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Add new</b-button>
     <div v-if="addMode !== undefined && addMode" class="container">
-      <directory-list-new-item v-on:addNew="addItem"/>
+      <directory-list-new-item v-on:addNew="addItem" v-on:cancelAdd="addMode = false"/>
     </div>
   </div>
 </template>
@@ -73,42 +73,30 @@ export default {
     },
 
     addItem (newItem) {
-      this.$validator.validateAll().then((result) => {
-        if (result) {
-          let newItemObject = {
-            name: newItem
-          }
-          axios.post(this.endpointUrl, newItemObject)
-            .then(response => {
-              this.items.push(response.data)
-              this.addMode = false
-              this.clearErrors()
-            })
-            .catch(e => {
-              this.getErrorMessage(e, 'Failed to add ' + newItem)
-            })
-        } else {
-          console.log('Couldn\'t add new item due to validation errors')
-        }
-      })
+      let newItemObject = {
+        name: newItem
+      }
+      axios.post(this.endpointUrl, newItemObject)
+        .then(response => {
+          this.items.push(response.data)
+          this.addMode = false
+          this.clearErrors()
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to add ' + newItem)
+        })
     },
 
     updateItem (item) {
-      this.$validator.validateAll().then((result) => {
-        if (result) {
-          axios.put(this.endpointUrl + item.id, item)
-            .then(() => {
-              let index = this.items.findIndex(it => it.id === item.id)
-              this.items[index] = item
-              this.clearErrors()
-            })
-            .catch(e => {
-              this.getErrorMessage(e, 'Failed to update ' + item.name)
-            })
-        } else {
-          console.log('Couldn\'t update item due to validation errors')
-        }
-      })
+      axios.put(this.endpointUrl + item.id, item)
+        .then(() => {
+          let index = this.items.findIndex(it => it.id === item.id)
+          this.items[index] = item
+          this.clearErrors()
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to update ' + item.name)
+        })
     },
 
     removeItem (id) {
