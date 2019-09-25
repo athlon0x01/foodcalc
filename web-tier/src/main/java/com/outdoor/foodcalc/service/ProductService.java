@@ -52,6 +52,7 @@ public class ProductService {
                                 final SimpleProduct pm = new SimpleProduct();
                                 pm.id = p.getProductId();
                                 pm.name = p.getName();
+                                pm.categoryId = c.getCategoryId();
                                 pm.calorific = p.getCalorific();
                                 pm.proteins = p.getProteins();
                                 pm.fats = p.getFats();

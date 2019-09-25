@@ -2,51 +2,55 @@
   <div>
     <h2 class="directory-header">Products list:</h2>
 
-    <!--Products table-->
-    <div v-if="categories.length > 0" class="container border">
+    <!--Products list-->
+    <div v-if="categoriesWithProducts.length > 0" class="container border">
+      <!--Header-->
       <div class="row headerRow bg-light">
         <div class="col-md-5 border"><strong>Name</strong></div>
-        <div class="col-md-2 border"><strong>Calorific</strong></div>
+        <div class="col-md-1 border"><strong>Calorific</strong></div>
         <div class="col-md-1 border"><strong>Proteins</strong></div>
         <div class="col-md-1 border"><strong>Fats</strong></div>
         <div class="col-md-1 border"><strong>Carbs</strong></div>
-        <div class="col-md-2 border"><strong>Default weight</strong></div>
+        <div class="col-md-1 border"><strong>Weight</strong></div>
       </div>
-      <template v-for="category in categories">
-        <div v-bind:key="category.id" class="row bg-light">
-          <div class="col-md-12 border"><i>{{category.name}}</i></div>
-        </div>
-        <template v-if="category.products.length > 0">
-          <div v-for="product in category.products" :key="product.id" class="row">
-            <div class="col-md-5 text-left border">{{product.name}}</div>
-            <div class="col-md-2 border">{{product.calorific}}</div>
-            <div class="col-md-1 border">{{product.proteins}}</div>
-            <div class="col-md-1 border">{{product.fats}}</div>
-            <div class="col-md-1 border">{{product.carbs}}</div>
-            <div class="col-md-2 border">{{product.defaultWeight}}</div>
-          </div>
-        </template>
-      </template>
+      <!--Content-->
+      <div v-for="category in categoriesWithProducts" :key="category.id">
+        <category-with-products v-bind:category="category"
+                                v-bind:categories="simpleCategories"
+                                v-on:update="updateProduct"
+                                v-on:remove="removeProduct"/>
+      </div>
     </div>
-    <div v-if="categories.length === 0 && errorMessage === null">
-      <p><i>No Products loaded</i></p>
+    <div v-if="categoriesWithProducts.length === 0 && errorMessage === null">
+      <p><i>No Products yet...</i></p>
     </div>
-
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
       <p>{{errorMessage}}</p>
+    </div>
+
+    <!--Add new item section-->
+    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Add new</b-button>
+    <div v-if="addMode !== undefined && addMode" class="container">
+      <new-product v-bind:categories="simpleCategories" v-on:addNew="addProduct" v-on:cancelAdd="addMode = false"/>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import CategoryWithProducts from 'src/components/directory/product/CategoryWithProducts'
+import NewProduct from 'src/components/directory/product/NewProduct'
 
 export default {
   name: 'Products',
+  components: {NewProduct, CategoryWithProducts},
   data () {
     return {
-      categories: [],
+      productsEndpointUrl: '/api/products/',
+      categoriesWithProducts: [],
+      simpleCategories: [],
+      addMode: false,
       errorMessage: null
     }
   },
@@ -60,17 +64,56 @@ export default {
         console.log(error)
         this.errorMessage = defaultMessage
       }
+    },
+
+    clearErrors () {
+      this.errorMessage = null
+      this.errors.clear()
+    },
+
+    getAllProducts () {
+      axios.get(this.productsEndpointUrl)
+        .then(response => {
+          this.categoriesWithProducts = response.data
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to load Products...')
+        })
+    },
+
+    addProduct (product) {
+      this.addMode = false
+      console.log('Adding product - ' + JSON.stringify(product))
+      // axios.post(this.productsEndpointUrl, product)
+      //   .then(response => {
+      //     this.addMode = false
+      //     this.clearErrors()
+      //     this.getAllProducts()
+      //   })
+      //   .catch(e => {
+      //     this.getErrorMessage(e, 'Failed to add product ' + JSON.stringify(product))
+      //   })
+    },
+
+    updateProduct (product) {
+      console.log('Editing product - ' + JSON.stringify(product))
+    },
+
+    removeProduct (productId) {
+      console.log('Removing product - ' + productId)
     }
   },
 
   mounted () {
     // load products on page init
-    axios.get('/api/products')
+    this.getAllProducts()
+    // load product categories for adding \ editing
+    axios.get('/api/product-categories')
       .then(response => {
-        this.categories = response.data
+        this.simpleCategories = response.data
       })
       .catch(e => {
-        this.getErrorMessage(e, 'Failed to load Products...')
+        this.getErrorMessage(e, 'Failed to load Product Categories...')
       })
   }
 }

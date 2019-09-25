@@ -8,6 +8,7 @@ package com.outdoor.foodcalc.model.product;
 public class SimpleProduct {
     public long id;
     public String name;
+    public long categoryId;
     public float calorific;
     public float proteins;
     public float fats;
