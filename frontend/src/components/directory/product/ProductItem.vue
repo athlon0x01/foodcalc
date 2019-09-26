@@ -105,7 +105,7 @@ export default {
       this.$validator.validateAll().then((result) => {
         if (result) {
           let product = {
-            productId: this.productId,
+            id: this.productId,
             name: this.name,
             categoryId: this.categoryId,
             calorific: this.calorific,

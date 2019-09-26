@@ -3,7 +3,7 @@
     <h2 class="directory-header">Products list</h2>
 
     <!--Products list-->
-    <div v-if="categoriesWithProducts.length > 0" class="container border">
+    <div v-if="hasProducts()" class="container border">
       <!--Header-->
       <div class="row headerRow bg-light">
         <div class="col-md-5 border"><strong>Name</strong></div>
@@ -21,7 +21,7 @@
                                 v-on:remove="removeProduct"/>
       </div>
     </div>
-    <div v-if="categoriesWithProducts.length === 0 && errorMessage === null">
+    <div v-if="!hasProducts() && errorMessage === null">
       <p><i>No Products yet...</i></p>
     </div>
     <!--Errors output-->
@@ -71,6 +71,14 @@ export default {
       this.errors.clear()
     },
 
+    hasProducts () {
+      let productsCount = 0
+      for (let i = 0; i < this.categoriesWithProducts.length; i++) {
+        productsCount += this.categoriesWithProducts[i].products.length
+      }
+      return productsCount > 0
+    },
+
     getAllProducts () {
       axios.get(this.productsEndpointUrl)
         .then(response => {
@@ -82,25 +90,37 @@ export default {
     },
 
     addProduct (product) {
-      this.addMode = false
-      console.log('Adding product - ' + JSON.stringify(product))
-      // axios.post(this.productsEndpointUrl, product)
-      //   .then(response => {
-      //     this.addMode = false
-      //     this.clearErrors()
-      //     this.getAllProducts()
-      //   })
-      //   .catch(e => {
-      //     this.getErrorMessage(e, 'Failed to add product ' + JSON.stringify(product))
-      //   })
+      axios.post(this.productsEndpointUrl, product)
+        .then(() => {
+          this.addMode = false
+          this.clearErrors()
+          this.getAllProducts()
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to add product ' + JSON.stringify(product))
+        })
     },
 
     updateProduct (product) {
-      console.log('Editing product - ' + JSON.stringify(product))
+      axios.put(this.productsEndpointUrl + product.id, product)
+        .then(() => {
+          this.clearErrors()
+          this.getAllProducts()
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to update product ' + product.name)
+        })
     },
 
     removeProduct (productId) {
-      console.log('Removing product - ' + productId)
+      axios.delete(this.productsEndpointUrl + productId)
+        .then(() => {
+          this.clearErrors()
+          this.getAllProducts()
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to delete product with id = ' + productId)
+        })
     }
   },
 

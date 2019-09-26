@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.service;
 
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -27,6 +29,8 @@ public class ProductService {
 
     private ProductCategoryDomainService productCategoryDomainService;
 
+    private final List<Product> products = new ArrayList<>();
+
     @Autowired
     public ProductService(ProductDomainService productDomainService, ProductCategoryDomainService productCategoryDomainService) {
         this.productDomainService = productDomainService;
@@ -36,7 +40,7 @@ public class ProductService {
     public List<CategoryWithProducts> getAllProducts() {
         //load products & categories
         final List<ProductCategory> categories = productCategoryDomainService.getCategories();
-        final List<Product> products = productDomainService.getAllProducts();
+//        final List<Product> products = productDomainService.getAllProducts();
         //group products by categories
         final Map<Long, List<Product>> productsMap = products.stream()
                 .collect(Collectors.groupingBy(p -> p.getCategory().getCategoryId()));
@@ -48,21 +52,81 @@ public class ProductService {
                     cm.name = c.getName();
                     final List<Product> productList = productsMap.get(c.getCategoryId());
                     cm.products = (productList == null) ? new ArrayList<>() : productList.stream()
-                            .map(p -> {
-                                final SimpleProduct pm = new SimpleProduct();
-                                pm.id = p.getProductId();
-                                pm.name = p.getName();
-                                pm.categoryId = c.getCategoryId();
-                                pm.calorific = p.getCalorific();
-                                pm.proteins = p.getProteins();
-                                pm.fats = p.getFats();
-                                pm.carbs = p.getCarbs();
-                                pm.defaultWeight = p.getDefaultWeight();
-                                return pm;
-                            })
+                            .map(this::mapSimpleProduct)
                             .collect(Collectors.toList());
                     return cm;
                 })
                 .collect(Collectors.toList());
+    }
+
+    public SimpleProduct getProduct(long id) {
+        final Optional<SimpleProduct> first = products.stream()
+                .filter(product -> product.getProductId() == id)
+                .map(this::mapSimpleProduct)
+                .findFirst();
+        return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
+    }
+
+    public SimpleProduct addProduct(SimpleProduct product) {
+        product.id = products.stream()
+                .map(Product::getProductId)
+                .max(Long::compareTo)
+                .orElse((long) products.size())
+                + 1;
+        final ProductCategory category = productCategoryDomainService.getCategory(product.categoryId)
+                .orElseThrow(() -> new NotFoundException("Failed to get Product Category, id = " + product.categoryId));
+        final Product domainProduct = new Product(product.id,
+                product.name,
+                category,
+                product.calorific,
+                product.proteins,
+                product.fats,
+                product.carbs,
+                product.defaultWeight);
+        products.add(domainProduct);
+        return product;
+    }
+
+    public boolean updateProduct(SimpleProduct product) {
+        final Optional<Product> first = products.stream()
+                .filter(p -> p.getProductId() == product.id)
+                .findFirst();
+        Product original = first.orElseThrow(() -> new NotFoundException(String.valueOf(product.id)));
+        if (original.getCategory().getCategoryId() != product.categoryId) {
+            final ProductCategory category = productCategoryDomainService.getCategory(product.categoryId)
+                    .orElseThrow(() -> new NotFoundException("Failed to get Product Category, id = " + product.categoryId));
+            original.setCategory(category);
+        }
+        original.setCalorific(product.calorific);
+        original.setProteins(product.proteins);
+        original.setFats(product.fats);
+        original.setCarbs(product.carbs);
+        original.setDefaultWeight(product.defaultWeight);
+        return true;
+    }
+
+    public boolean deleteProduct(long id) {
+        int index = 0;
+        while (index < products.size()) {
+            if (products.get(index).getProductId() == id) {
+                products.remove(index);
+                return true;
+            }
+            index++;
+        }
+        return false;
+    }
+
+    private SimpleProduct mapSimpleProduct(Product product) {
+        final SimpleProduct pm = new SimpleProduct();
+        pm.id = product.getProductId();
+        pm.name = product.getName();
+        pm.categoryId = product.getCategory().getCategoryId();
+        pm.calorific = product.getCalorific();
+        pm.proteins = product.getProteins();
+        pm.fats = product.getFats();
+        pm.carbs = product.getCarbs();
+        pm.defaultWeight = product.getDefaultWeight();
+        return pm;
     }
 }
