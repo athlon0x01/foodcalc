@@ -23,7 +23,7 @@ public class ProductCategoryEndpoint implements ProductCategoriesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductCategoryEndpoint.class);
 
-    private ProductCategoryService categoryService;
+    private final ProductCategoryService categoryService;
 
     @Autowired
     public ProductCategoryEndpoint(ProductCategoryService categoryService) {

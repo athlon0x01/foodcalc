@@ -78,16 +78,14 @@ public class MealTypeEndpoint {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMealType(@PathVariable("id") long id) {
         LOG.debug("Deleting meal type id = {}", id);
-        if (meals.size() <= id) {
-            throw new FoodcalcException("Meal type not found");
-        }
         int index = 0;
         while (index < meals.size()) {
             if (meals.get(index).id == id) {
                 meals.remove(index);
-                break;
+                return;
             }
             index++;
         }
+        throw new FoodcalcException("Meal type not found");
     }
 }

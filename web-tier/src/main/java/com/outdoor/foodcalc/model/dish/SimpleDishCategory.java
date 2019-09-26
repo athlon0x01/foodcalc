@@ -33,7 +33,7 @@ public class SimpleDishCategory {
 
     @Override
     public String toString() {
-        return "{" +
+        return '{' +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 '}';

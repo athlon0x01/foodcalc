@@ -2,6 +2,7 @@ package com.outdoor.foodcalc.model.product;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import java.util.Objects;
 
 /**
  * Simplified view model for {@link com.outdoor.foodcalc.domain.model.product.Product} class.
@@ -19,6 +20,26 @@ public class SimpleProduct {
     public float fats;
     public float carbs;
     public float defaultWeight;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        SimpleProduct that = (SimpleProduct) o;
+        return id == that.id &&
+                categoryId == that.categoryId &&
+                Float.compare(that.calorific, calorific) == 0 &&
+                Float.compare(that.proteins, proteins) == 0 &&
+                Float.compare(that.fats, fats) == 0 &&
+                Float.compare(that.carbs, carbs) == 0 &&
+                Float.compare(that.defaultWeight, defaultWeight) == 0 &&
+                name.equals(that.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, categoryId, calorific, proteins, fats, carbs, defaultWeight);
+    }
 
     @Override
     public String toString() {

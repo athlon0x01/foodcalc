@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
@@ -79,9 +80,10 @@ public class DishCategoryEndpoint {
         while (index < categories.size()) {
             if (categories.get(index).id == id) {
                 categories.remove(index);
-                break;
+                return;
             }
             index++;
         }
+        throw new FoodcalcException("Dish Category not found");
     }
 }
