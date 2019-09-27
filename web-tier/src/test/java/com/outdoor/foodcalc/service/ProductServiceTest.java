@@ -5,7 +5,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
-import com.outdoor.foodcalc.model.product.SimpleProduct;
+import com.outdoor.foodcalc.model.product.ProductView;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -88,7 +88,7 @@ public class ProductServiceTest {
         verify(productDomainService).getAllProducts();
     }
 
-    private void assertProducts(Product product, SimpleProduct model) {
+    private void assertProducts(Product product, ProductView model) {
         assertEquals(product.getProductId(), model.id);
         assertEquals(product.getName(), model.name);
         assertEquals(product.getCategory().getCategoryId(), model.categoryId);
@@ -96,6 +96,6 @@ public class ProductServiceTest {
         assertEquals(product.getProteins(), model.proteins, DELTA);
         assertEquals(product.getFats(), model.fats, DELTA);
         assertEquals(product.getCarbs(), model.carbs, DELTA);
-        assertEquals(product.getDefaultWeight(), model.defaultWeight, DELTA);
+        assertEquals(product.getDefaultWeight(), model.weight, DELTA);
     }
 }

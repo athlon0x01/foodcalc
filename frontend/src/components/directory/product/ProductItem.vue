@@ -27,7 +27,7 @@
         <input type="number" min="0" step="0.01" v-model="carbs" name="carbs" style="width: 100%"/>
       </div>
       <div class="col-md-1">
-        <input type="number" min="0" step="0.01" v-model="defaultWeight" name="defaultWeight" style="width: 100%"/>
+        <input type="number" min="0" step="0.01" v-model="weight" name="defaultWeight" style="width: 100%"/>
       </div>
       <div class="col-sm-1">
         <b-button variant="outline-success" size="sm" v-on:click="updateProduct">Update</b-button>
@@ -45,7 +45,7 @@
       <div class="col-md-1 border">{{proteins}}</div>
       <div class="col-md-1 border">{{fats}}</div>
       <div class="col-md-1 border">{{carbs}}</div>
-      <div class="col-md-1 border">{{defaultWeight}}</div>
+      <div class="col-md-1 border">{{weight}}</div>
       <div class="col-md-1">
         <b-button variant="outline-success" size="sm" v-on:click="startEdit">Edit</b-button>
       </div>
@@ -80,7 +80,7 @@ export default {
       proteins: this.product.proteins,
       fats: this.product.fats,
       carbs: this.product.carbs,
-      defaultWeight: this.product.defaultWeight
+      weight: this.product.weight
     }
   },
 
@@ -98,7 +98,7 @@ export default {
       this.proteins = this.product.proteins
       this.fats = this.product.fats
       this.carbs = this.product.carbs
-      this.defaultWeight = this.product.defaultWeight
+      this.weight = this.product.weight
     },
 
     updateProduct () {
@@ -112,7 +112,7 @@ export default {
             proteins: this.proteins,
             fats: this.fats,
             carbs: this.carbs,
-            defaultWeight: this.defaultWeight
+            weight: this.weight
           }
           this.$emit('update', product)
           this.editMode = false

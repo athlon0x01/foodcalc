@@ -9,7 +9,7 @@ import java.util.Objects;
  *
  * @author Anton Borovyk
  */
-public class SimpleProduct {
+public class ProductView {
     public long id;
     @NotEmpty
     public String name;
@@ -19,26 +19,26 @@ public class SimpleProduct {
     public float proteins;
     public float fats;
     public float carbs;
-    public float defaultWeight;
+    public float weight;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimpleProduct that = (SimpleProduct) o;
+        ProductView that = (ProductView) o;
         return id == that.id &&
                 categoryId == that.categoryId &&
                 Float.compare(that.calorific, calorific) == 0 &&
                 Float.compare(that.proteins, proteins) == 0 &&
                 Float.compare(that.fats, fats) == 0 &&
                 Float.compare(that.carbs, carbs) == 0 &&
-                Float.compare(that.defaultWeight, defaultWeight) == 0 &&
+                Float.compare(that.weight, weight) == 0 &&
                 name.equals(that.name);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, categoryId, calorific, proteins, fats, carbs, defaultWeight);
+        return Objects.hash(id, name, categoryId, calorific, proteins, fats, carbs, weight);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class SimpleProduct {
                 ", proteins=" + proteins +
                 ", fats=" + fats +
                 ", carbs=" + carbs +
-                ", defaultWeight=" + defaultWeight +
+                ", weight=" + weight +
                 '}';
     }
 }

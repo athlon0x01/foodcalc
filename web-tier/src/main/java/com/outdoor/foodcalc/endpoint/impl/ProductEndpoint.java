@@ -4,7 +4,7 @@ import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.endpoint.ProductsApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
-import com.outdoor.foodcalc.model.product.SimpleProduct;
+import com.outdoor.foodcalc.model.product.ProductView;
 import com.outdoor.foodcalc.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,21 +40,21 @@ public class ProductEndpoint implements ProductsApi {
     }
 
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
-    public SimpleProduct getProduct(@PathVariable("id") long id) {
+    public ProductView getProduct(@PathVariable("id") long id) {
         LOG.debug("Getting product id = {}", id);
         return productService.getProduct(id);
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public SimpleProduct addProduct(@RequestBody @Valid SimpleProduct product) {
+    public ProductView addProduct(@RequestBody @Valid ProductView product) {
         LOG.debug("Adding new product - {}", product);
         return productService.addProduct(product);
     }
 
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public SimpleProduct updateProduct(@PathVariable("id") long id,
-                                   @RequestBody @Valid SimpleProduct product) {
+    public ProductView updateProduct(@PathVariable("id") long id,
+                                     @RequestBody @Valid ProductView product) {
         if (id != product.id) {
             LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, product.id);
             throw new ValidationException("Path variable Id = " + id

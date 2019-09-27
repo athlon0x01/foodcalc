@@ -12,6 +12,7 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
 
     private final long productId;
     private String name;
+    //TODO add description
     private ProductCategory category;
     //calorific in kCal per 100 gram
     private float calorific;

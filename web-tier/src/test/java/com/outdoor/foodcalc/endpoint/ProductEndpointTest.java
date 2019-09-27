@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.endpoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.outdoor.foodcalc.endpoint.impl.ProductEndpoint;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
-import com.outdoor.foodcalc.model.product.SimpleProduct;
+import com.outdoor.foodcalc.model.product.ProductView;
 import com.outdoor.foodcalc.service.ProductService;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -54,7 +54,7 @@ public class ProductEndpointTest extends ApiUnitTest {
     @Ignore
     public void allProducts() throws Exception {
         CategoryWithProducts category = new CategoryWithProducts();
-        SimpleProduct product = new SimpleProduct();
+        ProductView product = new ProductView();
         product.id = 357891;
         product.name = "Sugar";
         product.categoryId = 12345;

@@ -28,7 +28,7 @@
       <input type="number" min="0" step="0.01" v-model="carbs" name="carbs" style="width: 100%"/>
     </div>
     <div class="col-md-1">
-      <input type="number" min="0" step="0.01" v-model="defaultWeight" name="defaultWeight" style="width: 100%"/>
+      <input type="number" min="0" step="0.01" v-model="weight" name="defaultWeight" style="width: 100%"/>
     </div>
     <div class="col-md-1">
       <b-button variant="outline-success" size="sm" v-on:click="addNewProduct">Add</b-button>
@@ -58,7 +58,7 @@ export default {
       proteins: 0,
       fats: 0,
       carbs: 0,
-      defaultWeight: 5
+      weight: 5
     }
   },
 
@@ -73,7 +73,7 @@ export default {
             proteins: this.proteins,
             fats: this.fats,
             carbs: this.carbs,
-            defaultWeight: this.defaultWeight
+            weight: this.weight
           }
           this.$emit('addNew', product)
         } else {

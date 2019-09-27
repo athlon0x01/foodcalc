@@ -6,7 +6,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
-import com.outdoor.foodcalc.model.product.SimpleProduct;
+import com.outdoor.foodcalc.model.product.ProductView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -59,15 +59,15 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
-    public SimpleProduct getProduct(long id) {
-        final Optional<SimpleProduct> first = products.stream()
+    public ProductView getProduct(long id) {
+        final Optional<ProductView> first = products.stream()
                 .filter(product -> product.getProductId() == id)
                 .map(this::mapSimpleProduct)
                 .findFirst();
         return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
     }
 
-    public SimpleProduct addProduct(SimpleProduct product) {
+    public ProductView addProduct(ProductView product) {
         product.id = products.stream()
                 .map(Product::getProductId)
                 .max(Long::compareTo)
@@ -82,12 +82,12 @@ public class ProductService {
                 product.proteins,
                 product.fats,
                 product.carbs,
-                product.defaultWeight);
+                product.weight);
         products.add(domainProduct);
         return product;
     }
 
-    public boolean updateProduct(SimpleProduct product) {
+    public boolean updateProduct(ProductView product) {
         final Optional<Product> first = products.stream()
                 .filter(p -> p.getProductId() == product.id)
                 .findFirst();
@@ -101,7 +101,7 @@ public class ProductService {
         original.setProteins(product.proteins);
         original.setFats(product.fats);
         original.setCarbs(product.carbs);
-        original.setDefaultWeight(product.defaultWeight);
+        original.setDefaultWeight(product.weight);
         return true;
     }
 
@@ -117,8 +117,8 @@ public class ProductService {
         return false;
     }
 
-    private SimpleProduct mapSimpleProduct(Product product) {
-        final SimpleProduct pm = new SimpleProduct();
+    private ProductView mapSimpleProduct(Product product) {
+        final ProductView pm = new ProductView();
         pm.id = product.getProductId();
         pm.name = product.getName();
         pm.categoryId = product.getCategory().getCategoryId();
@@ -126,7 +126,7 @@ public class ProductService {
         pm.proteins = product.getProteins();
         pm.fats = product.getFats();
         pm.carbs = product.getCarbs();
-        pm.defaultWeight = product.getDefaultWeight();
+        pm.weight = product.getDefaultWeight();
         return pm;
     }
 }
