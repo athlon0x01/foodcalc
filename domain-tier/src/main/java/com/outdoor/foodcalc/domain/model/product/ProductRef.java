@@ -14,6 +14,7 @@ import static java.util.stream.Collectors.summingInt;
  */
 public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Comparable<ProductRef> {
     private final Product product;
+    //TODO change construct param and getter result to float
     //product item weight in 0.1 grams
     private int weight;
 

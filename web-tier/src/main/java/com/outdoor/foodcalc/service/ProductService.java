@@ -37,6 +37,14 @@ public class ProductService {
         this.productCategoryDomainService = productCategoryDomainService;
     }
 
+    //TODO remove it, temporary method for DishService
+    Product getDomainProduct(long id) {
+        final Optional<Product> first = products.stream()
+                .filter(product -> product.getProductId() == id)
+                .findFirst();
+        return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
+    }
+
     public List<CategoryWithProducts> getAllProducts() {
         //load products & categories
         final List<ProductCategory> categories = productCategoryDomainService.getCategories();
@@ -97,6 +105,7 @@ public class ProductService {
                     .orElseThrow(() -> new NotFoundException("Failed to get Product Category, id = " + product.categoryId));
             original.setCategory(category);
         }
+        original.setName(product.name);
         original.setCalorific(product.calorific);
         original.setProteins(product.proteins);
         original.setFats(product.fats);

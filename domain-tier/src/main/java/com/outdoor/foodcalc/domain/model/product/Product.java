@@ -22,6 +22,7 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     private float fats;
     //carbonates in gram per 100 gram
     private float carbs;
+    //TODO review weight to be similar to ProductRef
     //default product item weight in gram
     private float defaultWeight;
 
