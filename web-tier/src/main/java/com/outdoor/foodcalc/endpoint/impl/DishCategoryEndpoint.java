@@ -2,17 +2,19 @@ package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
+import com.outdoor.foodcalc.endpoint.DishCategoriesApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.*;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * REST Endpoint for Dish Category related operations
@@ -20,20 +22,17 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * @author Anton Borovyk.
  */
 @RestController
-@RequestMapping("${spring.data.rest.basePath}/dish-categories")
-public class DishCategoryEndpoint {
+public class DishCategoryEndpoint implements DishCategoriesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(DishCategoryEndpoint.class);
 
     private final List<SimpleDishCategory> categories = new ArrayList<>();
 
-    @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<SimpleDishCategory> getDishCategories() {
         LOG.debug("Getting all dish categories");
         return categories;
     }
 
-    @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
     public SimpleDishCategory getDishCategory(@PathVariable("id") long id) {
         LOG.debug("Getting dish category id = {}", id);
         final Optional<SimpleDishCategory> first = categories.stream()
@@ -42,8 +41,6 @@ public class DishCategoryEndpoint {
         return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
     }
 
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
     public SimpleDishCategory addDishCategory(@RequestBody @Valid SimpleDishCategory category) {
         LOG.debug("Adding new dish category - {}", category);
         category.id = categories.stream()
@@ -55,7 +52,6 @@ public class DishCategoryEndpoint {
         return category;
     }
 
-    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public SimpleDishCategory updateDishCategory(@PathVariable("id") long id,
                                    @RequestBody @Valid SimpleDishCategory category) {
         if (id != category.id) {
@@ -72,8 +68,6 @@ public class DishCategoryEndpoint {
         return original;
     }
 
-    @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMealType(@PathVariable("id") long id) {
         LOG.debug("Deleting dish category id = {}", id);
         int index = 0;
