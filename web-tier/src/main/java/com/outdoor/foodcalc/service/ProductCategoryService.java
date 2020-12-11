@@ -24,7 +24,7 @@ public class ProductCategoryService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductCategoryService.class);
 
-    private ProductCategoryDomainService categoryDomainService;
+    private final ProductCategoryDomainService categoryDomainService;
 
     @Autowired
     public ProductCategoryService(ProductCategoryDomainService categoryDomainService) {

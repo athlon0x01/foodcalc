@@ -1,20 +1,18 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
-import com.outdoor.foodcalc.domain.exception.FoodcalcException;
-import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.endpoint.DishCategoriesApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
+import com.outdoor.foodcalc.service.DishCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * REST Endpoint for Dish Category related operations
@@ -26,30 +24,26 @@ public class DishCategoryEndpoint implements DishCategoriesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(DishCategoryEndpoint.class);
 
-    private final List<SimpleDishCategory> categories = new ArrayList<>();
+    private final DishCategoryService categoryService;
+
+    @Autowired
+    public DishCategoryEndpoint(DishCategoryService categoryService) {
+        this.categoryService = categoryService;
+    }
 
     public List<SimpleDishCategory> getDishCategories() {
         LOG.debug("Getting all dish categories");
-        return categories;
+        return categoryService.getDishCategories();
     }
 
     public SimpleDishCategory getDishCategory(@PathVariable("id") long id) {
         LOG.debug("Getting dish category id = {}", id);
-        final Optional<SimpleDishCategory> first = categories.stream()
-                .filter(c -> c.id == id)
-                .findFirst();
-        return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
+        return categoryService.getDishCategory(id);
     }
 
     public SimpleDishCategory addDishCategory(@RequestBody @Valid SimpleDishCategory category) {
         LOG.debug("Adding new dish category - {}", category);
-        category.id = categories.stream()
-                .map(c -> c.id)
-                .max(Long::compareTo)
-                .orElse((long) categories.size())
-                + 1;
-        categories.add(category);
-        return category;
+        return categoryService.addDishCategory(category);
     }
 
     public SimpleDishCategory updateDishCategory(@PathVariable("id") long id,
@@ -60,24 +54,11 @@ public class DishCategoryEndpoint implements DishCategoriesApi {
                     + " doesn't match with request body Id = " + category.id);
         }
         LOG.debug("Updating dish category {}", category);
-        final Optional<SimpleDishCategory> first = categories.stream()
-                .filter(c -> c.id == id)
-                .findFirst();
-        SimpleDishCategory original = first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
-        original.name = category.name;
-        return original;
+        return categoryService.updateDishCategory(id, category);
     }
 
     public void deleteMealType(@PathVariable("id") long id) {
         LOG.debug("Deleting dish category id = {}", id);
-        int index = 0;
-        while (index < categories.size()) {
-            if (categories.get(index).id == id) {
-                categories.remove(index);
-                return;
-            }
-            index++;
-        }
-        throw new FoodcalcException("Dish Category not found");
+        categoryService.deleteMealType(id);
     }
 }
