@@ -21,7 +21,7 @@ public class SimpleDishCategory {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SimpleProductCategory that = (SimpleProductCategory) o;
+        SimpleDishCategory that = (SimpleDishCategory) o;
         return id == that.id &&
                 Objects.equals(name, that.name);
     }
