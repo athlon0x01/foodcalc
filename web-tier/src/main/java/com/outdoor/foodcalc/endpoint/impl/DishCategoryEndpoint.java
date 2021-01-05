@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.endpoint.DishCategoriesApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
@@ -54,11 +55,16 @@ public class DishCategoryEndpoint implements DishCategoriesApi {
                     + " doesn't match with request body Id = " + category.id);
         }
         LOG.debug("Updating dish category {}", category);
-        return categoryService.updateDishCategory(id, category);
+        if (!categoryService.updateDishCategory(category)) {
+            throw new FoodcalcException("Dish category failed to update");
+        }
+        return category;
     }
 
-    public void deleteMealType(@PathVariable("id") long id) {
+    public void deleteDishCategory(@PathVariable("id") long id) {
         LOG.debug("Deleting dish category id = {}", id);
-        categoryService.deleteMealType(id);
+        if(!categoryService.deleteDishCategory(id)) {
+            throw new FoodcalcException("Dish category failed to delete");
+        }
     }
 }

@@ -66,5 +66,5 @@ public interface DishCategoriesApi {
     })
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteMealType(@PathVariable("id") long id);
+    void deleteDishCategory(@PathVariable("id") long id);
 }

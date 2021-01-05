@@ -23,7 +23,7 @@ public class DishCategoryService {
         final Optional<SimpleDishCategory> first = categories.stream()
                 .filter(c -> c.id == id)
                 .findFirst();
-        return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
+        return first.orElseThrow(() -> new NotFoundException("Dish Category wasn't found"));
     }
 
     public SimpleDishCategory addDishCategory(SimpleDishCategory category) {
@@ -36,25 +36,36 @@ public class DishCategoryService {
         return category;
     }
 
-    public SimpleDishCategory updateDishCategory(long id, SimpleDishCategory category) {
+    public boolean updateDishCategory(SimpleDishCategory category) {
         final Optional<SimpleDishCategory> first = categories.stream()
-                .filter(c -> c.id == id)
+                .filter(c -> c.id == category.id)
                 .findFirst();
-        SimpleDishCategory original = first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
+        if (!first.isPresent()) {
+            return false;
+        }
+        SimpleDishCategory original = first.get();
         original.name = category.name;
-        return original;
+        return true;
     }
 
-    public void deleteMealType(long id) {
-        int index = 0;
-        while (index < categories.size()) {
-            if (categories.get(index).id == id) {
-                categories.remove(index);
-                return;
-            }
-            index++;
-        }
-        throw new FoodcalcException("Dish Category not found");
+//    public void deleteMealType(long id) {
+//        int index = 0;
+//        while (index < categories.size()) {
+//            if (categories.get(index).id == id) {
+//                categories.remove(index);
+//                return;
+//            }
+//            index++;
+//        }
+//        throw new FoodcalcException("Dish Category wasn't found");
+//    }
+
+    public boolean deleteDishCategory(long id) {
+        final Optional<SimpleDishCategory> first = categories.stream().
+                filter(c -> c.id == id).
+                findFirst();
+        return first.map(categories::remove)
+                .orElse(false);
     }
 
 }
