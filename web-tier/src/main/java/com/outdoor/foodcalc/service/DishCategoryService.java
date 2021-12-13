@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.service;
 
-import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
 import org.springframework.stereotype.Service;
@@ -47,18 +46,6 @@ public class DishCategoryService {
         original.name = category.name;
         return true;
     }
-
-//    public void deleteMealType(long id) {
-//        int index = 0;
-//        while (index < categories.size()) {
-//            if (categories.get(index).id == id) {
-//                categories.remove(index);
-//                return;
-//            }
-//            index++;
-//        }
-//        throw new FoodcalcException("Dish Category wasn't found");
-//    }
 
     public boolean deleteDishCategory(long id) {
         final Optional<SimpleDishCategory> first = categories.stream().

@@ -24,7 +24,7 @@ public interface DishCategoriesApi {
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     List<SimpleDishCategory> getDishCategories();
 
-    @ApiOperation(value = "Get dish category id = {}",
+    @ApiOperation(value = "Get dish category by id = {}",
             response = SimpleDishCategory.class
     )
     @ApiResponses(value = {
