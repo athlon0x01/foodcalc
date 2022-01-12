@@ -2,10 +2,13 @@ package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
+import com.outdoor.foodcalc.endpoint.MealTypesApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.meal.MealType;
+import com.outdoor.foodcalc.service.MealTypesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,42 +25,34 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
  * @author Anton Borovyk.
  */
 @RestController
-@RequestMapping("${spring.data.rest.basePath}/meal-types")
-public class MealTypeEndpoint {
+public class MealTypesEndpoint implements MealTypesApi {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MealTypeEndpoint.class);
+    private static final Logger LOG = LoggerFactory.getLogger(MealTypesEndpoint.class);
 
     private final List<MealType> meals = new ArrayList<>();
 
-    @GetMapping(produces = APPLICATION_JSON_VALUE)
+    private final MealTypesService mealTypesService;
+
+    @Autowired
+    public MealTypesEndpoint(MealTypesService mealTypesService) {
+        this.mealTypesService = mealTypesService;
+    }
+
     public List<MealType> getMealTypes() {
         LOG.debug("Getting all meal types");
-        return meals;
+        return mealTypesService.getMealTypes();
     }
 
-    @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
     public MealType getMealType(@PathVariable("id") long id) {
         LOG.debug("Getting meal type id = {}", id);
-        final Optional<MealType> first = meals.stream()
-                .filter(c -> c.id == id)
-                .findFirst();
-        return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
+        return mealTypesService.getMealType(id);
     }
 
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
     public MealType addMealType(@RequestBody @Valid MealType mealType) {
         LOG.debug("Adding new meal type - {}", mealType);
-        mealType.id = meals.stream()
-                .map(c -> c.id)
-                .max(Long::compareTo)
-                .orElse((long) meals.size())
-                + 1;
-        meals.add(mealType);
-        return mealType;
+        return mealTypesService.addMealType(mealType);
     }
 
-    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public MealType updateMealType(@PathVariable("id") long id,
                                    @RequestBody @Valid MealType mealType) {
         if (id != mealType.id) {
@@ -66,26 +61,16 @@ public class MealTypeEndpoint {
                     + " doesn't match with request body Id = " + mealType.id);
         }
         LOG.debug("Updating meal type {}", mealType);
-        final Optional<MealType> first = meals.stream()
-                .filter(c -> c.id == id)
-                .findFirst();
-        MealType original = first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
-        original.name = mealType.name;
-        return original;
+        if (!mealTypesService.updateMealType(mealType)) {
+            throw new FoodcalcException("Meal type failed to update");
+        }
+        return mealType;
     }
 
-    @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMealType(@PathVariable("id") long id) {
         LOG.debug("Deleting meal type id = {}", id);
-        int index = 0;
-        while (index < meals.size()) {
-            if (meals.get(index).id == id) {
-                meals.remove(index);
-                return;
-            }
-            index++;
+        if (!mealTypesService.deleteMealType(id)) {
+            throw new FoodcalcException("Meal type failed to delete");
         }
-        throw new FoodcalcException("Meal type not found");
     }
 }
