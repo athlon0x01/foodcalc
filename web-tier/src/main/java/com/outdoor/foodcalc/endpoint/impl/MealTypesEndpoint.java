@@ -1,7 +1,6 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcException;
-import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.endpoint.MealTypesApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.meal.MealType;
@@ -9,15 +8,11 @@ import com.outdoor.foodcalc.service.MealTypesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * REST Endpoint for Meal Type related operations

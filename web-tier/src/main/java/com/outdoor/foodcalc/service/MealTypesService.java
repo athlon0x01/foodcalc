@@ -1,12 +1,7 @@
 package com.outdoor.foodcalc.service;
 
-import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.model.meal.MealType;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.ArrayList;
 import java.util.List;
