@@ -140,7 +140,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
         String message = "Path variable Id = 55 doesn't match with request body Id = " + CATEGORY_ID;
 
         put400("/dish-categories/55", dummyCategory).
-                andExpect(jsonPath("&", is(message)));
+                andExpect(jsonPath("$", is(message)));
 
         verify(service, never()).updateDishCategory(dummyCategory);
     }
