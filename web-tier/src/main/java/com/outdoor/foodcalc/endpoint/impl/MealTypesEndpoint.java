@@ -24,8 +24,6 @@ public class MealTypesEndpoint implements MealTypesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(MealTypesEndpoint.class);
 
-    private final List<MealType> meals = new ArrayList<>();
-
     private final MealTypesService mealTypesService;
 
     @Autowired
