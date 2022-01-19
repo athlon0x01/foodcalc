@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.domain.service.product;
+package com.outdoor.foodcalc.domain.service.dish;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
