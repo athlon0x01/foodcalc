@@ -3,17 +3,32 @@ package com.outdoor.foodcalc.domain.repository.product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.ArgumentMatcher;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.KeyHolder;
 
-import java.util.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.argThat;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * JUnit tests for {@link ProductCategoryRepo} class
@@ -159,5 +174,22 @@ public class ProductCategoryRepoTest {
 
         verify(jdbcTemplate).queryForObject(
                 eq(ProductCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
+    public void mapRowTest() throws SQLException {
+        long categoryId = 11123;
+        String categoryName = "dummyCategory";
+        ProductCategory dummyCategory = new ProductCategory(categoryId, categoryName);
+
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString("name")).thenReturn(categoryName);
+        when(resultSet.getLong("id")).thenReturn(categoryId);
+
+        ProductCategory category = repo.mapRow(resultSet, 2);
+        assertEquals(dummyCategory, category);
+
+        verify(resultSet).getString("name");
+        verify(resultSet).getLong("id");
     }
 }

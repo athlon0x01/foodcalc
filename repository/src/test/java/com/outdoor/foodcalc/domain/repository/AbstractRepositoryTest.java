@@ -13,10 +13,16 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.sql.DataSource;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Unit tests fro {@link AbstractRepository} class.
@@ -32,6 +38,9 @@ public class AbstractRepositoryTest {
     //class for testing
     private final static class CategoryRepo extends AbstractRepository<ProductCategory> {
     }
+
+    @Mock
+    private DataSource dataSource;
 
     @Mock
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -75,5 +84,14 @@ public class AbstractRepositoryTest {
 
         Optional<ProductCategory> actual = repo.getSingleObject(SQL, PARAMETERS, rowMapper);
         assertFalse(actual.isPresent());
+    }
+
+    @Test
+    public void setDataSourceTest() {
+        CategoryRepo testRepo = new CategoryRepo();
+        testRepo.setDataSource(dataSource);
+        Object template = ReflectionTestUtils.getField(testRepo, "jdbcTemplate");
+        assertNotNull(template);
+        assertTrue(template instanceof NamedParameterJdbcTemplate);
     }
 }

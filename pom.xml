@@ -69,6 +69,66 @@
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.7</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/outdoor/foodcalc/FoodcalcApplication.class</exclude>
+                        <exclude>com/outdoor/foodcalc/model/ValidationException.class</exclude>
+                        <exclude>com/outdoor/foodcalc/domain/repository/RepositoryConfig.class</exclude>
+                        <exclude>com/outdoor/foodcalc/domain/exception/*</exclude>
+<!--                        TODO verify web classes-->
+                        <exclude>com/outdoor/foodcalc/endpoint/impl/ProductEndpoint.class</exclude>
+                        <exclude>com/outdoor/foodcalc/endpoint/impl/DishEndpoint.class</exclude>
+                        <exclude>com/outdoor/foodcalc/model/**/*</exclude>
+                        <exclude>com/outdoor/foodcalc/service/*</exclude>
+<!--                        TODO verify model tests-->
+                        <exclude>com/outdoor/foodcalc/domain/model/plan/*</exclude>
+                        <exclude>com/outdoor/foodcalc/domain/model/meal/*</exclude>
+                        <exclude>com/outdoor/foodcalc/domain/model/dish/*</exclude>
+                        <exclude>com/outdoor/foodcalc/domain/model/product/*</exclude>
+                        <exclude>src/test/**/*</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>jacoco-initialize</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <phase>test-compile</phase>
+                    </execution>
+                    <execution>
+                        <id>jacoco-site</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>jacoco-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <rule>
+                                    <element>CLASS</element>
+                                    <limits>
+                                        <limit>
+                                            <counter>LINE</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.85</minimum>
+                                        </limit>
+                                    </limits>
+                                </rule>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 

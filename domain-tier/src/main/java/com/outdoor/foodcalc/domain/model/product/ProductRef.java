@@ -92,7 +92,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
 
     @Override
     public boolean sameValueAs(ProductRef other) {
-        return product.getProductId() == other.getProductId() && weight == other.getWeight();
+        return product.getProductId() == other.getProductId() && weight == other.weight;
     }
 
     /**

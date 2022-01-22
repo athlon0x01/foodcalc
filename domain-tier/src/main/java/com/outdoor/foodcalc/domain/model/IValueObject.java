@@ -20,6 +20,7 @@ public interface IValueObject<T> {
      * @return if collections contain the same value objects
      */
     static<T extends IValueObject<T>> boolean sameCollectionAs(Collection<T> first, Collection<T> second) {
+        if (first == second) return true;
         if (first.size() != second.size()) return false;
         Iterator<T> secondIt = second.iterator();
         for (T firstObj : first) {

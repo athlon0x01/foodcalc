@@ -134,6 +134,7 @@ public class MealTypesEndpointTest extends ApiUnitTest{
         verify(service).updateMealType(dummyMealType);
     }
 
+    @Test
     public void updateMealTypeValidationTest() throws Exception {
         String message = "Path variable Id = 55 doesn't match with request body Id = " + MEAL_TYPE_ID;
 
