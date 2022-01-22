@@ -70,28 +70,32 @@
                 </configuration>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M2</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <rules>
+                        <banDuplicatePomDependencyVersions/>
+                        <requireJavaVersion>
+                            <version>${java.version}</version>
+                        </requireJavaVersion>
+                        <dependencyConvergence/>
+                    </rules>
+                    <fail>false</fail>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.7</version>
-                <configuration>
-                    <excludes>
-                        <exclude>com/outdoor/foodcalc/FoodcalcApplication.class</exclude>
-                        <exclude>com/outdoor/foodcalc/model/ValidationException.class</exclude>
-                        <exclude>com/outdoor/foodcalc/domain/repository/RepositoryConfig.class</exclude>
-                        <exclude>com/outdoor/foodcalc/domain/exception/*</exclude>
-<!--                        TODO verify web classes-->
-                        <exclude>com/outdoor/foodcalc/endpoint/impl/ProductEndpoint.class</exclude>
-                        <exclude>com/outdoor/foodcalc/endpoint/impl/DishEndpoint.class</exclude>
-                        <exclude>com/outdoor/foodcalc/model/**/*</exclude>
-                        <exclude>com/outdoor/foodcalc/service/*</exclude>
-<!--                        TODO verify model tests-->
-                        <exclude>com/outdoor/foodcalc/domain/model/plan/*</exclude>
-                        <exclude>com/outdoor/foodcalc/domain/model/meal/*</exclude>
-                        <exclude>com/outdoor/foodcalc/domain/model/dish/*</exclude>
-                        <exclude>com/outdoor/foodcalc/domain/model/product/*</exclude>
-                        <exclude>src/test/**/*</exclude>
-                    </excludes>
-                </configuration>
                 <executions>
                     <execution>
                         <id>jacoco-initialize</id>
@@ -113,14 +117,35 @@
                             <goal>check</goal>
                         </goals>
                         <configuration>
+                            <haltOnFailure>false</haltOnFailure>
+                            <excludes>
+                                <exclude>com/outdoor/foodcalc/FoodcalcApplication.class</exclude>
+                                <exclude>com/outdoor/foodcalc/model/ValidationException.class</exclude>
+                                <exclude>com/outdoor/foodcalc/domain/repository/RepositoryConfig.class</exclude>
+                                <exclude>com/outdoor/foodcalc/domain/exception/*</exclude>
+<!--                                <exclude>com/outdoor/foodcalc/endpoint/impl/ProductEndpoint.class</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/endpoint/impl/DishEndpoint.class</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/model/**/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/service/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/domain/model/plan/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/domain/model/meal/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/domain/model/dish/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/domain/model/product/*</exclude>-->
+                                <exclude>src/test/**/*</exclude>
+                            </excludes>
                             <rules>
                                 <rule>
-                                    <element>CLASS</element>
+                                    <element>BUNDLE</element>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>
                                             <value>COVEREDRATIO</value>
                                             <minimum>0.85</minimum>
+                                        </limit>
+                                        <limit>
+                                            <counter>INSTRUCTION</counter>
+                                            <value>COVEREDRATIO</value>
+                                            <minimum>0.8</minimum>
                                         </limit>
                                     </limits>
                                 </rule>
