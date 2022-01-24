@@ -10,3 +10,11 @@ insert into products (name, category, calorific, proteins, carbs, defweight) val
 insert into products (name, category, calorific, proteins, fats, defweight) values('Tomato', (select id from product_categories where name = 'Vegetables'), 45.5, 5.5, 2.6, 21 );
 insert into products (name, category, calorific, proteins, fats, carbs) values('Cucamber', (select id from product_categories where name = 'Vegetables'), 21.4, 4.3, 1.1, 8.7);
 insert into products (name, category, calorific) values('Carrot', (select id from product_categories where name = 'Vegetables'), 67.8 );
+
+insert into dish_categories (name) values('Soups');
+insert into dish_categories (name) values('Garnish');
+insert into dish_categories (name) values('Appetizers');
+insert into dish_categories (name) values('Snacks');
+insert into dish_categories (name) values('Meat');
+insert into dish_categories (name) values('Desserts');
+
