@@ -44,7 +44,7 @@ public class DishCategoryEndpoint implements DishCategoriesApi {
 
     public SimpleDishCategory addDishCategory(@RequestBody @Valid SimpleDishCategory category) {
         LOG.debug("Adding new dish category - {}", category);
-        return categoryService.addDishCategory(category);
+        return categoryService.addDishCategory(category.name);
     }
 
     public SimpleDishCategory updateDishCategory(@PathVariable("id") long id,
