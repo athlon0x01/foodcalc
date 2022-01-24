@@ -18,8 +18,7 @@ import java.util.Optional;
  *
  * @author Olga Borovyk.
  */
-//FIXME
-//@Service
+@Service
 public class DishCategoryDomainService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductCategoryDomainService.class);
