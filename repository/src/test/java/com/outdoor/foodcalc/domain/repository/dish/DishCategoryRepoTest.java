@@ -47,8 +47,7 @@ public class DishCategoryRepoTest {
 
         when(jdbcTemplate.query(DishCategoryRepo.SELECT_ALL_CATEGORIES_SQL, repo)).thenReturn(expected);
 
-        List<DishCategory> actual = repo.getCategories();
-        assertEquals(expected, actual);
+        assertEquals(expected, repo.getCategories());
 
         verify(jdbcTemplate).query(DishCategoryRepo.SELECT_ALL_CATEGORIES_SQL, repo);
     }
