@@ -102,7 +102,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
         SimpleDishCategory category = new SimpleDishCategory();
         category.name = CATEGORY_NAME;
 
-        when(service.addDishCategory(category)).thenReturn(dummyCategory);  //?????
+        when(service.addDishCategory(category.name)).thenReturn(dummyCategory);
 
         MvcResult mvcResult = post("/dish-categories", category)
                 .andReturn();
@@ -110,7 +110,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
         SimpleDishCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleDishCategory.class);
         assertEquals(dummyCategory, actual);
 
-        verify(service).addDishCategory(category);
+        verify(service).addDishCategory(category.name);
     }
 
     @Test
@@ -119,7 +119,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
             post400("/dish-categories/", category);
 
-            verify(service, never()).addDishCategory(category);
+            verify(service, never()).addDishCategory(category.name);
     }
 
     @Test

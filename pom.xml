@@ -96,6 +96,23 @@
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.7</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/outdoor/foodcalc/FoodcalcApplication.class</exclude>
+                        <exclude>com/outdoor/foodcalc/model/ValidationException.class</exclude>
+                        <exclude>com/outdoor/foodcalc/domain/repository/RepositoryConfig.class</exclude>
+                        <exclude>com/outdoor/foodcalc/domain/exception/*</exclude>
+<!--                                <exclude>com/outdoor/foodcalc/endpoint/impl/ProductEndpoint.class</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/endpoint/impl/DishEndpoint.class</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/model/**/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/service/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/domain/model/plan/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/domain/model/meal/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/domain/model/dish/*</exclude>-->
+<!--                                <exclude>com/outdoor/foodcalc/domain/model/product/*</exclude>-->
+                        <exclude>src/test/**/*</exclude>
+                    </excludes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>jacoco-initialize</id>
@@ -118,21 +135,6 @@
                         </goals>
                         <configuration>
                             <haltOnFailure>false</haltOnFailure>
-                            <excludes>
-                                <exclude>com/outdoor/foodcalc/FoodcalcApplication.class</exclude>
-                                <exclude>com/outdoor/foodcalc/model/ValidationException.class</exclude>
-                                <exclude>com/outdoor/foodcalc/domain/repository/RepositoryConfig.class</exclude>
-                                <exclude>com/outdoor/foodcalc/domain/exception/*</exclude>
-<!--                                <exclude>com/outdoor/foodcalc/endpoint/impl/ProductEndpoint.class</exclude>-->
-<!--                                <exclude>com/outdoor/foodcalc/endpoint/impl/DishEndpoint.class</exclude>-->
-<!--                                <exclude>com/outdoor/foodcalc/model/**/*</exclude>-->
-<!--                                <exclude>com/outdoor/foodcalc/service/*</exclude>-->
-<!--                                <exclude>com/outdoor/foodcalc/domain/model/plan/*</exclude>-->
-<!--                                <exclude>com/outdoor/foodcalc/domain/model/meal/*</exclude>-->
-<!--                                <exclude>com/outdoor/foodcalc/domain/model/dish/*</exclude>-->
-<!--                                <exclude>com/outdoor/foodcalc/domain/model/product/*</exclude>-->
-                                <exclude>src/test/**/*</exclude>
-                            </excludes>
                             <rules>
                                 <rule>
                                     <element>BUNDLE</element>
