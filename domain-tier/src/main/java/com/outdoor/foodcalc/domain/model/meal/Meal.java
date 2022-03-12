@@ -21,6 +21,7 @@ import static java.util.stream.Collectors.toList;
 public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal> {
 
     private final long mealId;
+    private String description;
     private MealType type;
     private List<DishRef> dishes;
     private List<ProductRef> products;
@@ -34,6 +35,14 @@ public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal> {
 
     public long getMealId() {
         return mealId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public MealType getType() {
