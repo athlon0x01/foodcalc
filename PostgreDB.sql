@@ -20,21 +20,21 @@ CREATE TABLE product(
 );
 
 --dish related tables
-CREATE TABLE dish_categories (
+CREATE TABLE dish_category (
 	id bigserial PRIMARY KEY,
 	name varchar(64) UNIQUE NOT NULL
 );
 
-CREATE TABLE dishes (
+CREATE TABLE dish (
 	id bigserial PRIMARY KEY,
 	name varchar(64) NOT NULL,
 	description varchar(1024),
-	category integer REFERENCES dish_categories
+	category bigint REFERENCES dish_category
 );
 
-CREATE TABLE dish_products (
+CREATE TABLE dish_product (
 	id bigserial PRIMARY KEY,
-	dish bigint REFERENCES dishes,
+	dish bigint REFERENCES dish,
 	product bigint REFERENCES product,
 --product weight in 0.1 grams
 	weight integer NOT NULL
@@ -66,7 +66,7 @@ CREATE TABLE grocery_layouts_items (
 	id bigserial PRIMARY KEY,
 	layout_day bigint REFERENCES layout_days,
 	meal bigint REFERENCES meals,
-	dish bigint REFERENCES dishes,
+	dish bigint REFERENCES dish,
 	product bigint REFERENCES product,
 --product weight in 0.1 grams
 	weight integer NOT NULL

@@ -11,10 +11,10 @@ insert into product (name, description, category, calorific, proteins, fats, def
 insert into product (name, category, calorific, proteins, fats, carbs) values('Cucamber', (select id from product_category where name = 'Vegetables'), 21.4, 4.3, 1.1, 8.7);
 insert into product (name, category, calorific) values('Carrot', (select id from product_category where name = 'Vegetables'), 67.8 );
 
-insert into dish_categories (name) values('Soups');
-insert into dish_categories (name) values('Garnish');
-insert into dish_categories (name) values('Appetizers');
-insert into dish_categories (name) values('Snacks');
-insert into dish_categories (name) values('Meat');
-insert into dish_categories (name) values('Desserts');
+insert into dish_category (name) values('Soups');
+insert into dish_category (name) values('Garnish');
+insert into dish_category (name) values('Appetizers');
+insert into dish_category (name) values('Snacks');
+insert into dish_category (name) values('Meat');
+insert into dish_category (name) values('Desserts');
 
