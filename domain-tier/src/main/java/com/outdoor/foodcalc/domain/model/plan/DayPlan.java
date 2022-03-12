@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.domain.model.plan;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.IValueObject;
+import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.meal.MealRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
@@ -15,7 +16,7 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Day Plan entity, that contains some meals and may be some additional products.
+ * Day Plan entity, that contains some meals and may be some additional dishes and products.
  * Day doesn't include dishes. Dishes should be included into meals.
  * F.e. Breakfast & Lunch (meals) & some nuts & sweets (products).
  *
@@ -27,12 +28,14 @@ public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan>
     private LocalDate date;
     private String description;
     private List<MealRef> meals;
+    private List<DishRef> dishes;
     private List<ProductRef> products;
 
-    public DayPlan(long dayId, LocalDate date, List<MealRef> meals, Collection<ProductRef> products) {
+    public DayPlan(long dayId, LocalDate date, List<MealRef> meals, List<DishRef> dishes, List<ProductRef> products) {
         this.dayId = dayId;
         this.date = date;
         this.meals = new ArrayList<>(meals);
+        this.dishes = new ArrayList<>(dishes);
         this.products = new ArrayList<>(products);
     }
 
@@ -64,6 +67,14 @@ public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan>
         this.meals = new ArrayList<>(meals);
     }
 
+    public List<DishRef> getDishes() {
+        return Collections.unmodifiableList(dishes);
+    }
+
+    public void setDishes(List<DishRef> dishes) {
+        this.dishes = new ArrayList<>(dishes);
+    }
+
     public List<ProductRef> getProducts() {
         return Collections.unmodifiableList(products);
     }
@@ -87,6 +98,7 @@ public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan>
         if (dayId != dayPlan.dayId) return false;
         if (date != null ? !date.equals(dayPlan.date) : dayPlan.date != null) return false;
         if (!IValueObject.sameCollectionAs(meals, dayPlan.meals)) return false;
+        if (!IValueObject.sameCollectionAs(dishes, dayPlan.dishes)) return false;
         return IValueObject.sameCollectionAs(products, dayPlan.products);
 
     }
@@ -106,7 +118,12 @@ public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan>
     @Override
     protected Collection<Collection<ProductRef>> getProductsCollections() {
         //collect all meals products & products to one list
-        final List<Collection<ProductRef>> allProductsList = meals.stream().map(MealRef::getAllProducts).collect(toList());
+        final List<Collection<ProductRef>> allProductsList = meals.stream()
+                .map(MealRef::getAllProducts)
+                .collect(toList());
+        allProductsList.addAll(dishes.stream()
+                .map(DishRef::getAllProducts)
+                .collect(toList()));
         allProductsList.add(products);
         return allProductsList;
     }

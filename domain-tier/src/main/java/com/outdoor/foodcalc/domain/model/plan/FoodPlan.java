@@ -18,16 +18,16 @@ import static java.util.stream.Collectors.toList;
  */
 public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPlan> {
 
-    private final long layoutId;
+    private final long id;
     private String name;
     private String description;
     private int members;
     private int duration;
     private List<DayPlanRef> days;
 
-    public FoodPlan(long layoutId, String name, String description,
+    public FoodPlan(long id, String name, String description,
                     int members, int duration, Collection<DayPlanRef> days) {
-        this.layoutId = layoutId;
+        this.id = id;
         this.name = name;
         this.description = description;
         this.members = members;
@@ -35,8 +35,8 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
         this.days = new ArrayList<>(days);
     }
 
-    public long getLayoutId() {
-        return layoutId;
+    public long getId() {
+        return id;
     }
 
     public String getName() {
@@ -81,7 +81,7 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
 
     @Override
     public boolean sameIdentityAs(FoodPlan other) {
-        return layoutId == other.layoutId;
+        return id == other.id;
     }
 
     /**
@@ -116,7 +116,7 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
 
         FoodPlan that = (FoodPlan) o;
 
-        if (layoutId != that.layoutId) return false;
+        if (id != that.id) return false;
         if (members != that.members) return false;
         if (duration != that.duration) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
@@ -126,7 +126,7 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
 
     @Override
     public int hashCode() {
-        int result = (int) (layoutId ^ (layoutId >>> 32));
+        int result = (int) (id ^ (id >>> 32));
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + members;
         result = 31 * result + duration;
