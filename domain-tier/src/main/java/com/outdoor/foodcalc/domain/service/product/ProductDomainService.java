@@ -15,7 +15,7 @@ import java.util.List;
 @Service
 public class ProductDomainService {
 
-    private IProductRepo productRepo;
+    private final IProductRepo productRepo;
 
     @Autowired
     public ProductDomainService(IProductRepo productRepo) {

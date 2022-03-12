@@ -43,19 +43,21 @@ public class ProductRepoTest {
     public void mapRowTest() throws SQLException {
         long productId = 12345;
         final String productName = "dummyProduct";
+        final String productDescription = "dummyDescr";
         long categoryId = 11123;
         String categoryName = "dummyCategory";
         float calorific = 1.1f;
         float proteins = 3.3f;
         float fats = 4.5f;
         float carbs = 7.3f;
-        float defaultWeight = 11.1f;
-        Product dummyProduct = new Product(productId, productName,
+        int defaultWeight = 111;
+        Product dummyProduct = new Product(productId, productName, productDescription,
             new ProductCategory(categoryId, categoryName),
             calorific, proteins, fats, carbs, defaultWeight);
 
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString("productName")).thenReturn(productName);
+        when(resultSet.getString("productDescription")).thenReturn(productDescription);
         when(resultSet.getString("catName")).thenReturn(categoryName);
         when(resultSet.getLong("productId")).thenReturn(productId);
         when(resultSet.getLong("catId")).thenReturn(categoryId);
@@ -63,12 +65,13 @@ public class ProductRepoTest {
         when(resultSet.getFloat("proteins")).thenReturn(proteins);
         when(resultSet.getFloat("fats")).thenReturn(fats);
         when(resultSet.getFloat("carbs")).thenReturn(carbs);
-        when(resultSet.getFloat("defWeight")).thenReturn(defaultWeight);
+        when(resultSet.getInt("defWeight")).thenReturn(defaultWeight);
 
         Product product = repo.mapRow(resultSet, 2);
         assertEquals(dummyProduct, product);
 
         verify(resultSet).getString("productName");
+        verify(resultSet).getString("productDescription");
         verify(resultSet).getString("catName");
         verify(resultSet).getLong("productId");
         verify(resultSet).getLong("catId");
@@ -76,7 +79,7 @@ public class ProductRepoTest {
         verify(resultSet).getFloat("proteins");
         verify(resultSet).getFloat("fats");
         verify(resultSet).getFloat("carbs");
-        verify(resultSet).getFloat("defWeight");
+        verify(resultSet).getInt("defWeight");
     }
 
     @Test

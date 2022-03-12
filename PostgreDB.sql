@@ -1,21 +1,22 @@
 ﻿--PostgeSQL implementation of Food Calculator
 
 --product related tables
-CREATE TABLE product_categories (
+CREATE TABLE product_category (
 	id bigserial PRIMARY KEY,
 	name varchar(64) UNIQUE NOT NULL
 );
 
-CREATE TABLE products (
+CREATE TABLE product(
 	id bigserial PRIMARY KEY,
 	name varchar(64) NOT NULL,
-	category int REFERENCES product_categories,
+    description varchar(265),
+	category bigint REFERENCES product_category,
 	calorific real DEFAULT 0.0,
 	proteins real DEFAULT 0.0,
 	fats real DEFAULT 0.0,
 	carbs real DEFAULT 0.0,
 --product default weight in grams
-	defweight real DEFAULT 0.0
+	defweight integer DEFAULT 0
 );
 
 --dish related tables
@@ -34,7 +35,7 @@ CREATE TABLE dishes (
 CREATE TABLE dish_products (
 	id bigserial PRIMARY KEY,
 	dish bigint REFERENCES dishes,
-	product bigint REFERENCES products,
+	product bigint REFERENCES product,
 --product weight in 0.1 grams
 	weight integer NOT NULL
 );
@@ -66,7 +67,7 @@ CREATE TABLE grocery_layouts_items (
 	layout_day bigint REFERENCES layout_days,
 	meal bigint REFERENCES meals,
 	dish bigint REFERENCES dishes,
-	product bigint REFERENCES products,
+	product bigint REFERENCES product,
 --product weight in 0.1 grams
 	weight integer NOT NULL
 );

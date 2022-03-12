@@ -16,11 +16,11 @@ public class IValueObjectTest {
 
     @Test
     public void sameCollectionAs() {
-        Product corn = new Product(111, "Corn", new ProductCategory(22, "Cereals"),
-                119.f, 3.9f, 1.3f, 22.7f, 70.f);
+        Product corn = new Product(111, "Corn", "", new ProductCategory(22, "Cereals"),
+                119.f, 3.9f, 1.3f, 22.7f, 700);
         ProductRef cornRef = new ProductRef(corn, 800);
-        Product apple = new Product(123, "Apple", new ProductCategory(11, "Fruit"),
-                129.f, 2.9f, 5.3f, 21.7f, 70.f);
+        Product apple = new Product(123, "Apple", "", new ProductCategory(11, "Fruit"),
+                129.f, 2.9f, 5.3f, 21.7f, 700);
         ProductRef appleRef = new ProductRef(apple, 500);
         List<ProductRef> appleList = Collections.singletonList(appleRef);
         List<ProductRef> cornList = Collections.singletonList(cornRef);

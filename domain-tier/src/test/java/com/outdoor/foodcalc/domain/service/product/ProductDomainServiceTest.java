@@ -35,7 +35,7 @@ public class ProductDomainServiceTest {
 
     @Test
     public void getAllProductsTest() {
-        Product dummyProduct = new Product(12345, "dummyProduct",
+        Product dummyProduct = new Product(12345, "dummyProduct", "",
             new ProductCategory(11123, "dummyCategory"),
             1.1f, 3, 4.5f, 7, 11);
         List<Product> expected = Collections.singletonList(dummyProduct);

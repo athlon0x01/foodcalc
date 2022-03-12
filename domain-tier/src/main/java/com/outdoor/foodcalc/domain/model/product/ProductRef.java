@@ -5,8 +5,6 @@ import com.outdoor.foodcalc.domain.model.IValueObject;
 
 import java.util.Collection;
 
-import static java.util.stream.Collectors.summingInt;
-
 /**
  * Product items - components of the dish (building bricks for dish).
  *
@@ -14,7 +12,6 @@ import static java.util.stream.Collectors.summingInt;
  */
 public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Comparable<ProductRef> {
     private final Product product;
-    //TODO change construct param and getter result to float
     //product item weight in 0.1 grams
     private int weight;
 
@@ -104,7 +101,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
         //get Product entity
         Product product = products.iterator().next().product;
         //summarize product weight
-        int weight = products.stream().collect(summingInt(ProductRef::getInternalWeight));
+        int weight = products.stream().mapToInt(ProductRef::getInternalWeight).sum();
         //return new Value Object
         return new ProductRef(product, weight);
     }

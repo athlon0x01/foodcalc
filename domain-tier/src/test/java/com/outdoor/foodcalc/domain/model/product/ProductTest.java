@@ -21,7 +21,7 @@ public class ProductTest {
 
     @Before
     public void setup() {
-        product = new Product(111, "Corn", new ProductCategory(22, "Cereals"), 119.f, 3.9f, 1.3f, 22.7f, 70.f);
+        product = new Product(111, "Corn", "The Corn", new ProductCategory(22, "Cereals"), 119.f, 3.9f, 1.3f, 22.7f, 700);
         productRef = new ProductRef(product, 800);
     }
 

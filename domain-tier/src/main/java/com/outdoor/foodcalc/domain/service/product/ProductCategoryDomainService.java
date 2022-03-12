@@ -22,8 +22,8 @@ public class ProductCategoryDomainService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductCategoryDomainService.class);
 
-    private IProductCategoryRepo categoryRepo;
-    private IProductRepo productRepo;
+    private final IProductCategoryRepo categoryRepo;
+    private final IProductRepo productRepo;
 
     @Autowired
     public ProductCategoryDomainService(IProductCategoryRepo categoryRepo, IProductRepo productRepo) {

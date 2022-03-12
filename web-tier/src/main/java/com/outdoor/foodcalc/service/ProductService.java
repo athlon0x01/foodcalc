@@ -27,7 +27,7 @@ public class ProductService {
 
     private ProductDomainService productDomainService;
 
-    private ProductCategoryDomainService productCategoryDomainService;
+    private final ProductCategoryDomainService productCategoryDomainService;
 
     private final List<Product> products = new ArrayList<>();
 
@@ -85,12 +85,13 @@ public class ProductService {
                 .orElseThrow(() -> new NotFoundException("Failed to get Product Category, id = " + product.categoryId));
         final Product domainProduct = new Product(product.id,
                 product.name,
+                "",
                 category,
                 product.calorific,
                 product.proteins,
                 product.fats,
                 product.carbs,
-                product.weight);
+                Math.round(product.weight *10));
         products.add(domainProduct);
         return product;
     }

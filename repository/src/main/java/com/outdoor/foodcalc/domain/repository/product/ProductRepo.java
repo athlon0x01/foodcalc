@@ -21,12 +21,13 @@ import java.util.List;
 public class ProductRepo extends AbstractRepository<Product>
     implements IProductRepo, RowMapper<Product> {
 
-    static final String SELECT_ALL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, c.id as catId, c.name as catName, p.calorific as calorific, " +
+    static final String SELECT_ALL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+        "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
         "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight " +
-        "from products p join product_categories c on p.category = c.id";
+        "from product p join product_category c on p.category = c.id";
 
     static final String SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL = "select count(*) " +
-        "from products p join product_categories c on p.category = c.id and c.id = :categoryId";
+        "from product p join product_category c on p.category = c.id and c.id = :categoryId";
 
     @Override
     public List<Product> getAllProducts() {
@@ -45,11 +46,12 @@ public class ProductRepo extends AbstractRepository<Product>
         final ProductCategory category = new ProductCategory(resultSet.getLong("catId"), resultSet.getString("catName"));
         return new Product(resultSet.getLong("productId"),
             resultSet.getString("productName"),
+            resultSet.getString("productDescription"),
             category,
             resultSet.getFloat("calorific"),
             resultSet.getFloat("proteins"),
             resultSet.getFloat("fats"),
             resultSet.getFloat("carbs"),
-            resultSet.getFloat("defWeight"));
+            resultSet.getInt("defWeight"));
     }
 }

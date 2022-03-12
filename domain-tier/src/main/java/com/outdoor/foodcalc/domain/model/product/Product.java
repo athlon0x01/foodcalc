@@ -12,7 +12,7 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
 
     private final long productId;
     private String name;
-    //TODO add description
+    private String description;
     private ProductCategory category;
     //calorific in kCal per 100 gram
     private float calorific;
@@ -22,9 +22,8 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     private float fats;
     //carbonates in gram per 100 gram
     private float carbs;
-    //TODO review weight to be similar to ProductRef
-    //default product item weight in gram
-    private float defaultWeight;
+    //default product item weight in 0.1 grams
+    private int defaultWeight;
 
     public Product(String name, ProductCategory category) {
         this.productId = -1;
@@ -38,9 +37,10 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
         this.category = category;
     }
 
-    public Product(long productId, String name, ProductCategory category, float calorific, float proteins, float fats, float carbs, float defaultWeight) {
+    public Product(long productId, String name, String description, ProductCategory category, float calorific, float proteins, float fats, float carbs, int defaultWeight) {
         this.productId = productId;
         this.name = name;
+        this.description = description;
         this.category = category;
         this.calorific = calorific;
         this.proteins = proteins;
@@ -59,6 +59,14 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public ProductCategory getCategory() {
@@ -117,12 +125,16 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
         this.carbs = carbs;
     }
 
-    public float getDefaultWeight() {
+    public int getDefaultWeightInt() {
         return defaultWeight;
     }
 
+    public float getDefaultWeight() {
+        return defaultWeight / 10.f;
+    }
+
     public void setDefaultWeight(float defaultWeight) {
-        this.defaultWeight = defaultWeight;
+        this.defaultWeight = Math.round(defaultWeight * 10);
     }
 
     /**

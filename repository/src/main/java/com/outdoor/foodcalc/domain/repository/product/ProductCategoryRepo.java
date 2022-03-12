@@ -24,12 +24,12 @@ import java.util.Optional;
 public class ProductCategoryRepo extends AbstractRepository<ProductCategory>
     implements IProductCategoryRepo, RowMapper<ProductCategory> {
 
-    static final String SELECT_ALL_CATEGORIES_SQL = "SELECT * FROM product_categories";
-    static final String SELECT_CATEGORY_SQL = "SELECT * FROM product_categories WHERE id = :categoryId";
-    static final String SELECT_CATEGORY_EXISTS_SQL = "SELECT count(*) FROM product_categories WHERE id = :categoryId";
-    static final String INSERT_CATEGORY_SQL = "INSERT INTO product_categories (name) VALUES (:name)";
-    static final String UPDATE_CATEGORY_SQL = "UPDATE product_categories SET name = :name WHERE id = :categoryId";
-    static final String DELETE_CATEGORY_SQL = "DELETE FROM product_categories WHERE id = :categoryId";
+    static final String SELECT_ALL_CATEGORIES_SQL = "SELECT * FROM product_category";
+    static final String SELECT_CATEGORY_SQL = "SELECT * FROM product_category WHERE id = :categoryId";
+    static final String SELECT_CATEGORY_EXISTS_SQL = "SELECT count(*) FROM product_category WHERE id = :categoryId";
+    static final String INSERT_CATEGORY_SQL = "INSERT INTO product_category (name) VALUES (:name)";
+    static final String UPDATE_CATEGORY_SQL = "UPDATE product_category SET name = :name WHERE id = :categoryId";
+    static final String DELETE_CATEGORY_SQL = "DELETE FROM product_category WHERE id = :categoryId";
 
     @Override
     public List<ProductCategory> getCategories() {

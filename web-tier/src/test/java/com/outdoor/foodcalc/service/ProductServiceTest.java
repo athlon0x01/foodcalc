@@ -56,8 +56,8 @@ public class ProductServiceTest {
         List<ProductCategory> domainCategories = Arrays.asList(category1, category2, category3);
 
         Product product1 = new Product(12367, "first prod", category1);
-        Product product2 = new Product(12367, "second prod", category1, 1.1f, 3, 4.5f, 7, 11);
-        Product product3 = new Product(12367, "third prod", category2, 13, 11.5f, 7, 32.2f, 5.5f);
+        Product product2 = new Product(12367, "second prod", "", category1, 1.1f, 3, 4.5f, 7, 110);
+        Product product3 = new Product(12367, "third prod", "", category2, 13, 11.5f, 7, 32.2f, 55);
         List<Product> domainProducts = Arrays.asList(product1, product2, product3);
 
         when(categoryDomainService.getCategories()).thenReturn(domainCategories);
