@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.endpoint.impl;
 import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.endpoint.MealTypesApi;
 import com.outdoor.foodcalc.model.ValidationException;
-import com.outdoor.foodcalc.model.meal.MealType;
+import com.outdoor.foodcalc.model.meal.MealTypeView;
 import com.outdoor.foodcalc.service.MealTypesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -31,36 +30,36 @@ public class MealTypesEndpoint implements MealTypesApi {
         this.mealTypesService = mealTypesService;
     }
 
-    public List<MealType> getMealTypes() {
+    public List<MealTypeView> getMealTypes() {
         LOG.debug("Getting all meal types");
         return mealTypesService.getMealTypes();
     }
 
-    public MealType getMealType(@PathVariable("id") long id) {
+    public MealTypeView getMealType(@PathVariable("id") int id) {
         LOG.debug("Getting meal type id = {}", id);
         return mealTypesService.getMealType(id);
     }
 
-    public MealType addMealType(@RequestBody @Valid MealType mealType) {
-        LOG.debug("Adding new meal type - {}", mealType);
-        return mealTypesService.addMealType(mealType);
+    public MealTypeView addMealType(@RequestBody @Valid MealTypeView mealTypeView) {
+        LOG.debug("Adding new meal type - {}", mealTypeView);
+        return mealTypesService.addMealType(mealTypeView.name);
     }
 
-    public MealType updateMealType(@PathVariable("id") long id,
-                                   @RequestBody @Valid MealType mealType) {
-        if (id != mealType.id) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, mealType.id);
+    public MealTypeView updateMealType(@PathVariable("id") int id,
+                                       @RequestBody @Valid MealTypeView mealTypeView) {
+        if (id != mealTypeView.id) {
+            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, mealTypeView.id);
             throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + mealType.id);
+                    + " doesn't match with request body Id = " + mealTypeView.id);
         }
-        LOG.debug("Updating meal type {}", mealType);
-        if (!mealTypesService.updateMealType(mealType)) {
+        LOG.debug("Updating meal type {}", mealTypeView);
+        if (!mealTypesService.updateMealType(mealTypeView)) {
             throw new FoodcalcException("Meal type failed to update");
         }
-        return mealType;
+        return mealTypeView;
     }
 
-    public void deleteMealType(@PathVariable("id") long id) {
+    public void deleteMealType(@PathVariable("id") int id) {
         LOG.debug("Deleting meal type id = {}", id);
         if (!mealTypesService.deleteMealType(id)) {
             throw new FoodcalcException("Meal type failed to delete");
