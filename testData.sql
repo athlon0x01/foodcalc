@@ -18,3 +18,7 @@ insert into dish_category (name) values('Snacks');
 insert into dish_category (name) values('Meat');
 insert into dish_category (name) values('Desserts');
 
+insert into meal_type (name) values('breakfast');
+insert into meal_type (name) values('lunch');
+insert into meal_type (name) values('dinner');
+insert into meal_type (name) values('snack');
