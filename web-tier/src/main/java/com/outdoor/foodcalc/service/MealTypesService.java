@@ -24,11 +24,11 @@ public class MealTypesService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MealTypesService.class);
 
-    private final MealTypeDomainService mealTypeDomainService;
+    private final MealTypeDomainService domainService;
 
     @Autowired
     public MealTypesService(MealTypeDomainService mealTypeDomainService) {
-        this.mealTypeDomainService = mealTypeDomainService;
+        this.domainService = mealTypeDomainService;
     }
 
     /**
@@ -37,7 +37,7 @@ public class MealTypesService {
      * @return list of meal type views
      */
     public List<MealTypeView> getMealTypes() {
-        return mealTypeDomainService.getMealTypes().stream()
+        return domainService.getMealTypes().stream()
                 .map(this::mapMealType)
                 .collect(Collectors.toList());
     }
@@ -56,7 +56,7 @@ public class MealTypesService {
      * @return loaded meal type view
      */
     public MealTypeView getMealType(int id) {
-        Optional<MealType> mealType = mealTypeDomainService.getMealType(id);
+        Optional<MealType> mealType = domainService.getMealType(id);
         if (!mealType.isPresent()) {
             LOG.error("Meal type with id={} wasn't found", id);
             throw new NotFoundException("Meal type wasn't found");
@@ -72,7 +72,7 @@ public class MealTypesService {
      */
     public MealTypeView addMealType(String mealTypeName) {
         return mapMealType(
-                mealTypeDomainService.addMealType(
+                domainService.addMealType(
                         new MealType(-1, mealTypeName)));
     }
 
@@ -82,7 +82,7 @@ public class MealTypesService {
      * @param model updated meal type view
      */
     public boolean updateMealType(MealTypeView model) {
-        return mealTypeDomainService.updateMealType(new MealType(model.id, model.name));
+        return domainService.updateMealType(new MealType(model.id, model.name));
     }
 
     /**
@@ -91,6 +91,6 @@ public class MealTypesService {
      * @param id meal type Id to delete
      */
     public boolean deleteMealType(int id) {
-        return mealTypeDomainService.deleteMealType(id);
+        return domainService.deleteMealType(id);
     }
 }
