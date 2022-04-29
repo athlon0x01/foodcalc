@@ -1,7 +1,5 @@
 package com.outdoor.foodcalc.model.meal;
 
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
-
 import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
 
@@ -10,9 +8,9 @@ import java.util.Objects;
  *
  * @author Anton Borovyk.
  */
-public class MealType {
+public class MealTypeView {
 
-    public long id;
+    public int id;
 
     @NotEmpty
     public String name;
@@ -21,7 +19,7 @@ public class MealType {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        MealType that = (MealType) o;
+        MealTypeView that = (MealTypeView) o;
         return id == that.id &&
                 Objects.equals(name, that.name);
     }

@@ -2,7 +2,7 @@ package com.outdoor.foodcalc.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
-import com.outdoor.foodcalc.model.meal.MealType;
+import com.outdoor.foodcalc.model.meal.MealTypeView;
 import com.outdoor.foodcalc.service.MealTypesService;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,10 +30,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class MealTypesEndpointTest extends ApiUnitTest{
 
-    private static final long MEAL_TYPE_ID = 12345;
+    private static final int MEAL_TYPE_ID = 12345;
     private static final String MEAL_TYPE_NAME = "Test meal type";
 
-    private MealType dummyMealType;
+    private MealTypeView dummyMealTypeView;
 
     @MockBean
     private MealTypesService service;
@@ -50,14 +50,14 @@ public class MealTypesEndpointTest extends ApiUnitTest{
     @Before
     public void setUp() {
         setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
-        dummyMealType = new MealType();
-        dummyMealType.id = MEAL_TYPE_ID;
-        dummyMealType.name = MEAL_TYPE_NAME;
+        dummyMealTypeView = new MealTypeView();
+        dummyMealTypeView.id = MEAL_TYPE_ID;
+        dummyMealTypeView.name = MEAL_TYPE_NAME;
     }
 
     @Test
     public void getMealTypesTest() throws Exception {
-        List<MealType> expected = Collections.singletonList(dummyMealType);
+        List<MealTypeView> expected = Collections.singletonList(dummyMealTypeView);
 
         when(service.getMealTypes()).thenReturn(expected);
 
@@ -65,7 +65,7 @@ public class MealTypesEndpointTest extends ApiUnitTest{
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andReturn();
 
-        MealType[] actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealType[].class);
+        MealTypeView[] actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealTypeView[].class);
         assertEquals(expected, Arrays.asList(actual));
 
         verify(service).getMealTypes();
@@ -73,13 +73,13 @@ public class MealTypesEndpointTest extends ApiUnitTest{
 
     @Test
     public void getMealTypeTest() throws Exception {
-        MealType expected = dummyMealType;
+        MealTypeView expected = dummyMealTypeView;
 
-        when(service.getMealType(dummyMealType.id)).thenReturn(expected);
+        when(service.getMealType(dummyMealTypeView.id)).thenReturn(expected);
 
         MvcResult mvcResult = get("/meal-types/" + MEAL_TYPE_ID).andReturn();
 
-        MealType actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealType.class);
+        MealTypeView actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealTypeView.class);
         assertEquals(expected, actual);
 
         verify(service).getMealType(MEAL_TYPE_ID);
@@ -98,63 +98,63 @@ public class MealTypesEndpointTest extends ApiUnitTest{
 
     @Test
     public void addMealTypeTest() throws Exception {
-        MealType mealType = new MealType();
-        mealType.name = MEAL_TYPE_NAME;
+        MealTypeView mealTypeView = new MealTypeView();
+        mealTypeView.name = MEAL_TYPE_NAME;
 
-        when(service.addMealType(mealType)).thenReturn(dummyMealType);
+        when(service.addMealType(mealTypeView.name)).thenReturn(dummyMealTypeView);
 
-        MvcResult mvcResult = post("/meal-types/", mealType)
+        MvcResult mvcResult = post("/meal-types/", mealTypeView)
                 .andReturn();
 
-        MealType actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealType.class);
-        assertEquals(dummyMealType, actual);
+        MealTypeView actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealTypeView.class);
+        assertEquals(dummyMealTypeView, actual);
 
-        verify(service).addMealType(mealType);
+        verify(service).addMealType(mealTypeView.name);
     }
 
     @Test
     public void addMealTypeValidationErrorTest() throws Exception {
-        MealType mealType = new MealType();
+        MealTypeView mealTypeView = new MealTypeView();
 
-        post400("/meal-types/", mealType);
+        post400("/meal-types/", mealTypeView);
 
-        verify(service, never()).addMealType(mealType);
+        verify(service, never()).addMealType(mealTypeView.name);
     }
 
     @Test
     public void updateMealTypeTest() throws Exception {
-        when(service.updateMealType(dummyMealType)).thenReturn(true);
+        when(service.updateMealType(dummyMealTypeView)).thenReturn(true);
 
-        MvcResult mvcResult = put("/meal-types/" + MEAL_TYPE_ID, dummyMealType)
+        MvcResult mvcResult = put("/meal-types/" + MEAL_TYPE_ID, dummyMealTypeView)
                 .andReturn();
 
-        MealType actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealType.class);
-        assertEquals(dummyMealType, actual);
+        MealTypeView actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealTypeView.class);
+        assertEquals(dummyMealTypeView, actual);
 
-        verify(service).updateMealType(dummyMealType);
+        verify(service).updateMealType(dummyMealTypeView);
     }
 
     @Test
     public void updateMealTypeValidationTest() throws Exception {
         String message = "Path variable Id = 55 doesn't match with request body Id = " + MEAL_TYPE_ID;
 
-        put400("/meal-types/55", dummyMealType)
+        put400("/meal-types/55", dummyMealTypeView)
                 .andExpect(jsonPath("$", is(message)));
 
-        verify(service, never()).updateMealType(dummyMealType);
+        verify(service, never()).updateMealType(dummyMealTypeView);
 
     }
 
     @Test
     public void updateMealTypeInternalErrorTest() throws Exception {
         String message = "Meal type failed to update";
-        when(service.updateMealType(dummyMealType)).thenReturn(false);
+        when(service.updateMealType(dummyMealTypeView)).thenReturn(false);
 
-        putJson("/meal-types/" + MEAL_TYPE_ID, dummyMealType)
+        putJson("/meal-types/" + MEAL_TYPE_ID, dummyMealTypeView)
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$", is(message)));
 
-        verify(service).updateMealType(dummyMealType);
+        verify(service).updateMealType(dummyMealTypeView);
     }
 
     @Test

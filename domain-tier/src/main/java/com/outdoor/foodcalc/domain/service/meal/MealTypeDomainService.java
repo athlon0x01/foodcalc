@@ -16,8 +16,8 @@ import java.util.Optional;
  *
  * @author Olga Borovyk.
  */
-//FIXME
-//@Service
+
+@Service
 public class MealTypeDomainService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MealTypeDomainService.class);

@@ -25,7 +25,7 @@ public class DishCategoryRepo extends AbstractRepository<DishCategory>
     implements IDishCategoryRepo, RowMapper<DishCategory> {
 
     static final String SELECT_ALL_CATEGORIES_SQL = "SELECT * FROM dish_category";
-    static final String SELECT_CATEGORY_SQL = "SELECT * FROM dish_categories WHERE id = :categoryId";
+    static final String SELECT_CATEGORY_SQL = "SELECT * FROM dish_category WHERE id = :categoryId";
     static final String SELECT_CATEGORY_EXISTS_SQL = "SELECT count(*) FROM dish_category WHERE id = :categoryId";
     static final String INSERT_CATEGORY_SQL = "INSERT INTO dish_category (name) VALUES (:name)";
     static final String UPDATE_CATEGORY_SQL = "UPDATE dish_category SET name = :name WHERE id = :categoryId";

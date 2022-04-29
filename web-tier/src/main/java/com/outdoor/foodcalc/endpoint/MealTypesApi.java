@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.endpoint;
 
-import com.outdoor.foodcalc.model.meal.MealType;
+import com.outdoor.foodcalc.model.meal.MealTypeView;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -15,52 +15,52 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public interface MealTypesApi {
 
     @ApiOperation(value = "Get all meal types",
-                    response = MealType.class,
+                    response = MealTypeView.class,
                     responseContainer = "List")
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "All meal types returned",
-                            response = MealType.class, responseContainer = "List")
+                            response = MealTypeView.class, responseContainer = "List")
     })
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    List<MealType> getMealTypes();
+    List<MealTypeView> getMealTypes();
 
     @ApiOperation(value = "Get meal type by id = {}",
-                    response = MealType.class)
+                    response = MealTypeView.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Requested meal type returned", response = MealType.class),
+            @ApiResponse(code = 200, message = "Requested meal type returned", response = MealTypeView.class),
             @ApiResponse(code = 404, message = "Meal type not found")
     })
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
-    MealType getMealType(@PathVariable("id") long id);
+    MealTypeView getMealType(@PathVariable("id") int id);
 
     @ApiOperation(value = "Add new meal type - {}",
-                    response = MealType.class)
+                    response = MealTypeView.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "New meal type created", response = MealType.class),
+            @ApiResponse(code = 201, message = "New meal type created", response = MealTypeView.class),
             @ApiResponse(code = 400, message = "Bad request")
     })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    MealType addMealType(@RequestBody MealType mealType);
+    MealTypeView addMealType(@RequestBody MealTypeView mealTypeView);
 
     @ApiOperation(value = "Update meal type by ID",
-                    response = MealType.class)
+                    response = MealTypeView.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Meal type updated",response = MealType.class),
+            @ApiResponse(code = 200, message = "Meal type updated",response = MealTypeView.class),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 404, message = "Meal type not found")
     })
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    MealType updateMealType(@PathVariable("id") long id,
-                            @RequestBody MealType mealType);
+    MealTypeView updateMealType(@PathVariable("id") int id,
+                                @RequestBody MealTypeView mealTypeView);
 
     @ApiOperation(value = "Delete meal type by ID",
-                    response = MealType.class)
+                    response = MealTypeView.class)
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Meal type deleted"),
             @ApiResponse(code = 404, message = "Meal type not found")
     })
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteMealType(@PathVariable("id") long id);
+    void deleteMealType(@PathVariable("id") int id);
 }
