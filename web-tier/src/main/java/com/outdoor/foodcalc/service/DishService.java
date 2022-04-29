@@ -4,7 +4,6 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
-import com.outdoor.foodcalc.endpoint.impl.DishCategoryEndpoint;
 import com.outdoor.foodcalc.model.dish.*;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +18,13 @@ import java.util.stream.Collectors;
 @Service
 public class DishService {
 
-    private DishCategoryEndpoint dishCategories;
+    private DishCategoryService dishCategories;
     private ProductService productService;
 
     private final List<Dish> dishes = new ArrayList<>();
 
     @Autowired
-    public DishService(DishCategoryEndpoint dishCategories, ProductService productService) {
+    public DishService(DishCategoryService dishCategories, ProductService productService) {
         this.dishCategories = dishCategories;
         this.productService = productService;
     }
