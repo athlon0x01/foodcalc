@@ -29,7 +29,7 @@ public class DishCategoryServiceTest {
     private static final String CATEGORY_2_NAME = "Second category";
 
     @Mock
-    private DishCategoryDomainService categoryDomainService;
+    private DishCategoryDomainService domainService;
 
     @InjectMocks
     private DishCategoryService categoryService;
@@ -45,13 +45,7 @@ public class DishCategoryServiceTest {
                 new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME),
                 new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME)
         );
-        SimpleDishCategory category1 = new SimpleDishCategory();
-        category1.id = CATEGORY_1_ID;
-        category1.name = CATEGORY_1_NAME;
-        SimpleDishCategory category2 = new SimpleDishCategory();
-        category2.id = CATEGORY_2_ID;
-        category2.name = CATEGORY_2_NAME;
-        when(categoryDomainService.getCategories()).thenReturn(domainCategories);
+        when(domainService.getCategories()).thenReturn(domainCategories);
 
         List<SimpleDishCategory> actual = categoryService.getDishCategories();
 
@@ -62,14 +56,14 @@ public class DishCategoryServiceTest {
         assertEquals(CATEGORY_2_ID, actual.get(1).id);
         assertEquals(CATEGORY_2_NAME, actual.get(1).name);
 
-        verify(categoryDomainService).getCategories();
+        verify(domainService).getCategories();
     }
 
     @Test
     public void getDishCategoryTest() {
         Optional<DishCategory> domainCategory = Optional.of(new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME));
 
-        when(categoryDomainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
+        when(domainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
 
         SimpleDishCategory actual = categoryService.getDishCategory(CATEGORY_1_ID);
 
@@ -77,13 +71,13 @@ public class DishCategoryServiceTest {
         assertEquals(CATEGORY_1_ID, actual.id);
         assertEquals(CATEGORY_1_NAME, actual.name);
 
-        verify(categoryDomainService).getCategory(CATEGORY_1_ID);
+        verify(domainService).getCategory(CATEGORY_1_ID);
     }
 
     @Test(expected = NotFoundException.class)
     public void getNotExistingDishCategoryTest() {
         Optional<DishCategory> domainCategory = Optional.empty();
-        when(categoryDomainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
+        when(domainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
 
         categoryService.getDishCategory(CATEGORY_1_ID);
     }
@@ -92,7 +86,7 @@ public class DishCategoryServiceTest {
     public void addDishCategoryTest() {
         DishCategory domainCategory = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
         DishCategory categoryToAdd = new DishCategory(-1, CATEGORY_1_NAME);
-        when(categoryDomainService.addCategory(categoryToAdd)).thenReturn(domainCategory);
+        when(domainService.addCategory(categoryToAdd)).thenReturn(domainCategory);
 
         SimpleDishCategory actual = categoryService.addDishCategory(CATEGORY_1_NAME);
 
@@ -100,29 +94,28 @@ public class DishCategoryServiceTest {
         assertEquals(CATEGORY_1_ID, actual.id);
         assertEquals(CATEGORY_1_NAME, actual.name);
 
-        verify(categoryDomainService).addCategory(categoryToAdd);
+        verify(domainService).addCategory(categoryToAdd);
     }
 
     @Test
     public void updateDishCategoryTest() {
-        SimpleDishCategory categoryToAdd = new SimpleDishCategory();
-        categoryToAdd.id = CATEGORY_1_ID;
-        categoryToAdd.name = CATEGORY_1_NAME;
+        SimpleDishCategory categoryToUpdate = new SimpleDishCategory();
+        categoryToUpdate.id = CATEGORY_1_ID;
+        categoryToUpdate.name = CATEGORY_1_NAME;
         DishCategory domainCategory = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-        boolean expected = true;
-        when(categoryDomainService.updateCategory(domainCategory)).thenReturn(expected);
+        when(domainService.updateCategory(domainCategory)).thenReturn(true);
 
-        assertEquals(expected, categoryService.updateDishCategory(categoryToAdd));
+        assertTrue(categoryService.updateDishCategory(categoryToUpdate));
 
-        verify(categoryDomainService).updateCategory(domainCategory);
+        verify(domainService).updateCategory(domainCategory);
     }
 
     @Test
     public void deleteDishCategoryTest() {
-        when(categoryDomainService.deleteCategory(CATEGORY_1_ID)).thenReturn(true);
+        when(domainService.deleteCategory(CATEGORY_1_ID)).thenReturn(true);
 
         assertTrue(categoryService.deleteDishCategory(CATEGORY_1_ID));
 
-        verify(categoryDomainService).deleteCategory(CATEGORY_1_ID);
+        verify(domainService).deleteCategory(CATEGORY_1_ID);
     }
 }
