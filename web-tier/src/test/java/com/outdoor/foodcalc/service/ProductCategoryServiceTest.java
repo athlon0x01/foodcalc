@@ -41,7 +41,7 @@ public class ProductCategoryServiceTest {
     }
 
     @Test
-    public void getCategories() {
+    public void getCategoriesTest() {
         List<ProductCategory> domainCategories = Arrays.asList(
             new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME),
             new ProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME)
@@ -67,14 +67,10 @@ public class ProductCategoryServiceTest {
     }
 
     @Test
-    public void getCategory() {
+    public void getCategoryTest() {
         ProductCategory category = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-        Optional<ProductCategory> domainCategory = Optional.of(category);
-        SimpleProductCategory category1 = new SimpleProductCategory();
-        category1.id = CATEGORY_1_ID;
-        category1.name = CATEGORY_1_NAME;
-
-        when(categoryDomainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
+        when(categoryDomainService.getCategory(CATEGORY_1_ID))
+                .thenReturn(Optional.of(category));
 
         SimpleProductCategory actual = categoryService.getCategory(CATEGORY_1_ID);
         assertNotNull(actual);
@@ -85,7 +81,7 @@ public class ProductCategoryServiceTest {
     }
 
     @Test(expected = NotFoundException.class)
-    public void getNotExistingCategory() {
+    public void getNotExistingCategoryTest() {
         Optional<ProductCategory> domainCategory = Optional.empty();
         when(categoryDomainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
 
@@ -93,7 +89,7 @@ public class ProductCategoryServiceTest {
     }
 
     @Test
-    public void addCategory() {
+    public void addCategoryTest() {
         ProductCategory domainCategory = new ProductCategory(-1, CATEGORY_1_NAME);
         ProductCategory returnedCategory = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
         when(categoryDomainService.addCategory(domainCategory)).thenReturn(returnedCategory);
@@ -106,7 +102,7 @@ public class ProductCategoryServiceTest {
     }
 
     @Test
-    public void updateCategory() {
+    public void updateCategoryTest() {
         ProductCategory domainCategory = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
         SimpleProductCategory model = new SimpleProductCategory();
         model.id = CATEGORY_1_ID;
@@ -118,7 +114,7 @@ public class ProductCategoryServiceTest {
     }
 
     @Test
-    public void deleteCategory() {
+    public void deleteCategoryTest() {
         when(categoryDomainService.deleteCategory(CATEGORY_1_ID)).thenReturn(true);
         assertTrue(categoryService.deleteCategory(CATEGORY_1_ID));
         verify(categoryDomainService).deleteCategory(CATEGORY_1_ID);
