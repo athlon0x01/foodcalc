@@ -8,7 +8,7 @@ import java.util.Optional;
 /**
  * Product repository responsible for {@link Product} persistence.
  *
- * @author Anton Borovyk
+ * @author Anton Borovyk & Olga Borovyk
  */
 public interface IProductRepo {
 
