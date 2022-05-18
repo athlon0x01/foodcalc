@@ -4,7 +4,6 @@ import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.AbstractRepository;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -19,7 +18,7 @@ import java.util.Optional;
 /**
  * Product repository implementation responsible for {@link Product} persistence.
  *
- * @author Anton Borovyk
+ * @author Anton Borovyk & Olga Borovyk
  */
 @Repository
 public class ProductRepo extends AbstractRepository<Product>
