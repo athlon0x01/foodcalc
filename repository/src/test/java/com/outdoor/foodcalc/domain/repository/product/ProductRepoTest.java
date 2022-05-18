@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 /**
  * JUnit tests for {@link ProductRepo} class
  *
- * @author Anton Borovyk
+ * @author Anton Borovyk & Olga Borovyk
  */
 public class ProductRepoTest {
 
@@ -85,7 +85,6 @@ public class ProductRepoTest {
         String[] keyColumns = new String[]{"id"};
         KeyHolder holder = mock(KeyHolder.class);
         ProductRepo spyRepo = spy(repo);
-
         when(holder.getKey()).thenReturn(expectedId);
         doReturn(holder).when(spyRepo).getKeyHolder();
         when(jdbcTemplate.update(eq(ProductRepo.INSERT_PRODUCT_SQL),
