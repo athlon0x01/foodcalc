@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.KeyHolder;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -90,6 +92,26 @@ public class MealTypeRepoTest {
     }
 
     @Test
+    public void addMealTypeFailTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_TYPE.equals(params.getValue("name"));
+        int expectedId = -1;
+        String[] keyColumns = new String[] {"id"};
+        KeyHolder holder = mock(KeyHolder.class);
+        MealTypeRepo spyRepo = spy(repo);
+
+        when(holder.getKey()).thenReturn(null);
+        doReturn(holder).when(spyRepo).getKeyHolder();
+        when(jdbcTemplate.update(eq(MealTypeRepo.INSERT_MEALTYPE_SQL),
+                argThat(matcher), eq(holder), eq(keyColumns))).thenReturn(0);
+
+        assertEquals(expectedId, spyRepo.addMealType(dummyType));
+
+        verify(holder).getKey();
+        verify(jdbcTemplate).update(eq(MealTypeRepo.INSERT_MEALTYPE_SQL),
+                argThat(matcher), eq(holder), eq(keyColumns));
+    }
+
+    @Test
     public void updateMealTypeTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_TYPE.equals(params.getValue("name"))
                 && TYPE_ID.equals(params.getValue("typeId"));
@@ -156,5 +178,18 @@ public class MealTypeRepoTest {
 
         verify(jdbcTemplate).queryForObject(
                 eq(MealTypeRepo.SELECT_MEALTYPE_EXISTS_SQL), argThat(matcher), eq(Integer.class));
+    }
+
+    @Test
+    public void mapRowTest() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getInt("id")).thenReturn(TYPE_ID);
+        when(resultSet.getString("name")).thenReturn(DUMMY_TYPE);
+
+        MealType actualType = repo.mapRow(resultSet, 2);
+        assertEquals(dummyType, actualType);
+
+        verify(resultSet).getInt("id");
+        verify(resultSet).getString("name");
     }
 }
