@@ -102,6 +102,26 @@ public class ProductCategoryRepoTest {
     }
 
     @Test
+    public void addCategoryFailTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_CATEGORY.equals(params.getValue("name"));
+        long expectedId = -1L;
+        String[]  keyColumns = new String[] {"id"};
+        KeyHolder holder = mock(KeyHolder.class);
+        ProductCategoryRepo spyRepo = spy(repo);
+
+        when(holder.getKey()).thenReturn(null);
+        doReturn(holder).when(spyRepo).getKeyHolder();
+        when(jdbcTemplate.update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL),
+                argThat(matcher), eq(holder), eq(keyColumns))).thenReturn(0);
+
+        assertEquals(expectedId, spyRepo.addCategory(dummyCategory));
+
+        verify(holder).getKey();
+        verify(jdbcTemplate).update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL),
+                argThat(matcher), eq(holder), eq(keyColumns));
+    }
+
+    @Test
     public void updateCategoryTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_CATEGORY.equals(params.getValue("name"))
             && CATEGORY_ID.equals(params.getValue("categoryId"));
