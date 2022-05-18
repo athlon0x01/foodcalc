@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.service.product;
 
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
@@ -11,16 +12,27 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 /**
  * JUnit tests for {@link ProductDomainService} class
  *
- * @author Anton Borovyk
+ * @author Anton Borovyk & Olga Borovyk
  */
 public class ProductDomainServiceTest {
+
+    private static final Long PRODUCT_ID = 54321L;
+
+    private static final ProductCategory dummyCategory =  new ProductCategory(12345L, "dummuCategory");
+
+    private static final Product dummyProduct = new Product(
+            PRODUCT_ID, "dummyProduct", "dummyDescr", dummyCategory,
+            1.1f, 2.2f, 3.3f, 4.4f, 10);
+
 
     @InjectMocks
     private ProductDomainService productService;
@@ -35,9 +47,6 @@ public class ProductDomainServiceTest {
 
     @Test
     public void getAllProductsTest() {
-        Product dummyProduct = new Product(12345, "dummyProduct", "",
-            new ProductCategory(11123, "dummyCategory"),
-            1.1f, 3, 4.5f, 7, 11);
         List<Product> expected = Collections.singletonList(dummyProduct);
 
         when(productRepo.getAllProducts()).thenReturn(expected);
@@ -46,5 +55,61 @@ public class ProductDomainServiceTest {
         assertEquals(expected, actual);
 
         verify(productRepo).getAllProducts();
+    }
+
+    @Test
+    public void getProductTest() {
+        Optional<Product> expected = Optional.of(dummyProduct);
+        when(productRepo.getProduct(PRODUCT_ID)).thenReturn(expected);
+
+        Optional<Product> actual = productService.getProduct(PRODUCT_ID);
+        assertEquals(expected, actual);
+
+        verify(productRepo).getProduct(PRODUCT_ID);
+    }
+
+    @Test
+    public void addProductTest() {
+        when(productRepo.addProduct(dummyProduct)).thenReturn(PRODUCT_ID);
+
+        assertEquals(dummyProduct, productService.addProduct(dummyProduct));
+
+        verify(productRepo).addProduct(dummyProduct);
+    }
+
+    @Test
+    public void updateProductTest() {
+        when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(true);
+        when(productRepo.updateProduct(dummyProduct)).thenReturn(true);
+
+        assertTrue(productService.updateProduct(dummyProduct));
+
+        verify(productRepo).existsProduct(PRODUCT_ID);
+        verify(productRepo).updateProduct(dummyProduct);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void updateNotExistingProductTest() {
+        when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(false);
+
+        productService.updateProduct(dummyProduct);
+    }
+
+    @Test
+    public void deleteProductTest() {
+        when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(true);
+        when(productRepo.deleteProduct(PRODUCT_ID)).thenReturn(true);
+
+        assertTrue(productService.deleteProduct(PRODUCT_ID));
+
+        verify(productRepo).existsProduct(PRODUCT_ID);
+        verify(productRepo).deleteProduct(PRODUCT_ID);
+    }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteNotExistingProductTest() {
+        when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(false);
+
+        productService.deleteProduct(PRODUCT_ID);
     }
 }
