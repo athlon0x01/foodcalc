@@ -4,7 +4,6 @@ import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.AbstractRepository;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -19,7 +18,7 @@ import java.util.Optional;
 /**
  * Product repository implementation responsible for {@link Product} persistence.
  *
- * @author Anton Borovyk
+ * @author Anton Borovyk & Olga Borovyk
  */
 @Repository
 public class ProductRepo extends AbstractRepository<Product>
@@ -36,7 +35,7 @@ public class ProductRepo extends AbstractRepository<Product>
             "from product p join product_category c on p.category = c.id" +
             "where p.id = :productId";
 
-    static final String INSERT_PRODUCT_SQL = "insert into product (name, description, category, calorific," +
+    static final String INSERT_PRODUCT_SQL = "insert into product (name, description, category, calorific, " +
             "proteins, fats, carbs, defweight) values (:name, :description, :categoryId, :calorific," +
             ":proteins, :fats, :carbs, :defweight)";
 
@@ -73,32 +72,28 @@ public class ProductRepo extends AbstractRepository<Product>
     @Override
     public long addProduct(Product product) {
         KeyHolder holder = getKeyHolder();
-        SqlParameterSource parameters = new MapSqlParameterSource().
-                addValue("name", product.getName()).
-                addValue("description", product.getDescription()).
-                addValue("categoryId", product.getCategory().getCategoryId()).
-                addValue("calorific", product.getCalorific()).
-                addValue("proteins", product.getProteins()).
-                addValue("fats", product.getFats()).
-                addValue("carbs", product.getCarbs()).
-                addValue("defweight", product.getDefaultWeight());
+        MapSqlParameterSource parameters = getSqlParameterSource(product);
         jdbcTemplate.update(INSERT_PRODUCT_SQL, parameters, holder, new String[] {"id"});
         Number key = holder.getKey();
         return key != null ? key.longValue() : -1L;
     }
 
+    MapSqlParameterSource getSqlParameterSource(Product product) {
+        return new MapSqlParameterSource()
+                .addValue("productId", product.getProductId())
+                .addValue("name", product.getName())
+                .addValue("description", product.getDescription())
+                .addValue("categoryId", product.getCategory().getCategoryId())
+                .addValue("calorific", product.getCalorific())
+                .addValue("proteins", product.getProteins())
+                .addValue("fats", product.getFats())
+                .addValue("carbs", product.getCarbs())
+                .addValue("defweight", product.getDefaultWeightInt());
+    }
+
     @Override
     public boolean updateProduct(Product product) {
-        SqlParameterSource parameters = new MapSqlParameterSource().
-                addValue("productId", product.getProductId()).
-                addValue("name", product.getName()).
-                addValue("description", product.getDescription()).
-                addValue("categoryId", product.getCategory().getCategoryId()).
-                addValue("calorific", product.getCalorific()).
-                addValue("proteins", product.getProteins()).
-                addValue("fats", product.getFats()).
-                addValue("carbs", product.getCarbs()).
-                addValue("defweight", product.getDefaultWeight());
+        MapSqlParameterSource parameters = getSqlParameterSource(product);
         return jdbcTemplate.update(UPDATE_PRODUCT_SQL, parameters) > 0;
     }
 
