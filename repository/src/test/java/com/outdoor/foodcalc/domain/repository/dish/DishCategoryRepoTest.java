@@ -9,6 +9,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.KeyHolder;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -88,6 +90,25 @@ public class DishCategoryRepoTest {
     }
 
     @Test
+    public void addCategoryFailTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_CATEGORY.equals(params.getValue("name"));
+        String[] keyColumns = new String[] {"id"};
+        KeyHolder holder = mock(KeyHolder.class);
+        DishCategoryRepo spyRepo = spy(repo);
+
+        when(holder.getKey()).thenReturn(null);
+        doReturn(holder).when(spyRepo).getKeyHolder();
+        when(jdbcTemplate.update(eq(DishCategoryRepo.INSERT_CATEGORY_SQL),
+                argThat(matcher), eq(holder), eq(keyColumns))).thenReturn(0);
+
+        assertEquals(-1L, spyRepo.addCategory(dummyCategory));
+
+        verify(holder).getKey();
+        verify(jdbcTemplate).update(eq(DishCategoryRepo.INSERT_CATEGORY_SQL),
+                argThat(matcher), eq(holder), eq(keyColumns));
+    }
+
+    @Test
     public void updateCategoryTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_CATEGORY.equals(params.getValue("name"))
                 && CATEGORY_ID.equals(params.getValue("categoryId"));
@@ -156,5 +177,32 @@ public class DishCategoryRepoTest {
 
         verify(jdbcTemplate).queryForObject(
                 eq(DishCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
+    public void existsZeroTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> CATEGORY_ID.equals(params.getValue("categoryId"));
+
+        when(jdbcTemplate.queryForObject(
+                eq(DishCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class)))
+                .thenReturn(0L);
+
+        assertFalse(repo.exist(CATEGORY_ID));
+
+        verify(jdbcTemplate).queryForObject(
+                eq(DishCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
+    public void mapRowTest() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getString("name")).thenReturn(DUMMY_CATEGORY);
+        when(resultSet.getLong("id")).thenReturn(CATEGORY_ID);
+
+        DishCategory category = repo.mapRow(resultSet, 2);
+        assertEquals(dummyCategory, category);
+
+        verify(resultSet).getString("name");
+        verify(resultSet).getLong("id");
     }
 }
