@@ -104,7 +104,6 @@ public class ProductCategoryRepoTest {
     @Test
     public void addCategoryFailTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_CATEGORY.equals(params.getValue("name"));
-        long expectedId = -1L;
         String[]  keyColumns = new String[] {"id"};
         KeyHolder holder = mock(KeyHolder.class);
         ProductCategoryRepo spyRepo = spy(repo);
@@ -114,7 +113,7 @@ public class ProductCategoryRepoTest {
         when(jdbcTemplate.update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL),
                 argThat(matcher), eq(holder), eq(keyColumns))).thenReturn(0);
 
-        assertEquals(expectedId, spyRepo.addCategory(dummyCategory));
+        assertEquals(-1L, spyRepo.addCategory(dummyCategory));
 
         verify(holder).getKey();
         verify(jdbcTemplate).update(eq(ProductCategoryRepo.INSERT_CATEGORY_SQL),
@@ -197,14 +196,25 @@ public class ProductCategoryRepoTest {
     }
 
     @Test
-    public void mapRowTest() throws SQLException {
-        long categoryId = 11123;
-        String categoryName = "dummyCategory";
-        ProductCategory dummyCategory = new ProductCategory(categoryId, categoryName);
+    public void existsZeroTest() {
+        Long expected = 0L;
+        ArgumentMatcher<SqlParameterSource> matcher = params -> CATEGORY_ID.equals(params.getValue("categoryId"));
 
+        when(jdbcTemplate.queryForObject(
+                eq(ProductCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class)))
+                .thenReturn(expected);
+
+        assertFalse(repo.exist(CATEGORY_ID));
+
+        verify(jdbcTemplate).queryForObject(
+                eq(ProductCategoryRepo.SELECT_CATEGORY_EXISTS_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
+    public void mapRowTest() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getString("name")).thenReturn(categoryName);
-        when(resultSet.getLong("id")).thenReturn(categoryId);
+        when(resultSet.getString("name")).thenReturn(DUMMY_CATEGORY);
+        when(resultSet.getLong("id")).thenReturn(CATEGORY_ID);
 
         ProductCategory category = repo.mapRow(resultSet, 2);
         assertEquals(dummyCategory, category);

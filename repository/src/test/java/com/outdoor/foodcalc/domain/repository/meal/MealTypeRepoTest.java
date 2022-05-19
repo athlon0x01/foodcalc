@@ -94,7 +94,6 @@ public class MealTypeRepoTest {
     @Test
     public void addMealTypeFailTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_TYPE.equals(params.getValue("name"));
-        int expectedId = -1;
         String[] keyColumns = new String[] {"id"};
         KeyHolder holder = mock(KeyHolder.class);
         MealTypeRepo spyRepo = spy(repo);
@@ -104,7 +103,7 @@ public class MealTypeRepoTest {
         when(jdbcTemplate.update(eq(MealTypeRepo.INSERT_MEALTYPE_SQL),
                 argThat(matcher), eq(holder), eq(keyColumns))).thenReturn(0);
 
-        assertEquals(expectedId, spyRepo.addMealType(dummyType));
+        assertEquals(-1L, spyRepo.addMealType(dummyType));
 
         verify(holder).getKey();
         verify(jdbcTemplate).update(eq(MealTypeRepo.INSERT_MEALTYPE_SQL),
@@ -179,6 +178,21 @@ public class MealTypeRepoTest {
         verify(jdbcTemplate).queryForObject(
                 eq(MealTypeRepo.SELECT_MEALTYPE_EXISTS_SQL), argThat(matcher), eq(Integer.class));
     }
+
+    @Test
+    public void existsZeroTest() {
+        Integer expected = 0;
+        ArgumentMatcher<SqlParameterSource> matcher = params -> TYPE_ID.equals(params.getValue("typeId"));
+        when(jdbcTemplate.queryForObject(
+                eq(MealTypeRepo.SELECT_MEALTYPE_EXISTS_SQL), argThat(matcher), eq(Integer.class)))
+                .thenReturn(expected);
+
+        assertFalse(repo.exist(TYPE_ID));
+
+        verify(jdbcTemplate).queryForObject(
+                eq(MealTypeRepo.SELECT_MEALTYPE_EXISTS_SQL), argThat(matcher), eq(Integer.class));
+    }
+
 
     @Test
     public void mapRowTest() throws SQLException {

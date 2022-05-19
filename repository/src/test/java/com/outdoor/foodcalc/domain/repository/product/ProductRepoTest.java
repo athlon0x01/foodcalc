@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 /**
  * JUnit tests for {@link ProductRepo} class
  *
- * @author Anton Borovyk & Olga Borovyk
+ * @author Anton Borovyk
  */
 public class ProductRepoTest {
 
@@ -50,35 +50,6 @@ public class ProductRepoTest {
         MockitoAnnotations.initMocks(this);
         sqlParamsMatcher = params -> params.getValues()
                 .equals(repo.getSqlParameterSource(dummyProduct).getValues());
-    }
-
-    @Test
-    public void mapRowTest() throws SQLException {
-        ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getLong("productId")).thenReturn(dummyProduct.getProductId());
-        when(resultSet.getString("productName")).thenReturn(dummyProduct.getName());
-        when(resultSet.getString("productDescription")).thenReturn(dummyProduct.getDescription());
-        when(resultSet.getString("catName")).thenReturn(dummyProduct.getCategory().getName());
-        when(resultSet.getLong("catId")).thenReturn(dummyProduct.getCategory().getCategoryId());
-        when(resultSet.getFloat("calorific")).thenReturn(dummyProduct.getCalorific());
-        when(resultSet.getFloat("proteins")).thenReturn(dummyProduct.getProteins());
-        when(resultSet.getFloat("fats")).thenReturn(dummyProduct.getFats());
-        when(resultSet.getFloat("carbs")).thenReturn(dummyProduct.getCarbs());
-        when(resultSet.getInt("defWeight")).thenReturn(dummyProduct.getDefaultWeightInt());
-
-        Product product = repo.mapRow(resultSet, 2);
-        assertEquals(dummyProduct, product);
-
-        verify(resultSet).getString("productName");
-        verify(resultSet).getString("productDescription");
-        verify(resultSet).getString("catName");
-        verify(resultSet).getLong("productId");
-        verify(resultSet).getLong("catId");
-        verify(resultSet).getFloat("calorific");
-        verify(resultSet).getFloat("proteins");
-        verify(resultSet).getFloat("fats");
-        verify(resultSet).getFloat("carbs");
-        verify(resultSet).getInt("defWeight");
     }
 
     @Test
@@ -129,7 +100,6 @@ public class ProductRepoTest {
 
     @Test
     public void addProductFailTest() {
-        long expectedId = -1L;
         String[] keyColumns = new String[] {"id"};
         KeyHolder holder = mock(KeyHolder.class);
         ProductRepo spyRepo = spy(repo);
@@ -139,7 +109,7 @@ public class ProductRepoTest {
         when(jdbcTemplate.update(eq(ProductRepo.INSERT_PRODUCT_SQL),
                 argThat(sqlParamsMatcher), eq(holder), eq(keyColumns))).thenReturn(1);
 
-        assertEquals(expectedId, spyRepo.addProduct(dummyProduct));
+        assertEquals(-1L, spyRepo.addProduct(dummyProduct));
 
         verify(holder).getKey();
         verify(jdbcTemplate).update(eq(ProductRepo.INSERT_PRODUCT_SQL),
@@ -211,6 +181,19 @@ public class ProductRepoTest {
     }
 
     @Test
+    public void existsProductZeroTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> PRODUCT_ID.equals(params.getValue("productId"));
+        when(jdbcTemplate.queryForObject(
+                eq(ProductRepo.SELECT_PRODUCT_EXIST_SQL), argThat(matcher), eq(Long.class)))
+                .thenReturn(0L);
+
+        assertFalse(repo.existsProduct(PRODUCT_ID));
+
+        verify(jdbcTemplate).queryForObject(
+                eq(ProductRepo.SELECT_PRODUCT_EXIST_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
     public void productsCountInCategoryTest() {
         Long expected = 1L;
         ArgumentMatcher<SqlParameterSource> matcher = params -> CATEGORY_ID.equals(params.getValue("categoryId"));
@@ -237,5 +220,34 @@ public class ProductRepoTest {
 
         verify(jdbcTemplate).queryForObject(
             eq(ProductRepo.SELECT_PRODUCTS_COUNT_IN_CATEGORY_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
+    public void mapRowTest() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(resultSet.getLong("productId")).thenReturn(dummyProduct.getProductId());
+        when(resultSet.getString("productName")).thenReturn(dummyProduct.getName());
+        when(resultSet.getString("productDescription")).thenReturn(dummyProduct.getDescription());
+        when(resultSet.getString("catName")).thenReturn(dummyProduct.getCategory().getName());
+        when(resultSet.getLong("catId")).thenReturn(dummyProduct.getCategory().getCategoryId());
+        when(resultSet.getFloat("calorific")).thenReturn(dummyProduct.getCalorific());
+        when(resultSet.getFloat("proteins")).thenReturn(dummyProduct.getProteins());
+        when(resultSet.getFloat("fats")).thenReturn(dummyProduct.getFats());
+        when(resultSet.getFloat("carbs")).thenReturn(dummyProduct.getCarbs());
+        when(resultSet.getInt("defWeight")).thenReturn(dummyProduct.getDefaultWeightInt());
+
+        Product product = repo.mapRow(resultSet, 2);
+        assertEquals(dummyProduct, product);
+
+        verify(resultSet).getString("productName");
+        verify(resultSet).getString("productDescription");
+        verify(resultSet).getString("catName");
+        verify(resultSet).getLong("productId");
+        verify(resultSet).getLong("catId");
+        verify(resultSet).getFloat("calorific");
+        verify(resultSet).getFloat("proteins");
+        verify(resultSet).getFloat("fats");
+        verify(resultSet).getFloat("carbs");
+        verify(resultSet).getInt("defWeight");
     }
 }

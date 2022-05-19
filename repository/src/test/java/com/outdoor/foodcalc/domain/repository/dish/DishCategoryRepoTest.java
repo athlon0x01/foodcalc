@@ -92,7 +92,6 @@ public class DishCategoryRepoTest {
     @Test
     public void addCategoryFailTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_CATEGORY.equals(params.getValue("name"));
-        long expectedId = -1L;
         String[] keyColumns = new String[] {"id"};
         KeyHolder holder = mock(KeyHolder.class);
         DishCategoryRepo spyRepo = spy(repo);
@@ -102,7 +101,7 @@ public class DishCategoryRepoTest {
         when(jdbcTemplate.update(eq(DishCategoryRepo.INSERT_CATEGORY_SQL),
                 argThat(matcher), eq(holder), eq(keyColumns))).thenReturn(0);
 
-        assertEquals(expectedId, spyRepo.addCategory(dummyCategory));
+        assertEquals(-1L, spyRepo.addCategory(dummyCategory));
 
         verify(holder).getKey();
         verify(jdbcTemplate).update(eq(DishCategoryRepo.INSERT_CATEGORY_SQL),
