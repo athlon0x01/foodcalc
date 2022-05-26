@@ -67,9 +67,12 @@ public class ProductCategoryDomainServiceTest {
 
     @Test
     public void addCategoryTest() {
-        when(categoryRepo.addCategory(dummyCategory)).thenReturn(CATEGORY_ID);
-        assertEquals(dummyCategory, categoryService.addCategory(dummyCategory));
-        verify(categoryRepo).addCategory(dummyCategory);
+        ProductCategory categoryToAdd = new ProductCategory(-1, "dummyCategory");
+        when(categoryRepo.addCategory(categoryToAdd)).thenReturn(CATEGORY_ID);
+
+        assertEquals(dummyCategory, categoryService.addCategory(categoryToAdd));
+
+        verify(categoryRepo).addCategory(categoryToAdd);
     }
 
     @Test

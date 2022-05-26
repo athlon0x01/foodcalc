@@ -65,9 +65,12 @@ public class MealTypeDomainServiceTest {
 
     @Test
     public void addMealTypeTest() {
-        when(mealTypeRepo.addMealType(dummyMealType)).thenReturn(MEAL_TYPE_ID);
-        assertEquals(dummyMealType, mealTypeDomainService.addMealType(dummyMealType));
-        verify(mealTypeRepo).addMealType(dummyMealType);
+        MealType mealTypeToAdd = new MealType(-1, "dummyMealType");
+        when(mealTypeRepo.addMealType(mealTypeToAdd)).thenReturn(MEAL_TYPE_ID);
+
+        assertEquals(dummyMealType, mealTypeDomainService.addMealType(mealTypeToAdd));
+
+        verify(mealTypeRepo).addMealType(mealTypeToAdd);
     }
 
     @Test

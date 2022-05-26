@@ -18,7 +18,7 @@ import java.util.Optional;
 /**
  * Product repository implementation responsible for {@link Product} persistence.
  *
- * @author Anton Borovyk
+ * @author Anton Borovyk & Olga Borovyk
  */
 @Repository
 public class ProductRepo extends AbstractRepository<Product>
