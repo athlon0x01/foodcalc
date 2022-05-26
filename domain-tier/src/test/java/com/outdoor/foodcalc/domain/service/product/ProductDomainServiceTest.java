@@ -70,11 +70,13 @@ public class ProductDomainServiceTest {
 
     @Test
     public void addProductTest() {
-        when(productRepo.addProduct(dummyProduct)).thenReturn(PRODUCT_ID);
+        Product productToAdd = new Product(-1, "dummyProduct", "dummyDescr", dummyCategory,
+                1.1f, 2.2f, 3.3f, 4.4f, 10);
+        when(productRepo.addProduct(productToAdd)).thenReturn(PRODUCT_ID);
 
-        assertEquals(dummyProduct, productService.addProduct(dummyProduct));
+        assertEquals(dummyProduct, productService.addProduct(productToAdd));
 
-        verify(productRepo).addProduct(dummyProduct);
+        verify(productRepo).addProduct(productToAdd);
     }
 
     @Test

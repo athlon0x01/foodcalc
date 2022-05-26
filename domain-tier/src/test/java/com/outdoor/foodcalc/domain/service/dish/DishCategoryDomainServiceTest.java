@@ -65,9 +65,12 @@ public class DishCategoryDomainServiceTest {
 
     @Test
     public void addCategoryTest() {
-        when(categoryRepo.addCategory(dummyCategory)).thenReturn(CATEGORY_ID);
-        assertEquals(dummyCategory, categoryService.addCategory(dummyCategory));
-        verify(categoryRepo).addCategory(dummyCategory);
+        DishCategory categoryToAdd = new DishCategory(-1, "dummy category");
+        when(categoryRepo.addCategory(categoryToAdd)).thenReturn(CATEGORY_ID);
+
+        assertEquals(dummyCategory, categoryService.addCategory(categoryToAdd));
+
+        verify(categoryRepo).addCategory(categoryToAdd);
     }
 
     @Test
