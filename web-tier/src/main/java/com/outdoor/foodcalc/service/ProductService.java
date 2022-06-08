@@ -7,6 +7,8 @@ import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,11 +27,11 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-    private ProductDomainService productDomainService;
+    private static final Logger LOG = LoggerFactory.getLogger(ProductService.class);
+
+    private final ProductDomainService productDomainService;
 
     private final ProductCategoryDomainService productCategoryDomainService;
-
-    private final List<Product> products = new ArrayList<>();
 
     @Autowired
     public ProductService(ProductDomainService productDomainService, ProductCategoryDomainService productCategoryDomainService) {
@@ -37,94 +39,100 @@ public class ProductService {
         this.productCategoryDomainService = productCategoryDomainService;
     }
 
-    //TODO remove it, temporary method for DishService
-    Product getDomainProduct(long id) {
-        final Optional<Product> first = products.stream()
-                .filter(product -> product.getProductId() == id)
-                .findFirst();
-        return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
-    }
-
+    /**
+     * Gets all {@link Product} objects mapped to {@link ProductView}.
+     *
+     * @return list of products
+     */
     public List<CategoryWithProducts> getAllProducts() {
         //load products & categories
         final List<ProductCategory> categories = productCategoryDomainService.getCategories();
-//        final List<Product> products = productDomainService.getAllProducts();
+        final List<Product> products = productDomainService.getAllProducts();
+
         //group products by categories
         final Map<Long, List<Product>> productsMap = products.stream()
                 .collect(Collectors.groupingBy(p -> p.getCategory().getCategoryId()));
+
         //map domain classes to UI model
         return categories.stream()
-                .map(c -> {
-                    final CategoryWithProducts cm = new CategoryWithProducts();
-                    cm.id = c.getCategoryId();
-                    cm.name = c.getName();
-                    final List<Product> productList = productsMap.get(c.getCategoryId());
-                    cm.products = (productList == null) ? new ArrayList<>() : productList.stream()
-                            .map(this::mapSimpleProduct)
-                            .collect(Collectors.toList());
-                    return cm;
-                })
+                .map(category -> mapCategoryWithProducts(category, productsMap))
                 .collect(Collectors.toList());
     }
 
-    public ProductView getProduct(long id) {
-        final Optional<ProductView> first = products.stream()
-                .filter(product -> product.getProductId() == id)
+    private CategoryWithProducts mapCategoryWithProducts(
+            ProductCategory category, Map<Long, List<Product>> productsMap) {
+        final CategoryWithProducts withProducts = new CategoryWithProducts();
+        withProducts.id = category.getCategoryId();
+        withProducts.name = category.getName();
+        final List<Product> productList = productsMap.get(category.getCategoryId());
+        withProducts.products = (productList == null) ? new ArrayList<>() : productList.stream()
                 .map(this::mapSimpleProduct)
-                .findFirst();
-        return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
+                .collect(Collectors.toList());
+        return withProducts;
     }
 
-    public ProductView addProduct(ProductView product) {
-        product.id = products.stream()
-                .map(Product::getProductId)
-                .max(Long::compareTo)
-                .orElse((long) products.size())
-                + 1;
-        final ProductCategory category = productCategoryDomainService.getCategory(product.categoryId)
-                .orElseThrow(() -> new NotFoundException("Failed to get Product Category, id = " + product.categoryId));
-        final Product domainProduct = new Product(product.id,
-                product.name,
-                "",
-                category,
-                product.calorific,
-                product.proteins,
-                product.fats,
-                product.carbs,
-                Math.round(product.weight *10));
-        products.add(domainProduct);
-        return product;
-    }
-
-    public boolean updateProduct(ProductView product) {
-        final Optional<Product> first = products.stream()
-                .filter(p -> p.getProductId() == product.id)
-                .findFirst();
-        Product original = first.orElseThrow(() -> new NotFoundException(String.valueOf(product.id)));
-        if (original.getCategory().getCategoryId() != product.categoryId) {
-            final ProductCategory category = productCategoryDomainService.getCategory(product.categoryId)
-                    .orElseThrow(() -> new NotFoundException("Failed to get Product Category, id = " + product.categoryId));
-            original.setCategory(category);
+    Product getDomainProduct(long id) {
+        Optional<Product> domainProduct = productDomainService.getProduct(id);
+        if(!domainProduct.isPresent()) {
+            LOG.error("Product with id={} wasn't found", id);
+            throw new NotFoundException("Product wasn't found");
         }
-        original.setName(product.name);
-        original.setCalorific(product.calorific);
-        original.setProteins(product.proteins);
-        original.setFats(product.fats);
-        original.setCarbs(product.carbs);
-        original.setDefaultWeight(product.weight);
-        return true;
+        return domainProduct.get();
     }
 
+    /**
+     * Gets all {@link Product} objects mapped to {@link ProductView}.
+     *
+     * @param id product Id to load
+     * @return loaded product
+     */
+    public ProductView getProduct(long id) {
+        Product domainProduct = getDomainProduct(id);
+        return mapSimpleProduct(domainProduct);
+    }
+
+    /**
+     * Adds new {@link Product}.
+     *
+     * @param simpleProduct product to add
+     * @return new product
+     */
+    public ProductView addProduct(ProductView simpleProduct) {
+        final ProductCategory category = productCategoryDomainService.getCategory(simpleProduct.categoryId)
+                .orElseThrow(() ->
+                        new NotFoundException("Failed to get Product Category, id = " + simpleProduct.categoryId));
+        Product productToAdd = new Product(-1, simpleProduct.name, "", category,
+                simpleProduct.calorific, simpleProduct.proteins, simpleProduct.fats, simpleProduct.carbs,
+                Math.round(simpleProduct.weight *10));
+
+        return mapSimpleProduct(productDomainService.addProduct(productToAdd));
+    }
+
+    /**
+     * Updates selected {@link Product} with new value.
+     *
+     * @param productModel updated
+     * @return if product updated
+     */
+    public boolean updateProduct(ProductView productModel) {
+        final ProductCategory category = productCategoryDomainService.getCategory(productModel.categoryId)
+                .orElseThrow(() ->
+                        new NotFoundException("Failed to get Product Category, id = " + productModel.categoryId));
+        Product productToUpdate = new Product(productModel.id, productModel.name, "", category,
+                productModel.calorific, productModel.proteins, productModel.fats, productModel.carbs,
+                Math.round(productModel.weight *10));
+
+        return productDomainService.updateProduct(productToUpdate);
+    }
+
+    /**
+     * Removes selected {@link Product}.
+     *
+     * @param id product Id to delete
+     * @return if product deleted
+     */
     public boolean deleteProduct(long id) {
-        int index = 0;
-        while (index < products.size()) {
-            if (products.get(index).getProductId() == id) {
-                products.remove(index);
-                return true;
-            }
-            index++;
-        }
-        return false;
+        return productDomainService.deleteProduct(id);
     }
 
     private ProductView mapSimpleProduct(Product product) {

@@ -14,7 +14,7 @@ import java.util.Optional;
 /**
  * Domain service for all operations with {@link Product} objects.
  *
- * @author Anton Borovyk & Olga Borovyk
+ * @author Anton Borovyk
  */
 @Service
 public class ProductDomainService {

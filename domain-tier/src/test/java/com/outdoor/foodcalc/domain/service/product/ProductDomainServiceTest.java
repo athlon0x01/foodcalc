@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 /**
  * JUnit tests for {@link ProductDomainService} class
  *
- * @author Anton Borovyk & Olga Borovyk
+ * @author Anton Borovyk
  */
 public class ProductDomainServiceTest {
 
