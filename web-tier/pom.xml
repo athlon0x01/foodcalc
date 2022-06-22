@@ -14,10 +14,9 @@
     <version>0.1-SNAPSHOT</version>
 
     <properties>
-        <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
-        <javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-        <hibernate.validator.version>6.0.13.Final</hibernate.validator.version>
-        <springfox.swagger.version>2.9.2</springfox.swagger.version>
+        <spring-boot.version>2.7.0</spring-boot.version>
+        <hibernate.validator.version>6.2.3.Final</hibernate.validator.version>
+        <springfox.swagger.version>3.0.0</springfox.swagger.version>
     </properties>
 
     <dependencies>
@@ -34,12 +33,7 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.validation</groupId>
-            <artifactId>validation-api</artifactId>
-            <version>${javax.validation.api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.validator</groupId>
             <artifactId>hibernate-validator</artifactId>
             <version>${hibernate.validator.version}</version>
         </dependency>
@@ -86,7 +80,7 @@
         <plugins>
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <id>copy Vue.js frontend content</id>
