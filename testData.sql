@@ -8,7 +8,7 @@ insert into product (name, description, category, calorific, fats, carbs, defwei
 
 insert into product (name, category, calorific, proteins, carbs, defweight) values('Potato', (select id from product_category where name = 'Vegetables'), 77.1, 9.2, 52.3, 50 );
 insert into product (name, description, category, calorific, proteins, fats, defweight) values('Tomato', 'The tomato', (select id from product_category where name = 'Vegetables'), 45.5, 5.5, 2.6, 21 );
-insert into product (name, category, calorific, proteins, fats, carbs) values('Cucamber', (select id from product_category where name = 'Vegetables'), 21.4, 4.3, 1.1, 8.7);
+insert into product (name, category, calorific, proteins, fats, carbs) values('Cucumber', (select id from product_category where name = 'Vegetables'), 21.4, 4.3, 1.1, 8.7);
 insert into product (name, category, calorific) values('Carrot', (select id from product_category where name = 'Vegetables'), 67.8 );
 
 insert into dish_category (name) values('Soups');

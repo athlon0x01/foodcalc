@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:13.7
+    environment:
+      POSTGRES_DB: "foodcalc"
+      POSTGRES_USER: "fry"
+      POSTGRES_PASSWORD: "Alabama123"
+    ports:
+      - "25432:5432"
