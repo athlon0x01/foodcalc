@@ -30,9 +30,9 @@ public class ProductRepo extends AbstractRepository<Product>
         "from product p join product_category c on p.category = c.id";
 
     static final String SELECT_PRODUCT_SQL = "select p.id as productId, p.name as productName," +
-            "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific" +
+            "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight " +
-            "from product p join product_category c on p.category = c.id" +
+            "from product p join product_category c on p.category = c.id " +
             "where p.id = :productId";
 
     static final String INSERT_PRODUCT_SQL = "insert into product (name, description, category, calorific, " +
