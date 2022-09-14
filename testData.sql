@@ -22,3 +22,7 @@ insert into meal_type (name) values('breakfast');
 insert into meal_type (name) values('lunch');
 insert into meal_type (name) values('dinner');
 insert into meal_type (name) values('snack');
+
+insert into dish (name, description, category) values('borsch', 'soup with tomatos', (select id from dish_category where name = 'Soups'));
+insert into dish (name, description, category) values('buckwheat', 'buckwheat porridge', (select id from dish_category where name = 'Garnish'));
+insert into dish (name, description, category) values('stew', 'stew meat', (select id from dish_category where name = 'Meat'));
