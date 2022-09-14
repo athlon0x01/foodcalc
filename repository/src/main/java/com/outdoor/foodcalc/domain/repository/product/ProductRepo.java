@@ -18,13 +18,13 @@ import java.util.Optional;
 /**
  * Product repository implementation responsible for {@link Product} persistence.
  *
- * @author Anton Borovyk & Olga Borovyk
+ * @author Anton Borovyk
  */
 @Repository
 public class ProductRepo extends AbstractRepository<Product>
     implements IProductRepo, RowMapper<Product> {
 
-    static final String SELECT_ALL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+        static final String SELECT_ALL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
         "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
         "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight " +
         "from product p join product_category c on p.category = c.id";
