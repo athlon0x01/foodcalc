@@ -3,8 +3,11 @@ package com.outdoor.foodcalc.domain.repository.product;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.*;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,9 +26,12 @@ import static org.mockito.Mockito.*;
 /**
  * JUnit tests for {@link ProductRepo} class
  *
- * @author Anton Borovyk & Olga Borovyk
+ * @author Anton Borovyk
  */
 public class ProductRepoTest {
+
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private static final Long CATEGORY_ID = 12345L;
 
@@ -47,7 +53,6 @@ public class ProductRepoTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         sqlParamsMatcher = params -> params.getValues()
                 .equals(repo.getSqlParameterSource(dummyProduct).getValues());
     }
