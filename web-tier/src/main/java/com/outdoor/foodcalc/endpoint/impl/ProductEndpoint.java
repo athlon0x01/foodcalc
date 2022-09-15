@@ -9,13 +9,10 @@ import com.outdoor.foodcalc.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.List;
-
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 /**
  * REST Endpoint for Product related operations
@@ -34,25 +31,21 @@ public class ProductEndpoint implements ProductsApi {
         this.productService = productService;
     }
 
-    public List<CategoryWithProducts> allProducts() {
+    public List<CategoryWithProducts> getAllProducts() {
         LOG.debug("Getting all products");
         return productService.getAllProducts();
     }
 
-    @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
     public ProductView getProduct(@PathVariable("id") long id) {
         LOG.debug("Getting product id = {}", id);
         return productService.getProduct(id);
     }
 
-    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.CREATED)
     public ProductView addProduct(@RequestBody @Valid ProductView product) {
         LOG.debug("Adding new product - {}", product);
         return productService.addProduct(product);
     }
 
-    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ProductView updateProduct(@PathVariable("id") long id,
                                      @RequestBody @Valid ProductView product) {
         if (id != product.id) {
@@ -67,8 +60,6 @@ public class ProductEndpoint implements ProductsApi {
         return product;
     }
 
-    @DeleteMapping("{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteProduct(@PathVariable("id") long id) {
         LOG.debug("Deleting meal type id = {}", id);
         if (!productService.deleteProduct(id)) {

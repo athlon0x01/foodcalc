@@ -142,6 +142,17 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
     }
 
     @Test
+    public void updateCategoryNotFoundTest() throws Exception {
+        String message = "Product category doesn't exist";
+        when(service.updateCategory(dummyCategory)).thenThrow(new NotFoundException(message));
+
+        put404("/product-categories/" + CATEGORY_ID, dummyCategory)
+                .andExpect(jsonPath("$", is(message)));
+
+        verify(service).updateCategory(dummyCategory);
+    }
+
+    @Test
     public void updateCategoryValidationTest() throws Exception {
         String message = "Path variable Id = 55 doesn't match with request body Id = " + CATEGORY_ID;
 
