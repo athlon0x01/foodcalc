@@ -98,7 +98,7 @@ public abstract class ApiUnitTest {
     public ResultActions post(String url, Object body) throws Exception {
         return postJson(url, body)
             .andExpect(status().isCreated())
-            .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8));
+            .andExpect(content().contentType(APPLICATION_JSON_VALUE));
     }
 
     public ResultActions post400(String url, Object body) throws Exception {
