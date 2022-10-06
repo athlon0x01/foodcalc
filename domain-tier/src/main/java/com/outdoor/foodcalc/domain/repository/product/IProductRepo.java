@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.domain.repository.product;
 
 import com.outdoor.foodcalc.domain.model.product.Product;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.List;
 import java.util.Optional;
@@ -65,4 +66,28 @@ public interface IProductRepo {
      * @return if product exists
      */
     boolean existsProduct(long id);
+
+    /**
+     * Loads all {@link ProductRef} of dish.
+     *
+     * @return list of {@link ProductRef}
+     */
+    List<ProductRef> getDishProducts(long dishId);
+
+    /**
+     * Saves list of {@link ProductRef} for dish.
+     *
+     * @param products list of products to add for dish
+     * @param dishId dish id
+     * @return if list of  {@link ProductRef} was saved for dish
+     */
+    boolean addDishProducts(long dishId, List<ProductRef> products);
+
+    /**
+     * Deletes all {@link ProductRef} for dish.
+     *
+     * @param dishId dish id
+     * @return if products was deleted for dish
+     */
+    boolean deleteDishProducts(long dishId);
 }
