@@ -2,6 +2,7 @@ package com.outdoor.foodcalc.domain.repository.product;
 
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,9 +17,7 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -37,11 +36,17 @@ public class ProductRepoTest {
 
     private static final Long PRODUCT_ID = 54321L;
 
-    private static final ProductCategory dummyCategory =  new ProductCategory(CATEGORY_ID, "dummuCategory");
+    private static final ProductCategory dummyCategory =  new ProductCategory(CATEGORY_ID, "dummyCategory");
 
     private static final Product dummyProduct = new Product(
             PRODUCT_ID, "dummyProduct", "dummyDescr", dummyCategory,
             1.1f, 2.2f, 3.3f, 4.4f, 10);
+
+    private static final Integer PRODUCT_REF_WEIGHT = 600;
+
+    private static final ProductRef dummyProductRef = new ProductRef(dummyProduct, PRODUCT_REF_WEIGHT);
+
+    private static final Long DISH_ID = 67890L;
 
     private ArgumentMatcher<MapSqlParameterSource> sqlParamsMatcher;
 
@@ -50,6 +55,40 @@ public class ProductRepoTest {
 
     @InjectMocks
     private ProductRepo repo;
+
+    private static class StringMatcher implements ArgumentMatcher<String> {
+        private final String expected;
+
+        public StringMatcher(String expected) {
+            this.expected = expected;
+        }
+
+        @Override
+        public boolean matches(String actual) {
+            return expected.equals(actual);
+        }
+    }
+
+    private static class MapSqlParameterSourceMatcher implements ArgumentMatcher<MapSqlParameterSource[]> {
+        private final MapSqlParameterSource[] expected;
+
+        public MapSqlParameterSourceMatcher(MapSqlParameterSource[] expected) {
+            this.expected = expected;
+        }
+
+        @Override
+        public boolean matches(MapSqlParameterSource[] actual) {
+            if(expected.length == actual.length) {
+                for(int i = 0; i < expected.length; i++) {
+                    if(!expected[i].getValues().equals(actual[i].getValues())) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+    };
 
     @Before
     public void setUp() {
@@ -253,5 +292,94 @@ public class ProductRepoTest {
         verify(resultSet).getFloat("fats");
         verify(resultSet).getFloat("carbs");
         verify(resultSet).getInt("defWeight");
+    }
+
+    @Test
+    public void addDishProductsTest() {
+        int[] savedRows = new int[]{1};
+        List<ProductRef> productsToAdd = Collections.singletonList(dummyProductRef);
+        ArgumentMatcher<MapSqlParameterSource[]> paramsMatcher = new MapSqlParameterSourceMatcher(
+                repo.getDishProductsSqlParameterSource(DISH_ID, Collections.singletonList(dummyProductRef)));
+        when(jdbcTemplate.batchUpdate(
+                eq(ProductRepo.INSERT_DISH_PRODUCTS_SQL), argThat(paramsMatcher)))
+                .thenReturn(savedRows);
+
+        assertTrue(repo.addDishProducts(DISH_ID, productsToAdd));
+
+        verify(jdbcTemplate).batchUpdate(eq(ProductRepo.INSERT_DISH_PRODUCTS_SQL), argThat(paramsMatcher));
+    }
+
+    @Test
+    public void addDishProductsFailTest() {
+        int[] savedRows = new int[]{};
+        List<ProductRef> productsToAdd = Collections.singletonList(dummyProductRef);
+        ArgumentMatcher<MapSqlParameterSource[]> paramsMatcher = new MapSqlParameterSourceMatcher(
+                repo.getDishProductsSqlParameterSource(DISH_ID, Collections.singletonList(dummyProductRef)));
+        when(jdbcTemplate.batchUpdate(
+                eq(ProductRepo.INSERT_DISH_PRODUCTS_SQL), argThat(paramsMatcher)))
+                .thenReturn(savedRows);
+
+        assertFalse(repo.addDishProducts(DISH_ID, productsToAdd));
+
+        verify(jdbcTemplate).batchUpdate(eq(ProductRepo.INSERT_DISH_PRODUCTS_SQL), argThat(paramsMatcher));
+    }
+
+    @Test
+    public void getDishProductsTest() {
+        List<ProductRef> expected = Collections.singletonList(dummyProductRef);
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        when(jdbcTemplate.query(
+                eq(ProductRepo.SELECT_DISH_PRODUCTS_SQL), argThat(matcher), Mockito.<RowMapper<ProductRef>>any()))
+                .thenReturn(expected);
+
+        List<ProductRef> actual = repo.getDishProducts(DISH_ID);
+        assertEquals(expected, actual);
+
+        verify(jdbcTemplate).query(
+                eq(ProductRepo.SELECT_DISH_PRODUCTS_SQL), argThat(matcher), Mockito.<RowMapper<ProductRef>>any());
+    }
+
+    @Test
+    public void deleteDishProductsTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        when(jdbcTemplate.update(eq(ProductRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher))).thenReturn(1);
+
+        assertTrue(repo.deleteDishProducts(DISH_ID));
+
+        verify(jdbcTemplate).update(eq(ProductRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher));
+    }
+
+    @Test
+    public void deleteDishProductsFailTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        when(jdbcTemplate.update(eq(ProductRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher))).thenReturn(0);
+
+        assertFalse(repo.deleteDishProducts(DISH_ID));
+
+        verify(jdbcTemplate).update(eq(ProductRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher));
+    }
+
+    @Test
+    public void ProductRefMapRowTest() throws SQLException {
+        ResultSet resultSet = mock(ResultSet.class);
+        ProductRepo.ProductRefRowMapper productRefRowMapper = repo.new ProductRefRowMapper();
+
+        when(resultSet.getInt("weight")).thenReturn(PRODUCT_REF_WEIGHT);
+        when(resultSet.getLong("productId")).thenReturn(dummyProduct.getProductId());
+        when(resultSet.getString("productName")).thenReturn(dummyProduct.getName());
+        when(resultSet.getString("catName")).thenReturn(dummyProduct.getCategory().getName());
+
+        ProductRef actualProductRef = productRefRowMapper.mapRow(resultSet, 2);
+
+        assertNotNull(actualProductRef);
+        assertEquals(dummyProductRef.getWeight(), actualProductRef.getWeight(), 0.01);
+        assertEquals(dummyProductRef.getProductId(), actualProductRef.getProductId());
+        assertEquals(dummyProductRef.getName(), actualProductRef.getName());
+        assertEquals(dummyProductRef.getProductCategoryName(), actualProductRef.getProductCategoryName());
+
+        verify(resultSet).getInt("weight");
+        verify(resultSet).getLong("productId");
+        verify(resultSet).getString("productName");
+        verify(resultSet).getString("catName");
     }
 }
