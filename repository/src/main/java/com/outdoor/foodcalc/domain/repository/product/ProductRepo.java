@@ -2,7 +2,6 @@ package com.outdoor.foodcalc.domain.repository.product;
 
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
-import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.AbstractRepository;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -24,8 +23,6 @@ import java.util.Optional;
 @Repository
 public class ProductRepo extends AbstractRepository<Product>
     implements IProductRepo, RowMapper<Product> {
-
-    private final ProductRefRowMapper productRefRowMapper = new ProductRefRowMapper();
 
     static final String SELECT_ALL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
         "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
@@ -53,29 +50,6 @@ public class ProductRepo extends AbstractRepository<Product>
         "from product p join product_category c on p.category = c.id and c.id = :categoryId";
 
     static final String SELECT_PRODUCT_EXIST_SQL = "select count(*) from product where id = :productId";
-
-    static final String SELECT_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
-            "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
-            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, dp.weight as weight " +
-            "from dish_product dp " +
-            "join product p on dp.product  = p.id " +
-            "join product_category c on p.category = c.id " +
-            "where dp.dish = :dish " +
-            "order by dp.ndx";
-
-    static final String INSERT_DISH_PRODUCTS_SQL = "insert into dish_product (dish, product, ndx, weight) " +
-            "values (:dish, :product, :ndx, :weight)";
-
-    static final String DELETE_DISH_PRODUCTS_SQL = "delete from dish_product" +
-            "where dish = :dish";
-
-    public class ProductRefRowMapper implements RowMapper<ProductRef> {
-        @Override
-        public ProductRef mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Product product = ProductRepo.this.mapRow(rs, rowNum);
-            return new ProductRef(product, rs.getInt("weight"));
-        }
-    }
 
     @Override
     public List<Product> getAllProducts() {
@@ -117,18 +91,6 @@ public class ProductRepo extends AbstractRepository<Product>
                 .addValue("defweight", product.getDefaultWeightInt());
     }
 
-    MapSqlParameterSource[] getDishProductsSqlParameterSource(long dishId, List<ProductRef> products) {
-        MapSqlParameterSource[] mappedArray = new MapSqlParameterSource[products.size()];
-        for(int i = 0; i < products.size(); i++) {
-            mappedArray[i] = new MapSqlParameterSource()
-                    .addValue("dish", dishId)
-                    .addValue("product", products.get(i).getProductId())
-                    .addValue("ndx", i)
-                    .addValue("weight", products.get(i).getWeight());
-        }
-        return mappedArray;
-    }
-
     @Override
     public boolean updateProduct(Product product) {
         MapSqlParameterSource parameters = getSqlParameterSource(product);
@@ -146,26 +108,6 @@ public class ProductRepo extends AbstractRepository<Product>
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("productId", id);
         Long count = jdbcTemplate.queryForObject(SELECT_PRODUCT_EXIST_SQL, parameters, Long.class);
         return count != null && count > 0;
-    }
-
-    @Override
-    public boolean addDishProducts(long dishId, List<ProductRef> products) {
-        int[] savedRows = jdbcTemplate.batchUpdate(
-                INSERT_DISH_PRODUCTS_SQL, getDishProductsSqlParameterSource(dishId, products));
-
-        return savedRows.length == products.size();
-    }
-
-    @Override
-    public List<ProductRef> getDishProducts(long dishId) {
-        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dish", dishId);
-        return jdbcTemplate.query(SELECT_DISH_PRODUCTS_SQL, parameters, productRefRowMapper);
-    }
-
-    @Override
-    public boolean deleteDishProducts(long dishId) {
-        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dish", dishId);
-        return jdbcTemplate.update(DELETE_DISH_PRODUCTS_SQL, parameters) > 0;
     }
 
     @Override

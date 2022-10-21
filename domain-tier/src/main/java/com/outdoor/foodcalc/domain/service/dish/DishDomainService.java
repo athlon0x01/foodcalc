@@ -5,11 +5,13 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
+import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -23,12 +25,12 @@ public class DishDomainService {
 
     private final IDishRepo dishRepo;
 
-    private final IProductRepo productRepo;
+    private final IProductRefRepo productRefRepo;
 
     @Autowired
-    public DishDomainService(IDishRepo dishRepo, IProductRepo productRepo) {
+    public DishDomainService(IDishRepo dishRepo, IProductRefRepo productRefRepo) {
         this.dishRepo = dishRepo;
-        this.productRepo = productRepo;
+        this.productRefRepo = productRefRepo;
     }
 
     /**
@@ -38,8 +40,11 @@ public class DishDomainService {
      */
     public List<Dish> getAllDishes() {
         List<Dish> dishes = dishRepo.getAllDishes();
-        for(Dish dish : dishes) {
-            dish.setProducts(productRepo.getDishProducts(dish.getDishId()));
+        Map<Long, List<ProductRef>> allDishIdWithProductRefs = productRefRepo.getAllDishProducts();
+        for (Dish dish : dishes) {
+            if(allDishIdWithProductRefs.containsKey(dish.getDishId())) {
+                dish.setProducts(allDishIdWithProductRefs.get(dish.getDishId()));
+            }
         }
         return dishes;
     }
@@ -52,7 +57,7 @@ public class DishDomainService {
      */
     public Optional<Dish> getDish(long id) {
         Optional<Dish> dish = dishRepo.getDish(id);
-        dish.ifPresent(value -> value.setProducts(productRepo.getDishProducts(value.getDishId())));
+        dish.ifPresent(value -> value.setProducts(productRefRepo.getDishProducts(value.getDishId())));
         return dish;
     }
 
@@ -67,10 +72,8 @@ public class DishDomainService {
         if(id == -1L) {
             throw new FoodcalcDomainException("Failed to add dish");
         }
-        if(dish.getProducts().size()>0) {
-            if(!productRepo.addDishProducts(dish.getDishId(), dish.getProducts())) {
-                throw new FoodcalcDomainException("Fail to add products for dish with id=" + dish.getDishId());
-            }
+        if((dish.getProducts().size()>0) && (!productRefRepo.addDishProducts(dish))) {
+            throw new FoodcalcDomainException("Fail to add products for dish with id=" + dish.getDishId());
         }
         return new Dish(id,
                 dish.getName(),
@@ -88,13 +91,11 @@ public class DishDomainService {
         if(!dishRepo.existsDish(dish.getDishId())) {
             throw new NotFoundException("Dish with id=" + dish.getDishId() + " doesn't exist");
         }
-        if(!productRepo.deleteDishProducts(dish.getDishId())) {
+        if(!productRefRepo.deleteDishProducts(dish.getDishId())) {
             throw new FoodcalcDomainException("Failed to delete products for dish with id=" + dish.getDishId());
         }
-        if(dish.getProducts().size()>0) {
-            if(!productRepo.addDishProducts(dish.getDishId(), dish.getProducts())) {
+        if((dish.getProducts().size()>0) && (!productRefRepo.addDishProducts(dish))) {
                 throw new FoodcalcDomainException("Failed to add products for dish with id=" + dish.getDishId());
-            }
         }
         if(!dishRepo.updateDish(dish)) {
             throw new FoodcalcDomainException("Failed to update dish with id=" + dish.getDishId());
@@ -110,7 +111,7 @@ public class DishDomainService {
         if(!dishRepo.existsDish(id)) {
             throw new NotFoundException("Dish with id=" + id + " doesn't exist");
         }
-        if(!productRepo.deleteDishProducts(id)) {
+        if(!productRefRepo.deleteDishProducts(id)) {
             throw new FoodcalcDomainException("Failed to delete products for dish with id=" + id);
         }
         if(!dishRepo.deleteDish(id)) {

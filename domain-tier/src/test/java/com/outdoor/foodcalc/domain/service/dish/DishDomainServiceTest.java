@@ -8,7 +8,7 @@ import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
-import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
+import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -16,9 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
@@ -54,31 +52,43 @@ public class DishDomainServiceTest {
             DISH_ID, "borsch", "dummyDescr",
             dummyDishCategory, Collections.singletonList(dummyProductRef));
 
+    private static final Map<Long, List<ProductRef>> allDishesWithProducts = new HashMap<>();
+    static {
+        allDishesWithProducts.put(DISH_ID, Collections.singletonList(dummyProductRef));
+    }
+
+
     @Mock
     private IDishRepo dishRepo;
 
     @Mock
-    private IProductRepo productRepo;
+    private IProductRefRepo productRefRepo;
 
     @InjectMocks
     private DishDomainService service;
 
     @Test
     public void getAllDishesTest() {
-        List<Dish> dishList = Collections.singletonList(dummyDish);
-        List<ProductRef> productList = Collections.singletonList(dummyProductRef);
-        List<Dish> expectedDishList = Collections.singletonList(dummyDishWithProducts);
+        List<Dish> dishList = new ArrayList<>();
+        List<Dish> expectedList = new ArrayList<>();
+        Dish someDish = new Dish(11111L, "some", dummyDishCategory);
+        dishList.add(dummyDish);
+        expectedList.add(dummyDishWithProducts);
+        dishList.add(someDish);
+        expectedList.add(someDish);
 
         when(dishRepo.getAllDishes()).thenReturn(dishList);
-        when(productRepo.getDishProducts(dummyDish.getDishId())).thenReturn(productList);
+        when(productRefRepo.getAllDishProducts()).thenReturn(allDishesWithProducts);
 
         List<Dish> actualDishList = service.getAllDishes();
-        assertEquals(actualDishList.size(), expectedDishList.size());
-        assertEquals(expectedDishList, actualDishList);
-        assertEquals(expectedDishList.get(0), actualDishList.get(0));
+        assertEquals(dishList.size(), actualDishList.size());
+        assertEquals(dishList, actualDishList);
+        assertEquals(expectedList.get(0).getProducts(), actualDishList.get(0).getProducts());
+        assertEquals(expectedList.get(1).getProducts(), actualDishList.get(1).getProducts());
+
 
         verify(dishRepo).getAllDishes();
-        verify(productRepo).getDishProducts(DISH_ID);
+        verify(productRefRepo).getAllDishProducts();
     }
 
     @Test
@@ -90,7 +100,7 @@ public class DishDomainServiceTest {
         assertEquals(expectedDish, actualDish);
 
         verify(dishRepo).getDish(DISH_ID);
-        verify(productRepo, never()).getDishProducts(anyLong());
+        verify(productRefRepo, never()).getDishProducts(anyLong());
     }
 
     @Test
@@ -98,13 +108,13 @@ public class DishDomainServiceTest {
         Optional<Dish> dish = Optional.of(dummyDish);
         when(dishRepo.getDish(DISH_ID)).thenReturn(dish);
         List<ProductRef> productList = Collections.singletonList(dummyProductRef);
-        when(productRepo.getDishProducts(DISH_ID)).thenReturn(productList);
+        when(productRefRepo.getDishProducts(DISH_ID)).thenReturn(productList);
 
         Optional<Dish> actualDish = service.getDish(DISH_ID);
         assertEquals(dummyDishWithProducts, actualDish.get());
 
         verify(dishRepo).getDish(DISH_ID);
-        verify(productRepo).getDishProducts(DISH_ID);
+        verify(productRefRepo).getDishProducts(DISH_ID);
     }
 
     @Test
@@ -117,7 +127,7 @@ public class DishDomainServiceTest {
         assertEquals(expectedDish, actualDish);
 
         verify(dishRepo).addDish(dishToAdd);
-        verify(productRepo, never()).addDishProducts(dishToAdd.getDishId(), dishToAdd.getProducts());
+        verify(productRefRepo, never()).addDishProducts(dishToAdd);
     }
 
     @Test
@@ -125,13 +135,13 @@ public class DishDomainServiceTest {
         Dish dishToAdd = new Dish(-1,"borsch", "dummyDescr",
                 dummyDishCategory, Collections.singletonList(dummyProductRef));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
-        when(productRepo.addDishProducts(dishToAdd.getDishId(), dishToAdd.getProducts())).thenReturn(true);
+        when(productRefRepo.addDishProducts(dishToAdd)).thenReturn(true);
 
         Dish actualDish = service.addDish(dishToAdd);
         assertEquals(dummyDishWithProducts, actualDish);
 
         verify(dishRepo).addDish(dishToAdd);
-        verify(productRepo).addDishProducts(dishToAdd.getDishId(), dishToAdd.getProducts());
+        verify(productRefRepo).addDishProducts(dishToAdd);
     }
 
     @Test(expected = FoodcalcDomainException.class)
@@ -147,7 +157,7 @@ public class DishDomainServiceTest {
         Dish dishToAdd = new Dish(-1,"borsch", "dummyDescr",
                 dummyDishCategory, Collections.singletonList(dummyProductRef));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
-        when(productRepo.addDishProducts(dishToAdd.getDishId(), dishToAdd.getProducts())).thenReturn(false);
+        when(productRefRepo.addDishProducts(dishToAdd)).thenReturn(false);
 
         service.addDish(dishToAdd);
     }
@@ -162,15 +172,15 @@ public class DishDomainServiceTest {
     public void updateDishTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
-        when(productRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(true);
-        when(productRepo.addDishProducts(dishToUpdate.getDishId(), dishToUpdate.getProducts())).thenReturn(true);
+        when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(true);
+        when(productRefRepo.addDishProducts(dishToUpdate)).thenReturn(true);
         when(dishRepo.updateDish(dishToUpdate)).thenReturn(true);
 
         service.updateDish(dishToUpdate);
 
         verify(dishRepo).existsDish(dishToUpdate.getDishId());
-        verify(productRepo).deleteDishProducts(dishToUpdate.getDishId());
-        verify(productRepo).addDishProducts(dishToUpdate.getDishId(), dishToUpdate.getProducts());
+        verify(productRefRepo).deleteDishProducts(dishToUpdate.getDishId());
+        verify(productRefRepo).addDishProducts(dishToUpdate);
         verify(dishRepo).updateDish(dishToUpdate);
     }
 
@@ -178,14 +188,14 @@ public class DishDomainServiceTest {
     public void updateDishWithoutProductsTest() {
         Dish dishToUpdate = dummyDish;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
-        when(productRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(true);
+        when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(true);
         when(dishRepo.updateDish(dishToUpdate)).thenReturn(true);
 
         service.updateDish(dishToUpdate);
 
         verify(dishRepo).existsDish(dishToUpdate.getDishId());
-        verify(productRepo).deleteDishProducts(dishToUpdate.getDishId());
-        verify(productRepo, never()).addDishProducts(dishToUpdate.getDishId(), dishToUpdate.getProducts());
+        verify(productRefRepo).deleteDishProducts(dishToUpdate.getDishId());
+        verify(productRefRepo, never()).addDishProducts(dishToUpdate);
         verify(dishRepo).updateDish(dishToUpdate);
     }
 
@@ -201,7 +211,7 @@ public class DishDomainServiceTest {
     public void updateDishDeleteProductsFailTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
-        when(productRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(false);
+        when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(false);
 
         service.updateDish(dishToUpdate);
     }
@@ -210,8 +220,8 @@ public class DishDomainServiceTest {
     public void updateDishAddProductsFailTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
-        when(productRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(true);
-        when(productRepo.addDishProducts(dishToUpdate.getDishId(), dishToUpdate.getProducts())).thenReturn(false);
+        when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(true);
+        when(productRefRepo.addDishProducts(dishToUpdate)).thenReturn(false);
 
         service.updateDish(dishToUpdate);
     }
@@ -220,8 +230,8 @@ public class DishDomainServiceTest {
     public void updateDishFailTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
-        when(productRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(true);
-        when(productRepo.addDishProducts(dishToUpdate.getDishId(), dishToUpdate.getProducts())).thenReturn(true);
+        when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(true);
+        when(productRefRepo.addDishProducts(dishToUpdate)).thenReturn(true);
         when(dishRepo.updateDish(dishToUpdate)).thenReturn(false);
 
         service.updateDish(dishToUpdate);
@@ -230,13 +240,13 @@ public class DishDomainServiceTest {
     @Test
     public void deleteDishTest() {
         when(dishRepo.existsDish(DISH_ID)).thenReturn(true);
-        when(productRepo.deleteDishProducts(DISH_ID)).thenReturn(true);
+        when(productRefRepo.deleteDishProducts(DISH_ID)).thenReturn(true);
         when(dishRepo.deleteDish(DISH_ID)).thenReturn(true);
 
         service.deleteDish(DISH_ID);
 
         verify(dishRepo).existsDish(DISH_ID);
-        verify(productRepo).deleteDishProducts(DISH_ID);
+        verify(productRefRepo).deleteDishProducts(DISH_ID);
         verify(dishRepo).deleteDish(DISH_ID);
     }
 
@@ -250,7 +260,7 @@ public class DishDomainServiceTest {
     @Test(expected = FoodcalcDomainException.class)
     public void deleteDishDeleteProductsFailTest() {
         when(dishRepo.existsDish(DISH_ID)).thenReturn(true);
-        when(productRepo.deleteDishProducts(DISH_ID)).thenReturn(false);
+        when(productRefRepo.deleteDishProducts(DISH_ID)).thenReturn(false);
 
         service.deleteDish(DISH_ID);
     }
@@ -258,7 +268,7 @@ public class DishDomainServiceTest {
     @Test(expected = FoodcalcDomainException.class)
     public void deleteDishFailTest() {
         when(dishRepo.existsDish(DISH_ID)).thenReturn(true);
-        when(productRepo.deleteDishProducts(DISH_ID)).thenReturn(true);
+        when(productRefRepo.deleteDishProducts(DISH_ID)).thenReturn(true);
         when(dishRepo.deleteDish(DISH_ID)).thenReturn(false);
 
         service.deleteDish(DISH_ID);
