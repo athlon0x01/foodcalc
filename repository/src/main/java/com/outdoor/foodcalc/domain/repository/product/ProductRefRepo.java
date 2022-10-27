@@ -99,11 +99,10 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     @Override
     public Map<Long, List<ProductRef>> extractData(ResultSet rs) throws SQLException, DataAccessException {
         Map<Long, List<ProductRef>> resultMap = new HashMap<>();
-        do {
+         do {
             Long dishId = rs.getLong("dish");
             ProductRef dishProduct = mapRow(rs, rs.getRow());
-            Boolean containsKey = resultMap.containsKey(dishId);
-            if(containsKey) {
+            if(resultMap.containsKey(dishId)) {
                 resultMap.get(dishId).add(dishProduct);
             } else {
                 List<ProductRef> dishProducts = new ArrayList<>();

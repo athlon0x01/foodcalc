@@ -6,7 +6,6 @@ import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
-import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
