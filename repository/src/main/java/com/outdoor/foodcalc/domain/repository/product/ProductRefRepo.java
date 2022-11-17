@@ -4,6 +4,7 @@ import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.AbstractRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
@@ -26,6 +27,9 @@ import java.util.Map;
 @Repository
 public class ProductRefRepo extends AbstractRepository<ProductRef>
     implements IProductRefRepo, RowMapper<ProductRef>, ResultSetExtractor<Map<Long, List<ProductRef>>> {
+
+    private final ProductRepo productRepo;
+
 
     static final String SELECT_ALL_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
@@ -50,15 +54,21 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String DELETE_DISH_PRODUCTS_SQL = "delete from dish_product" +
             "where dish = :dish";
 
+    @Autowired
+    public ProductRefRepo(ProductRepo productRepo) {
+        super();
+        this.productRepo = productRepo;
+    }
+
     @Override
     public ProductRef mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ProductRepo repo = new ProductRepo();
-        Product product = repo.mapRow(rs, rowNum);
+        Product product = productRepo.mapRow(rs, rowNum);
         return new ProductRef(product, rs.getInt("weight"));
     }
 
     MapSqlParameterSource[] getDishProductsSqlParameterSource(Dish dish) {
         MapSqlParameterSource[] mappedArray = new MapSqlParameterSource[dish.getProducts().size()];
+//        dish.getProducts().stream().forEach();
         for(int i = 0; i < dish.getProducts().size(); i++) {
             mappedArray[i] = new MapSqlParameterSource()
                     .addValue("dish", dish.getDishId())

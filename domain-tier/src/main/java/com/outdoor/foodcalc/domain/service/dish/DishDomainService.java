@@ -37,12 +37,13 @@ public class DishDomainService {
      *
      * @return list of dishes
      */
-    public List<Dish> getAllDishes() {
+    public List<Dish> allDishProducts() {
         List<Dish> dishes = dishRepo.getAllDishes();
         Map<Long, List<ProductRef>> allDishIdWithProductRefs = productRefRepo.getAllDishProducts();
         for (Dish dish : dishes) {
-            if(allDishIdWithProductRefs.containsKey(dish.getDishId())) {
-                dish.setProducts(allDishIdWithProductRefs.get(dish.getDishId()));
+            List<ProductRef> products = allDishIdWithProductRefs.get(dish.getDishId());
+            if(!products.isEmpty()) {
+                dish.setProducts(products);
             }
         }
         return dishes;
@@ -56,7 +57,12 @@ public class DishDomainService {
      */
     public Optional<Dish> getDish(long id) {
         Optional<Dish> dish = dishRepo.getDish(id);
-        dish.ifPresent(value -> value.setProducts(productRefRepo.getDishProducts(value.getDishId())));
+        dish.ifPresent(value -> {
+            List<ProductRef> dishProducts = productRefRepo.getDishProducts(value.getDishId());
+            if(!dishProducts.isEmpty()) {
+                value.setProducts(dishProducts);
+            }
+        });
         return dish;
     }
 
@@ -71,7 +77,7 @@ public class DishDomainService {
         if(id == -1L) {
             throw new FoodcalcDomainException("Failed to add dish");
         }
-        if((dish.getProducts().size()>0) && (!productRefRepo.addDishProducts(dish))) {
+        if((dish.getProducts().size() > 0) && (!productRefRepo.addDishProducts(dish))) {
             throw new FoodcalcDomainException("Fail to add products for dish with id=" + dish.getDishId());
         }
         return new Dish(id,

@@ -64,6 +64,9 @@ public class ProductRefRepoTest {
     }
 
     @Mock
+    private ProductRepo productRepo;
+
+    @Mock
     private NamedParameterJdbcTemplate jdbcTemplate;
 
     @InjectMocks
@@ -187,9 +190,7 @@ public class ProductRefRepoTest {
         ResultSet resultSet = mock(ResultSet.class);
 
         when(resultSet.getInt("weight")).thenReturn(PRODUCT_REF_WEIGHT);
-        when(resultSet.getLong("productId")).thenReturn(dummyProduct.getProductId());
-        when(resultSet.getString("productName")).thenReturn(dummyProduct.getName());
-        when(resultSet.getString("catName")).thenReturn(dummyProduct.getCategory().getName());
+        when(productRepo.mapRow(eq(resultSet), anyInt())).thenReturn(dummyProduct);
 
         ProductRef actualProductRef = repo.mapRow(resultSet, 2);
 
@@ -199,21 +200,17 @@ public class ProductRefRepoTest {
         assertEquals(dummyProductRef.getName(), actualProductRef.getName());
         assertEquals(dummyProductRef.getProductCategoryName(), actualProductRef.getProductCategoryName());
 
+        verify(productRepo).mapRow(eq(resultSet), anyInt());
         verify(resultSet).getInt("weight");
-        verify(resultSet).getLong("productId");
-        verify(resultSet).getString("productName");
-        verify(resultSet).getString("catName");
     }
 
     @Test
     public void extractDataTest() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
 
+        when(productRepo.mapRow(eq(resultSet), anyInt())).thenReturn(dummyProduct);
         when(resultSet.getLong("dish")).thenReturn(DISH_ID);
         when(resultSet.getInt("weight")).thenReturn(PRODUCT_REF_WEIGHT);
-        when(resultSet.getLong("productId")).thenReturn(dummyProduct.getProductId());
-        when(resultSet.getString("productName")).thenReturn(dummyProduct.getName());
-        when(resultSet.getString("catName")).thenReturn(dummyProduct.getCategory().getName());
         when(resultSet.next()).thenReturn(true).thenReturn(false);
 
         Map<Long, List<ProductRef>> actualMap = repo.extractData(resultSet);
@@ -224,10 +221,8 @@ public class ProductRefRepoTest {
         assertEquals(allDishesWithProducts.get(DISH_ID).get(0), actualMap.get(DISH_ID).get(0));
         assertEquals(allDishesWithProducts.get(DISH_ID).get(0), actualMap.get(DISH_ID).get(1));
 
+        verify(productRepo, times(2)).mapRow(eq(resultSet), anyInt());
         verify(resultSet, times(2)).getLong("dish");
         verify(resultSet, times(2)).getInt("weight");
-        verify(resultSet, times(2)).getLong("productId");
-        verify(resultSet, times(2)).getString("productName");
-        verify(resultSet, times(2)).getString("catName");
     }
 }
