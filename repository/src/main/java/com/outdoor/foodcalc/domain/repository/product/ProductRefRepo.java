@@ -68,7 +68,6 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
 
     MapSqlParameterSource[] getDishProductsSqlParameterSource(Dish dish) {
         MapSqlParameterSource[] mappedArray = new MapSqlParameterSource[dish.getProducts().size()];
-//        dish.getProducts().stream().forEach();
         for(int i = 0; i < dish.getProducts().size(); i++) {
             mappedArray[i] = new MapSqlParameterSource()
                     .addValue("dish", dish.getDishId())

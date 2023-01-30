@@ -40,12 +40,10 @@ public class DishDomainService {
     public List<Dish> allDishProducts() {
         List<Dish> dishes = dishRepo.getAllDishes();
         Map<Long, List<ProductRef>> allDishIdWithProductRefs = productRefRepo.getAllDishProducts();
-        for (Dish dish : dishes) {
-            List<ProductRef> products = allDishIdWithProductRefs.get(dish.getDishId());
-            if(!products.isEmpty()) {
-                dish.setProducts(products);
-            }
-        }
+
+        dishes.stream()
+                .filter(dish -> allDishIdWithProductRefs.containsKey(dish.getDishId()))
+                .forEach(dish -> dish.setProducts(allDishIdWithProductRefs.get(dish.getDishId())));
         return dishes;
     }
 

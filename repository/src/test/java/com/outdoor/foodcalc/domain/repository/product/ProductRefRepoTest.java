@@ -5,6 +5,7 @@ import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.*;
@@ -15,6 +16,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -69,8 +71,13 @@ public class ProductRefRepoTest {
     @Mock
     private NamedParameterJdbcTemplate jdbcTemplate;
 
-    @InjectMocks
     private ProductRefRepo repo;
+
+    @Before
+    public void setUp() throws Exception {
+        repo = new ProductRefRepo(productRepo);
+        ReflectionTestUtils.setField(repo, "jdbcTemplate", jdbcTemplate);
+    }
 
     private static class MapSqlParameterSourceMatcher implements ArgumentMatcher<MapSqlParameterSource[]> {
         private final MapSqlParameterSource[] expected;
