@@ -37,7 +37,7 @@ public class DishDomainService {
      *
      * @return list of dishes
      */
-    public List<Dish> allDishProducts() {
+    public List<Dish> getAllDishes() {
         List<Dish> dishes = dishRepo.getAllDishes();
         Map<Long, List<ProductRef>> allDishIdWithProductRefs = productRefRepo.getAllDishProducts();
 
