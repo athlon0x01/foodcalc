@@ -217,8 +217,9 @@ public class ProductRefRepoTest {
 
         when(productRepo.mapRow(eq(resultSet), anyInt())).thenReturn(dummyProduct);
         when(resultSet.getLong("dish")).thenReturn(DISH_ID);
+        when(resultSet.getInt("ndx")).thenReturn(1).thenReturn(0);
         when(resultSet.getInt("weight")).thenReturn(PRODUCT_REF_WEIGHT);
-        when(resultSet.next()).thenReturn(true).thenReturn(false);
+        when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
 
         Map<Long, List<ProductRef>> actualMap = repo.extractData(resultSet);
         assertNotNull(actualMap);

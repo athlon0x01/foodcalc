@@ -14,10 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Product repository implementation responsible for {@link ProductRef} persistence.
@@ -34,7 +31,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_ALL_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "dp.dish as dish, dp.weight as weight " +
+            "dp.dish as dish, dp.weight as weight, dp.ndx as ndx " +
             "from dish_product dp " +
             "join product p on dp.product  = p.id " +
             "join product_category c on p.category = c.id ";
@@ -56,7 +53,6 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
 
     @Autowired
     public ProductRefRepo(ProductRepo productRepo) {
-        super();
         this.productRepo = productRepo;
     }
 
@@ -107,18 +103,16 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
 
     @Override
     public Map<Long, List<ProductRef>> extractData(ResultSet rs) throws SQLException, DataAccessException {
-        Map<Long, List<ProductRef>> resultMap = new HashMap<>();
-         do {
+        Map<Long, TreeMap<Integer, ProductRef>> allDishesProducts = new HashMap<>();
+        while (rs.next()) {
             Long dishId = rs.getLong("dish");
+            int ndx = rs.getInt("ndx");
             ProductRef dishProduct = mapRow(rs, rs.getRow());
-            if(resultMap.containsKey(dishId)) {
-                resultMap.get(dishId).add(dishProduct);
-            } else {
-                List<ProductRef> dishProducts = new ArrayList<>();
-                dishProducts.add(dishProduct);
-                resultMap.put(dishId, dishProducts);
-            }
-        } while (rs.next());
+            TreeMap<Integer, ProductRef> dishProducts = allDishesProducts.computeIfAbsent(dishId, k -> new TreeMap<>());
+            dishProducts.put(ndx, dishProduct);
+        }
+        Map<Long, List<ProductRef>> resultMap = new HashMap<>();
+        allDishesProducts.forEach((k, v) -> resultMap.put(k, new ArrayList<>(v.values())));
         return resultMap;
     }
 }
