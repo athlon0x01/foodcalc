@@ -97,7 +97,7 @@ public class DishDomainService {
         if(!productRefRepo.deleteDishProducts(dish.getDishId())) {
             throw new FoodcalcDomainException("Failed to delete products for dish with id=" + dish.getDishId());
         }
-        if((dish.getProducts().size()>0) && (!productRefRepo.addDishProducts(dish))) {
+        if((dish.getProducts().size() > 0) && (!productRefRepo.addDishProducts(dish))) {
                 throw new FoodcalcDomainException("Failed to add products for dish with id=" + dish.getDishId());
         }
         if(!dishRepo.updateDish(dish)) {
