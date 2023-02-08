@@ -41,7 +41,7 @@ CREATE TABLE dish_product
     id      bigserial PRIMARY KEY,
     dish    bigint REFERENCES dish,
     product bigint REFERENCES product,
-    index   smallint NOT NULL,
+    ndx   smallint NOT NULL,
 --product weight in 0.1 grams
     weight  integer  NOT NULL
 );
@@ -65,7 +65,7 @@ CREATE TABLE meal_product
     id      bigserial PRIMARY KEY,
     meal    bigint REFERENCES meal,
     product bigint REFERENCES product,
-    index   smallint NOT NULL,
+    ndx   smallint NOT NULL,
 --product weight in 0.1 grams
     weight  integer  NOT NULL
 );
@@ -75,7 +75,7 @@ CREATE TABLE meal_dish
     id    bigserial PRIMARY KEY,
     meal  bigint REFERENCES meal,
     dish  bigint REFERENCES dish,
-    index smallint NOT NULL
+    ndx smallint NOT NULL
 );
 
 --layout items
@@ -92,7 +92,7 @@ CREATE TABLE day_plan
 (
     id          bigserial PRIMARY KEY,
     day         date,
-    index       smallint NOT NULL,
+    ndx       smallint NOT NULL,
     description varchar(1024),
     plan        bigint REFERENCES food_plan
 );
@@ -102,7 +102,7 @@ CREATE TABLE day_meal
     id    bigserial PRIMARY KEY,
     day   bigint REFERENCES day_plan,
     meal  bigint REFERENCES meal,
-    index smallint NOT NULL
+    ndx smallint NOT NULL
 );
 
 CREATE TABLE day_dish
@@ -110,7 +110,7 @@ CREATE TABLE day_dish
     id    bigserial PRIMARY KEY,
     day   bigint REFERENCES day_plan,
     dish  bigint REFERENCES dish,
-    index smallint NOT NULL
+    ndx smallint NOT NULL
 );
 
 CREATE TABLE day_product
@@ -118,7 +118,7 @@ CREATE TABLE day_product
     id      bigserial PRIMARY KEY,
     day     bigint REFERENCES day_plan,
     product bigint REFERENCES product,
-    index   smallint NOT NULL,
+    ndx   smallint NOT NULL,
 --product weight in 0.1 grams
     weight  integer  NOT NULL
 );

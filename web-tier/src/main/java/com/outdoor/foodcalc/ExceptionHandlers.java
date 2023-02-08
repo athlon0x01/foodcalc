@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.model.ValidationException;
 import org.slf4j.Logger;
@@ -37,6 +38,12 @@ public class ExceptionHandlers {
     public ResponseEntity<String> notFoundException(final NotFoundException e) {
         LOG.error("Item was not found", e);
         return new ResponseEntity<>(getErrorMessage(e), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(FoodcalcDomainException.class)
+    public ResponseEntity<String> foodcalcDomainException(final FoodcalcDomainException e) {
+        LOG.error("Some domain error occurred", e);
+        return new ResponseEntity<>(getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(RuntimeException.class)

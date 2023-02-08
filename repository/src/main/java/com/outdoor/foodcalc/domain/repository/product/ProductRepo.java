@@ -112,8 +112,8 @@ public class ProductRepo extends AbstractRepository<Product>
 
     @Override
     public Product mapRow(ResultSet resultSet, int i) throws SQLException {
-        final ProductCategory category = new ProductCategory(resultSet.
-                getLong("catId"), resultSet.getString("catName"));
+        final ProductCategory category = new ProductCategory(
+                resultSet.getLong("catId"), resultSet.getString("catName"));
         return new Product(resultSet.getLong("productId"),
             resultSet.getString("productName"),
             resultSet.getString("productDescription"),

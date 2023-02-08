@@ -16,9 +16,7 @@ import org.springframework.jdbc.support.KeyHolder;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -37,7 +35,7 @@ public class ProductRepoTest {
 
     private static final Long PRODUCT_ID = 54321L;
 
-    private static final ProductCategory dummyCategory =  new ProductCategory(CATEGORY_ID, "dummuCategory");
+    private static final ProductCategory dummyCategory =  new ProductCategory(CATEGORY_ID, "dummyCategory");
 
     private static final Product dummyProduct = new Product(
             PRODUCT_ID, "dummyProduct", "dummyDescr", dummyCategory,
