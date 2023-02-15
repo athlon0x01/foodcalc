@@ -193,6 +193,45 @@ public class ProductRefRepoTest {
     }
 
     @Test
+    public void dishProductsExistTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        when(jdbcTemplate.queryForObject(
+                eq(ProductRefRepo.SELECT_DISH_PRODUCTS_EXIST_SQL), argThat(matcher), eq(Long.class)))
+                .thenReturn(1L);
+
+        assertTrue(repo.dishProductsExist(DISH_ID));
+
+        verify(jdbcTemplate).queryForObject(
+                eq(ProductRefRepo.SELECT_DISH_PRODUCTS_EXIST_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
+    public void dishProductsExistZeroTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        when(jdbcTemplate.queryForObject(
+                eq(ProductRefRepo.SELECT_DISH_PRODUCTS_EXIST_SQL), argThat(matcher), eq(Long.class)))
+                .thenReturn(0L);
+
+        assertFalse(repo.dishProductsExist(DISH_ID));
+
+        verify(jdbcTemplate).queryForObject(
+                eq(ProductRefRepo.SELECT_DISH_PRODUCTS_EXIST_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
+    public void dishProductsExistNullTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        when(jdbcTemplate.queryForObject(
+                eq(ProductRefRepo.SELECT_DISH_PRODUCTS_EXIST_SQL), argThat(matcher), eq(Long.class)))
+                .thenReturn(null);
+
+        assertFalse(repo.dishProductsExist(DISH_ID));
+
+        verify(jdbcTemplate).queryForObject(
+                eq(ProductRefRepo.SELECT_DISH_PRODUCTS_EXIST_SQL), argThat(matcher), eq(Long.class));
+    }
+
+    @Test
     public void ProductRefMapRowTest() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
 
