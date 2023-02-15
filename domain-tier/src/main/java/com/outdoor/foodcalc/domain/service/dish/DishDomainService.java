@@ -75,14 +75,15 @@ public class DishDomainService {
         if(id == -1L) {
             throw new FoodcalcDomainException("Failed to add dish");
         }
-        if((dish.getProducts().size() > 0) && (!productRefRepo.addDishProducts(dish))) {
-            throw new FoodcalcDomainException("Fail to add products for dish with id=" + dish.getDishId());
-        }
-        return new Dish(id,
+        Dish addedDish = new Dish(id,
                 dish.getName(),
                 dish.getDescription(),
                 dish.getCategory(),
                 dish.getProducts());
+        if((addedDish.getProducts().size() > 0) && (!productRefRepo.addDishProducts(addedDish))) {
+            throw new FoodcalcDomainException("Fail to add products for dish with id=" + addedDish.getDishId());
+        }
+        return addedDish;
     }
 
     /**
@@ -94,7 +95,7 @@ public class DishDomainService {
         if(!dishRepo.existsDish(dish.getDishId())) {
             throw new NotFoundException("Dish with id=" + dish.getDishId() + " doesn't exist");
         }
-        if(!productRefRepo.deleteDishProducts(dish.getDishId())) {
+        if(productRefRepo.dishProductsExist(dish.getDishId()) && !productRefRepo.deleteDishProducts(dish.getDishId())) {
             throw new FoodcalcDomainException("Failed to delete products for dish with id=" + dish.getDishId());
         }
         if((dish.getProducts().size() > 0) && (!productRefRepo.addDishProducts(dish))) {
@@ -114,7 +115,7 @@ public class DishDomainService {
         if(!dishRepo.existsDish(id)) {
             throw new NotFoundException("Dish with id=" + id + " doesn't exist");
         }
-        if(!productRefRepo.deleteDishProducts(id)) {
+        if(productRefRepo.dishProductsExist(id) && !productRefRepo.deleteDishProducts(id)) {
             throw new FoodcalcDomainException("Failed to delete products for dish with id=" + id);
         }
         if(!dishRepo.deleteDish(id)) {
