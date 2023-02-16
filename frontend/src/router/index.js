@@ -4,6 +4,7 @@ import HomePage from 'src/components/HomePage'
 import AboutPage from 'src/components/AboutPage'
 import DirectoryPage from 'src/components/directory/DirectoryPage'
 import Products from 'src/components/directory/Products'
+import Dishes from 'src/components/directory/Dishes'
 import ProductCategories from 'src/components/directory/ProductCategories'
 import DishCategories from 'src/components/directory/DishCategories'
 import MealTypes from 'src/components/directory/MealTypes'
@@ -33,6 +34,11 @@ export default new Router({
           path: 'products',
           name: 'ProductsPage',
           component: Products
+        },
+        {
+          path: 'dishes',
+          name: 'DishesPage',
+          component: Dishes
         },
         {
           path: 'product-categories',
