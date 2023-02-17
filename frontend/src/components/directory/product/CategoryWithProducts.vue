@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-bind:key="category.id" class="row bg-light">
-      <div class="col-md-12 border" style="text-align: left"><i><b>{{category.name}}</b></i></div>
+      <div class="col-md-12 border" style="text-align: left"><em><strong>{{category.name}}</strong></em></div>
     </div>
     <template v-if="category.products.length > 0">
       <div v-for="product in category.products" :key="category.id + '-' + product.id">

@@ -5,6 +5,7 @@ import AboutPage from 'src/components/AboutPage'
 import DirectoryPage from 'src/components/directory/DirectoryPage'
 import Products from 'src/components/directory/Products'
 import Dishes from 'src/components/directory/Dishes'
+import EditDish from 'src/components/directory/dish/EditDish'
 import ProductCategories from 'src/components/directory/ProductCategories'
 import DishCategories from 'src/components/directory/DishCategories'
 import MealTypes from 'src/components/directory/MealTypes'
@@ -39,6 +40,11 @@ export default new Router({
           path: 'dishes',
           name: 'DishesPage',
           component: Dishes
+        },
+        {
+          path: 'dish-edit',
+          name: 'EditDishPage',
+          component: EditDish
         },
         {
           path: 'product-categories',

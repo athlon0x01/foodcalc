@@ -22,7 +22,7 @@
       </div>
     </div>
     <div v-if="!hasProducts() && errorMessage === null">
-      <p><i>No Products yet...</i></p>
+      <p><em>No Products yet...</em></p>
     </div>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
