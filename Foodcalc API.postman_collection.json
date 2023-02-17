@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "a650abea-5a0e-4d29-aee3-9981004d40c9",
+		"_postman_id": "35adcdea-1848-4a57-a9e1-b7ef77251832",
 		"name": "Foodcalc API",
 		"description": "API collections for Foodcalc application\n",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "6532257"
 	},
 	"item": [
 		{
@@ -27,10 +28,104 @@
 						"description": "Get all products grouped by product categories"
 					},
 					"response": []
+				},
+				{
+					"name": "Get Product by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/products/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Product",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"sausage\",\r\n    \"categoryId\": 3,\r\n    \"calorific\": 76.0,\r\n    \"proteins\": 4.0,\r\n    \"fats\": 1.0,\r\n    \"carbs\": 17.5,\r\n    \"weight\": 10.3\r\n}"
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/products",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"products"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Product",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 66,\r\n    \"name\": \"chicken\",\r\n    \"categoryId\": 3,\r\n    \"calorific\": 33.0,\r\n    \"proteins\": 3.0,\r\n    \"fats\": 3.0,\r\n    \"carbs\": 33.5,\r\n    \"weight\": 33.3\r\n}"
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/products/66",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"66"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Product by Id",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/products/1",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
 			],
-			"description": "All directory operations related to Products",
-			"protocolProfileBehavior": {}
+			"description": "All directory operations related to Products"
 		},
 		{
 			"name": "Product Categories",
@@ -161,7 +256,6 @@
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "8506f9fc-15df-4c53-8e2a-df6a60c5cddd",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -171,15 +265,13 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "67f421e8-d67c-43f4-b9ab-8735b8522423",
 						"type": "text/javascript",
 						"exec": [
 							""
 						]
 					}
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
 		},
 		{
 			"name": "Dish Categories",
@@ -303,9 +395,269 @@
 					},
 					"response": []
 				}
-			],
-			"protocolProfileBehavior": {}
+			]
+		},
+		{
+			"name": "Meal Types",
+			"item": [
+				{
+					"name": "Get All Meal Types",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/meal-types",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"meal-types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Meal Type by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/meal-types/2",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"meal-types",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Meal Type",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"new meal type\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/meal-types",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"meal-types"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Meal Type",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 4,\r\n    \"name\": \"updated meal type\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/meal-types/4",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"meal-types",
+								"4"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Meal Type",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/meal-types/6",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"meal-types",
+								"6"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Dishes",
+			"item": [
+				{
+					"name": "Get All Dishes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/dishes",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Dish by Id",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/dishes/20",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"dishes",
+								"20"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Dish with Products",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"kompot\",\r\n    \"categoryId\": 6,\r\n    \"calorific\": 20.0,\r\n    \"products\": [{\r\n        \"productId\": 4,\r\n        \"weight\": 100.0\r\n    },\r\n    {\r\n        \"productId\": 1,\r\n        \"weight\": 200.0\r\n    },\r\n    {\r\n        \"productId\": 3,\r\n        \"weight\": 300.0\r\n    }]\r\n}"
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/dishes",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Add Dish without Products",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\": \"fries\",\r\n    \"categoryId\": 2,\r\n    \"calorific\": 76.0,\r\n    \"products\": []\r\n}"
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/dishes",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"dishes"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Edit Dish",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"id\": 55,\r\n    \"name\": \"wwwww\",\r\n    \"categoryId\": 3,\r\n    \"calorific\": 600.0,\r\n    \"products\": [{\r\n        \"productId\": 3,\r\n        \"weight\": 200.0\r\n    },\r\n    {\r\n        \"productId\": 1,\r\n        \"weight\": 100.0\r\n    }]\r\n}"
+						},
+						"url": {
+							"raw": "{{baseURL}}/api/dishes/55",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"dishes",
+								"55"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Dish",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/api/dishes/55",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"api",
+								"dishes",
+								"55"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
-	],
-	"protocolProfileBehavior": {}
+	]
 }
