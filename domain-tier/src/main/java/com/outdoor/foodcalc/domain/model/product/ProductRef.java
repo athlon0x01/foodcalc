@@ -51,6 +51,10 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
         return product.getName();
     }
 
+    public Long getProductCategoryId() {
+        return product.getCategory().getCategoryId();
+    }
+
     public String getProductCategoryName() {
         return product.getCategory().getName();
     }
