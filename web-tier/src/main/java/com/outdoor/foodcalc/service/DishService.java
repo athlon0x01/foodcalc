@@ -4,6 +4,8 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
+import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
+import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
 import com.outdoor.foodcalc.model.dish.*;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,23 +19,30 @@ import java.util.stream.Collectors;
 
 @Service
 public class DishService {
-
-    private DishCategoryService dishCategories;
-    private ProductService productService;
-
-    private final List<Dish> dishes = new ArrayList<>();
+    private final DishDomainService dishDomainService;
+    private final DishCategoryDomainService dishCategoryDomainService;
+    private final DishCategoryService dishCategories;
+    private final ProductService productService;
 
     @Autowired
-    public DishService(DishCategoryService dishCategories, ProductService productService) {
+    public DishService(DishDomainService dishDomainService, DishCategoryDomainService dishCategoryDomainService, DishCategoryService dishCategories, ProductService productService) {
+        this.dishDomainService = dishDomainService;
+        this.dishCategoryDomainService = dishCategoryDomainService;
         this.dishCategories = dishCategories;
         this.productService = productService;
     }
 
+    /**
+     * Gets all {@link Dish} objects mapped to {@link DishView}.
+     *
+     * @return list of products
+     */
     public List<CategoryWithDishes> getAllDishes() {
         //load dishes & categories
         final List<SimpleDishCategory> categories = dishCategories.getDishCategories();
+        final List<Dish> domainDishes = dishDomainService.getAllDishes();
         //group dishes by categories
-        final Map<Long, List<Dish>> dishesMap = dishes.stream()
+        final Map<Long, List<Dish>> dishesMap = domainDishes.stream()
                 .collect(Collectors.groupingBy(d -> d.getCategory().getCategoryId()));
         //map domain classes to UI model
         return categories.stream()
@@ -50,50 +59,57 @@ public class DishService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Gets all {@link Dish} objects mapped to {@link DishView}.
+     *
+     * @param id dishId to load
+     * @return loaded dish
+     */
     public DishView getDish(long id) {
-        final Optional<DishView> first = dishes.stream()
-                .filter(dish -> dish.getDishId() == id)
-                .map(this::mapDishView)
-                .findFirst();
-        return first.orElseThrow(() -> new NotFoundException(String.valueOf(id)));
-    }
-
-    public SimpleDish addDish(SimpleDish dish) {
-        dish.id = dishes.stream()
-                .map(Dish::getDishId)
-                .max(Long::compareTo)
-                .orElse((long) dishes.size())
-                + 1;
-        Dish domainDish = new Dish(dish.id, dish.name, mapDishCategory(dish.categoryId));
-        domainDish.setProducts(mapProductRefs(dish));
-        dishes.add(domainDish);
-        return dish;
-    }
-
-    public boolean updateDish(SimpleDish dish) {
-        final Optional<Dish> first = dishes.stream()
-                .filter(p -> p.getDishId() == dish.id)
-                .findFirst();
-        Dish original = first.orElseThrow(() -> new NotFoundException(String.valueOf(dish.id)));
-        if (original.getCategory().getCategoryId() != dish.categoryId) {
-            final DishCategory category = mapDishCategory(dish.categoryId);
-            original.setCategory(category);
+        Optional<Dish> domainDish = dishDomainService.getDish(id);
+        if(!domainDish.isPresent()) {
+            throw new NotFoundException("Dish wasn't found");
         }
-        original.setName(dish.name);
-        original.setProducts(mapProductRefs(dish));
-        return true;
+        return mapDishView(domainDish.get());
     }
 
-    public boolean deleteDish(long id) {
-        int index = 0;
-        while (index < dishes.size()) {
-            if (dishes.get(index).getDishId() == id) {
-                dishes.remove(index);
-                return true;
-            }
-            index++;
-        }
-        return false;
+    /**
+     * Adds new {@link Dish}.
+     *
+     * @param simpleDish dish to add
+     * @return new dish
+     */
+    public SimpleDish addDish(SimpleDish simpleDish) {
+        final DishCategory category = dishCategoryDomainService.getCategory(simpleDish.categoryId)
+                .orElseThrow(() ->
+                        new NotFoundException("Failed to get Dish Category, id = " + simpleDish.categoryId ));
+
+        Dish dishToAdd = new Dish( -1, simpleDish.name, "", category, mapProductRefs(simpleDish));
+        simpleDish.id = dishDomainService.addDish(dishToAdd).getDishId();
+        return simpleDish;
+    }
+
+    /**
+     * Updates selected {@link Dish} with new value.
+     *
+     * @param simpleDish updated
+     */
+    public void updateDish(SimpleDish simpleDish) {
+        final DishCategory category = dishCategoryDomainService.getCategory(simpleDish.categoryId)
+                .orElseThrow(() ->
+                        new NotFoundException("Failed to get Dish Category, id = " + simpleDish.categoryId ));
+
+        Dish dishToUpdate = new Dish(simpleDish.id, simpleDish.name, "", category, mapProductRefs(simpleDish));
+        dishDomainService.updateDish(dishToUpdate);
+    }
+
+    /**
+     * Removes selected {@link Dish}.
+     *
+     * @param id dish Id to delete
+     */
+    public void deleteDish(long id) {
+        dishDomainService.deleteDish(id);
     }
 
     private DishView mapDishView(Dish dish) {
@@ -111,16 +127,8 @@ public class DishService {
         return view;
     }
 
-    private DishCategory mapDishCategory(long id) {
-        final SimpleDishCategory category = dishCategories.getDishCategory(id);
-        if (category == null) {
-            throw  new NotFoundException("Failed to get Dish Category, id = " + id);
-        }
-        return new DishCategory(category.id, category.name);
-    }
-
-    private List<ProductRef> mapProductRefs(SimpleDish dish) {
-        return dish.products.stream()
+    private List<ProductRef> mapProductRefs(SimpleDish simpleDish) {
+        return simpleDish.products.stream()
                 .map(dp -> new ProductRef(
                         productService.getDomainProduct(dp.productId),
                         Math.round(dp.weight * 10)))
