@@ -15,7 +15,8 @@
       </div>
       <!--Content-->
       <div v-for="category in categoriesWithDishes" :key="category.id">
-        <category-with-dishes v-bind:category="category"/>
+        <category-with-dishes v-bind:category="category"
+                              v-on:remove="removeDish"/>
       </div>
     </div>
     <div v-if="!hasDishes() && errorMessage === null">
@@ -75,6 +76,17 @@ export default {
         })
         .catch(e => {
           this.getErrorMessage(e, 'Failed to load Products...')
+        })
+    },
+
+    removeDish (dishId) {
+      axios.delete(this.dishesEndpointUrl + dishId)
+        .then(() => {
+          this.clearErrors()
+          this.getAllDishes()
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to delete dish with id = ' + dishId)
         })
     }
   },

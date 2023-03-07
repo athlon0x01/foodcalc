@@ -32,11 +32,11 @@ export default {
 
   methods: {
     editDish () {
-      console.log('Will edit later')
+      this.$router.push({name: 'EditDishPage', params: {oldDish: this.dish}})
     },
 
     removeDish () {
-      console.log('Will remove later')
+      this.$emit('remove', this.dish.id)
     }
   }
 }

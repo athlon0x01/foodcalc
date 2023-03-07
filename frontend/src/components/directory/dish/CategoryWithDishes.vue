@@ -5,7 +5,8 @@
     </div>
     <template v-if="category.dishes.length > 0">
       <div v-for="dish in category.dishes" :key="category.id + '-' + dish.id">
-        <dish-view v-bind:dish="dish"/>
+        <dish-view v-bind:dish="dish"
+                   v-on:remove="removeDish"/>
       </div>
     </template>
   </div>
@@ -21,6 +22,12 @@ export default {
     category: {
       type: Object,
       required: true
+    }
+  },
+
+  methods: {
+    removeDish (dishId) {
+      this.$emit('remove', dishId)
     }
   }
 }

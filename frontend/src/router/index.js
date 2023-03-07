@@ -44,7 +44,8 @@ export default new Router({
         {
           path: 'dish-edit',
           name: 'EditDishPage',
-          component: EditDish
+          component: EditDish,
+          props: true
         },
         {
           path: 'product-categories',
