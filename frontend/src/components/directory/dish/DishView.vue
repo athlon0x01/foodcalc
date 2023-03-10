@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-bind:key="dish.id" class="row">
-      <div class="col-md-10 border" style="text-align: left">&emsp;<em>{{dish.name}}</em></div>
+      <div class="col-md-10 border" style="text-align: left;margin-top: 3px">&emsp;<em>{{dish.name}}</em></div>
       <div class="col-md-1">
         <b-button variant="outline-success" size="sm" v-on:click="editDish">Edit</b-button>
       </div>

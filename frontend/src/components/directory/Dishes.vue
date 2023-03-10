@@ -62,11 +62,12 @@ export default {
     },
 
     hasDishes () {
-      let dishesCount = 0
-      for (let i = 0; i < this.categoriesWithDishes.length; i++) {
-        dishesCount += this.categoriesWithDishes[i].dishes.length
+      for (const category of this.categoriesWithDishes) {
+        if (category.dishes.length > 0) {
+          return true
+        }
       }
-      return dishesCount > 0
+      return false
     },
 
     getAllDishes () {

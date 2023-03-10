@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2 class="directory-header">Add Dish</h2>
+    <h2 class="directory-header">{{ pageTitle }}</h2>
     <div class="container">
       <div class="row">
         <div class="col-md-9">
@@ -19,6 +19,42 @@
           <p v-if="errors.has('categoryId') > 0" class="alert">{{errors.first('categoryId')}}</p>
         </div>
       </div>
+      <!--Products section-->
+      <template v-if="products.length > 0" class="row">
+        <!--Header-->
+        <h4 style="padding-top:10px">Products</h4>
+        <div class="row headerRow bg-light">
+          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-1 border"><strong>Calorific</strong></div>
+          <div class="col-md-1 border"><strong>Proteins</strong></div>
+          <div class="col-md-1 border"><strong>Fats</strong></div>
+          <div class="col-md-1 border"><strong>Carbs</strong></div>
+          <div class="col-md-1 border"><strong>Weight</strong></div>
+        </div>
+        <div class="row headerRow bg-light">
+          <div class="col-md-5 border"><em>Total</em></div>
+          <div class="col-md-1 border"><em>{{ totalCalorific }}</em></div>
+          <div class="col-md-1 border"><em>{{ totalProteins }}</em></div>
+          <div class="col-md-1 border"><em>{{ totalFats }}</em></div>
+          <div class="col-md-1 border"><em>{{ totalCarbs }}</em></div>
+          <div class="col-md-1 border"><em>{{ totalWeight }}</em></div>
+        </div>
+        <!--Content-->
+        <div v-for="product in products" :key="product.id">
+          <product-view v-bind:product="product"
+                        v-bind:select-mode="false"
+                        v-bind:manage-mode="true"
+                        v-on:productUp="moveProductUp"
+                        v-on:productDown="moveProductDown"
+                        v-on:weightUpdated="updateProductWeight"
+                        v-on:productRemoved="removeProduct"/>
+        </div>
+      </template>
+      <b-button variant="link" size="sm" v-on:click="addProductsModeChange">{{ productsTitle }}</b-button>
+      <div v-if="addProductsMode !== undefined && addProductsMode" class="border border-dark">
+        <select-product-view v-on:hideProducts="hideProductsToAdd"
+                             v-on:productSelected="addProduct"/>
+      </div>
       <div style="margin-top: 15px">
         <b-button variant="outline-success" size="sm" v-on:click="addNewDish">{{ addButtonTitle }}</b-button>
         <router-link :to="{ name : 'DishesPage' }"><b-button variant="outline-danger" size="sm" >Cancel</b-button></router-link>
@@ -29,9 +65,12 @@
 
 <script>
 import axios from 'axios'
+import SelectProductView from 'src/components/directory/product/SelectProductView'
+import ProductView from 'src/components/directory/product/ProductView'
 
 export default {
   name: 'EditDish',
+  components: {SelectProductView, ProductView},
   props: {
     oldDish: {
       type: Object,
@@ -40,15 +79,24 @@ export default {
   },
 
   data () {
+    let initialProducts = this.editMode() ? this.oldDish.products : []
     return {
       dishesEndpointUrl: '/api/dishes/',
       dishCategoriesEndpointUrl: '/api/dish-categories/',
       dishCategories: [],
+      addProductsMode: false,
+      pageTitle: this.editMode() ? 'Edit Dish' : 'Add Dish',
+      productsTitle: 'Show Products to add',
       addButtonTitle: this.editMode() ? 'Update' : 'Add',
       dishId: this.editMode() ? this.oldDish.id : -1,
       name: this.editMode() ? this.oldDish.name : '',
       categoryId: this.editMode() ? this.oldDish.categoryId : 0,
-      products: this.editMode() ? this.oldDish.products : [],
+      products: initialProducts,
+      totalCalorific: this.calculateProductsTotal(initialProducts, p => Number(p.calorific)),
+      totalProteins: this.calculateProductsTotal(initialProducts, p => Number(p.proteins)),
+      totalFats: this.calculateProductsTotal(initialProducts, p => Number(p.fats)),
+      totalCarbs: this.calculateProductsTotal(initialProducts, p => Number(p.carbs)),
+      totalWeight: this.calculateProductsTotal(initialProducts, p => Number(p.weight)),
       errorMessage: null
     }
   },
@@ -56,6 +104,58 @@ export default {
   methods: {
     editMode () {
       return this.oldDish !== undefined
+    },
+
+    addProductsModeChange () {
+      this.addProductsMode = !this.addProductsMode
+      this.productsTitle = this.addProductsMode ? 'Hide Products to be added' : 'Show Products to add'
+    },
+
+    hideProductsToAdd () {
+      this.addProductsMode = false
+      this.productsTitle = 'Show Products to add'
+    },
+
+    addProduct (product) {
+      if (this.products.find(p => p.id === product.id) === undefined) {
+        this.products.push(product)
+        this.updateProductsTotal()
+      } else {
+        console.log('Dish already contains ' + JSON.stringify(product))
+      }
+    },
+
+    removeProduct (productId) {
+      this.products = this.products.filter(p => p.id !== productId)
+      this.updateProductsTotal()
+    },
+
+    moveProductUp (productId) {
+      const ndx = this.products.findIndex(p => p.id === productId)
+      if (ndx > 0) {
+        let product = this.products[ndx]
+        this.products[ndx] = this.products[ndx - 1]
+        this.products[ndx - 1] = product
+        this.$forceUpdate()
+      }
+    },
+
+    moveProductDown (productId) {
+      const ndx = this.products.findIndex(p => p.id === productId)
+      if (ndx < this.products.length - 1) {
+        let product = this.products[ndx]
+        this.products[ndx] = this.products[ndx + 1]
+        this.products[ndx + 1] = product
+        this.$forceUpdate()
+      }
+    },
+
+    updateProductWeight (productId, weight) {
+      let product = this.products.find(p => p.id === productId)
+      if (product !== undefined) {
+        product.weight = weight
+        this.totalWeight = this.calculateProductsTotal(this.products, p => Number(p.weight))
+      }
     },
 
     getErrorMessage (error, defaultMessage) {
@@ -91,7 +191,7 @@ export default {
             id: this.dishId,
             name: this.name,
             categoryId: this.categoryId,
-            products: this.products
+            products: this.mapProducts()
           }
           if (this.editMode()) {
             this.updateDish(newDish)
@@ -100,6 +200,15 @@ export default {
           }
         } else {
           console.log('Couldn\'t add new dish due to validation errors')
+        }
+      })
+    },
+
+    mapProducts () {
+      return this.products.map(p => {
+        return {
+          productId: p.id,
+          weight: p.weight
         }
       })
     },
@@ -124,6 +233,19 @@ export default {
         .catch(e => {
           this.getErrorMessage(e, 'Failed to update dish ' + JSON.stringify(dish))
         })
+    },
+
+    calculateProductsTotal (products, propertyGetter) {
+      let total = products.reduce((total, product) => propertyGetter(product) + total, 0)
+      return total.toFixed(1)
+    },
+
+    updateProductsTotal () {
+      this.totalCalorific = this.calculateProductsTotal(this.products, p => Number(p.calorific))
+      this.totalProteins = this.calculateProductsTotal(this.products, p => Number(p.proteins))
+      this.totalFats = this.calculateProductsTotal(this.products, p => Number(p.fats))
+      this.totalCarbs = this.calculateProductsTotal(this.products, p => Number(p.carbs))
+      this.totalWeight = this.calculateProductsTotal(this.products, p => Number(p.weight))
     }
   },
 

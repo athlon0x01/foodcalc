@@ -72,11 +72,12 @@ export default {
     },
 
     hasProducts () {
-      let productsCount = 0
-      for (let i = 0; i < this.categoriesWithProducts.length; i++) {
-        productsCount += this.categoriesWithProducts[i].products.length
+      for (const category of this.categoriesWithProducts) {
+        if (category.products.length > 0) {
+          return true
+        }
       }
-      return productsCount > 0
+      return false
     },
 
     getAllProducts () {
