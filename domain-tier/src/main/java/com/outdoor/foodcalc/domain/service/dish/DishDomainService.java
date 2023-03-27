@@ -68,6 +68,9 @@ public class DishDomainService {
      * Add new {@link Dish} object.
      *
      * @param dish to add
+     *
+     * @throws FoodcalcDomainException If dish wasn't added
+     * @throws FoodcalcDomainException If dish products weren't added
      * @return new {@link Dish} with auto generated id
      */
     public Dish addDish(Dish dish) {
@@ -80,7 +83,7 @@ public class DishDomainService {
                 dish.getDescription(),
                 dish.getCategory(),
                 dish.getProducts());
-        if((addedDish.getProducts().size() > 0) && (!productRefRepo.addDishProducts(addedDish))) {
+        if((!productRefRepo.addDishProducts(addedDish)) && (addedDish.getProducts().size() > 0)) {
             throw new FoodcalcDomainException("Fail to add products for dish with id=" + addedDish.getDishId());
         }
         return addedDish;
@@ -90,17 +93,20 @@ public class DishDomainService {
      * Update {@link Dish} object.
      *
      * @param dish to update
+     *
+     * @throws NotFoundException If dish doesn't exist
+     * @throws FoodcalcDomainException If dish products weren't added
+     * @throws FoodcalcDomainException If dish wasn't updated
      */
     public void updateDish(Dish dish) {
         if(!dishRepo.existsDish(dish.getDishId())) {
             throw new NotFoundException("Dish with id=" + dish.getDishId() + " doesn't exist");
         }
-        if(productRefRepo.dishProductsExist(dish.getDishId()) && !productRefRepo.deleteDishProducts(dish.getDishId())) {
-            throw new FoodcalcDomainException("Failed to delete products for dish with id=" + dish.getDishId());
+        productRefRepo.deleteDishProducts(dish.getDishId());
+        if((!dish.getProducts().isEmpty()) && (!productRefRepo.addDishProducts(dish))) {
+            throw new FoodcalcDomainException("Failed to add products for dish with id=" + dish.getDishId());
         }
-        if((dish.getProducts().size() > 0) && (!productRefRepo.addDishProducts(dish))) {
-                throw new FoodcalcDomainException("Failed to add products for dish with id=" + dish.getDishId());
-        }
+
         if(!dishRepo.updateDish(dish)) {
             throw new FoodcalcDomainException("Failed to update dish with id=" + dish.getDishId());
         }
@@ -110,14 +116,15 @@ public class DishDomainService {
      * Delete {@link Dish} object with all related {@link ProductRef}.
      *
      * @param id dish to delete
+     *
+     * @throws NotFoundException If dish doesn't exist
+     * @throws FoodcalcDomainException If dish wasn't deleted
      */
     public void deleteDish(long id) {
         if(!dishRepo.existsDish(id)) {
             throw new NotFoundException("Dish with id=" + id + " doesn't exist");
         }
-        if(productRefRepo.dishProductsExist(id) && !productRefRepo.deleteDishProducts(id)) {
-            throw new FoodcalcDomainException("Failed to delete products for dish with id=" + id);
-        }
+        productRefRepo.deleteDishProducts(id);
         if(!dishRepo.deleteDish(id)) {
             throw new FoodcalcDomainException("Failed to delete dish with id=" + id);
         }
