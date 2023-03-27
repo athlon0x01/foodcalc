@@ -172,26 +172,6 @@ public class ProductRefRepoTest {
                 eq(ProductRefRepo.SELECT_DISH_PRODUCTS_SQL), argThat(matcher), Mockito.<RowMapper<ProductRef>>any());
     }
 
-//    @Test
-//    public void deleteDishProductsTest() {
-//        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
-//        when(jdbcTemplate.update(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher))).thenReturn(1);
-//
-//        assertTrue(repo.deleteDishProducts(DISH_ID));
-//
-//        verify(jdbcTemplate).update(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher));
-//    }
-//
-//    @Test
-//    public void deleteDishProductsFailTest() {
-//        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
-//        when(jdbcTemplate.update(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher))).thenReturn(0);
-//
-//        assertFalse(repo.deleteDishProducts(DISH_ID));
-//
-//        verify(jdbcTemplate).update(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher));
-//    }
-
     @Test
     public void deleteDishProductsTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
