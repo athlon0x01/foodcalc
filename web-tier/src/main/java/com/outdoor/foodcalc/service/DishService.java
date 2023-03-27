@@ -14,21 +14,20 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class DishService {
     private final DishDomainService dishDomainService;
     private final DishCategoryDomainService dishCategoryDomainService;
-    private final DishCategoryService dishCategories;
+    private final DishCategoryService dishCategoryService;
     private final ProductService productService;
 
     @Autowired
-    public DishService(DishDomainService dishDomainService, DishCategoryDomainService dishCategoryDomainService, DishCategoryService dishCategories, ProductService productService) {
+    public DishService(DishDomainService dishDomainService, DishCategoryDomainService dishCategoryDomainService, DishCategoryService dishCategoryService, ProductService productService) {
         this.dishDomainService = dishDomainService;
         this.dishCategoryDomainService = dishCategoryDomainService;
-        this.dishCategories = dishCategories;
+        this.dishCategoryService = dishCategoryService;
         this.productService = productService;
     }
 
@@ -39,7 +38,7 @@ public class DishService {
      */
     public List<CategoryWithDishes> getAllDishes() {
         //load dishes & categories
-        final List<SimpleDishCategory> categories = dishCategories.getDishCategories();
+        final List<SimpleDishCategory> categories = dishCategoryService.getDishCategories();
         final List<Dish> domainDishes = dishDomainService.getAllDishes();
         //group dishes by categories
         final Map<Long, List<Dish>> dishesMap = domainDishes.stream()
@@ -66,11 +65,10 @@ public class DishService {
      * @return loaded dish
      */
     public DishView getDish(long id) {
-        Optional<Dish> domainDish = dishDomainService.getDish(id);
-        if(!domainDish.isPresent()) {
-            throw new NotFoundException("Dish wasn't found");
-        }
-        return mapDishView(domainDish.get());
+        Dish domainDish = dishDomainService.getDish(id)
+                .orElseThrow(() ->
+                        new NotFoundException("Dish wasn't found"));
+        return mapDishView(domainDish);
     }
 
     /**
@@ -99,8 +97,8 @@ public class DishService {
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Dish Category, id = " + simpleDish.categoryId ));
 
-        Dish dishToUpdate = new Dish(simpleDish.id, simpleDish.name, "", category, mapProductRefs(simpleDish));
-        dishDomainService.updateDish(dishToUpdate);
+        Dish updatedDish = new Dish(simpleDish.id, simpleDish.name, "", category, mapProductRefs(simpleDish));
+        dishDomainService.updateDish(updatedDish);
     }
 
     /**
