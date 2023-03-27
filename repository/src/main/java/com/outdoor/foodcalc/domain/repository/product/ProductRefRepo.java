@@ -48,10 +48,9 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String INSERT_DISH_PRODUCTS_SQL = "insert into dish_product (dish, product, ndx, weight) " +
             "values (:dish, :product, :ndx, :weight)";
 
-    static final String DELETE_DISH_PRODUCTS_SQL = "delete from dish_product " +
-            "where dish = :dish";
-
-    static final String SELECT_DISH_PRODUCTS_EXIST_SQL = "select count(*) from dish_product where dish = :dish";
+    static final String DELETE_DISH_PRODUCTS_SQL_COUNT = "with deleted as " +
+            "(delete from dish_product where dish = :dish returning *) " +
+            "select count(*) from deleted";
 
 
     @Autowired
@@ -99,16 +98,10 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     }
 
     @Override
-    public boolean deleteDishProducts(long dishId) {
+    public long deleteDishProducts(long dishId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("dish", dishId);
-        return jdbcTemplate.update(DELETE_DISH_PRODUCTS_SQL, parameters) > 0;
-    }
-
-    @Override
-    public boolean dishProductsExist(long dishId) {
-        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dish", dishId);
-        Long count = jdbcTemplate.queryForObject(SELECT_DISH_PRODUCTS_EXIST_SQL, parameters, Long.class);
-        return count != null && count > 0;
+        Long count = jdbcTemplate.queryForObject(DELETE_DISH_PRODUCTS_SQL_COUNT, parameters, Long.class);
+        return Optional.ofNullable(count).orElse(0L);
     }
 
     @Override

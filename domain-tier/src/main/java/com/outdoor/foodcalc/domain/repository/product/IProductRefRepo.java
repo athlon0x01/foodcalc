@@ -41,14 +41,5 @@ public interface IProductRefRepo {
      * @param dishId dish id
      * @return if products was deleted for dish
      */
-    boolean deleteDishProducts(long dishId);
-
-    /**
-     * Check if products for specified {@link Dish} exist.
-     *
-     * @param id dish to check
-     * @return if products for specified dish exist
-     */
-    boolean dishProductsExist(long id);
-
+    long deleteDishProducts(long dishId);
 }
