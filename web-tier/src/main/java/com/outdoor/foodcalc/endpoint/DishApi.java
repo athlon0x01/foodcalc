@@ -58,16 +58,14 @@ public interface DishApi {
     SimpleDish addDish(@ApiParam(value = "Dish", required = true)
                        @RequestBody @Valid SimpleDish dish);
 
-    @ApiOperation(value = "Update dish by ID",
-            notes = "Updates dish and returns updated value",
-            response = SimpleDish.class
+    @ApiOperation(value = "Update dish by ID"
     )
     @ApiResponses(value = {
             @ApiResponse(code = 200, message = "Dish updated"),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 404, message = "Dish not found")
     })
-    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
     void updateDish(@ApiParam(value = "ID of the Dish", required = true)
                           @PathVariable("id") long id,
                           @ApiParam(value = "Dish", required = true)
