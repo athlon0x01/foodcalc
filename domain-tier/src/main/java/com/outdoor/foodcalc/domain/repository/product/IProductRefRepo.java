@@ -39,7 +39,7 @@ public interface IProductRefRepo {
      * Deletes all {@link ProductRef} for dish.
      *
      * @param dishId dish id
-     * @return if products was deleted for dish
+     * @return number of deleted products for dish
      */
     long deleteDishProducts(long dishId);
 }
