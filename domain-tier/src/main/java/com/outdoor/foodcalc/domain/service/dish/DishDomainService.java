@@ -83,7 +83,7 @@ public class DishDomainService {
                 dish.getDescription(),
                 dish.getCategory(),
                 dish.getProducts());
-        if((!productRefRepo.addDishProducts(addedDish)) && (addedDish.getProducts().size() > 0)) {
+        if(!addedDish.getProducts().isEmpty() && !productRefRepo.addDishProducts(addedDish)) {
             throw new FoodcalcDomainException("Fail to add products for dish with id=" + addedDish.getDishId());
         }
         return addedDish;
@@ -103,7 +103,7 @@ public class DishDomainService {
             throw new NotFoundException("Dish with id=" + dish.getDishId() + " doesn't exist");
         }
         productRefRepo.deleteDishProducts(dish.getDishId());
-        if((!dish.getProducts().isEmpty()) && (!productRefRepo.addDishProducts(dish))) {
+        if(!dish.getProducts().isEmpty() && !productRefRepo.addDishProducts(dish)) {
             throw new FoodcalcDomainException("Failed to add products for dish with id=" + dish.getDishId());
         }
 
