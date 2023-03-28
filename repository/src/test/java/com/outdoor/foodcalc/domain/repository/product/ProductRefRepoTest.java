@@ -175,22 +175,42 @@ public class ProductRefRepoTest {
     @Test
     public void deleteDishProductsTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
-        when(jdbcTemplate.update(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher))).thenReturn(1);
+        when(jdbcTemplate
+                .queryForObject(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL_COUNT), argThat(matcher), eq(Long.class)))
+                .thenReturn(1L);
 
-        assertTrue(repo.deleteDishProducts(DISH_ID));
+        assertEquals(repo.deleteDishProducts(DISH_ID), 1L);
 
-        verify(jdbcTemplate).update(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher));
+        verify(jdbcTemplate)
+                .queryForObject(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL_COUNT), argThat(matcher), eq(Long.class));
     }
 
     @Test
-    public void deleteDishProductsFailTest() {
+    public void deleteDishProductsZeroTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
-        when(jdbcTemplate.update(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher))).thenReturn(0);
+        when(jdbcTemplate
+                .queryForObject(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL_COUNT), argThat(matcher), eq(Long.class)))
+                .thenReturn(0L);
 
-        assertFalse(repo.deleteDishProducts(DISH_ID));
+        assertEquals(repo.deleteDishProducts(DISH_ID), 0L);
 
-        verify(jdbcTemplate).update(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL), argThat(matcher));
+        verify(jdbcTemplate)
+                .queryForObject(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL_COUNT), argThat(matcher), eq(Long.class));
     }
+
+    @Test
+    public void deleteDishProductsNullTest() {
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        when(jdbcTemplate
+                .queryForObject(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL_COUNT), argThat(matcher), eq(Long.class)))
+                .thenReturn(null);
+
+        assertEquals(repo.deleteDishProducts(DISH_ID), 0L);
+
+        verify(jdbcTemplate)
+                .queryForObject(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL_COUNT), argThat(matcher), eq(Long.class));
+    }
+
 
     @Test
     public void ProductRefMapRowTest() throws SQLException {
