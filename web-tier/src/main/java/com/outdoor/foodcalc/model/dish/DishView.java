@@ -12,5 +12,12 @@ public class DishView {
     public String name;
     @Min(1)
     public long categoryId;
+    public float calorific;
+    public float proteins;
+    public float fats;
+    public float carbs;
+    public float weight;
+
     public List<ProductView> products;
+
 }
