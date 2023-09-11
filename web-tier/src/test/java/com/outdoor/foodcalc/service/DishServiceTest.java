@@ -19,6 +19,7 @@ import org.mockito.junit.MockitoRule;
 
 import java.util.*;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -102,7 +103,7 @@ public class DishServiceTest {
         CategoryWithDishes categoryWithDishes1 = createCategoryWithDishes(
                 CATEGORY1.getCategoryId(), CATEGORY1.getName(), Arrays.asList(dishView1, dishView2));
         CategoryWithDishes categoryWithDishes2 = createCategoryWithDishes(
-                CATEGORY2.getCategoryId(), CATEGORY2.getName(), Arrays.asList(dishView3));
+                CATEGORY2.getCategoryId(), CATEGORY2.getName(), List.of(dishView3));
         CategoryWithDishes categoryWithDishes3 = createCategoryWithDishes(
                 CATEGORY3.getCategoryId(), CATEGORY3.getName(), new ArrayList<>());
         List<CategoryWithDishes> expected = Arrays.asList(categoryWithDishes1, categoryWithDishes2, categoryWithDishes3);
@@ -165,7 +166,7 @@ public class DishServiceTest {
         when(productService.getDomainProduct(dishProduct3.productId)).thenReturn(product3);
 
         SimpleDish actualSimpleDish = dishService.addDish(simpleDishToAdd);
-        assertTrue(assertEqualsSimpleDish(expectedSimpleDish, actualSimpleDish));
+        assertEquals(expectedSimpleDish, actualSimpleDish);
 
         verify(dishCategoryDomainService).getCategory(simpleDishToAdd.categoryId);
         verify(dishDomainService).addDish(any());
@@ -283,31 +284,6 @@ public class DishServiceTest {
                 expected.name.equals(actual.name) &&
                 expected.categoryId == actual.categoryId &&
                 expected.products.equals(actual.products);
-    }
-
-    private boolean assertEqualsSimpleDish(SimpleDish expected, SimpleDish actual) {
-        if (expected == actual) return true;
-        if (actual == null || expected.getClass() != actual.getClass()) return false;
-        return expected.id == actual.id &&
-                expected.name.equals(actual.name) &&
-                expected.categoryId == actual.categoryId &&
-                assertEqualsDishProductList(expected.products, actual.products);
-    }
-
-    private boolean assertEqualsDishProducts(DishProduct expected, DishProduct actual) {
-        if (expected == actual) return true;
-        if (expected == null || actual == null || expected.getClass() != actual.getClass()) return false;
-        return expected.productId == actual.productId &&
-                Float.compare(expected.weight, actual.weight) == 0;
-    }
-
-    private boolean assertEqualsDishProductList(List<DishProduct> expected, List<DishProduct> actual) {
-        if (expected.size() != actual.size()) return false;
-        if (expected.getClass() != actual.getClass()) return false;
-        for (int i =0; i < expected.size(); i++) {
-            if (!assertEqualsDishProducts(expected.get(i), actual.get(i))) return false;
-        }
-        return true;
     }
 
     private boolean assertEqualsDishView(List<CategoryWithDishes> expected, List<CategoryWithDishes> actual) {
