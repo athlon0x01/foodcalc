@@ -56,7 +56,7 @@ public interface DishApi {
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     SimpleDish addDish(@ApiParam(value = "Dish", required = true)
-                       @RequestBody @Valid SimpleDish dish);
+                       @RequestBody SimpleDish dish);
 
     @ApiOperation(value = "Update dish by ID"
     )
@@ -69,7 +69,7 @@ public interface DishApi {
     void updateDish(@ApiParam(value = "ID of the Dish", required = true)
                           @PathVariable("id") long id,
                           @ApiParam(value = "Dish", required = true)
-                          @RequestBody @Valid SimpleDish dish);
+                          @RequestBody SimpleDish dish);
 
     @ApiOperation(value = "Delete dish by ID"
     )

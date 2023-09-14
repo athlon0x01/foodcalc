@@ -122,6 +122,11 @@ public class DishService {
                     return product;
                 })
                 .collect(Collectors.toList());
+        view.calorific = dish.getCalorific();
+        view.proteins = dish.getProteins();
+        view.fats = dish.getFats();
+        view.carbs = dish.getCarbs();
+        view.weight = dish.getWeight();
         return view;
     }
 
