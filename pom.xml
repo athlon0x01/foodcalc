@@ -18,6 +18,7 @@
     </modules>
 
     <properties>
+        <foodcalc.version>0.3-SNAPSHOT</foodcalc.version>
         <spring.version>5.3.20</spring.version>
         <jackson.version>2.13.3</jackson.version>
         <common-io.version>2.11.0</common-io.version>

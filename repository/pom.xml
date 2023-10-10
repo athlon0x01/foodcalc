@@ -17,7 +17,7 @@
         <dependency>
             <groupId>com.outdoor.foodcalc</groupId>
             <artifactId>domain-tier</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${foodcalc.version}</version>
             <scope>compile</scope>
         </dependency>
 
