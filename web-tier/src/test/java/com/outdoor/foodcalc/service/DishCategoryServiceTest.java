@@ -4,12 +4,10 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
