@@ -43,9 +43,7 @@ public class MealTypesService {
     }
 
     private MealTypeView mapMealType(MealType mealType) {
-        final MealTypeView model = new MealTypeView();
-        model.id = mealType.getTypeId();
-        model.name = mealType.getName();
+        final MealTypeView model = new MealTypeView(mealType.getTypeId(), mealType.getName());
         return model;
     }
 
@@ -57,7 +55,7 @@ public class MealTypesService {
      */
     public MealTypeView getMealType(int id) {
         Optional<MealType> mealType = domainService.getMealType(id);
-        if (!mealType.isPresent()) {
+        if (mealType.isEmpty()) {
             LOG.error("Meal type with id={} wasn't found", id);
             throw new NotFoundException("Meal type wasn't found");
         }
@@ -82,7 +80,7 @@ public class MealTypesService {
      * @param model updated meal type view
      */
     public boolean updateMealType(MealTypeView model) {
-        return domainService.updateMealType(new MealType(model.id, model.name));
+        return domainService.updateMealType(new MealType(model.getId(), model.getName()));
     }
 
     /**

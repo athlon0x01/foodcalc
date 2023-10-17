@@ -4,11 +4,12 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
-import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,10 +26,20 @@ import static org.mockito.Mockito.when;
  * @author Olga Borovyk.
  */
 public class MealTypesServiceTest {
+
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     private static final int TYPE_1_ID = 11111;
     private static final int TYPE_2_ID = 22222;
     private static final String TYPE_1_NAME = "First Meal type";
     private static final String TYPE_2_NAME = "Second Meal type";
+
+    private static final MealType TYPE_1 = new MealType(TYPE_1_ID, TYPE_1_NAME);
+    private static final MealType TYPE_2 = new MealType(TYPE_2_ID, TYPE_2_NAME);
+
+    private static final MealTypeView VIEW_1 = new MealTypeView(TYPE_1_ID, TYPE_1_NAME);
+    private static final MealTypeView VIEW_2 = new MealTypeView(TYPE_2_ID, TYPE_2_NAME);
 
     @Mock
     private MealTypeDomainService domainService;
@@ -36,40 +47,30 @@ public class MealTypesServiceTest {
     @InjectMocks
     private MealTypesService mealTypesService;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
-
     @Test
     public void getMealTypesTest() {
-        List<MealType> domainMealTypes = Arrays.asList(
-                new MealType(TYPE_1_ID, TYPE_1_NAME),
-                new MealType(TYPE_2_ID, TYPE_2_NAME));
+        List<MealType> domainMealTypes = Arrays.asList(TYPE_1, TYPE_2);
         when(domainService.getMealTypes()).thenReturn(domainMealTypes);
+        List<MealTypeView> expected = Arrays.asList(VIEW_1, VIEW_2);
 
         List<MealTypeView> actual = mealTypesService.getMealTypes();
 
         assertNotNull(actual);
         assertEquals(2, actual.size());
-        assertEquals(TYPE_1_ID, actual.get(0).id);
-        assertEquals(TYPE_1_NAME, actual.get(0).name);
-        assertEquals(TYPE_2_ID, actual.get(1).id);
-        assertEquals(TYPE_2_NAME, actual.get(1).name);
+        assertEquals(expected, actual);
 
         verify(domainService).getMealTypes();
     }
 
     @Test
     public void getMealTypeTest() {
-        MealType domainType = new MealType(TYPE_1_ID, TYPE_1_NAME);
-        when(domainService.getMealType(TYPE_1_ID)).thenReturn(Optional.of(domainType));
+        MealType domainType = TYPE_1;
+        when(domainService.getMealType(domainType.getTypeId())).thenReturn(Optional.of(domainType));
 
-        MealTypeView actual = mealTypesService.getMealType(TYPE_1_ID);
+        MealTypeView actual = mealTypesService.getMealType(domainType.getTypeId());
 
         assertNotNull(actual);
-        assertEquals(TYPE_1_ID, actual.id);
-        assertEquals(TYPE_1_NAME, actual.name);
+        assertEquals(VIEW_1, actual);
 
         verify(domainService).getMealType(TYPE_1_ID);
     }
@@ -83,28 +84,23 @@ public class MealTypesServiceTest {
 
     @Test
     public void addMealTypeTest() {
-        MealType returnedDomainType = new MealType(TYPE_1_ID, TYPE_1_NAME);
         MealType typeToAdd = new MealType(-1, TYPE_1_NAME);
-        when(domainService.addMealType(typeToAdd)).thenReturn(returnedDomainType);
+        when(domainService.addMealType(typeToAdd)).thenReturn(TYPE_1);
 
         MealTypeView actual = mealTypesService.addMealType(TYPE_1_NAME);
 
         assertNotNull(actual);
-        assertEquals(TYPE_1_ID, actual.id);
-        assertEquals(TYPE_1_NAME, actual.name);
+        assertEquals(VIEW_1, actual);
 
         verify(domainService).addMealType(typeToAdd);
     }
 
     @Test
     public void updateMealTypeTest() {
-        MealTypeView typeToUpdate = new MealTypeView();
-        typeToUpdate.id = TYPE_1_ID;
-        typeToUpdate.name = TYPE_1_NAME;
-        MealType domainType = new MealType(TYPE_1_ID, TYPE_1_NAME);
+        MealType domainType = TYPE_1;
         when(domainService.updateMealType(domainType)).thenReturn(true);
 
-        assertTrue(mealTypesService.updateMealType(typeToUpdate));
+        assertTrue(mealTypesService.updateMealType(VIEW_1));
 
         verify(domainService).updateMealType(domainType);
     }
