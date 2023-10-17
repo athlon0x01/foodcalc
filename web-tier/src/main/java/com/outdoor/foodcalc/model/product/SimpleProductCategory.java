@@ -1,39 +1,23 @@
 package com.outdoor.foodcalc.model.product;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import javax.validation.constraints.NotEmpty;
-import java.util.Objects;
 
 /**
  * View model for {@link com.outdoor.foodcalc.domain.model.product.ProductCategory} class.
  *
  * @author Anton Borovyk.
  */
-public class SimpleProductCategory {
+@AllArgsConstructor
+@NoArgsConstructor
+public @Data class SimpleProductCategory {
 
-    public long id;
+    private long id;
 
     @NotEmpty
-    public String name;
+    private String name;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        SimpleProductCategory that = (SimpleProductCategory) o;
-        return id == that.id &&
-            Objects.equals(name, that.name);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, name);
-    }
-
-    @Override
-    public String toString() {
-        return '{' +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }

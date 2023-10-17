@@ -1,23 +1,27 @@
 package com.outdoor.foodcalc.model.dish;
 
 import com.outdoor.foodcalc.model.product.ProductView;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
-
-public class DishView {
-    public long id;
+ @AllArgsConstructor
+ @NoArgsConstructor
+public @Data class DishView {
+    private long id;
     @NotEmpty
-    public String name;
+    private String name;
     @Min(1)
-    public long categoryId;
-    public float calorific;
-    public float proteins;
-    public float fats;
-    public float carbs;
-    public float weight;
+    private long categoryId;
+    private float calorific;
+    private float proteins;
+    private float fats;
+    private float carbs;
+    private float weight;
 
-    public List<ProductView> products;
+    private List<ProductView> products;
 
 }
