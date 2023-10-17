@@ -36,6 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ProductEndpointTest extends ApiUnitTest {
 
     public static final long PRODUCT_ID = 357891;
+    private static final ProductView PRODUCT_VIEW = new ProductView(PRODUCT_ID, "sugar", 12345,
+            0, 0, 0, 0, 0);
 
     @MockBean
     private ProductService service;
@@ -56,11 +58,8 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void getAllProductsTest() throws Exception {
-        CategoryWithProducts category = new CategoryWithProducts();
-        ProductView product = getSimpleProduct();
-        category.id = 12345;
-        category.name = "Sweets";
-        category.products = Collections.singletonList(product);
+        CategoryWithProducts category = new CategoryWithProducts(12345, "Sweets",
+                Collections.singletonList(PRODUCT_VIEW));
         List<CategoryWithProducts> products = Collections.singletonList(category);
 
         when(service.getAllProducts()).thenReturn(products);
@@ -71,7 +70,7 @@ public class ProductEndpointTest extends ApiUnitTest {
             .andExpect(jsonPath("$[0].name", is("Sweets")))
             .andExpect(jsonPath("$[0].products", hasSize(1)))
             .andExpect(jsonPath("$[0].products[0].id", is(357891)))
-            .andExpect(jsonPath("$[0].products[0].name", is("Sugar")))
+            .andExpect(jsonPath("$[0].products[0].name", is("sugar")))
             .andExpect(jsonPath("$[0].products[0].categoryId", is(12345)));
 
         verify(service).getAllProducts();
@@ -79,7 +78,7 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void getProductTest() throws Exception {
-        ProductView expectedProduct = getSimpleProduct();
+        ProductView expectedProduct = PRODUCT_VIEW;
         when(service.getProduct(PRODUCT_ID)).thenReturn(expectedProduct);
 
         MvcResult mvcResult = get("/products/" + PRODUCT_ID)
@@ -89,14 +88,6 @@ public class ProductEndpointTest extends ApiUnitTest {
         assertEquals(expectedProduct, actualProduct);
 
         verify(service).getProduct(PRODUCT_ID);
-    }
-
-    private ProductView getSimpleProduct() {
-        ProductView simpleProduct = new ProductView();
-        simpleProduct.id = PRODUCT_ID;
-        simpleProduct.name = "Sugar";
-        simpleProduct.categoryId = 12345;
-        return simpleProduct;
     }
 
     @Test
@@ -112,9 +103,9 @@ public class ProductEndpointTest extends ApiUnitTest {
     @Test
     public void addProductTest() throws Exception {
         ProductView productToAdd = new ProductView();
-        productToAdd.name = "Sugar";
-        productToAdd.categoryId = 12345;
-        ProductView expectedProduct = getSimpleProduct();
+        productToAdd.setName("Sugar");
+        productToAdd.setCategoryId(12345);
+        ProductView expectedProduct = PRODUCT_VIEW;
         when(service.addProduct(productToAdd)).thenReturn(expectedProduct);
 
         MvcResult mvcResult = post("/products", productToAdd).andReturn();
@@ -136,7 +127,7 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void updateProductTest() throws Exception {
-        ProductView productToUpdate = getSimpleProduct();
+        ProductView productToUpdate = PRODUCT_VIEW;
         when(service.updateProduct(productToUpdate)).thenReturn(true);
 
         MvcResult mvcResult = put("/products/" + PRODUCT_ID, productToUpdate).andReturn();
@@ -149,7 +140,7 @@ public class ProductEndpointTest extends ApiUnitTest {
     @Test
     public void updateProductValidationTest() throws Exception {
         String message = "Path variable Id = 55 doesn't match with request body Id = " + PRODUCT_ID;
-        ProductView productToUpdate = getSimpleProduct();
+        ProductView productToUpdate = PRODUCT_VIEW;
 
         put400("/products/55", productToUpdate)
                 .andExpect(jsonPath("$", is(message)));
@@ -160,10 +151,10 @@ public class ProductEndpointTest extends ApiUnitTest {
     @Test
     public void updateProductInternalErrorTest() throws Exception {
         String message = "Product failed to update";
-        ProductView productToUpdate = getSimpleProduct();
+        ProductView productToUpdate = PRODUCT_VIEW;
         when(service.updateProduct(productToUpdate)).thenReturn(false);
 
-        putJson("/products/" + productToUpdate.id, productToUpdate)
+        putJson("/products/" + productToUpdate.getId(), productToUpdate)
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$", is(message)));
 
@@ -173,10 +164,10 @@ public class ProductEndpointTest extends ApiUnitTest {
     @Test
     public void updateProductNotFoundTest() throws Exception {
         String message = "Product doesn't exist";
-        ProductView productToUpdate = getSimpleProduct();
+        ProductView productToUpdate = PRODUCT_VIEW;
         when(service.updateProduct(productToUpdate)).thenThrow(new NotFoundException(message));
 
-        put404("/products/" + productToUpdate.id, productToUpdate)
+        put404("/products/" + productToUpdate.getId(), productToUpdate)
                 .andExpect(jsonPath("$", is(message)));
 
         verify(service).updateProduct(productToUpdate);
@@ -191,7 +182,7 @@ public class ProductEndpointTest extends ApiUnitTest {
         verify(service).deleteProduct(PRODUCT_ID);
     }
 
-        @Test
+    @Test
     public void deleteProductNotFoundTest() throws Exception {
         String message = "Product doesn't exist";
         when(service.deleteProduct(PRODUCT_ID)).thenThrow(new NotFoundException(message));

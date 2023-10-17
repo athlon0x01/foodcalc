@@ -58,9 +58,8 @@ public class ProductCategoryService {
     }
 
     private SimpleProductCategory mapProductCategory(ProductCategory productCategory) {
-        final SimpleProductCategory model = new SimpleProductCategory();
-        model.id = productCategory.getCategoryId();
-        model.name = productCategory.getName();
+        final SimpleProductCategory model = new SimpleProductCategory(
+                productCategory.getCategoryId(), productCategory.getName());
         return model;
     }
 
@@ -83,7 +82,7 @@ public class ProductCategoryService {
      * @param model updated category
      */
     public boolean updateCategory(SimpleProductCategory model) {
-        return categoryDomainService.updateCategory(new ProductCategory(model.id, model.name));
+        return categoryDomainService.updateCategory(new ProductCategory(model.getId(), model.getName()));
     }
 
     /**

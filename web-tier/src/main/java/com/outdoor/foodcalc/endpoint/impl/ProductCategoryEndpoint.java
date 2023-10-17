@@ -42,15 +42,15 @@ public class ProductCategoryEndpoint implements ProductCategoriesApi {
 
     public SimpleProductCategory addCategory(@RequestBody @Valid SimpleProductCategory category) {
         LOG.debug("Adding new product category - {}", category);
-        return categoryService.addCategory(category.name);
+        return categoryService.addCategory(category.getName());
     }
 
     public SimpleProductCategory updateCategory(@PathVariable("id") long id,
                                                 @RequestBody @Valid SimpleProductCategory category) {
-        if (id != category.id) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.id);
+        if (id != category.getId()) {
+            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.getId());
             throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + category.id);
+                    + " doesn't match with request body Id = " + category.getId());
         }
         LOG.debug("Updating product category {}", category);
         if (!categoryService.updateCategory(category)) {

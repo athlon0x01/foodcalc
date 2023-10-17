@@ -18,7 +18,7 @@ public class SimpleProductCategoryTest extends BaseModelValidationTest{
     @Test
     public void validationPassTest() {
         SimpleProductCategory category = new SimpleProductCategory();
-        category.name = "Test";
+        category.setName("Test");
 
         Set<ConstraintViolation<SimpleProductCategory>> constraintViolations = validator.validate(category);
 
@@ -38,7 +38,7 @@ public class SimpleProductCategoryTest extends BaseModelValidationTest{
     @Test
     public void emptyNameTest() {
         SimpleProductCategory category = new SimpleProductCategory();
-        category.name = "";
+        category.setName("");
 
         Set<ConstraintViolation<SimpleProductCategory>> constraintViolations = validator.validate(category);
 

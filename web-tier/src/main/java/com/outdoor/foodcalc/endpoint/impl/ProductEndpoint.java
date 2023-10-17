@@ -48,10 +48,10 @@ public class ProductEndpoint implements ProductsApi {
 
     public ProductView updateProduct(@PathVariable("id") long id,
                                      @RequestBody @Valid ProductView product) {
-        if (id != product.id) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, product.id);
+        if (id != product.getId()) {
+            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, product.getId());
             throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + product.id);
+                    + " doesn't match with request body Id = " + product.getId());
         }
         LOG.debug("Updating product {}", product);
         if (!productService.updateProduct(product)) {

@@ -38,8 +38,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     private static final long CATEGORY_ID = 12345;
     private static final String CATEGORY_NAME = "Test category";
-
-    private SimpleProductCategory dummyCategory;
+    private static final SimpleProductCategory dummyCategory = new SimpleProductCategory(CATEGORY_ID, CATEGORY_NAME);
 
     @MockBean
     private ProductCategoryService service;
@@ -56,9 +55,6 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
     @Before
     public void setUp() {
         setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
-        dummyCategory = new SimpleProductCategory();
-        dummyCategory.id = CATEGORY_ID;
-        dummyCategory.name = CATEGORY_NAME;
     }
 
     @Test
@@ -105,8 +101,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryTest() throws Exception {
-        SimpleProductCategory category = new SimpleProductCategory();
-        category.name = CATEGORY_NAME;
+        SimpleProductCategory category = new SimpleProductCategory(1, CATEGORY_NAME);
 
         when(service.addCategory(CATEGORY_NAME)).thenReturn(dummyCategory);
 
@@ -194,7 +189,6 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
         verify(service).deleteCategory(CATEGORY_ID);
     }
 
-
     @Test
     public void deleteInternalErrorTest() throws Exception {
         String message = "Product category failed to delete";
@@ -206,5 +200,4 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
         verify(service).deleteCategory(CATEGORY_ID);
     }
-
 }
