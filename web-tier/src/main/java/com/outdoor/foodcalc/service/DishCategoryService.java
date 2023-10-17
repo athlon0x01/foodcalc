@@ -43,9 +43,7 @@ public class DishCategoryService {
     }
 
     private SimpleDishCategory mapDishCategory(DishCategory category) {
-        final SimpleDishCategory model = new SimpleDishCategory();
-        model.id = category.getCategoryId();
-        model.name = category.getName();
+        final SimpleDishCategory model = new SimpleDishCategory(category.getCategoryId(), category.getName());
         return model;
     }
 
@@ -82,7 +80,7 @@ public class DishCategoryService {
      * @param model updated category
      */
     public boolean updateDishCategory(SimpleDishCategory model) {
-        return categoryDomainService.updateCategory(new DishCategory(model.id, model.name));
+        return categoryDomainService.updateCategory(new DishCategory(model.getId(), model.getName()));
     }
 
     /**
