@@ -4,12 +4,12 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +27,6 @@ import static org.mockito.Mockito.when;
  */
 public class MealTypesServiceTest {
 
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
-
     private static final int TYPE_1_ID = 11111;
     private static final int TYPE_2_ID = 22222;
     private static final String TYPE_1_NAME = "First Meal type";
@@ -46,6 +43,11 @@ public class MealTypesServiceTest {
 
     @InjectMocks
     private MealTypesService mealTypesService;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void getMealTypesTest() {

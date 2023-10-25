@@ -4,12 +4,11 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
@@ -23,9 +22,6 @@ import static org.mockito.Mockito.when;
  * @author Olga Borovyk.
  */
 public class DishCategoryServiceTest {
-
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private static final long CATEGORY_1_ID = 11111;
     private static final long CATEGORY_2_ID = 22222;
@@ -43,6 +39,11 @@ public class DishCategoryServiceTest {
 
     @InjectMocks
     private DishCategoryService categoryService;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Test
     public void getDishCategoriesTest() {
