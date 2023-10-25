@@ -10,12 +10,11 @@ import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
 import com.outdoor.foodcalc.model.dish.*;
 import com.outdoor.foodcalc.model.product.ProductView;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
@@ -25,11 +24,13 @@ import static org.mockito.Mockito.*;
 
 public class DishServiceTest {
 
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
-
     @InjectMocks
     private DishService dishService;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Mock
     private DishDomainService dishDomainService;
@@ -91,17 +92,18 @@ public class DishServiceTest {
     private static final Dish domainDish3 = new Dish(DISH_3_ID, "domain dish3", "", DOMAIN_CAT_2,
             Arrays.asList(productRef1, productRef2, productRef3));
 
-    private static final DishView dishView1 = new DishView(
-            domainDish1.getDishId(), domainDish1.getName(), domainDish1.getCategory().getCategoryId(),
-            6.83f, 6.65f, 0.0f, 18.2f, 100.0f,
-            Arrays.asList(productView1, productView2, productView3));
-    private static final DishView dishView2 = new DishView(
-            domainDish2.getDishId(), domainDish2.getName(), domainDish2.getCategory().getCategoryId(),
-            0f, 0, 0f, 0, 0f, new ArrayList<>());
-    private static final DishView dishView3 = new DishView(
-            domainDish3.getDishId(), domainDish3.getName(), domainDish3.getCategory().getCategoryId(),
-            6.83f, 6.65f, 0.0f, 18.2f, 100.0f,
-            Arrays.asList(productView1, productView2, productView3));
+    private static final DishView dishView1 = DishView.builder().id(domainDish1.getDishId())
+            .name(domainDish1.getName()).categoryId(domainDish1.getCategory().getCategoryId())
+            .calorific(6.83f).proteins(6.83f).fats(0.0f).carbs(18.2f).weight(100.0f)
+            .products(Arrays.asList(productView1, productView2, productView3)).build();
+    private static final DishView dishView2 = DishView.builder().id(domainDish2.getDishId())
+            .name(domainDish2.getName()).categoryId(domainDish2.getCategory().getCategoryId())
+            .calorific(0f).proteins(0f).fats(0f).carbs(0f).weight(0f)
+            .products(new ArrayList<>()).build();
+    private static final DishView dishView3 = DishView.builder().id(domainDish3.getDishId())
+        .name(domainDish3.getName()).categoryId(domainDish3.getCategory().getCategoryId())
+            .calorific(6.83f).proteins(6.83f).fats(0.0f).carbs(18.2f).weight(100.0f)
+            .products(Arrays.asList(productView1, productView2, productView3)).build();
 
     private static final DishProduct dishProduct1 = new DishProduct(productRef1.getProductId(), productRef1.getWeight());
     private static final DishProduct dishProduct2 = new DishProduct(productRef2.getProductId(), productRef2.getWeight());

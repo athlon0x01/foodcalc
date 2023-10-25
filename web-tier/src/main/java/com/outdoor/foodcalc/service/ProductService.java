@@ -61,14 +61,13 @@ public class ProductService {
 
     private CategoryWithProducts mapCategoryWithProducts(
             ProductCategory category, Map<Long, List<Product>> productsMap) {
-        final CategoryWithProducts withProducts = new CategoryWithProducts();
-        withProducts.setId(category.getCategoryId());
-        withProducts.setName(category.getName());
         final List<Product> productList = productsMap.get(category.getCategoryId());
-        withProducts.setProducts((productList == null) ? new ArrayList<>() : productList.stream()
-                .map(this::mapSimpleProduct)
-                .collect(Collectors.toList()));
-        return withProducts;
+        return CategoryWithProducts.builder()
+                .id(category.getCategoryId())
+                .name(category.getName()).products((productList == null) ? new ArrayList<>() : productList.stream()
+                        .map(this::mapSimpleProduct)
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     Product getDomainProduct(long id) {
@@ -136,15 +135,15 @@ public class ProductService {
     }
 
     private ProductView mapSimpleProduct(Product product) {
-        final ProductView pm = new ProductView();
-        pm.setId(product.getProductId());
-        pm.setName(product.getName());
-        pm.setCategoryId(product.getCategory().getCategoryId());
-        pm.setCalorific(product.getCalorific());
-        pm.setProteins(product.getProteins());
-        pm.setFats(product.getFats());
-        pm.setCarbs(product.getCarbs());
-        pm.setWeight(product.getDefaultWeight());
-        return pm;
+        return ProductView.builder()
+                .id(product.getProductId())
+                .name(product.getName())
+                .categoryId(product.getCategory().getCategoryId())
+                .calorific(product.getCalorific())
+                .proteins(product.getProteins())
+                .fats(product.getFats())
+                .carbs(product.getCarbs())
+                .weight(product.getDefaultWeight())
+                .build();
     }
 }

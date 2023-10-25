@@ -7,12 +7,11 @@ import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
@@ -25,9 +24,6 @@ import static org.mockito.Mockito.*;
  * @author Anton Borovyk.
  */
 public class ProductServiceTest {
-
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private static final double DELTA = 0.00001;
     private static final long CATEGORY_1_ID = 12345;
@@ -61,6 +57,11 @@ public class ProductServiceTest {
     @InjectMocks
     private ProductService productService;
 
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
+
     @Mock
     private ProductDomainService productDomainService;
     @Mock
@@ -70,12 +71,12 @@ public class ProductServiceTest {
     public void getAllProductsTest() {
         List<ProductCategory> domainCategories = Arrays.asList(CATEGORY1, CATEGORY2, CATEGORY3);
         List<Product> domainProducts = Arrays.asList(DOMAIN_PRODUCT_1, DOMAIN_PRODUCT_2, DOMAIN_PRODUCT_3);
-        CategoryWithProducts categoryWithProducts1 = new CategoryWithProducts(
-                CATEGORY1.getCategoryId(), CATEGORY1.getName(), Arrays.asList(PRODUCT_VIEW_1, PRODUCT_VIEW_2));
-        CategoryWithProducts categoryWithProducts2 = new CategoryWithProducts(
-                CATEGORY2.getCategoryId(), CATEGORY2.getName(), Arrays.asList(PRODUCT_VIEW_3));
-        CategoryWithProducts categoryWithProducts3 = new CategoryWithProducts(
-                CATEGORY3.getCategoryId(), CATEGORY3.getName(), Collections.emptyList());
+        CategoryWithProducts categoryWithProducts1 = CategoryWithProducts.builder().id(CATEGORY1.getCategoryId())
+                .name(CATEGORY1.getName()).products(Arrays.asList(PRODUCT_VIEW_1, PRODUCT_VIEW_2)).build();
+        CategoryWithProducts categoryWithProducts2 = CategoryWithProducts.builder().id(CATEGORY2.getCategoryId())
+                .name(CATEGORY2.getName()).products(Collections.singletonList(PRODUCT_VIEW_3)).build();
+        CategoryWithProducts categoryWithProducts3 = CategoryWithProducts.builder().id(CATEGORY3.getCategoryId())
+                .name(CATEGORY3.getName()).products(Collections.emptyList()).build();
         List<CategoryWithProducts> expected = Arrays.asList(
                 categoryWithProducts1, categoryWithProducts2, categoryWithProducts3);
 
@@ -166,7 +167,6 @@ public class ProductServiceTest {
 
         productService.updateProduct(productView);
     }
-
 
     @Test
     public void deleteProductTest() {
