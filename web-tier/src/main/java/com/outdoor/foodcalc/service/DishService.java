@@ -46,14 +46,14 @@ public class DishService {
         //map domain classes to UI model
         return categories.stream()
                 .map(c -> {
-                    final CategoryWithDishes cView = new CategoryWithDishes();
-                    cView.setId(c.getId());
-                    cView.setName(c.getName());
                     final List<Dish> dishList = dishesMap.get(c.getId());
-                    cView.setDishes((dishList == null) ? new ArrayList<>() : dishList.stream()
-                            .map(this::mapDishView)
-                            .collect(Collectors.toList()));
-                    return cView;
+                    return CategoryWithDishes.builder()
+                            .id(c.getId())
+                            .name(c.getName())
+                            .dishes((dishList == null) ? new ArrayList<>() : dishList.stream()
+                                    .map(this::mapDishView)
+                                    .collect(Collectors.toList()))
+                            .build();
                 })
                 .collect(Collectors.toList());
     }
@@ -111,22 +111,22 @@ public class DishService {
     }
 
     private DishView mapDishView(Dish dish) {
-        DishView view = new DishView();
-        view.setId(dish.getDishId());
-        view.setName(dish.getName());
-        view.setCategoryId(dish.getCategory().getCategoryId());
-        view.setProducts(dish.getAllProducts().stream()
-                .map(pr -> {
-                    final ProductView product = productService.getProduct(pr.getProductId());
-                    product.setWeight(pr.getWeight());
-                    return product;
-                })
-                .collect(Collectors.toList()));
-        view.setCalorific(dish.getCalorific());
-        view.setProteins(dish.getProteins());
-        view.setCarbs(dish.getCarbs());
-        view.setWeight(dish.getWeight());
-        return view;
+        return DishView.builder()
+                .id(dish.getDishId())
+                .name(dish.getName())
+                .categoryId(dish.getCategory().getCategoryId())
+                .products(dish.getAllProducts().stream()
+                        .map(pr -> {
+                            final ProductView product = productService.getProduct(pr.getProductId());
+                            product.setWeight(pr.getWeight());
+                            return product;
+                        })
+                        .collect(Collectors.toList()))
+                .calorific(dish.getCalorific())
+                .proteins(dish.getCalorific())
+                .carbs(dish.getCarbs())
+                .weight(dish.getWeight())
+                .build();
     }
 
     private List<ProductRef> mapProductRefs(SimpleDish simpleDish) {

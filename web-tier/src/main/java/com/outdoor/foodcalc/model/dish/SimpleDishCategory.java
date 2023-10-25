@@ -13,9 +13,10 @@ import java.util.Objects;
  *
  * @author Anton Borovyk.
  */
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public @Data class SimpleDishCategory {
+public class SimpleDishCategory {
 
     private long id;
 

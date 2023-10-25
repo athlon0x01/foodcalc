@@ -11,9 +11,10 @@ import javax.validation.constraints.NotEmpty;
  *
  * @author Anton Borovyk.
  */
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public @Data class SimpleProductCategory {
+public class SimpleProductCategory {
 
     private long id;
 

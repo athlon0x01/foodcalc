@@ -12,9 +12,10 @@ import java.util.Objects;
  *
  * @author Anton Borovyk.
  */
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public @Data class MealTypeView {
+public class MealTypeView {
 
     private int id;
 

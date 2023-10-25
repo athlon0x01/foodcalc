@@ -1,16 +1,17 @@
 package com.outdoor.foodcalc.model.dish;
 
 import com.outdoor.foodcalc.model.product.ProductView;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
- @AllArgsConstructor
- @NoArgsConstructor
-public @Data class DishView {
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class DishView {
     private long id;
     @NotEmpty
     private String name;

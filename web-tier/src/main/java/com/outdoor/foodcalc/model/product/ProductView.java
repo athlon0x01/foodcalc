@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.model.product;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,9 +13,11 @@ import javax.validation.constraints.NotEmpty;
  *
  * @author Anton Borovyk
  */
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public @Data class ProductView {
+@Builder
+public class ProductView {
     private long id;
     @NotEmpty
     private String name;
