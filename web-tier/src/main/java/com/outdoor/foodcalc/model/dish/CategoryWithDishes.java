@@ -1,14 +1,12 @@
 package com.outdoor.foodcalc.model.dish;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Jacksonized
 @Builder
 public class CategoryWithDishes {
     private long id;

@@ -44,15 +44,15 @@ public class ProductServiceTest {
     private static final Product DOMAIN_PRODUCT_3 = new Product(12366, "third prod", "",
             CATEGORY2, 13, 11.5f, 7, 32.2f, 55);
 
-    private static final ProductView PRODUCT_VIEW_1 = new ProductView(12344, "first prod",
-            CATEGORY1.getCategoryId(), 1.7f, 5, 7.5f, 2, 33.3f);
-    private static final ProductView PRODUCT_VIEW_2 = new ProductView(12355, "second prod",
-            CATEGORY1.getCategoryId(), 1.1f, 3, 4.5f, 7, 11f);
-    private static final ProductView PRODUCT_VIEW_3 = new ProductView(12366, "third prod",
-            CATEGORY2.getCategoryId(), 13, 11.5f, 7, 32.2f, 5.5f);
-
-    private static final ProductView DUMMY_PRODUCT_VIEW = new ProductView(12345, "second prod",
-            CATEGORY_2_ID, 1.1f, 3f, 4.5f, 7f, 110f);
+    private static final ProductView PRODUCT_VIEW_1 = ProductView.builder()
+            .id(12344).name("first prod").categoryId(CATEGORY1.getCategoryId())
+            .calorific(1.7f).proteins(5).fats(7.5f).carbs(2).weight(33.3f).build();
+    private static final ProductView PRODUCT_VIEW_2 = ProductView.builder()
+            .id(12355).name("second prod").categoryId(CATEGORY1.getCategoryId())
+            .calorific(1.1f).proteins(3).fats(4.5f).carbs(7).weight(11f).build();
+    private static final ProductView PRODUCT_VIEW_3 = ProductView.builder()
+            .id(12366).name("third prod").categoryId(CATEGORY2.getCategoryId())
+            .calorific(13).proteins(11.5f).fats(7).carbs(32.2f).weight(5.5f).build();
 
     @InjectMocks
     private ProductService productService;

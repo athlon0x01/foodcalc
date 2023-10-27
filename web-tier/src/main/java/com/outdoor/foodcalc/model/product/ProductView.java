@@ -1,9 +1,8 @@
 package com.outdoor.foodcalc.model.product;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
@@ -14,8 +13,7 @@ import javax.validation.constraints.NotEmpty;
  * @author Anton Borovyk
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Jacksonized
 @Builder
 public class ProductView {
     private long id;

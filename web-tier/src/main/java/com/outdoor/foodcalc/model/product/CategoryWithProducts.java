@@ -1,9 +1,8 @@
 package com.outdoor.foodcalc.model.product;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.List;
 
@@ -13,8 +12,7 @@ import java.util.List;
  * @author Anton Borovyk
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Jacksonized
 @Builder
 public class CategoryWithProducts {
     private long id;

@@ -2,14 +2,14 @@ package com.outdoor.foodcalc.model.dish;
 
 import com.outdoor.foodcalc.model.product.ProductView;
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
+@Jacksonized
 @Builder
 public class DishView {
     private long id;

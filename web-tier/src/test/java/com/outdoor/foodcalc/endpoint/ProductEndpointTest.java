@@ -36,8 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class ProductEndpointTest extends ApiUnitTest {
 
     public static final long PRODUCT_ID = 357891;
-    private static final ProductView PRODUCT_VIEW = new ProductView(PRODUCT_ID, "sugar", 12345,
-            0, 0, 0, 0, 0);
+    private static final ProductView PRODUCT_VIEW = ProductView.builder()
+            .id(PRODUCT_ID).name("sugar").categoryId(12345).build();
 
     @MockBean
     private ProductService service;
@@ -58,8 +58,8 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void getAllProductsTest() throws Exception {
-        CategoryWithProducts category = new CategoryWithProducts(12345, "Sweets",
-                Collections.singletonList(PRODUCT_VIEW));
+        CategoryWithProducts category = CategoryWithProducts.builder()
+                .id(12345).name("Sweets").products(Collections.singletonList(PRODUCT_VIEW)).build();
         List<CategoryWithProducts> products = Collections.singletonList(category);
 
         when(service.getAllProducts()).thenReturn(products);
@@ -102,9 +102,7 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void addProductTest() throws Exception {
-        ProductView productToAdd = new ProductView();
-        productToAdd.setName("Sugar");
-        productToAdd.setCategoryId(12345);
+        ProductView productToAdd = ProductView.builder().name("Sugar").categoryId(12345).build();
         ProductView expectedProduct = PRODUCT_VIEW;
         when(service.addProduct(productToAdd)).thenReturn(expectedProduct);
 
@@ -118,7 +116,7 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void addProductValidationErrorTest() throws Exception {
-        ProductView productToAdd = new ProductView();
+        ProductView productToAdd = ProductView.builder().build();
 
         post400("/products", productToAdd);
 

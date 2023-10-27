@@ -71,22 +71,25 @@ public class DishEndpointTest extends ApiUnitTest{
      private static final long DISH_3_ID = 44444;
 
 
-     private static final ProductView productView1 = new ProductView(
-             productRef1.getProductId(), productRef1.getName(), productRef1.getProductCategoryId(),
-             1.1f,1.1f,1.1f,1.1f,20f);
-     private static final ProductView productView2 = new ProductView(
-             productRef2.getProductId(), productRef2.getName(), productRef2.getProductCategoryId(),
-             1.1f,1.1f,1.1f,1.1f,20f);
+     private static final ProductView productView1 = ProductView.builder()
+             .id(productRef1.getProductId()).name(productRef1.getName()).categoryId(productRef1.getProductCategoryId())
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f).build();
+     private static final ProductView productView2 = ProductView.builder()
+             .id(productRef2.getProductId()).name(productRef2.getName()).categoryId(productRef2.getProductCategoryId())
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f).build();
 
-     private static final DishView dishView1 = new DishView(
-             DISH_1_ID, "dishView1", CATEGORY_1_ID, 1.1f,1.1f,1.1f,1.1f,20f,
-             Arrays.asList(productView1, productView2));
-     private static final DishView dishView2 = new DishView(
-             DISH_2_ID, "dishView2", CATEGORY_1_ID, 1.1f,1.1f,1.1f,1.1f,20f,
-             Collections.emptyList());
-     private static final DishView dishView3 = new DishView(
-             DISH_3_ID, "dishView3", CATEGORY_2_ID, 1.1f,1.1f,1.1f,1.1f,20f,
-             Collections.emptyList());
+     private static final DishView dishView1 = DishView.builder()
+             .id(DISH_1_ID).name("dishView1").categoryId(CATEGORY_1_ID)
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f)
+             .products(Arrays.asList(productView1, productView2)).build();
+     private static final DishView dishView2 = DishView.builder()
+             .id(DISH_2_ID).name("dishView2").categoryId(CATEGORY_1_ID)
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f)
+             .products(Collections.emptyList()).build();
+     private static final DishView dishView3 = DishView.builder()
+             .id(DISH_3_ID).name("dishView3").categoryId(CATEGORY_2_ID)
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f)
+             .products(Collections.emptyList()).build();
 
      @Before
      public void setUp() {
@@ -94,27 +97,20 @@ public class DishEndpointTest extends ApiUnitTest{
      }
 
      private SimpleDish createSimpleDish(long id) {
-          SimpleDish simpleDish = new SimpleDish();
-          simpleDish.setId(id);
-          simpleDish.setName("test simpleDish");
-          simpleDish.setCategoryId(CATEGORY_1_ID);
-          DishProduct product1 = new DishProduct();
-          product1.setProductId(1000);
-          product1.setWeight(100.1f);
-          DishProduct product2 = new DishProduct();
-          product2.setProductId(2000);
-          product2.setWeight(200.2f);
-          simpleDish.setProducts(List.of(product1, product2));
+          DishProduct product1 = DishProduct.builder().productId(1000).weight(100.1f).build();
+          DishProduct product2 = DishProduct.builder().productId(2000).weight(200.2f).build();
+          SimpleDish simpleDish = SimpleDish.builder()
+                  .id(id).name("test simpleDish").categoryId(CATEGORY_1_ID)
+                  .products(List.of(product1, product2)).build();
           return simpleDish;
      }
 
      @Test
      public void getAllDishesTest() throws Exception {
-          CategoryWithDishes categoryWithDishes1 = new CategoryWithDishes(
-                  CATEGORY_1_ID, CATEGORY_1_NAME, Arrays.asList(dishView1, dishView2));
-          CategoryWithDishes categoryWithDishes2 = new CategoryWithDishes(
-                  CATEGORY_2_ID, CATEGORY_2_NAME, Collections.singletonList(dishView3));
-
+          CategoryWithDishes categoryWithDishes1 = CategoryWithDishes.builder()
+                  .id(CATEGORY_1_ID).name(CATEGORY_1_NAME).dishes(Arrays.asList(dishView1, dishView2)).build();
+          CategoryWithDishes categoryWithDishes2 = CategoryWithDishes.builder()
+                  .id(CATEGORY_2_ID).name(CATEGORY_2_NAME).dishes(Collections.singletonList(dishView3)).build();
           List<CategoryWithDishes> expected = List.of(categoryWithDishes1, categoryWithDishes2);
 
           when(service.getAllDishes()).thenReturn(expected);
@@ -201,7 +197,7 @@ public class DishEndpointTest extends ApiUnitTest{
 
      @Test
      public void addDishValidationErrorTest() throws Exception {
-          SimpleDish simpleDishToAdd = new SimpleDish();
+          SimpleDish simpleDishToAdd = SimpleDish.builder().build();
           post400("/dishes", simpleDishToAdd);
 
           verify(service, never()).addDish(simpleDishToAdd);
