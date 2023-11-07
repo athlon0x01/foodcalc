@@ -33,7 +33,7 @@ public class MealTypesEndpointTest extends ApiUnitTest{
     private static final int MEAL_TYPE_ID = 12345;
     private static final String MEAL_TYPE_NAME = "Test meal type";
 
-    private MealTypeView dummyMealTypeView;
+    private static final MealTypeView dummyMealTypeView = new MealTypeView(MEAL_TYPE_ID, MEAL_TYPE_NAME);
 
     @MockBean
     private MealTypesService service;
@@ -50,9 +50,6 @@ public class MealTypesEndpointTest extends ApiUnitTest{
     @Before
     public void setUp() {
         setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
-        dummyMealTypeView = new MealTypeView();
-        dummyMealTypeView.id = MEAL_TYPE_ID;
-        dummyMealTypeView.name = MEAL_TYPE_NAME;
     }
 
     @Test
@@ -75,7 +72,7 @@ public class MealTypesEndpointTest extends ApiUnitTest{
     public void getMealTypeTest() throws Exception {
         MealTypeView expected = dummyMealTypeView;
 
-        when(service.getMealType(dummyMealTypeView.id)).thenReturn(expected);
+        when(service.getMealType(dummyMealTypeView.getId())).thenReturn(expected);
 
         MvcResult mvcResult = get("/meal-types/" + MEAL_TYPE_ID).andReturn();
 
@@ -99,9 +96,9 @@ public class MealTypesEndpointTest extends ApiUnitTest{
     @Test
     public void addMealTypeTest() throws Exception {
         MealTypeView mealTypeView = new MealTypeView();
-        mealTypeView.name = MEAL_TYPE_NAME;
+        mealTypeView.setName(MEAL_TYPE_NAME);
 
-        when(service.addMealType(mealTypeView.name)).thenReturn(dummyMealTypeView);
+        when(service.addMealType(mealTypeView.getName())).thenReturn(dummyMealTypeView);
 
         MvcResult mvcResult = post("/meal-types/", mealTypeView)
                 .andReturn();
@@ -109,7 +106,7 @@ public class MealTypesEndpointTest extends ApiUnitTest{
         MealTypeView actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealTypeView.class);
         assertEquals(dummyMealTypeView, actual);
 
-        verify(service).addMealType(mealTypeView.name);
+        verify(service).addMealType(mealTypeView.getName());
     }
 
     @Test
@@ -118,7 +115,7 @@ public class MealTypesEndpointTest extends ApiUnitTest{
 
         post400("/meal-types/", mealTypeView);
 
-        verify(service, never()).addMealType(mealTypeView.name);
+        verify(service, never()).addMealType(mealTypeView.getName());
     }
 
     @Test

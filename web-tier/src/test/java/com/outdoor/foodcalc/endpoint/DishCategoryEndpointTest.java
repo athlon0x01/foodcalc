@@ -26,15 +26,13 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class DishCategoryEndpointTest extends ApiUnitTest {
 
     private static final long CATEGORY_ID = 12345;
     private static final String CATEGORY_NAME = "Test category";
-
-    private SimpleDishCategory dummyCategory;
+    private static final SimpleDishCategory dummyCategory = new SimpleDishCategory(CATEGORY_ID, CATEGORY_NAME);
 
     @MockBean
     private DishCategoryService service;
@@ -51,9 +49,6 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
     @Before
     public void setUp() {
         setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
-        dummyCategory = new SimpleDishCategory();
-        dummyCategory.id = CATEGORY_ID;
-        dummyCategory.name = CATEGORY_NAME;
     }
 
     @Test
@@ -100,9 +95,9 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
     @Test
     public void addCategoryTest() throws Exception {
         SimpleDishCategory category = new SimpleDishCategory();
-        category.name = CATEGORY_NAME;
+        category.setName(CATEGORY_NAME);
 
-        when(service.addDishCategory(category.name)).thenReturn(dummyCategory);
+        when(service.addDishCategory(category.getName())).thenReturn(dummyCategory);
 
         MvcResult mvcResult = post("/dish-categories", category)
                 .andReturn();
@@ -110,7 +105,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
         SimpleDishCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleDishCategory.class);
         assertEquals(dummyCategory, actual);
 
-        verify(service).addDishCategory(category.name);
+        verify(service).addDishCategory(category.getName());
     }
 
     @Test
@@ -119,7 +114,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
             post400("/dish-categories/", category);
 
-            verify(service, never()).addDishCategory(category.name);
+            verify(service, never()).addDishCategory(category.getName());
     }
 
     @Test
@@ -188,5 +183,4 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
         verify(service).deleteDishCategory(CATEGORY_ID);
     }
-
 }

@@ -42,15 +42,15 @@ public class MealTypesEndpoint implements MealTypesApi {
 
     public MealTypeView addMealType(@RequestBody @Valid MealTypeView mealTypeView) {
         LOG.debug("Adding new meal type - {}", mealTypeView);
-        return mealTypesService.addMealType(mealTypeView.name);
+        return mealTypesService.addMealType(mealTypeView.getName());
     }
 
     public MealTypeView updateMealType(@PathVariable("id") int id,
                                        @RequestBody @Valid MealTypeView mealTypeView) {
-        if (id != mealTypeView.id) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, mealTypeView.id);
+        if (id != mealTypeView.getId()) {
+            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, mealTypeView.getId());
             throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + mealTypeView.id);
+                    + " doesn't match with request body Id = " + mealTypeView.getId());
         }
         LOG.debug("Updating meal type {}", mealTypeView);
         if (!mealTypesService.updateMealType(mealTypeView)) {

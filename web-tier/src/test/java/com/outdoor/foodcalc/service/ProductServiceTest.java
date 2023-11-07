@@ -8,15 +8,12 @@ import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -37,33 +34,51 @@ public class ProductServiceTest {
     private static final String CATEGORY_3_NAME = "Empty";
 
     private static final ProductCategory CATEGORY1 = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-
     private static final ProductCategory CATEGORY2 = new ProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
-
     private static final ProductCategory CATEGORY3 = new ProductCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
+
+    private static final Product DOMAIN_PRODUCT_1 = new Product(12344, "first prod","",
+            CATEGORY1, 1.7f, 5, 7.5f, 2, 333);
+    private static final Product DOMAIN_PRODUCT_2 = new Product(12355, "second prod", "",
+            CATEGORY1, 1.1f, 3, 4.5f, 7, 110);
+    private static final Product DOMAIN_PRODUCT_3 = new Product(12366, "third prod", "",
+            CATEGORY2, 13, 11.5f, 7, 32.2f, 55);
+
+    private static final ProductView PRODUCT_VIEW_1 = ProductView.builder()
+            .id(12344).name("first prod").categoryId(CATEGORY1.getCategoryId())
+            .calorific(1.7f).proteins(5).fats(7.5f).carbs(2).weight(33.3f).build();
+    private static final ProductView PRODUCT_VIEW_2 = ProductView.builder()
+            .id(12355).name("second prod").categoryId(CATEGORY1.getCategoryId())
+            .calorific(1.1f).proteins(3).fats(4.5f).carbs(7).weight(11f).build();
+    private static final ProductView PRODUCT_VIEW_3 = ProductView.builder()
+            .id(12366).name("third prod").categoryId(CATEGORY2.getCategoryId())
+            .calorific(13).proteins(11.5f).fats(7).carbs(32.2f).weight(5.5f).build();
 
     @InjectMocks
     private ProductService productService;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Mock
     private ProductDomainService productDomainService;
     @Mock
     private ProductCategoryDomainService categoryDomainService;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
-    }
-
     @Test
     public void getAllProductsTest() {
         List<ProductCategory> domainCategories = Arrays.asList(CATEGORY1, CATEGORY2, CATEGORY3);
-
-        Product product1 = new Product(12367, "first prod", CATEGORY1);
-        Product product2 = new Product(12367, "second prod", "", CATEGORY1, 1.1f, 3, 4.5f, 7, 110);
-        Product product3 = new Product(12367, "third prod", "", CATEGORY2, 13, 11.5f, 7, 32.2f, 55);
-        List<Product> domainProducts = Arrays.asList(product1, product2, product3);
+        List<Product> domainProducts = Arrays.asList(DOMAIN_PRODUCT_1, DOMAIN_PRODUCT_2, DOMAIN_PRODUCT_3);
+        CategoryWithProducts categoryWithProducts1 = CategoryWithProducts.builder().id(CATEGORY1.getCategoryId())
+                .name(CATEGORY1.getName()).products(Arrays.asList(PRODUCT_VIEW_1, PRODUCT_VIEW_2)).build();
+        CategoryWithProducts categoryWithProducts2 = CategoryWithProducts.builder().id(CATEGORY2.getCategoryId())
+                .name(CATEGORY2.getName()).products(Collections.singletonList(PRODUCT_VIEW_3)).build();
+        CategoryWithProducts categoryWithProducts3 = CategoryWithProducts.builder().id(CATEGORY3.getCategoryId())
+                .name(CATEGORY3.getName()).products(Collections.emptyList()).build();
+        List<CategoryWithProducts> expected = Arrays.asList(
+                categoryWithProducts1, categoryWithProducts2, categoryWithProducts3);
 
         when(categoryDomainService.getCategories()).thenReturn(domainCategories);
         when(productDomainService.getAllProducts()).thenReturn(domainProducts);
@@ -71,48 +86,20 @@ public class ProductServiceTest {
         List<CategoryWithProducts> actual = productService.getAllProducts();
         assertNotNull(actual);
         assertEquals(domainCategories.size(), actual.size());
-        CategoryWithProducts model1 = actual.get(0);
-        assertEquals(CATEGORY_1_ID, model1.id);
-        assertEquals(CATEGORY_1_NAME, model1.name);
-        assertEquals(2, model1.products.size());
-        assertProducts(product1, model1.products.get(0));
-        assertProducts(product2, model1.products.get(1));
-
-        CategoryWithProducts model2 = actual.get(1);
-        assertEquals(CATEGORY_2_ID, model2.id);
-        assertEquals(CATEGORY_2_NAME, model2.name);
-        assertEquals(1, model2.products.size());
-        assertProducts(product3, model2.products.get(0));
-
-        CategoryWithProducts model3 = actual.get(2);
-        assertEquals(CATEGORY_3_ID, model3.id);
-        assertEquals(CATEGORY_3_NAME, model3.name);
-        assertTrue(model3.products.isEmpty());
+        assertEquals(expected, actual);
 
         verify(categoryDomainService).getCategories();
         verify(productDomainService).getAllProducts();
     }
 
-    private void assertProducts(Product product, ProductView model) {
-        assertEquals(product.getProductId(), model.id);
-        assertEquals(product.getName(), model.name);
-        assertEquals(product.getCategory().getCategoryId(), model.categoryId);
-        assertEquals(product.getCalorific(), model.calorific, DELTA);
-        assertEquals(product.getProteins(), model.proteins, DELTA);
-        assertEquals(product.getFats(), model.fats, DELTA);
-        assertEquals(product.getCarbs(), model.carbs, DELTA);
-        assertEquals(product.getDefaultWeight(), model.weight, DELTA);
-    }
-
     @Test
     public void getProductTest() {
-        Product domainProduct = new Product(12367, "second prod", "", CATEGORY2,
-                1.1f,3, 4.5f, 7, 110);
+        Product domainProduct = DOMAIN_PRODUCT_2;
 
         when(productDomainService.getProduct(domainProduct.getProductId())).thenReturn(Optional.of(domainProduct));
 
-        ProductView simpleProduct = productService.getProduct(domainProduct.getProductId());
-        assertProducts(domainProduct, simpleProduct);
+        ProductView actual = productService.getProduct(domainProduct.getProductId());
+        assertEquals(PRODUCT_VIEW_2, actual);
 
         verify(productDomainService).getProduct(domainProduct.getProductId());
     }
@@ -126,72 +113,59 @@ public class ProductServiceTest {
 
     @Test
     public void addProductTest() {
-        ProductView simpleProduct = getSimpleProduct();
+        ProductView productView = PRODUCT_VIEW_1;
 
-        Product domainProduct = new Product(-1, simpleProduct.name, "",
-                CATEGORY2, simpleProduct.calorific,
-                simpleProduct.proteins, simpleProduct.fats, simpleProduct.carbs, (int) simpleProduct.weight);
+        Product domainProduct = new Product(-1, productView.getName(), "",
+                CATEGORY1, productView.getCalorific(), productView.getProteins(),
+                productView.getFats(), productView.getCarbs(), Math.round(productView.getWeight() *10));
 
-        Product returnedProduct = new Product(simpleProduct.id, simpleProduct.name, "",
-                CATEGORY2, simpleProduct.calorific,
-                simpleProduct.proteins, simpleProduct.fats, simpleProduct.carbs, (int) simpleProduct.weight);
+        Product returnedProduct = new Product(productView.getId(), productView.getName(), "",
+                CATEGORY1, productView.getCalorific(), productView.getProteins(),
+                productView.getFats(), productView.getCarbs(), Math.round(productView.getWeight() *10));
 
-        when(categoryDomainService.getCategory(simpleProduct.categoryId)).thenReturn(Optional.of(CATEGORY2));
+        when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.of(CATEGORY1));
         when(productDomainService.addProduct(domainProduct)).thenReturn(returnedProduct);
 
-        ProductView actual = productService.addProduct(simpleProduct);
-        assertProducts(returnedProduct, actual);
+        ProductView actual = productService.addProduct(productView);
+        assertEquals(productView, actual);
 
-        verify(categoryDomainService).getCategory(simpleProduct.categoryId);
+        verify(categoryDomainService).getCategory(productView.getCategoryId());
         verify(productDomainService).addProduct(domainProduct);
-    }
-
-    private ProductView getSimpleProduct() {
-        ProductView simpleProduct = new ProductView();
-        simpleProduct.id = 12345;
-        simpleProduct.name = "second prod";
-        simpleProduct.categoryId = CATEGORY_2_ID;
-        simpleProduct.calorific = 1.1f;
-        simpleProduct.proteins = 3f;
-        simpleProduct.fats = 4.5f;
-        simpleProduct.carbs = 7f;
-        simpleProduct.weight = 110f;
-        return simpleProduct;
     }
 
     @Test(expected = NotFoundException.class)
     public void addProductWithoutCategoryTest() {
-        ProductView simpleProduct = getSimpleProduct();
+        ProductView productView = PRODUCT_VIEW_1;
 
-        when(categoryDomainService.getCategory(simpleProduct.categoryId)).thenReturn(Optional.empty());
+        when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.empty());
 
-        productService.addProduct(simpleProduct);
+        productService.addProduct(productView);
     }
 
     @Test
     public void updateProductTest() {
-        ProductView simpleProduct = getSimpleProduct();
+        ProductView productView = PRODUCT_VIEW_1;
 
-        Product domainProduct = new Product(simpleProduct.id, simpleProduct.name, "",
-                CATEGORY2, simpleProduct.calorific,
-                simpleProduct.proteins, simpleProduct.fats, simpleProduct.carbs, (int) simpleProduct.weight);
+        Product domainProduct = new Product(productView.getId(), productView.getName(), "",
+                CATEGORY1, productView.getCalorific(), productView.getProteins(),
+                productView.getFats(), productView.getCarbs(), Math.round(productView.getWeight() *10));
 
-        when(categoryDomainService.getCategory(simpleProduct.categoryId)).thenReturn(Optional.of(CATEGORY2));
+        when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.of(CATEGORY1));
         when(productDomainService.updateProduct(domainProduct)).thenReturn(true);
 
-        assertTrue(productService.updateProduct(simpleProduct));
+        assertTrue(productService.updateProduct(productView));
 
-        verify(categoryDomainService).getCategory(simpleProduct.categoryId);
+        verify(categoryDomainService).getCategory(productView.getCategoryId());
         verify(productDomainService).updateProduct(domainProduct);
     }
 
     @Test(expected = NotFoundException.class)
     public void updateProductWithoutCategoryTest() {
-        ProductView simpleProduct = getSimpleProduct();
+        ProductView productView = PRODUCT_VIEW_1;
 
-        when(categoryDomainService.getCategory(simpleProduct.categoryId)).thenReturn(Optional.empty());
+        when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.empty());
 
-        productService.updateProduct(simpleProduct);
+        productService.updateProduct(productView);
     }
 
     @Test

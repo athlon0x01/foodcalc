@@ -5,6 +5,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,6 +30,14 @@ public class ProductCategoryServiceTest {
     private static final String CATEGORY_1_NAME = "First category";
     private static final String CATEGORY_2_NAME = "Second category";
 
+    private static final ProductCategory PRODUCT_CATEGORY_1 = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+
+    private static final ProductCategory PRODUCT_CATEGORY_2 = new ProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+
+    private static final SimpleProductCategory SIMPLE_PRODUCT_CATEGORY_1 = new SimpleProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+
+    private static final SimpleProductCategory SIMPLE_PRODUCT_CATEGORY_2 = new SimpleProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+
     @InjectMocks
     private ProductCategoryService categoryService;
 
@@ -42,40 +51,29 @@ public class ProductCategoryServiceTest {
 
     @Test
     public void getCategoriesTest() {
-        List<ProductCategory> domainCategories = Arrays.asList(
-            new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME),
-            new ProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME)
-        );
-        SimpleProductCategory category1 = new SimpleProductCategory();
-        category1.id = CATEGORY_1_ID;
-        category1.name = CATEGORY_1_NAME;
-        SimpleProductCategory category2 = new SimpleProductCategory();
-        category2.id = CATEGORY_2_ID;
-        category2.name = CATEGORY_2_NAME;
+        List<ProductCategory> domainCategories = Arrays.asList(PRODUCT_CATEGORY_1, PRODUCT_CATEGORY_2);
+        List<SimpleProductCategory> expected = Arrays.asList(SIMPLE_PRODUCT_CATEGORY_1, SIMPLE_PRODUCT_CATEGORY_2);
 
         when(categoryDomainService.getCategories()).thenReturn(domainCategories);
 
         List<SimpleProductCategory> actual = categoryService.getCategories();
         assertNotNull(actual);
         assertEquals(2, actual.size());
-        assertEquals(CATEGORY_1_ID, actual.get(0).id);
-        assertEquals(CATEGORY_1_NAME, actual.get(0).name);
-        assertEquals(CATEGORY_2_ID, actual.get(1).id);
-        assertEquals(CATEGORY_2_NAME, actual.get(1).name);
+        assertEquals(expected, actual);
 
         verify(categoryDomainService).getCategories();
     }
 
     @Test
     public void getCategoryTest() {
-        ProductCategory category = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
         when(categoryDomainService.getCategory(CATEGORY_1_ID))
-                .thenReturn(Optional.of(category));
+                .thenReturn(Optional.of(PRODUCT_CATEGORY_1));
+
+        SimpleProductCategory expected = SIMPLE_PRODUCT_CATEGORY_1;
 
         SimpleProductCategory actual = categoryService.getCategory(CATEGORY_1_ID);
         assertNotNull(actual);
-        assertEquals(CATEGORY_1_ID, actual.id);
-        assertEquals(CATEGORY_1_NAME, actual.name);
+        assertEquals(expected, actual);
 
         verify(categoryDomainService).getCategory(CATEGORY_1_ID);
     }
@@ -91,25 +89,23 @@ public class ProductCategoryServiceTest {
     @Test
     public void addCategoryTest() {
         ProductCategory domainCategory = new ProductCategory(-1, CATEGORY_1_NAME);
-        ProductCategory returnedCategory = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-        when(categoryDomainService.addCategory(domainCategory)).thenReturn(returnedCategory);
+        when(categoryDomainService.addCategory(domainCategory)).thenReturn(PRODUCT_CATEGORY_1);
+        SimpleProductCategory expected = SIMPLE_PRODUCT_CATEGORY_1;
 
-        SimpleProductCategory category = categoryService.addCategory(CATEGORY_1_NAME);
-        assertEquals(CATEGORY_1_ID, category.id);
-        assertEquals(CATEGORY_1_NAME, category.name);
+        SimpleProductCategory actual = categoryService.addCategory(CATEGORY_1_NAME);
+        assertEquals(expected, actual);
 
         verify(categoryDomainService).addCategory(domainCategory);
     }
 
     @Test
     public void updateCategoryTest() {
-        ProductCategory domainCategory = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-        SimpleProductCategory model = new SimpleProductCategory();
-        model.id = CATEGORY_1_ID;
-        model.name = CATEGORY_1_NAME;
+        ProductCategory domainCategory = PRODUCT_CATEGORY_1;
 
         when(categoryDomainService.updateCategory(domainCategory)).thenReturn(false);
-        assertFalse(categoryService.updateCategory(model));
+
+        assertFalse(categoryService.updateCategory(SIMPLE_PRODUCT_CATEGORY_1));
+
         verify(categoryDomainService).updateCategory(domainCategory);
     }
 
@@ -119,5 +115,4 @@ public class ProductCategoryServiceTest {
         assertTrue(categoryService.deleteCategory(CATEGORY_1_ID));
         verify(categoryDomainService).deleteCategory(CATEGORY_1_ID);
     }
-
 }

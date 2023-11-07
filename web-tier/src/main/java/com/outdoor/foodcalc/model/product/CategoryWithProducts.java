@@ -1,5 +1,9 @@
 package com.outdoor.foodcalc.model.product;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.extern.jackson.Jacksonized;
+
 import java.util.List;
 
 /**
@@ -7,8 +11,11 @@ import java.util.List;
  *
  * @author Anton Borovyk
  */
+@Data
+@Jacksonized
+@Builder
 public class CategoryWithProducts {
-    public long id;
-    public String name;
-    public List<ProductView> products;
+    private long id;
+    private String name;
+    private List<ProductView> products;
 }

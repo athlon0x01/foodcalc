@@ -28,6 +28,12 @@ public class DishCategoryServiceTest {
     private static final String CATEGORY_1_NAME = "First category";
     private static final String CATEGORY_2_NAME = "Second category";
 
+    private static final DishCategory DOMAIN_CAT_1 = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+    private static final DishCategory DOMAIN_CAT_2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+
+    private static final SimpleDishCategory SIMPLE_DISH_CAT_1 = new SimpleDishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+    private static final SimpleDishCategory SIMPLE_DISH_CAT_2 = new SimpleDishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+
     @Mock
     private DishCategoryDomainService domainService;
 
@@ -41,35 +47,30 @@ public class DishCategoryServiceTest {
 
     @Test
     public void getDishCategoriesTest() {
-        List<DishCategory> domainCategories = Arrays.asList(
-                new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME),
-                new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME)
-        );
+        List<DishCategory> domainCategories = Arrays.asList(DOMAIN_CAT_1, DOMAIN_CAT_2);
+        List<SimpleDishCategory> expected = Arrays.asList(SIMPLE_DISH_CAT_1, SIMPLE_DISH_CAT_2);
+
         when(domainService.getCategories()).thenReturn(domainCategories);
 
         List<SimpleDishCategory> actual = categoryService.getDishCategories();
 
         assertNotNull(actual);
         assertEquals(2, actual.size());
-        assertEquals(CATEGORY_1_ID, actual.get(0).id);
-        assertEquals(CATEGORY_1_NAME, actual.get(0).name);
-        assertEquals(CATEGORY_2_ID, actual.get(1).id);
-        assertEquals(CATEGORY_2_NAME, actual.get(1).name);
+        assertEquals(expected, actual);
 
         verify(domainService).getCategories();
     }
 
     @Test
     public void getDishCategoryTest() {
-        Optional<DishCategory> domainCategory = Optional.of(new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME));
+        Optional<DishCategory> domainCategory = Optional.of(DOMAIN_CAT_1);
 
         when(domainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
 
         SimpleDishCategory actual = categoryService.getDishCategory(CATEGORY_1_ID);
 
         assertNotNull(actual);
-        assertEquals(CATEGORY_1_ID, actual.id);
-        assertEquals(CATEGORY_1_NAME, actual.name);
+        assertEquals(SIMPLE_DISH_CAT_1, actual);
 
         verify(domainService).getCategory(CATEGORY_1_ID);
     }
@@ -84,30 +85,24 @@ public class DishCategoryServiceTest {
 
     @Test
     public void addDishCategoryTest() {
-        DishCategory domainCategory = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
         DishCategory categoryToAdd = new DishCategory(-1, CATEGORY_1_NAME);
-        when(domainService.addCategory(categoryToAdd)).thenReturn(domainCategory);
+        when(domainService.addCategory(categoryToAdd)).thenReturn(DOMAIN_CAT_1);
 
         SimpleDishCategory actual = categoryService.addDishCategory(CATEGORY_1_NAME);
 
         assertNotNull(actual);
-        assertEquals(CATEGORY_1_ID, actual.id);
-        assertEquals(CATEGORY_1_NAME, actual.name);
+        assertEquals(SIMPLE_DISH_CAT_1, actual);
 
         verify(domainService).addCategory(categoryToAdd);
     }
 
     @Test
     public void updateDishCategoryTest() {
-        SimpleDishCategory categoryToUpdate = new SimpleDishCategory();
-        categoryToUpdate.id = CATEGORY_1_ID;
-        categoryToUpdate.name = CATEGORY_1_NAME;
-        DishCategory domainCategory = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-        when(domainService.updateCategory(domainCategory)).thenReturn(true);
+        when(domainService.updateCategory(DOMAIN_CAT_1)).thenReturn(true);
 
-        assertTrue(categoryService.updateDishCategory(categoryToUpdate));
+        assertTrue(categoryService.updateDishCategory(SIMPLE_DISH_CAT_1));
 
-        verify(domainService).updateCategory(domainCategory);
+        verify(domainService).updateCategory(DOMAIN_CAT_1);
     }
 
     @Test

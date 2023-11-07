@@ -26,7 +26,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -69,87 +68,49 @@ public class DishEndpointTest extends ApiUnitTest{
 
      private static final long DISH_1_ID = 22222;
      private static final long DISH_2_ID = 33333;
+     private static final long DISH_3_ID = 44444;
+
+
+     private static final ProductView productView1 = ProductView.builder()
+             .id(productRef1.getProductId()).name(productRef1.getName()).categoryId(productRef1.getProductCategoryId())
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f).build();
+     private static final ProductView productView2 = ProductView.builder()
+             .id(productRef2.getProductId()).name(productRef2.getName()).categoryId(productRef2.getProductCategoryId())
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f).build();
+
+     private static final DishView dishView1 = DishView.builder()
+             .id(DISH_1_ID).name("dishView1").categoryId(CATEGORY_1_ID)
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f)
+             .products(Arrays.asList(productView1, productView2)).build();
+     private static final DishView dishView2 = DishView.builder()
+             .id(DISH_2_ID).name("dishView2").categoryId(CATEGORY_1_ID)
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f)
+             .products(Collections.emptyList()).build();
+     private static final DishView dishView3 = DishView.builder()
+             .id(DISH_3_ID).name("dishView3").categoryId(CATEGORY_2_ID)
+             .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f)
+             .products(Collections.emptyList()).build();
 
      @Before
      public void setUp() {
           setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
      }
 
-     private ProductView createProductView(ProductRef productRef) {
-          ProductView productView = new ProductView();
-          productView.id = productRef.getProductId();
-          productView.name = productRef.getName();
-          productView.categoryId = productRef.getProductCategoryId();
-          productView.calorific = 1.1f;
-          productView.proteins = 1.1f;
-          productView.fats = 1.1f;
-          productView.carbs = 1.1f;
-          productView.weight = 20f;
-          return productView;
-     }
-
-
-     private DishView createDishView(long id, String name, long categoryId, List<ProductView> products) {
-          DishView dishView = new DishView();
-          dishView.id = id;
-          dishView.name = name;
-          dishView.categoryId = categoryId;
-          dishView.calorific = 0.1f;
-          dishView.carbs = 0.1f;
-          dishView.fats = 0.1f;
-          dishView.proteins = 0.1f;
-          dishView.weight = 0.1f;
-          dishView.products = products;
-          return dishView;
-     }
-
      private SimpleDish createSimpleDish(long id) {
-          SimpleDish simpleDish = new SimpleDish();
-          simpleDish.id = id;
-          simpleDish.name = "test simpleDish";
-          simpleDish.categoryId = CATEGORY_1_ID;
-          DishProduct product1 = new DishProduct();
-          product1.productId = 1000;
-          product1.weight = 100.1f;
-          DishProduct product2 = new DishProduct();
-          product2.productId = 2000;
-          product2.weight = 200.2f;
-          simpleDish.products = List.of(product1, product2);
+          DishProduct product1 = DishProduct.builder().productId(1000).weight(100.1f).build();
+          DishProduct product2 = DishProduct.builder().productId(2000).weight(200.2f).build();
+          SimpleDish simpleDish = SimpleDish.builder()
+                  .id(id).name("test simpleDish").categoryId(CATEGORY_1_ID)
+                  .products(List.of(product1, product2)).build();
           return simpleDish;
-     }
-     private boolean equalDishViews(DishView dw1, DishView dw2) {
-          if (dw1 == dw2) return true;
-          if (dw2 == null || dw1 == null || dw1.getClass() != dw2.getClass()) return false;
-          return dw1.id == dw2.id &&
-                  dw1.categoryId == dw2.categoryId &&
-                  Float.compare(dw2.calorific, dw1.calorific) == 0 &&
-                  Float.compare(dw2.proteins, dw1.proteins) == 0 &&
-                  Float.compare(dw2.fats, dw1.fats) == 0 &&
-                  Float.compare(dw2.carbs, dw1.carbs) == 0 &&
-                  Float.compare(dw2.weight, dw1.weight) == 0 &&
-                  dw1.name.equals(dw2.name);
      }
 
      @Test
      public void getAllDishesTest() throws Exception {
-          CategoryWithDishes categoryWithDishes1 = new CategoryWithDishes();
-          CategoryWithDishes categoryWithDishes2 = new CategoryWithDishes();
-
-          categoryWithDishes1.id = CATEGORY_1_ID;
-          categoryWithDishes1.name = CATEGORY_1_NAME;
-          DishView dishView1 = createDishView(11, "dishView11", CATEGORY_1_ID,
-                  Arrays.asList(
-                          createProductView(productRef1),
-                          createProductView(productRef2)));
-          DishView dishView2 = createDishView(12, "dishView12", CATEGORY_1_ID,
-                  Collections.emptyList());
-          categoryWithDishes1.dishes = Arrays.asList(dishView1, dishView2);
-
-          categoryWithDishes2.id = CATEGORY_2_ID;
-          categoryWithDishes2.name = CATEGORY_2_NAME;
-          categoryWithDishes2.dishes = Collections.singletonList(createDishView(31,"dishView31", CATEGORY_2_ID,
-                  Collections.emptyList()));
-
+          CategoryWithDishes categoryWithDishes1 = CategoryWithDishes.builder()
+                  .id(CATEGORY_1_ID).name(CATEGORY_1_NAME).dishes(Arrays.asList(dishView1, dishView2)).build();
+          CategoryWithDishes categoryWithDishes2 = CategoryWithDishes.builder()
+                  .id(CATEGORY_2_ID).name(CATEGORY_2_NAME).dishes(Collections.singletonList(dishView3)).build();
           List<CategoryWithDishes> expected = List.of(categoryWithDishes1, categoryWithDishes2);
 
           when(service.getAllDishes()).thenReturn(expected);
@@ -157,14 +118,14 @@ public class DishEndpointTest extends ApiUnitTest{
                   .andExpect(jsonPath("$", hasSize(2)))
                   .andExpect(jsonPath("$[0].id", is(((int)CATEGORY_1_ID))))
                   .andExpect(jsonPath("$[0].name", is(CATEGORY_1_NAME)))
-                  .andExpect(jsonPath("$[0].dishes[0].id", is(11)))
-                  .andExpect(jsonPath("$[0].dishes[0].name", is("dishView11")))
+                  .andExpect(jsonPath("$[0].dishes[0].id", is((int)DISH_1_ID)))
+                  .andExpect(jsonPath("$[0].dishes[0].name", is("dishView1")))
                   .andExpect(jsonPath("$[0].dishes[0].categoryId", is((int)CATEGORY_1_ID)))
-                  .andExpect(jsonPath("$[0].dishes[0].calorific", equalTo(0.1)))
-                  .andExpect(jsonPath("$[0].dishes[0].proteins", equalTo(0.1)))
-                  .andExpect(jsonPath("$[0].dishes[0].fats", equalTo(0.1)))
-                  .andExpect(jsonPath("$[0].dishes[0].carbs", equalTo(0.1)))
-                  .andExpect(jsonPath("$[0].dishes[0].weight", equalTo(0.1)))
+                  .andExpect(jsonPath("$[0].dishes[0].calorific", equalTo(1.1)))
+                  .andExpect(jsonPath("$[0].dishes[0].proteins", equalTo(1.1)))
+                  .andExpect(jsonPath("$[0].dishes[0].fats", equalTo(1.1)))
+                  .andExpect(jsonPath("$[0].dishes[0].carbs", equalTo(1.1)))
+                  .andExpect(jsonPath("$[0].dishes[0].weight", equalTo(20.0)))
                   .andExpect(jsonPath("$[0].dishes[0].products[0].id", is(101010)))
                   .andExpect(jsonPath("$[0].dishes[0].products[0].name", is("first prod")))
                   .andExpect(jsonPath("$[0].dishes[0].products[0].categoryId", is(77777)))
@@ -183,41 +144,38 @@ public class DishEndpointTest extends ApiUnitTest{
                   .andExpect(jsonPath("$[0].dishes[0].products[1].weight", equalTo(20.0)))
                   .andExpect(jsonPath("$[0].id", is((int)CATEGORY_1_ID)))
                   .andExpect(jsonPath("$[0].name", is(CATEGORY_1_NAME)))
-                  .andExpect(jsonPath("$[0].dishes[1].id", is(12)))
-                  .andExpect(jsonPath("$[0].dishes[1].name", is("dishView12")))
+                  .andExpect(jsonPath("$[0].dishes[1].id", is((int)DISH_2_ID)))
+                  .andExpect(jsonPath("$[0].dishes[1].name", is("dishView2")))
                   .andExpect(jsonPath("$[0].dishes[1].categoryId", is((int)CATEGORY_1_ID)))
-                  .andExpect(jsonPath("$[0].dishes[1].calorific", equalTo(0.1)))
-                  .andExpect(jsonPath("$[0].dishes[1].proteins", equalTo(0.1)))
-                  .andExpect(jsonPath("$[0].dishes[1].fats", equalTo(0.1)))
-                  .andExpect(jsonPath("$[0].dishes[1].carbs", equalTo(0.1)))
-                  .andExpect(jsonPath("$[0].dishes[1].weight", equalTo(0.1)))
+                  .andExpect(jsonPath("$[0].dishes[1].calorific", equalTo(1.1)))
+                  .andExpect(jsonPath("$[0].dishes[1].proteins", equalTo(1.1)))
+                  .andExpect(jsonPath("$[0].dishes[1].fats", equalTo(1.1)))
+                  .andExpect(jsonPath("$[0].dishes[1].carbs", equalTo(1.1)))
+                  .andExpect(jsonPath("$[0].dishes[1].weight", equalTo(20.0)))
                   .andExpect(jsonPath("$[1].id", is((int) CATEGORY_2_ID)))
                   .andExpect(jsonPath("$[1].name", is(CATEGORY_2_NAME)))
-                  .andExpect(jsonPath("$[1].dishes[0].id", is(31)))
-                  .andExpect(jsonPath("$[1].dishes[0].name", is("dishView31")))
+                  .andExpect(jsonPath("$[1].dishes[0].id", is((int)DISH_3_ID)))
+                  .andExpect(jsonPath("$[1].dishes[0].name", is("dishView3")))
                   .andExpect(jsonPath("$[1].dishes[0].categoryId", is((int) CATEGORY_2_ID)))
-                  .andExpect(jsonPath("$[1].dishes[0].calorific", equalTo(0.1)))
-                  .andExpect(jsonPath("$[1].dishes[0].proteins", equalTo(0.1)))
-                  .andExpect(jsonPath("$[1].dishes[0].fats", equalTo(0.1)))
-                  .andExpect(jsonPath("$[1].dishes[0].carbs", equalTo(0.1)))
-                  .andExpect(jsonPath("$[1].dishes[0].weight", equalTo(0.1)));
+                  .andExpect(jsonPath("$[1].dishes[0].calorific", equalTo(1.1)))
+                  .andExpect(jsonPath("$[1].dishes[0].proteins", equalTo(1.1)))
+                  .andExpect(jsonPath("$[1].dishes[0].fats", equalTo(1.1)))
+                  .andExpect(jsonPath("$[1].dishes[0].carbs", equalTo(1.1)))
+                  .andExpect(jsonPath("$[1].dishes[0].weight", equalTo(20.0)));
 
           verify(service).getAllDishes();
      }
 
      @Test
      public void getDishTest() throws Exception {
-          DishView expected = createDishView(DISH_1_ID, "dishView1", CATEGORY_1_ID,
-                  Arrays.asList(
-                          createProductView(productRef1),
-                          createProductView(productRef2)));
+          DishView expected = dishView1;
 
           when(service.getDish(DISH_1_ID)).thenReturn(expected);
 
           MvcResult mvcResult = get("/dishes/" + DISH_1_ID).andReturn();
 
           DishView actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), DishView.class);
-          assertTrue(equalDishViews(expected, actual));
+          assertEquals(expected, actual);
 
           verify(service).getDish(DISH_1_ID);
      }
@@ -239,7 +197,7 @@ public class DishEndpointTest extends ApiUnitTest{
 
      @Test
      public void addDishValidationErrorTest() throws Exception {
-          SimpleDish simpleDishToAdd = new SimpleDish();
+          SimpleDish simpleDishToAdd = SimpleDish.builder().build();
           post400("/dishes", simpleDishToAdd);
 
           verify(service, never()).addDish(simpleDishToAdd);
@@ -247,12 +205,11 @@ public class DishEndpointTest extends ApiUnitTest{
 
      @Test
      public void updateDishTest() throws Exception {
-          long id = DISH_1_ID;
-          SimpleDish simpleDish = createSimpleDish(id);
+          SimpleDish simpleDish = createSimpleDish(DISH_1_ID);
 
           doNothing().when(service).updateDish(simpleDish);
 
-          put("/dishes/" + id, simpleDish).andReturn();
+          put("/dishes/" + DISH_1_ID, simpleDish).andReturn();
 
           verify(service).updateDish(simpleDish);
      }
@@ -269,32 +226,29 @@ public class DishEndpointTest extends ApiUnitTest{
 
      @Test
      public void updateDishNotFoundTest() throws Exception {
-          long id = DISH_1_ID;
-          SimpleDish simpleDishToUpdate = createSimpleDish(id);
+          SimpleDish simpleDishToUpdate = createSimpleDish(DISH_1_ID);
           doThrow(NotFoundException.class).when(service).updateDish(simpleDishToUpdate);
 
-          put404("/dishes/" + id, simpleDishToUpdate).andReturn();
+          put404("/dishes/" + DISH_1_ID, simpleDishToUpdate).andReturn();
 
           verify(service).updateDish(simpleDishToUpdate);
      }
 
      @Test
      public void deleteDishTest() throws Exception {
-          long id = DISH_1_ID;
-          doNothing().when(service).deleteDish(id);
+          doNothing().when(service).deleteDish(DISH_1_ID);
 
-          delete("/dishes/" + id).andReturn();
+          delete("/dishes/" + DISH_1_ID).andReturn();
 
-          verify(service).deleteDish(id);
+          verify(service).deleteDish(DISH_1_ID);
      }
 
      @Test
      public void deleteDishNotFoundTest() throws Exception {
-          long id = DISH_1_ID;
-          doThrow(NotFoundException.class).when(service).deleteDish(id);
+          doThrow(NotFoundException.class).when(service).deleteDish(DISH_1_ID);
 
-          delete404("/dishes/" + id).andReturn();
+          delete404("/dishes/" + DISH_1_ID).andReturn();
 
-          verify(service).deleteDish(id);
+          verify(service).deleteDish(DISH_1_ID);
      }
 }

@@ -61,14 +61,14 @@ public class ProductService {
 
     private CategoryWithProducts mapCategoryWithProducts(
             ProductCategory category, Map<Long, List<Product>> productsMap) {
-        final CategoryWithProducts withProducts = new CategoryWithProducts();
-        withProducts.id = category.getCategoryId();
-        withProducts.name = category.getName();
         final List<Product> productList = productsMap.get(category.getCategoryId());
-        withProducts.products = (productList == null) ? new ArrayList<>() : productList.stream()
-                .map(this::mapSimpleProduct)
-                .collect(Collectors.toList());
-        return withProducts;
+        return CategoryWithProducts.builder()
+                .id(category.getCategoryId())
+                .name(category.getName())
+                .products((productList == null) ? new ArrayList<>() : productList.stream()
+                        .map(this::mapSimpleProduct)
+                        .collect(Collectors.toList()))
+                .build();
     }
 
     Product getDomainProduct(long id) {
@@ -98,12 +98,12 @@ public class ProductService {
      * @return new product
      */
     public ProductView addProduct(ProductView simpleProduct) {
-        final ProductCategory category = productCategoryDomainService.getCategory(simpleProduct.categoryId)
+        final ProductCategory category = productCategoryDomainService.getCategory(simpleProduct.getCategoryId())
                 .orElseThrow(() ->
-                        new NotFoundException("Failed to get Product Category, id = " + simpleProduct.categoryId));
-        Product productToAdd = new Product(-1, simpleProduct.name, "", category,
-                simpleProduct.calorific, simpleProduct.proteins, simpleProduct.fats, simpleProduct.carbs,
-                Math.round(simpleProduct.weight *10));
+                        new NotFoundException("Failed to get Product Category, id = " + simpleProduct.getCategoryId()));
+        Product productToAdd = new Product(-1, simpleProduct.getName(), "", category,
+                simpleProduct.getCalorific(), simpleProduct.getProteins(), simpleProduct.getFats(), simpleProduct.getCarbs(),
+                Math.round(simpleProduct.getWeight() *10));
 
         return mapSimpleProduct(productDomainService.addProduct(productToAdd));
     }
@@ -115,12 +115,12 @@ public class ProductService {
      * @return if product updated
      */
     public boolean updateProduct(ProductView productModel) {
-        final ProductCategory category = productCategoryDomainService.getCategory(productModel.categoryId)
+        final ProductCategory category = productCategoryDomainService.getCategory(productModel.getCategoryId())
                 .orElseThrow(() ->
-                        new NotFoundException("Failed to get Product Category, id = " + productModel.categoryId));
-        Product productToUpdate = new Product(productModel.id, productModel.name, "", category,
-                productModel.calorific, productModel.proteins, productModel.fats, productModel.carbs,
-                Math.round(productModel.weight *10));
+                        new NotFoundException("Failed to get Product Category, id = " + productModel.getCategoryId()));
+        Product productToUpdate = new Product(productModel.getId(), productModel.getName(), "", category,
+                productModel.getCalorific(), productModel.getProteins(), productModel.getFats(), productModel.getCarbs(),
+                Math.round(productModel.getWeight() *10));
 
         return productDomainService.updateProduct(productToUpdate);
     }
@@ -136,15 +136,15 @@ public class ProductService {
     }
 
     private ProductView mapSimpleProduct(Product product) {
-        final ProductView pm = new ProductView();
-        pm.id = product.getProductId();
-        pm.name = product.getName();
-        pm.categoryId = product.getCategory().getCategoryId();
-        pm.calorific = product.getCalorific();
-        pm.proteins = product.getProteins();
-        pm.fats = product.getFats();
-        pm.carbs = product.getCarbs();
-        pm.weight = product.getDefaultWeight();
-        return pm;
+        return ProductView.builder()
+                .id(product.getProductId())
+                .name(product.getName())
+                .categoryId(product.getCategory().getCategoryId())
+                .calorific(product.getCalorific())
+                .proteins(product.getProteins())
+                .fats(product.getFats())
+                .carbs(product.getCarbs())
+                .weight(product.getDefaultWeight())
+                .build();
     }
 }

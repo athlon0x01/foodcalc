@@ -10,27 +10,27 @@ import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
 import com.outdoor.foodcalc.model.dish.*;
 import com.outdoor.foodcalc.model.product.ProductView;
-import org.junit.Rule;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.MockitoAnnotations;
 
 import java.util.*;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 public class DishServiceTest {
 
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
-
     @InjectMocks
     private DishService dishService;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+    }
 
     @Mock
     private DishDomainService dishDomainService;
@@ -50,12 +50,12 @@ public class DishServiceTest {
     private static final String CATEGORY_1_NAME = "First category";
     private static final String CATEGORY_2_NAME = "Second category";
     private static final String CATEGORY_3_NAME = "Empty";
-
-    private static final DishCategory CATEGORY1 = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-
-    private static final DishCategory CATEGORY2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
-
-    private static final DishCategory CATEGORY3 = new DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
+    private static final SimpleDishCategory SIMPLE_CAT_1 = new SimpleDishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+    private static final SimpleDishCategory SIMPLE_CAT_2 = new SimpleDishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+    private static final SimpleDishCategory SIMPLE_CAT_3 = new SimpleDishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
+    private static final DishCategory DOMAIN_CAT_1 = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+    private static final DishCategory DOMAIN_CAT_2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+    private static final DishCategory DOMAIN_CAT_3 = new DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
 
     private static final Product product1 = new Product(101010, "first prod",
             new ProductCategory(77777, "test product cat1"));
@@ -66,50 +66,83 @@ public class DishServiceTest {
             new ProductCategory(88888, "test product cat2"),
             13, 11.5f, 7, 32.2f, 55);
 
-
     private static final ProductRef productRef1 = new ProductRef(product1, 200);
     private static final ProductRef productRef2 = new ProductRef(product2, 300);
     private static final ProductRef productRef3 = new ProductRef(product3, 500);
+
+    private static final ProductView productView1 = ProductView.builder()
+            .id(productRef1.getProductId()).name(productRef1.getName())
+            .categoryId(productRef1.getProductCategoryId()).calorific(productRef1.getCalorific())
+            .proteins(productRef1.getProteins()).fats(productRef1.getFats())
+            .carbs(productRef1.getCarbs()).weight(productRef1.getWeight()).build();
+    private static final ProductView productView2 = ProductView.builder()
+            .id(productRef2.getProductId()).name(productRef2.getName())
+            .categoryId(productRef2.getProductCategoryId()).calorific(productRef2.getCalorific())
+            .proteins(productRef2.getProteins()).fats(productRef2.getFats())
+            .carbs(productRef2.getCarbs()).weight(productRef2.getWeight()).build();
+    private static final ProductView productView3 = ProductView.builder()
+            .id(productRef3.getProductId()).name(productRef3.getName())
+            .categoryId(productRef3.getProductCategoryId()).calorific(productRef3.getCalorific())
+            .proteins(productRef3.getProteins()).fats(productRef3.getFats())
+            .carbs(productRef3.getCarbs()).weight(productRef3.getWeight()).build();
 
     private static final long DISH_1_ID = 22222;
     private static final long DISH_2_ID = 33333;
     private static final long DISH_3_ID = 44444;
 
+
+    private static final Dish domainDish1 = new Dish(DISH_1_ID, "domain dish1", "", DOMAIN_CAT_1,
+            Arrays.asList(productRef1, productRef2, productRef3));
+    private static final Dish domainDish2 = new Dish(DISH_2_ID, "domain dish2", "", DOMAIN_CAT_1,
+            new ArrayList<>());
+    private static final Dish domainDish3 = new Dish(DISH_3_ID, "domain dish3", "", DOMAIN_CAT_2,
+            Arrays.asList(productRef1, productRef2, productRef3));
+
+    private static final DishView dishView1 = DishView.builder().id(domainDish1.getDishId())
+            .name(domainDish1.getName()).categoryId(domainDish1.getCategory().getCategoryId())
+            .calorific(6.83f).proteins(6.83f).fats(0.0f).carbs(18.2f).weight(100.0f)
+            .products(Arrays.asList(productView1, productView2, productView3)).build();
+    private static final DishView dishView2 = DishView.builder().id(domainDish2.getDishId())
+            .name(domainDish2.getName()).categoryId(domainDish2.getCategory().getCategoryId())
+            .calorific(0f).proteins(0f).fats(0f).carbs(0f).weight(0f)
+            .products(new ArrayList<>()).build();
+    private static final DishView dishView3 = DishView.builder().id(domainDish3.getDishId())
+        .name(domainDish3.getName()).categoryId(domainDish3.getCategory().getCategoryId())
+            .calorific(6.83f).proteins(6.83f).fats(0.0f).carbs(18.2f).weight(100.0f)
+            .products(Arrays.asList(productView1, productView2, productView3)).build();
+
+    private static final DishProduct dishProduct1 = DishProduct.builder()
+            .productId(productRef1.getProductId()).weight(productRef1.getWeight()).build();
+    private static final DishProduct dishProduct2 = DishProduct.builder()
+            .productId(productRef2.getProductId()).weight(productRef2.getWeight()).build();
+
+    private static final DishProduct dishProduct3 = DishProduct.builder()
+            .productId(productRef3.getProductId()).weight(productRef3.getWeight()).build();
+
     @Test
     public void getAllDishesTest() {
-        SimpleDishCategory cat1 = createSimpleDishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-        SimpleDishCategory cat2 = createSimpleDishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
-        SimpleDishCategory cat3 = createSimpleDishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
-        List<SimpleDishCategory> dishCategoryList = Arrays.asList(cat1, cat2, cat3);
-        List<ProductRef> domainProducts = Arrays.asList(productRef1, productRef2, productRef3);
-        Dish domainDish1 = new Dish(DISH_1_ID, "domain dish1", "", CATEGORY1, domainProducts);
-        Dish domainDish2 = new Dish(DISH_2_ID, "domain dish2", "", CATEGORY1, new ArrayList<>());
-        Dish domainDish3 = new Dish(DISH_3_ID, "domain dish3", "", CATEGORY2, domainProducts);
+        List<SimpleDishCategory> dishCategoryList = Arrays.asList(SIMPLE_CAT_1, SIMPLE_CAT_2, SIMPLE_CAT_3);
         List<Dish> domainDishList = Arrays.asList(domainDish1, domainDish2, domainDish3);
+
         when(dishCategories.getDishCategories()).thenReturn(dishCategoryList);
         when(dishDomainService.getAllDishes()).thenReturn(domainDishList);
-
-        ProductView productView1 = createProductView(productRef1);
-        ProductView productView2 = createProductView(productRef2);
-        ProductView productView3 = createProductView(productRef3);
-        List<ProductView> productViewList = Arrays.asList(productView1, productView2, productView3);
-        DishView dishView1 = createDishView(DISH_1_ID, "domain dish1", CATEGORY1.getCategoryId(), productViewList);
-        DishView dishView2 = createDishView(DISH_2_ID, "domain dish2", CATEGORY1.getCategoryId(), new ArrayList<>());
-        DishView dishView3 = createDishView(DISH_3_ID, "domain dish3", CATEGORY2.getCategoryId(), productViewList);
         when(productService.getProduct(product1.getProductId())).thenReturn(productView1);
         when(productService.getProduct(product2.getProductId())).thenReturn(productView2);
         when(productService.getProduct(product3.getProductId())).thenReturn(productView3);
 
-        CategoryWithDishes categoryWithDishes1 = createCategoryWithDishes(
-                CATEGORY1.getCategoryId(), CATEGORY1.getName(), Arrays.asList(dishView1, dishView2));
-        CategoryWithDishes categoryWithDishes2 = createCategoryWithDishes(
-                CATEGORY2.getCategoryId(), CATEGORY2.getName(), List.of(dishView3));
-        CategoryWithDishes categoryWithDishes3 = createCategoryWithDishes(
-                CATEGORY3.getCategoryId(), CATEGORY3.getName(), new ArrayList<>());
+        CategoryWithDishes categoryWithDishes1 = CategoryWithDishes.builder()
+                .id(DOMAIN_CAT_1.getCategoryId()).name(DOMAIN_CAT_1.getName())
+                .dishes(Arrays.asList(dishView1, dishView2)).build();
+        CategoryWithDishes categoryWithDishes2 = CategoryWithDishes.builder()
+                .id(DOMAIN_CAT_2.getCategoryId()).name(DOMAIN_CAT_2.getName())
+                .dishes(List.of(dishView3)).build();
+        CategoryWithDishes categoryWithDishes3 = CategoryWithDishes.builder()
+                .id(DOMAIN_CAT_3.getCategoryId()).name(DOMAIN_CAT_3.getName())
+                .dishes(new ArrayList<>()).build();
         List<CategoryWithDishes> expected = Arrays.asList(categoryWithDishes1, categoryWithDishes2, categoryWithDishes3);
 
         List<CategoryWithDishes> actual = dishService.getAllDishes();
-        assertTrue(assertEqualsDishView(expected, actual));
+        assertEquals(expected, actual);
 
         verify(dishCategories).getDishCategories();
         verify(dishDomainService).getAllDishes();
@@ -120,23 +153,17 @@ public class DishServiceTest {
 
     @Test
     public void getDishTest() {
-        List<ProductRef> domainProducts = Arrays.asList(productRef1, productRef2, productRef3);
-        ProductView productView1 = createProductView(productRef1);
-        ProductView productView2 = createProductView(productRef2);
-        ProductView productView3 = createProductView(productRef3);
-        List<ProductView> productViewList = Arrays.asList(productView1, productView2, productView3);
-        Dish domainDish = new Dish(DISH_1_ID, "test domain dish", "", CATEGORY1, domainProducts);
-        DishView expectedDishView = createDishView(
-                DISH_1_ID, "test domain dish", CATEGORY1.getCategoryId(), productViewList);
-        when(dishDomainService.getDish(DISH_1_ID)).thenReturn(Optional.of(domainDish));
+        Dish domainDish = domainDish1;
+        DishView expectedDishView = dishView1;
+        when(dishDomainService.getDish(domainDish.getDishId())).thenReturn(Optional.of(domainDish));
         when(productService.getProduct(product1.getProductId())).thenReturn(productView1);
         when(productService.getProduct(product2.getProductId())).thenReturn(productView2);
         when(productService.getProduct(product3.getProductId())).thenReturn(productView3);
 
-        DishView actualDishView = dishService.getDish(DISH_1_ID);
-        assertTrue(assertEqualsDishView(expectedDishView, actualDishView));
+        DishView actualDishView = dishService.getDish(domainDish.getDishId());
+        assertEquals(expectedDishView, actualDishView);
 
-        verify(dishDomainService).getDish(DISH_1_ID);
+        verify(dishDomainService).getDish(domainDish.getDishId());
         verify(productService).getProduct(product1.getProductId());
         verify(productService).getProduct(product2.getProductId());
         verify(productService).getProduct(product3.getProductId());
@@ -150,69 +177,64 @@ public class DishServiceTest {
 
     @Test
     public void addDishTest() {
-        DishProduct dishProduct1 = createDishProduct(productRef1);
-        DishProduct dishProduct2 = createDishProduct(productRef2);
-        DishProduct dishProduct3 = createDishProduct(productRef3);
         List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
-        SimpleDish simpleDishToAdd = createSimpleDish(77777, "test simpleDish", CATEGORY_1_ID, dishProductList);
-        SimpleDish expectedSimpleDish = createSimpleDish(DISH_1_ID, "test simpleDish", CATEGORY_1_ID, dishProductList);
-        Dish addedDomainDish = new Dish(DISH_1_ID, "test simpleDish", "",
-                CATEGORY1, Arrays.asList(productRef1,productRef2, productRef3));
-        when(dishCategoryDomainService.getCategory(simpleDishToAdd.categoryId))
+        Dish addedDomainDish = domainDish1;
+        SimpleDish simpleDishToAdd = SimpleDish.builder().id(77777).name(domainDish1.getName())
+                .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
+        SimpleDish expectedSimpleDish = SimpleDish.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
+                .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
+
+        when(dishCategoryDomainService.getCategory(simpleDishToAdd.getCategoryId()))
                 .thenReturn(Optional.of(addedDomainDish.getCategory()));
         when(dishDomainService.addDish(any())).thenReturn(addedDomainDish);
-        when(productService.getDomainProduct(dishProduct1.productId)).thenReturn(product1);
-        when(productService.getDomainProduct(dishProduct2.productId)).thenReturn(product2);
-        when(productService.getDomainProduct(dishProduct3.productId)).thenReturn(product3);
+        when(productService.getDomainProduct(dishProduct1.getProductId())).thenReturn(product1);
+        when(productService.getDomainProduct(dishProduct2.getProductId())).thenReturn(product2);
+        when(productService.getDomainProduct(dishProduct3.getProductId())).thenReturn(product3);
 
         SimpleDish actualSimpleDish = dishService.addDish(simpleDishToAdd);
         assertEquals(expectedSimpleDish, actualSimpleDish);
 
-        verify(dishCategoryDomainService).getCategory(simpleDishToAdd.categoryId);
+        verify(dishCategoryDomainService).getCategory(simpleDishToAdd.getCategoryId());
         verify(dishDomainService).addDish(any());
-        verify(productService).getDomainProduct(dishProduct1.productId);
-        verify(productService).getDomainProduct(dishProduct2.productId);
-        verify(productService).getDomainProduct(dishProduct3.productId);
+        verify(productService).getDomainProduct(dishProduct1.getProductId());
+        verify(productService).getDomainProduct(dishProduct2.getProductId());
+        verify(productService).getDomainProduct(dishProduct3.getProductId());
     }
 
     @Test(expected = NotFoundException.class)
     public void addDishCategoryFailTest() {
-        DishProduct dishProduct1 = createDishProduct(productRef1);
-        DishProduct dishProduct2 = createDishProduct(productRef2);
-        DishProduct dishProduct3 = createDishProduct(productRef3);
         List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
-        SimpleDish simpleDishToAdd = createSimpleDish(77777, "test simpleDish", CATEGORY_1_ID, dishProductList);
-        when(dishCategoryDomainService.getCategory(simpleDishToAdd.categoryId)).thenReturn(Optional.empty());
+        SimpleDish simpleDishToAdd = SimpleDish.builder().id(77777).name(domainDish1.getName())
+                .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
+        when(dishCategoryDomainService.getCategory(simpleDishToAdd.getCategoryId())).thenReturn(Optional.empty());
 
         dishService.addDish(simpleDishToAdd);
     }
 
     @Test
     public void updateDishTest() {
-        DishProduct dishProduct1 = createDishProduct(productRef1);
-        DishProduct dishProduct2 = createDishProduct(productRef2);
-        DishProduct dishProduct3 = createDishProduct(productRef3);
         List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
-        SimpleDish simpleDishToUpdate = createSimpleDish(DISH_1_ID, "test simpleDish", CATEGORY_1_ID, dishProductList);
-        when(dishCategoryDomainService.getCategory(simpleDishToUpdate.categoryId)).thenReturn(Optional.of(CATEGORY1));
-        when(productService.getDomainProduct(dishProduct1.productId)).thenReturn(product1);
-        when(productService.getDomainProduct(dishProduct2.productId)).thenReturn(product2);
-        when(productService.getDomainProduct(dishProduct3.productId)).thenReturn(product3);
+        SimpleDish simpleDishToUpdate = SimpleDish.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
+                .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
+
+        when(dishCategoryDomainService.getCategory(simpleDishToUpdate.getCategoryId()))
+                .thenReturn(Optional.of(DOMAIN_CAT_1));
+        when(productService.getDomainProduct(dishProduct1.getProductId())).thenReturn(product1);
+        when(productService.getDomainProduct(dishProduct2.getProductId())).thenReturn(product2);
+        when(productService.getDomainProduct(dishProduct3.getProductId())).thenReturn(product3);
         doNothing().when(dishDomainService).updateDish(any());
 
         dishService.updateDish(simpleDishToUpdate);
         verify(dishDomainService).updateDish(any());
-
     }
 
     @Test(expected = NotFoundException.class)
     public void updateDishCategoryFailTest() {
-        DishProduct dishProduct1 = createDishProduct(productRef1);
-        DishProduct dishProduct2 = createDishProduct(productRef2);
-        DishProduct dishProduct3 = createDishProduct(productRef3);
         List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
-        SimpleDish simpleDishToUpdate = createSimpleDish(DISH_1_ID, "test simpleDish", CATEGORY_1_ID, dishProductList);
-        when(dishCategoryDomainService.getCategory(simpleDishToUpdate.categoryId)).thenReturn(Optional.empty());
+        SimpleDish simpleDishToUpdate = SimpleDish.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
+                .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
+
+        when(dishCategoryDomainService.getCategory(simpleDishToUpdate.getCategoryId())).thenReturn(Optional.empty());
 
         dishService.updateDish(simpleDishToUpdate);
     }
@@ -222,80 +244,5 @@ public class DishServiceTest {
         doNothing().when(dishDomainService).deleteDish(DISH_1_ID);
         dishService.deleteDish(DISH_1_ID);
         verify(dishDomainService).deleteDish(DISH_1_ID);
-    }
-
-    private DishView createDishView(long id, String name, long categoryId, List<ProductView> products) {
-        DishView dishView = new DishView();
-        dishView.id = id;
-        dishView.name = name;
-        dishView.categoryId = categoryId;
-        dishView.products = products;
-        return dishView;
-    }
-
-    private SimpleDish createSimpleDish(long id, String name, long categoryId, List<DishProduct> products) {
-        SimpleDish simpleDish = new SimpleDish();
-        simpleDish.id = id;
-        simpleDish.name = name;
-        simpleDish.categoryId = categoryId;
-        simpleDish.products = products;
-        return simpleDish;
-    }
-
-    private DishProduct createDishProduct(ProductRef productRef) {
-        DishProduct dishProduct = new DishProduct();
-        dishProduct.productId = productRef.getProductId();
-        dishProduct.weight = productRef.getWeight();
-        return dishProduct;
-    }
-
-    private ProductView createProductView(ProductRef productRef) {
-        ProductView productView = new ProductView();
-        productView.id = productRef.getProductId();
-        productView.name = productRef.getName();
-        productView.categoryId = productRef.getProductCategoryId();
-        productView.calorific = productRef.getCalorific();
-        productView.proteins = productRef.getProteins();
-        productView.fats = productRef.getFats();
-        productView.carbs = productRef.getCarbs();
-        productView.weight = productRef.getWeight();
-        return productView;
-    }
-
-    private SimpleDishCategory createSimpleDishCategory(long id, String name) {
-        SimpleDishCategory simpleDishCategory = new SimpleDishCategory();
-        simpleDishCategory.id = id;
-        simpleDishCategory.name = name;
-        return simpleDishCategory;
-    }
-
-    private CategoryWithDishes createCategoryWithDishes(long id, String name, List<DishView> dishes) {
-        CategoryWithDishes categoryWithDishes = new CategoryWithDishes();
-        categoryWithDishes.id = id;
-        categoryWithDishes.name = name;
-        categoryWithDishes.dishes = dishes;
-        return categoryWithDishes;
-    }
-
-    private boolean assertEqualsDishView(DishView expected, DishView actual) {
-        if (expected == actual) return true;
-        if (actual == null || expected.getClass() != actual.getClass()) return false;
-        return expected.id == actual.id &&
-                expected.name.equals(actual.name) &&
-                expected.categoryId == actual.categoryId &&
-                expected.products.equals(actual.products);
-    }
-
-    private boolean assertEqualsDishView(List<CategoryWithDishes> expected, List<CategoryWithDishes> actual) {
-        if (expected.size() != actual.size()) return false;
-        for (int i =0; i < expected.size(); i++) {
-            if (expected.get(i).id != actual.get(i).id) return false;
-            if (!Objects.equals(expected.get(i).name, actual.get(i).name)) return false;
-            if (expected.get(i).dishes.size() != actual.get(i).dishes.size()) return false;
-            for (int j =0; j < expected.get(i).dishes.size(); j++) {
-                if (!assertEqualsDishView(expected.get(i).dishes.get(j), actual.get(i).dishes.get(j))) return false;
-            }
-        }
-        return true;
     }
 }

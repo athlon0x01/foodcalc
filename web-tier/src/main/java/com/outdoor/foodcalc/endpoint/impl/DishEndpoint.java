@@ -43,10 +43,10 @@ public class DishEndpoint implements DishApi {
 
     public void updateDish(@PathVariable("id") long id,
                                    @RequestBody @Valid SimpleDish dish) {
-        if (id != dish.id) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, dish.id);
+        if (id != dish.getId()) {
+            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, dish.getId());
             throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + dish.id);
+                    + " doesn't match with request body Id = " + dish.getId());
         }
         LOG.debug("Updating dish {}", dish);
         dishService.updateDish(dish);

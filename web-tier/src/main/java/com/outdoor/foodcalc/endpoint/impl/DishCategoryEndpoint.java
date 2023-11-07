@@ -44,15 +44,15 @@ public class DishCategoryEndpoint implements DishCategoriesApi {
 
     public SimpleDishCategory addDishCategory(@RequestBody @Valid SimpleDishCategory category) {
         LOG.debug("Adding new dish category - {}", category);
-        return categoryService.addDishCategory(category.name);
+        return categoryService.addDishCategory(category.getName());
     }
 
     public SimpleDishCategory updateDishCategory(@PathVariable("id") long id,
                                    @RequestBody @Valid SimpleDishCategory category) {
-        if (id != category.id) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.id);
+        if (id != category.getId()) {
+            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.getId());
             throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + category.id);
+                    + " doesn't match with request body Id = " + category.getId());
         }
         LOG.debug("Updating dish category {}", category);
         if (!categoryService.updateDishCategory(category)) {

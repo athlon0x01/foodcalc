@@ -44,16 +44,20 @@ public class DishService {
         final Map<Long, List<Dish>> dishesMap = domainDishes.stream()
                 .collect(Collectors.groupingBy(d -> d.getCategory().getCategoryId()));
         //map domain classes to UI model
+        return mapCategoryWithDishes(categories, dishesMap);
+    }
+
+    private List<CategoryWithDishes> mapCategoryWithDishes(List<SimpleDishCategory> categories, Map<Long, List<Dish>> dishesMap) {
         return categories.stream()
                 .map(c -> {
-                    final CategoryWithDishes cView = new CategoryWithDishes();
-                    cView.id = c.id;
-                    cView.name = c.name;
-                    final List<Dish> dishList = dishesMap.get(c.id);
-                    cView.dishes = (dishList == null) ? new ArrayList<>() : dishList.stream()
-                            .map(this::mapDishView)
-                            .collect(Collectors.toList());
-                    return cView;
+                    final List<Dish> dishList = dishesMap.get(c.getId());
+                    return CategoryWithDishes.builder()
+                            .id(c.getId())
+                            .name(c.getName())
+                            .dishes((dishList == null) ? new ArrayList<>() : dishList.stream()
+                                    .map(this::mapDishView)
+                                    .collect(Collectors.toList()))
+                            .build();
                 })
                 .collect(Collectors.toList());
     }
@@ -78,12 +82,12 @@ public class DishService {
      * @return new dish
      */
     public SimpleDish addDish(SimpleDish simpleDish) {
-        final DishCategory category = dishCategoryDomainService.getCategory(simpleDish.categoryId)
+        final DishCategory category = dishCategoryDomainService.getCategory(simpleDish.getCategoryId())
                 .orElseThrow(() ->
-                        new NotFoundException("Failed to get Dish Category, id = " + simpleDish.categoryId ));
+                        new NotFoundException("Failed to get Dish Category, id = " + simpleDish.getCategoryId()));
 
-        Dish dishToAdd = new Dish( -1, simpleDish.name, "", category, mapProductRefs(simpleDish));
-        simpleDish.id = dishDomainService.addDish(dishToAdd).getDishId();
+        Dish dishToAdd = new Dish( -1, simpleDish.getName(), "", category, mapProductRefs(simpleDish));
+        simpleDish.setId(dishDomainService.addDish(dishToAdd).getDishId());
         return simpleDish;
     }
 
@@ -93,11 +97,11 @@ public class DishService {
      * @param simpleDish updated
      */
     public void updateDish(SimpleDish simpleDish) {
-        final DishCategory category = dishCategoryDomainService.getCategory(simpleDish.categoryId)
+        final DishCategory category = dishCategoryDomainService.getCategory(simpleDish.getCategoryId())
                 .orElseThrow(() ->
-                        new NotFoundException("Failed to get Dish Category, id = " + simpleDish.categoryId ));
+                        new NotFoundException("Failed to get Dish Category, id = " + simpleDish.getCategoryId() ));
 
-        Dish updatedDish = new Dish(simpleDish.id, simpleDish.name, "", category, mapProductRefs(simpleDish));
+        Dish updatedDish = new Dish(simpleDish.getId(), simpleDish.getName(), "", category, mapProductRefs(simpleDish));
         dishDomainService.updateDish(updatedDish);
     }
 
@@ -111,30 +115,29 @@ public class DishService {
     }
 
     private DishView mapDishView(Dish dish) {
-        DishView view = new DishView();
-        view.id = dish.getDishId();
-        view.name = dish.getName();
-        view.categoryId = dish.getCategory().getCategoryId();
-        view.products = dish.getAllProducts().stream()
-                .map(pr -> {
-                    final ProductView product = productService.getProduct(pr.getProductId());
-                    product.weight = pr.getWeight();
-                    return product;
-                })
-                .collect(Collectors.toList());
-        view.calorific = dish.getCalorific();
-        view.proteins = dish.getProteins();
-        view.fats = dish.getFats();
-        view.carbs = dish.getCarbs();
-        view.weight = dish.getWeight();
-        return view;
+        return DishView.builder()
+                .id(dish.getDishId())
+                .name(dish.getName())
+                .categoryId(dish.getCategory().getCategoryId())
+                .products(dish.getAllProducts().stream()
+                        .map(pr -> {
+                            final ProductView product = productService.getProduct(pr.getProductId());
+                            product.setWeight(pr.getWeight());
+                            return product;
+                        })
+                        .collect(Collectors.toList()))
+                .calorific(dish.getCalorific())
+                .proteins(dish.getCalorific())
+                .carbs(dish.getCarbs())
+                .weight(dish.getWeight())
+                .build();
     }
 
     private List<ProductRef> mapProductRefs(SimpleDish simpleDish) {
-        return simpleDish.products.stream()
+        return simpleDish.getProducts().stream()
                 .map(dp -> new ProductRef(
-                        productService.getDomainProduct(dp.productId),
-                        Math.round(dp.weight * 10)))
+                        productService.getDomainProduct(dp.getProductId()),
+                        Math.round(dp.getWeight() * 10)))
                 .collect(Collectors.toList());
     }
 }
