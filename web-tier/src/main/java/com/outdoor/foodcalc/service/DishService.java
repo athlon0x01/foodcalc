@@ -44,6 +44,10 @@ public class DishService {
         final Map<Long, List<Dish>> dishesMap = domainDishes.stream()
                 .collect(Collectors.groupingBy(d -> d.getCategory().getCategoryId()));
         //map domain classes to UI model
+        return mapCategoryWithDishes(categories, dishesMap);
+    }
+
+    private List<CategoryWithDishes> mapCategoryWithDishes(List<SimpleDishCategory> categories, Map<Long, List<Dish>> dishesMap) {
         return categories.stream()
                 .map(c -> {
                     final List<Dish> dishList = dishesMap.get(c.getId());
