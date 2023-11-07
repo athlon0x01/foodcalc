@@ -64,7 +64,8 @@ public class ProductService {
         final List<Product> productList = productsMap.get(category.getCategoryId());
         return CategoryWithProducts.builder()
                 .id(category.getCategoryId())
-                .name(category.getName()).products((productList == null) ? new ArrayList<>() : productList.stream()
+                .name(category.getName())
+                .products((productList == null) ? new ArrayList<>() : productList.stream()
                         .map(this::mapSimpleProduct)
                         .collect(Collectors.toList()))
                 .build();

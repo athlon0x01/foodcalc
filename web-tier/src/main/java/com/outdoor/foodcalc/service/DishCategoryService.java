@@ -43,8 +43,7 @@ public class DishCategoryService {
     }
 
     private SimpleDishCategory mapDishCategory(DishCategory category) {
-        final SimpleDishCategory model = new SimpleDishCategory(category.getCategoryId(), category.getName());
-        return model;
+        return new SimpleDishCategory(category.getCategoryId(), category.getName());
     }
 
     /**

@@ -58,9 +58,8 @@ public class ProductCategoryService {
     }
 
     private SimpleProductCategory mapProductCategory(ProductCategory productCategory) {
-        final SimpleProductCategory model = new SimpleProductCategory(
+        return new SimpleProductCategory(
                 productCategory.getCategoryId(), productCategory.getName());
-        return model;
     }
 
     /**

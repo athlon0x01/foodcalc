@@ -43,8 +43,7 @@ public class MealTypesService {
     }
 
     private MealTypeView mapMealType(MealType mealType) {
-        final MealTypeView model = new MealTypeView(mealType.getTypeId(), mealType.getName());
-        return model;
+        return new MealTypeView(mealType.getTypeId(), mealType.getName());
     }
 
     /**
