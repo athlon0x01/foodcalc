@@ -101,9 +101,10 @@ public class ProductService {
         final ProductCategory category = productCategoryDomainService.getCategory(simpleProduct.getCategoryId())
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Product Category, id = " + simpleProduct.getCategoryId()));
-        Product productToAdd = new Product(-1, simpleProduct.getName(), "", category,
-                simpleProduct.getCalorific(), simpleProduct.getProteins(), simpleProduct.getFats(), simpleProduct.getCarbs(),
-                Math.round(simpleProduct.getWeight() *10));
+        Product productToAdd = Product.builder().productId(-1).name(simpleProduct.getName())
+                .description("").category(category).calorific(simpleProduct.getCalorific())
+                .proteins(simpleProduct.getProteins()).fats(simpleProduct.getFats()).carbs(simpleProduct.getCarbs())
+                .defaultWeight(Math.round(simpleProduct.getWeight() *10)).build();
 
         return mapSimpleProduct(productDomainService.addProduct(productToAdd));
     }
@@ -118,9 +119,10 @@ public class ProductService {
         final ProductCategory category = productCategoryDomainService.getCategory(productModel.getCategoryId())
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Product Category, id = " + productModel.getCategoryId()));
-        Product productToUpdate = new Product(productModel.getId(), productModel.getName(), "", category,
-                productModel.getCalorific(), productModel.getProteins(), productModel.getFats(), productModel.getCarbs(),
-                Math.round(productModel.getWeight() *10));
+        Product productToUpdate = Product.builder().productId(productModel.getId()).name(productModel.getName())
+                .description("").category(category).calorific(productModel.getCalorific())
+                .proteins(productModel.getProteins()).fats(productModel.getFats())
+                .carbs(productModel.getCarbs()).defaultWeight(Math.round(productModel.getWeight() *10)).build();
 
         return productDomainService.updateProduct(productToUpdate);
     }

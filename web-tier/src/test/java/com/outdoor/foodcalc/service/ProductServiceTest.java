@@ -37,12 +37,15 @@ public class ProductServiceTest {
     private static final ProductCategory CATEGORY2 = new ProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
     private static final ProductCategory CATEGORY3 = new ProductCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
 
-    private static final Product DOMAIN_PRODUCT_1 = new Product(12344, "first prod","",
-            CATEGORY1, 1.7f, 5, 7.5f, 2, 333);
-    private static final Product DOMAIN_PRODUCT_2 = new Product(12355, "second prod", "",
-            CATEGORY1, 1.1f, 3, 4.5f, 7, 110);
-    private static final Product DOMAIN_PRODUCT_3 = new Product(12366, "third prod", "",
-            CATEGORY2, 13, 11.5f, 7, 32.2f, 55);
+    private static final Product DOMAIN_PRODUCT_1 = Product.builder().productId(12344).name("first prod")
+            .description("").category(CATEGORY1).calorific(1.7f)
+            .proteins(5).fats(7.5f).carbs(2).defaultWeight(333).build();
+    private static final Product DOMAIN_PRODUCT_2 = Product.builder().productId(12355).name("second prod")
+            .description("").category(CATEGORY1).calorific(1.1f)
+            .proteins(3).fats(4.5f).carbs(7).defaultWeight(110).build();
+    private static final Product DOMAIN_PRODUCT_3 = Product.builder().productId(12366).name("third prod")
+            .description("").category(CATEGORY2).calorific(13)
+            .proteins(11.5f).fats(7).carbs(32.2f).defaultWeight(55).build();
 
     private static final ProductView PRODUCT_VIEW_1 = ProductView.builder()
             .id(12344).name("first prod").categoryId(CATEGORY1.getCategoryId())
@@ -115,13 +118,15 @@ public class ProductServiceTest {
     public void addProductTest() {
         ProductView productView = PRODUCT_VIEW_1;
 
-        Product domainProduct = new Product(-1, productView.getName(), "",
-                CATEGORY1, productView.getCalorific(), productView.getProteins(),
-                productView.getFats(), productView.getCarbs(), Math.round(productView.getWeight() *10));
+        Product domainProduct = Product.builder().productId(-1).name(productView.getName()).description("")
+                .category(CATEGORY1).calorific(productView.getCalorific()).proteins(productView.getProteins())
+                .fats(productView.getFats()).carbs(productView.getCarbs())
+                .defaultWeight(Math.round(productView.getWeight() *10)).build();
 
-        Product returnedProduct = new Product(productView.getId(), productView.getName(), "",
-                CATEGORY1, productView.getCalorific(), productView.getProteins(),
-                productView.getFats(), productView.getCarbs(), Math.round(productView.getWeight() *10));
+        Product returnedProduct = Product.builder().productId(productView.getId()).name(productView.getName())
+                .description("").category(CATEGORY1).calorific(productView.getCalorific())
+                .proteins(productView.getProteins()).fats(productView.getFats()).carbs(productView.getCarbs())
+                .defaultWeight(Math.round(productView.getWeight() *10)).build();
 
         when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.of(CATEGORY1));
         when(productDomainService.addProduct(domainProduct)).thenReturn(returnedProduct);
@@ -146,9 +151,10 @@ public class ProductServiceTest {
     public void updateProductTest() {
         ProductView productView = PRODUCT_VIEW_1;
 
-        Product domainProduct = new Product(productView.getId(), productView.getName(), "",
-                CATEGORY1, productView.getCalorific(), productView.getProteins(),
-                productView.getFats(), productView.getCarbs(), Math.round(productView.getWeight() *10));
+        Product domainProduct = Product.builder().productId(productView.getId()).name(productView.getName())
+                .description("").category(CATEGORY1).calorific(productView.getCalorific())
+                .proteins(productView.getProteins()).fats(productView.getFats()).carbs(productView.getCarbs())
+                .defaultWeight(Math.round(productView.getWeight() *10)).build();
 
         when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.of(CATEGORY1));
         when(productDomainService.updateProduct(domainProduct)).thenReturn(true);
@@ -170,12 +176,10 @@ public class ProductServiceTest {
 
     @Test
     public void deleteProductTest() {
-        Product domainProduct = new Product(12367, "second prod", "", CATEGORY2,
-                1.1f,3, 4.5f, 7, 110);
-        when(productDomainService.deleteProduct(domainProduct.getProductId())).thenReturn(true);
+        when(productDomainService.deleteProduct(DOMAIN_PRODUCT_2.getProductId())).thenReturn(true);
 
-        assertTrue(productService.deleteProduct(domainProduct.getProductId()));
+        assertTrue(productService.deleteProduct(DOMAIN_PRODUCT_2.getProductId()));
 
-        verify(productDomainService).deleteProduct(domainProduct.getProductId());
+        verify(productDomainService).deleteProduct(DOMAIN_PRODUCT_2.getProductId());
     }
 }
