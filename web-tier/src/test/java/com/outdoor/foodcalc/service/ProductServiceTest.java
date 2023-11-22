@@ -38,13 +38,13 @@ public class ProductServiceTest {
     private static final ProductCategory CATEGORY3 = new ProductCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
 
     private static final Product DOMAIN_PRODUCT_1 = Product.builder().productId(12344).name("first prod")
-            .description("").category(CATEGORY1).calorific(1.7f)
+            .category(CATEGORY1).calorific(1.7f)
             .proteins(5).fats(7.5f).carbs(2).defaultWeight(333).build();
     private static final Product DOMAIN_PRODUCT_2 = Product.builder().productId(12355).name("second prod")
-            .description("").category(CATEGORY1).calorific(1.1f)
+            .category(CATEGORY1).calorific(1.1f)
             .proteins(3).fats(4.5f).carbs(7).defaultWeight(110).build();
     private static final Product DOMAIN_PRODUCT_3 = Product.builder().productId(12366).name("third prod")
-            .description("").category(CATEGORY2).calorific(13)
+            .category(CATEGORY2).calorific(13)
             .proteins(11.5f).fats(7).carbs(32.2f).defaultWeight(55).build();
 
     private static final ProductView PRODUCT_VIEW_1 = ProductView.builder()
@@ -118,13 +118,13 @@ public class ProductServiceTest {
     public void addProductTest() {
         ProductView productView = PRODUCT_VIEW_1;
 
-        Product domainProduct = Product.builder().productId(-1).name(productView.getName()).description("")
+        Product domainProduct = Product.builder().productId(-1).name(productView.getName())
                 .category(CATEGORY1).calorific(productView.getCalorific()).proteins(productView.getProteins())
                 .fats(productView.getFats()).carbs(productView.getCarbs())
                 .defaultWeight(Math.round(productView.getWeight() *10)).build();
 
         Product returnedProduct = Product.builder().productId(productView.getId()).name(productView.getName())
-                .description("").category(CATEGORY1).calorific(productView.getCalorific())
+                .category(CATEGORY1).calorific(productView.getCalorific())
                 .proteins(productView.getProteins()).fats(productView.getFats()).carbs(productView.getCarbs())
                 .defaultWeight(Math.round(productView.getWeight() *10)).build();
 
@@ -152,7 +152,7 @@ public class ProductServiceTest {
         ProductView productView = PRODUCT_VIEW_1;
 
         Product domainProduct = Product.builder().productId(productView.getId()).name(productView.getName())
-                .description("").category(CATEGORY1).calorific(productView.getCalorific())
+                .category(CATEGORY1).calorific(productView.getCalorific())
                 .proteins(productView.getProteins()).fats(productView.getFats()).carbs(productView.getCarbs())
                 .defaultWeight(Math.round(productView.getWeight() *10)).build();
 

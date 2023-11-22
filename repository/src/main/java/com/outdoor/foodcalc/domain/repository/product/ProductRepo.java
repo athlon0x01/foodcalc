@@ -114,13 +114,17 @@ public class ProductRepo extends AbstractRepository<Product>
     public Product mapRow(ResultSet resultSet, int i) throws SQLException {
         final ProductCategory category = new ProductCategory(
                 resultSet.getLong("catId"), resultSet.getString("catName"));
-        return Product.builder().productId(resultSet.getLong("productId"))
+        return Product.builder()
+                .productId(resultSet.getLong("productId"))
                 .name(resultSet.getString("productName"))
                 .description(resultSet.getString("productDescription"))
-                .category(category).calorific(resultSet.getFloat("calorific"))
-                .proteins(resultSet.getFloat("proteins")).fats(resultSet.getFloat("fats"))
+                .category(category)
+                .calorific(resultSet.getFloat("calorific"))
+                .proteins(resultSet.getFloat("proteins"))
+                .fats(resultSet.getFloat("fats"))
                 .carbs(resultSet.getFloat("carbs"))
-                .defaultWeight(resultSet.getInt("defWeight")).build();
+                .defaultWeight(resultSet.getInt("defWeight"))
+                .build();
     }
 
     KeyHolder getKeyHolder() {
