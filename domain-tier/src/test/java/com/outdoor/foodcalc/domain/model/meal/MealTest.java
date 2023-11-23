@@ -29,12 +29,17 @@ public class MealTest {
     @Before
     public void setup() {
         ProductCategory category = new ProductCategory(222, "Test Category");
-        Product buckwheat = new Product(123, "Buckwheat", "", category, 317, 8.8f, 2.3f, 64.9f, 80);
-        Product meat = new Product(124, "Meat", "", category, 286, 19.3f, 21.5f, 1.7f, 45);
-        Product onion = new Product(125, "Onion", "", category, 264, 16, 0, 47.8f, 5);
-        Product salt = new Product("Salt", category);
-        Product potato = new Product(126, "Potato", "", category, 315, 6.1f, 0, 72.3f, 15);
-        Product cookies = new Product(127, "Cookies", "", category, 408, 9.9f, 9.8f, 67.7f, 25);
+        Product buckwheat = Product.builder().productId(123).name("Buckwheat").category(category).
+                calorific(317).proteins(8.8f).fats(2.3f).carbs(64.9f).defaultWeight(80).build();
+        Product meat = Product.builder().productId(124).name("Meat").category(category).calorific(286)
+                .proteins(19.3f).fats(21.5f).carbs(1.7f).defaultWeight(45).build();
+        Product onion = Product.builder().productId(125).name("Onion").category(category).calorific(264)
+                .proteins(16).fats(0).carbs(47.8f).defaultWeight(5).build();
+        Product salt = Product.builder().productId(-1).name("Salt").category(category).build();
+        Product potato = Product.builder().productId(126).name("Potato").category(category).calorific(315)
+                .proteins(6.1f).fats(0).carbs(72.3f).defaultWeight(15).build();
+        Product cookies = Product.builder().productId(127).name("Cookies").category(category).calorific(408)
+                .proteins(9.9f).fats(9.8f).carbs(67.7f).defaultWeight(25).build();
         Collection<ProductRef> dishProducts = new ArrayList<>();
         dishProducts.add(new ProductRef(buckwheat, 700));
         dishProducts.add(new ProductRef(meat, 400));

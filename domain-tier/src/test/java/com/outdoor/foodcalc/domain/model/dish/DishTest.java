@@ -28,13 +28,16 @@ public class DishTest {
     public void setup() {
         products = new ArrayList<>();
         ProductCategory category = new ProductCategory(222, "Test Category");
-        Product buckwheat = new Product(123, "Buckwheat", "", category, 317, 8.8f, 2.3f, 64.9f, 80);
+        Product buckwheat = Product.builder().productId(123).name("Buckwheat").category(category).
+                calorific(317).proteins(8.8f).fats(2.3f).carbs(64.9f).defaultWeight(80).build();
         products.add(new ProductRef(buckwheat, 700));
-        Product meat = new Product(124, "Meat", "", category, 286, 19.3f, 21.5f, 1.7f, 45);
+        Product meat = Product.builder().productId(124).name("Meat").category(category).calorific(286)
+                .proteins(19.3f).fats(21.5f).carbs(1.7f).defaultWeight(45).build();
         products.add(new ProductRef(meat, 400));
-        Product onion = new Product(125, "Onion", "", category, 264, 16, 0, 47.8f, 5);
+        Product onion = Product.builder().productId(125).name("Onion").category(category).calorific(264)
+                .proteins(16).fats(0).carbs(47.8f).defaultWeight(5).build();
         products.add(new ProductRef(onion, 40));
-        Product salt = new Product("Salt", category);
+        Product salt = Product.builder().productId(-1).name("Salt").category(category).build();
         products.add(new ProductRef(salt, 25));
 
         dish = new Dish(123, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), products);

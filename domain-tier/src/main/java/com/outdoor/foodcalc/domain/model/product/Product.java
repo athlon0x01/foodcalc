@@ -16,7 +16,7 @@ import lombok.extern.jackson.Jacksonized;
 @Data
 @AllArgsConstructor
 @Jacksonized
-@Builder
+@Builder(toBuilder = true)
 public class Product implements IDomainEntity<Product>, FoodDetails {
 
     private final long productId;
@@ -33,18 +33,6 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     private float carbs;
     //default product item weight in 0.1 grams
     private int defaultWeight;
-
-    public Product(String name, ProductCategory category) {
-        this.productId = -1;
-        this.name = name;
-        this.category = category;
-    }
-
-    public Product(long productId, String name, ProductCategory category) {
-        this.productId = productId;
-        this.name = name;
-        this.category = category;
-    }
 
     public int getDefaultWeightInt() {
         return defaultWeight;

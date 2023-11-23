@@ -54,16 +54,8 @@ public class ProductDomainService {
      */
     public Product addProduct(Product product) {
         long id = productRepo.addProduct(product);
-        return  Product.builder()
+        return  product.toBuilder()
                 .productId(id)
-                .name(product.getName())
-                .description(product.getDescription())
-                .category(product.getCategory())
-                .calorific(product.getCalorific())
-                .proteins(product.getProteins())
-                .fats(product.getFats())
-                .carbs(product.getCarbs())
-                .defaultWeight(product.getDefaultWeightInt())
                 .build();
     }
 
