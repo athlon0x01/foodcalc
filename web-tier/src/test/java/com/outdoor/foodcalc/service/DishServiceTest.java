@@ -57,14 +57,14 @@ public class DishServiceTest {
     private static final DishCategory DOMAIN_CAT_2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
     private static final DishCategory DOMAIN_CAT_3 = new DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
 
-    private static final Product product1 = new Product(101010, "first prod",
-            new ProductCategory(77777, "test product cat1"));
-    private static final Product product2 = new Product(121212, "second prod", "",
-            new ProductCategory(77777, "test product cat1"),
-            1.1f, 3, 4.5f, 7, 110);
-    private static final Product product3 = new Product(131313, "third prod", "",
-            new ProductCategory(88888, "test product cat2"),
-            13, 11.5f, 7, 32.2f, 55);
+    private static final Product product1 = Product.builder().productId(101010).name("first prod")
+            .category(new ProductCategory(77777, "test product cat1")).build();
+    private static final Product product2 = Product.builder().productId(121212).name("second prod").description("")
+            .category(new ProductCategory(77777, "test product cat1")).calorific(1.1f)
+            .proteins(3).fats(4.5f).carbs(7).defaultWeight(110).build();
+    private static final Product product3 = Product.builder().productId(131313).name("third prod").description("")
+            .category(new ProductCategory(88888, "test product cat2")).calorific(13)
+            .proteins(11.5f).fats(7).carbs(32.2f).defaultWeight(55).build();
 
     private static final ProductRef productRef1 = new ProductRef(product1, 200);
     private static final ProductRef productRef2 = new ProductRef(product2, 300);

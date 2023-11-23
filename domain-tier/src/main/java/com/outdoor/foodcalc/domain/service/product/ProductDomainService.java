@@ -54,15 +54,9 @@ public class ProductDomainService {
      */
     public Product addProduct(Product product) {
         long id = productRepo.addProduct(product);
-        return new Product(id,
-                product.getName(),
-                product.getDescription(),
-                product.getCategory(),
-                product.getCalorific(),
-                product.getProteins(),
-                product.getFats(),
-                product.getCarbs(),
-                product.getDefaultWeightInt());
+        return  product.toBuilder()
+                .productId(id)
+                .build();
     }
 
     /**

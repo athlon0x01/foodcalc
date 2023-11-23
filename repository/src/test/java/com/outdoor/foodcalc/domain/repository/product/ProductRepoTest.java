@@ -37,9 +37,9 @@ public class ProductRepoTest {
 
     private static final ProductCategory dummyCategory =  new ProductCategory(CATEGORY_ID, "dummyCategory");
 
-    private static final Product dummyProduct = new Product(
-            PRODUCT_ID, "dummyProduct", "dummyDescr", dummyCategory,
-            1.1f, 2.2f, 3.3f, 4.4f, 10);
+    private static final Product dummyProduct = Product.builder().productId(PRODUCT_ID).name("dummyProduct")
+            .description("dummyDescr").category(dummyCategory).calorific(1.1f)
+            .proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
 
     private ArgumentMatcher<MapSqlParameterSource> sqlParamsMatcher;
 
