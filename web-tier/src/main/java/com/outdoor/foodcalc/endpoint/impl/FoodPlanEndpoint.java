@@ -5,10 +5,8 @@ import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.model.plan.SimpleFoodPlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,5 +55,13 @@ public class FoodPlanEndpoint {
                 .members(plan.getMembers())
                 .duration(plan.getDuration())
                 .build();
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteFoodPlan(@PathVariable("id") long id) {
+        LOG.debug("Removing food plan id = {}", id);
+        Optional<FoodPlan> first = foodPlans.stream().filter(foodPlan -> id == foodPlan.getId()).findFirst();
+        first.ifPresent(foodPlans::remove);
     }
 }

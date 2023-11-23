@@ -9,6 +9,7 @@ import EditDish from 'src/components/directory/dish/EditDish'
 import ProductCategories from 'src/components/directory/ProductCategories'
 import DishCategories from 'src/components/directory/DishCategories'
 import MealTypes from 'src/components/directory/MealTypes'
+import FoodPlan from 'src/components/plan/FoodPlan'
 
 Vue.use(Router)
 
@@ -63,6 +64,11 @@ export default new Router({
           component: MealTypes
         }
       ]
+    },
+    {
+      path: '/plan/:planId',
+      name: 'FoodPlanPage',
+      component: FoodPlan
     }
   ]
 })
