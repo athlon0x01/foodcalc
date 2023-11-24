@@ -27,6 +27,10 @@ public class ProductTest {
         productRef = new ProductRef(product, 800);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void productRefNonNullTest() {
+        ProductRef productRefNull = new ProductRef(null, 800);
+    }
     @Test
     public void testProductWeight() {
         //Product weight should be 0

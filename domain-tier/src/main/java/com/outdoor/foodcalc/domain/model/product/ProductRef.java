@@ -2,6 +2,7 @@ package com.outdoor.foodcalc.domain.model.product;
 
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
+import lombok.*;
 
 import java.util.Collection;
 
@@ -10,22 +11,15 @@ import java.util.Collection;
  *
  * @author Anton Borovyk
  */
+
+@ToString
+@EqualsAndHashCode
+@AllArgsConstructor
 public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Comparable<ProductRef> {
+    @NonNull
     private final Product product;
     //product item weight in 0.1 grams
     private int weight;
-
-    /**
-     * Product item constructor
-     * @param product product entity
-     * @param weight item weight in 0.1 grams
-     */
-    public ProductRef(Product product, int weight) {
-        if (product == null)
-            throw new IllegalArgumentException("Constructor doesn't allow null parameters!");
-        this.product = product;
-        this.weight = weight;
-    }
 
     /**
      * @return weight in gram
@@ -111,38 +105,11 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        ProductRef that = (ProductRef) o;
-
-        if (weight != that.weight) return false;
-        if (getProductId() != that.getProductId()) return false;
-        if (getName() != null ? !getName().equals(that.getName()) : that.getName() != null) return false;
-        return !(getProductCategoryName() != null ? !getProductCategoryName().equals(that.getProductCategoryName())
-                : that.getProductCategoryName() != null);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = product.hashCode();
-        result = 31 * result + weight;
-        return result;
-    }
-
-    @Override
     public int compareTo(ProductRef o) {
         //compare productId first
         if (getProductId() == o.getProductId()) {
             return getInternalWeight() - o.getInternalWeight();
         }
         else return (getProductId() < o.getProductId()) ? -1 : 1;
-    }
-
-    @Override
-    public String toString() {
-        return "[id=" + getProductId() + ", Name='" + getName() + "', weight=" + getInternalWeight() + "]";
     }
 }
