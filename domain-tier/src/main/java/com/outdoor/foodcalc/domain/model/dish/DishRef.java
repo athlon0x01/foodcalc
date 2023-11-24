@@ -4,6 +4,8 @@ import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -14,16 +16,13 @@ import java.util.List;
  *
  * @author Anton Borovyk
  */
+
+@AllArgsConstructor
 public class DishRef implements IValueObject<DishRef>, FoodDetails, ProductsContainer {
 
     //internal Dish entity
+    @NonNull
     private final Dish dish;
-
-    public DishRef(Dish dish) {
-        if (dish == null)
-            throw new IllegalArgumentException("Constructor doesn't allow null parameters!");
-        this.dish = dish;
-    }
 
     public long getDishId() {
         return dish.getDishId();

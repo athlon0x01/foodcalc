@@ -44,6 +44,11 @@ public class DishTest {
         dishRef = new DishRef(dish);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void dishRefNonNullTest() {
+        DishRef dishRefNull = new DishRef(null);
+    }
+
     @Test
     public void foodDetailsTest() {
         //check weight
