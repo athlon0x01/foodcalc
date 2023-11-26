@@ -65,6 +65,11 @@ public class MealTest {
         Collections.sort(products);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void mealRefNonNullTest() {
+        MealRef mealRefNull = new MealRef(null);
+    }
+
     @Test
     public void foodDetailsTest() {
         //check weight

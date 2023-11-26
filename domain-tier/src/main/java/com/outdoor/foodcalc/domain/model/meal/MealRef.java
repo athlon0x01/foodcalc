@@ -5,6 +5,8 @@ import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -15,15 +17,12 @@ import java.util.List;
  *
  * @author Anton Borovyk
  */
+
+@AllArgsConstructor
 public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsContainer {
 
+    @NonNull
     private final Meal meal;
-
-    public MealRef(Meal meal) {
-        if (meal == null)
-            throw new IllegalArgumentException("Constructor doesn't allow null parameters!");
-        this.meal = meal;
-    }
 
     public long getMealId() {
         return meal.getMealId();
