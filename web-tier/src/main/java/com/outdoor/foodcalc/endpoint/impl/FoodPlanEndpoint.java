@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -63,5 +64,14 @@ public class FoodPlanEndpoint {
         LOG.debug("Removing food plan id = {}", id);
         Optional<FoodPlan> first = foodPlans.stream().filter(foodPlan -> id == foodPlan.getId()).findFirst();
         first.ifPresent(foodPlans::remove);
+    }
+
+    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public SimpleFoodPlan addFoodPlan(@RequestBody @Valid SimpleFoodPlan foodPlan) {
+        long maxId = foodPlans.stream().map(FoodPlan::getId).max(Long::compareTo).orElse(1L) + 1L;
+        FoodPlan plan = new FoodPlan(maxId, foodPlan.getName(), null, foodPlan.getMembers(), 0, Collections.emptyList());
+        foodPlans.add(plan);
+        foodPlan.setId(maxId);
+        return foodPlan;
     }
 }

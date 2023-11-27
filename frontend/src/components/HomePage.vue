@@ -28,6 +28,34 @@
     <div v-if="errorMessage !== null" class="alert">
       <p>{{errorMessage}}</p>
     </div>
+    <!--Add new food plan section-->
+    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Add new</b-button>
+    <div v-if="addMode !== undefined && addMode" class="container">
+      <div class="row">
+        <div class="col-md-4"/>
+        <div class="col-md-2 border bg-light"><strong>Name</strong></div>
+        <div>
+          <input v-validate="'required'" v-model="planName" name="planName"
+                 v-bind:class="{ validationError: errors.has('planName')}"
+                 placeholder='Enter food plan name here..' style="width: 100%"/>
+          <p v-if="errors.has('planName') > 0" class="alert">{{errors.first('planName')}}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-4"/>
+        <div class="col-md-2 border bg-light"><strong>Members</strong></div>
+        <input type="number" min="0" step="1" v-model="planMembers" name="planMembers"/>
+      </div>
+      <div class="row" style="padding-top:10px;">
+        <div class="col-md-5"/>
+        <div class="col-md-1">
+          <b-button variant="outline-success" size="sm" v-on:click="addNewPlan">Add</b-button>
+        </div>
+        <div class="col-md-1">
+          <b-button variant="outline-danger" size="sm" v-on:click="addMode = false">Cancel</b-button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -41,6 +69,9 @@ export default {
     return {
       foodPlansEndpointUrl: '/api/plans/',
       foodPlans: [],
+      addMode: false,
+      planName: '',
+      planMembers: 2,
       errorMessage: null
     }
   },
@@ -64,6 +95,30 @@ export default {
         .catch(e => {
           this.getErrorMessage(e, 'Failed to load Food plans...')
         })
+    },
+
+    addNewPlan () {
+      this.$validator.validateAll().then((result) => {
+        if (result) {
+          let foodPlan = {
+            name: this.planName,
+            members: this.planMembers
+          }
+          axios.post(this.foodPlansEndpointUrl, foodPlan)
+            .then(() => {
+              this.addMode = false
+              this.errorMessage = null
+              this.planName = ''
+              this.planMembers = 2
+              this.getAllFoodPlans()
+            })
+            .catch(e => {
+              this.getErrorMessage(e, 'Failed to add food plan ' + JSON.stringify(foodPlan))
+            })
+        } else {
+          console.log('Couldn\'t add new food plan due to validation errors')
+        }
+      })
     },
 
     deletePlan (id) {

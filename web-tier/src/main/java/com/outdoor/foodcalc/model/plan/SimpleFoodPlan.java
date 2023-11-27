@@ -17,6 +17,5 @@ public class SimpleFoodPlan {
     private String name;
     @Min(1)
     private int members;
-    @Min(1)
     private int duration;
 }
