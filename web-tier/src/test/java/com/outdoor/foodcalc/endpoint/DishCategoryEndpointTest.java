@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
 import com.outdoor.foodcalc.service.DishCategoryService;
@@ -119,13 +120,10 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void updateCategoryTest() throws Exception {
-        when(service.updateDishCategory(dummyCategory)).thenReturn(true);
+        doNothing().when(service).updateDishCategory(dummyCategory);
 
-        MvcResult mvcResult = put("/dish-categories/" + CATEGORY_ID, dummyCategory).
+        put("/dish-categories/" + CATEGORY_ID, dummyCategory).
                 andReturn();
-
-        SimpleDishCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleDishCategory.class);
-        assertEquals(dummyCategory, actual);
 
         verify(service).updateDishCategory(dummyCategory);
     }
@@ -141,12 +139,26 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
     }
 
     @Test
+    public void updateCategoryNotFoundTest() throws Exception {
+        String message = "Dish category with id=" + CATEGORY_ID + " doesn't exist";
+        doThrow(new NotFoundException(message)).when(service).updateDishCategory(dummyCategory);
+
+
+        put404("/dish-categories/" + CATEGORY_ID, dummyCategory).
+                andExpect(status().isNotFound()).
+                andExpect(jsonPath("$", is(message)));
+
+        verify(service).updateDishCategory(dummyCategory);
+    }
+
+    @Test
     public void updateCategoryInternalErrorsTest() throws Exception {
-        String message = "Dish category failed to update";
-        when(service.updateDishCategory(dummyCategory)).thenReturn(false);
+        String message = "Failed to update dish category with id=" + CATEGORY_ID;
+        doThrow(new FoodcalcDomainException(message)).when(service).updateDishCategory(dummyCategory);
+
 
         putJson("/dish-categories/" + CATEGORY_ID, dummyCategory).
-                andExpect(status().isInternalServerError()).
+                andExpect(status().is5xxServerError()).
                 andExpect(jsonPath("$", is(message)));
 
         verify(service).updateDishCategory(dummyCategory);
@@ -154,7 +166,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void deleteCategoryTest() throws Exception {
-        when(service.deleteDishCategory(CATEGORY_ID)).thenReturn(true);
+        doNothing().when(service).deleteDishCategory(CATEGORY_ID);
 
         delete("/dish-categories/" + CATEGORY_ID);
 
@@ -163,19 +175,20 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void deleteCategoryNotFoundTest() throws Exception {
-        String message = "Dish category doesn't exist";
-        when(service.deleteDishCategory(CATEGORY_ID)).thenThrow(new NotFoundException(message));
+        String message = "Dish category with id=" + CATEGORY_ID + " doesn't exist";
+        doThrow(new NotFoundException(message))
+                .when(service).deleteDishCategory(CATEGORY_ID);
 
         delete404("/dish-categories/" + CATEGORY_ID).andExpect(jsonPath("$", is(message)));
 
         verify(service).deleteDishCategory(CATEGORY_ID);
-
     }
 
     @Test
     public void deleteInternalErrorTest() throws Exception {
-        String message = "Dish category failed to delete";
-        when(service.deleteDishCategory(CATEGORY_ID)).thenReturn(false);
+        String message = "Failed to delete dish category with id=" + CATEGORY_ID;
+        doThrow(new FoodcalcDomainException(message))
+                .when(service).deleteDishCategory(CATEGORY_ID);
 
         deleteJson("/dish-categories/" + CATEGORY_ID).
                 andExpect(status().isInternalServerError()).
