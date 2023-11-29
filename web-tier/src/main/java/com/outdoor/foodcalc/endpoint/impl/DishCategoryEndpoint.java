@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
-import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.endpoint.DishCategoriesApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
