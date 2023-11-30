@@ -4,15 +4,31 @@
     <div v-if="foodPlan !== null" class="container">
       <div class="row">
         <div class="col-md-2 border bg-light"><strong>Name</strong></div>
-        <div class="col-md-10 border">{{foodPlan.name}}</div>
+        <div class="col-md-9 border">
+          <input v-validate="'required'" v-model="foodPlan.name" name="planName"
+                 v-bind:class="{ validationError: errors.has('planName')}"
+                 placeholder='Enter food plan name here..' style="width: 100%"/>
+          <p v-if="errors.has('planName') > 0" class="alert">{{errors.first('planName')}}</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-2 border bg-light"><strong>Description</strong></div>
+        <div class="col-md-9 border">
+          <input v-model="foodPlan.description" name="planDescription" style="width: 100%"/>
+        </div>
+        <div class="col-md-1">
+          <b-button variant="outline-success" size="sm" v-on:click="updatePlanInfo">Update Info</b-button>
+        </div>
       </div>
       <div class="row">
         <div class="col-md-2 border bg-light"><strong>Members</strong></div>
-        <div class="col-md-10 border">{{foodPlan.members}}</div>
+        <div class="col-md-9 border">
+          <input type="number" min="0" step="1" v-model="foodPlan.members" name="planMembers"/>
+        </div>
       </div>
       <div class="row">
         <div class="col-md-2 border bg-light"><strong>Duration</strong></div>
-        <div class="col-md-10 border">{{foodPlan.duration}}</div>
+        <div class="col-md-9 border">{{foodPlan.duration}}</div>
       </div>
     </div>
     <!--Errors output-->
@@ -45,6 +61,22 @@ export default {
         console.log(error)
         this.errorMessage = defaultMessage
       }
+    },
+
+    updatePlanInfo () {
+      this.$validator.validateAll().then((result) => {
+        if (result) {
+          axios.put(this.foodPlansEndpointUrl + this.$route.params.planId, this.foodPlan)
+            .then(() => {
+              this.errorMessage = null
+            })
+            .catch(e => {
+              this.getErrorMessage(e, 'Failed to update food plan Info ' + JSON.stringify(this.foodPlan))
+            })
+        } else {
+          console.log('Couldn\'t update food plan info due to validation errors')
+        }
+      })
     }
   },
 

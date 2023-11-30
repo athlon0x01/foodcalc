@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -44,15 +41,21 @@ public class FoodPlanEndpoint {
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
     public SimpleFoodPlan getFoodPlan(@PathVariable("id") long id) {
         LOG.debug("Getting food plan id = {}", id);
-        Optional<FoodPlan> first = foodPlans.stream().filter(foodPlan -> id == foodPlan.getId()).findFirst();
-        return first.map(this::mapPlan)
+        return getFirstPlan(id).map(this::mapPlan)
                 .orElseThrow(() -> new NotFoundException("Food plan with id = " + id + " wasn't found"));
+    }
+
+    private Optional<FoodPlan> getFirstPlan(long id) {
+        return foodPlans.stream()
+                .filter(foodPlan -> id == foodPlan.getId())
+                .findFirst();
     }
 
     private SimpleFoodPlan mapPlan(FoodPlan plan) {
         return SimpleFoodPlan.builder()
                 .id(plan.getId())
                 .name(plan.getName())
+                .description(plan.getDescription())
                 .members(plan.getMembers())
                 .duration(plan.getDuration())
                 .build();
@@ -62,16 +65,27 @@ public class FoodPlanEndpoint {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteFoodPlan(@PathVariable("id") long id) {
         LOG.debug("Removing food plan id = {}", id);
-        Optional<FoodPlan> first = foodPlans.stream().filter(foodPlan -> id == foodPlan.getId()).findFirst();
-        first.ifPresent(foodPlans::remove);
+        getFirstPlan(id).ifPresent(foodPlans::remove);
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public SimpleFoodPlan addFoodPlan(@RequestBody @Valid SimpleFoodPlan foodPlan) {
+        LOG.debug("Adding new food");
         long maxId = foodPlans.stream().map(FoodPlan::getId).max(Long::compareTo).orElse(1L) + 1L;
         FoodPlan plan = new FoodPlan(maxId, foodPlan.getName(), null, foodPlan.getMembers(), 0, Collections.emptyList());
         foodPlans.add(plan);
         foodPlan.setId(maxId);
         return foodPlan;
+    }
+
+    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
+    public void updateFoodPlan(@PathVariable("id") long id,
+                               @RequestBody @Valid SimpleFoodPlan foodPlan) {
+        LOG.debug("Updating food plan id = {}", id);
+        FoodPlan plan = getFirstPlan(id)
+                .orElseThrow(() -> new NotFoundException("Food plan with id = " + id + " wasn't found"));
+        plan.setName(foodPlan.getName());
+        plan.setDescription(foodPlan.getDescription());
+        plan.setMembers(foodPlan.getMembers());
     }
 }
