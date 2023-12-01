@@ -2,6 +2,8 @@ package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
+import com.outdoor.foodcalc.model.plan.FoodDayView;
+import com.outdoor.foodcalc.model.plan.FoodPlanView;
 import com.outdoor.foodcalc.model.plan.SimpleFoodPlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,10 +21,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class FoodPlanEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(FoodPlanEndpoint.class);
-
+    private final FoodDayEndpoint foodDayEndpoint;
     private final List<FoodPlan> foodPlans;
 
-    public FoodPlanEndpoint() {
+    public FoodPlanEndpoint(FoodDayEndpoint foodDayEndpoint) {
+        this.foodDayEndpoint = foodDayEndpoint;
         FoodPlan planA = new FoodPlan(1L, "Test plan A", "", 2, 5, Collections.emptyList());
         FoodPlan planB = new FoodPlan(2L, "Test food plan B", "", 3, 8, Collections.emptyList());
         this.foodPlans = new ArrayList<>();
@@ -39,9 +42,9 @@ public class FoodPlanEndpoint {
     }
 
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
-    public SimpleFoodPlan getFoodPlan(@PathVariable("id") long id) {
+    public FoodPlanView getFoodPlan(@PathVariable("id") long id) {
         LOG.debug("Getting food plan id = {}", id);
-        return getFirstPlan(id).map(this::mapPlan)
+        return getFirstPlan(id).map(this::mapPlanView)
                 .orElseThrow(() -> new NotFoundException("Food plan with id = " + id + " wasn't found"));
     }
 
@@ -52,12 +55,28 @@ public class FoodPlanEndpoint {
     }
 
     private SimpleFoodPlan mapPlan(FoodPlan plan) {
+        List<FoodDayView> days = foodDayEndpoint.getAllDays(plan.getId());
         return SimpleFoodPlan.builder()
                 .id(plan.getId())
                 .name(plan.getName())
                 .description(plan.getDescription())
                 .members(plan.getMembers())
-                .duration(plan.getDuration())
+                .duration(days.size())
+                .build();
+    }
+
+    private FoodPlanView mapPlanView(FoodPlan plan) {
+        return FoodPlanView.builder()
+                .id(plan.getId())
+                .name(plan.getName())
+                .description(plan.getDescription())
+                .members(plan.getMembers())
+                .days(foodDayEndpoint.getAllDays(plan.getId()))
+                .calorific(plan.getCalorific())
+                .carbs(plan.getCarbs())
+                .fats(plan.getFats())
+                .proteins(plan.getProteins())
+                .weight(plan.getWeight())
                 .build();
     }
 

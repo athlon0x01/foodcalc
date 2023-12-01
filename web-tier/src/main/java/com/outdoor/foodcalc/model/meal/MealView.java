@@ -1,13 +1,14 @@
-package com.outdoor.foodcalc.model.dish;
+package com.outdoor.foodcalc.model.meal;
 
 import com.outdoor.foodcalc.model.FoodView;
+import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.product.ProductView;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
@@ -15,11 +16,9 @@ import java.util.List;
 @ToString(callSuper = true)
 @Jacksonized
 @SuperBuilder
-public class DishView  extends FoodView {
-    @NotEmpty
-    private String name;
-    @Min(1)
-    private long categoryId;
+public class MealView extends FoodView {
+    private String description;
+    private MealTypeView typeView;
+    private List<DishView> dishes;
     private List<ProductView> products;
-
 }
