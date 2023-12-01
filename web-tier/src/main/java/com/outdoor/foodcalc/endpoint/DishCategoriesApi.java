@@ -1,8 +1,10 @@
 package com.outdoor.foodcalc.endpoint;
 
+import com.outdoor.foodcalc.model.dish.SimpleDish;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
 import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -45,26 +47,25 @@ public interface DishCategoriesApi {
     @ResponseStatus(HttpStatus.CREATED)
     SimpleDishCategory addDishCategory(@RequestBody SimpleDishCategory category);
 
-    @ApiOperation(value = "Update dish category by ID",
-            response = SimpleDishCategory.class
-    )
+    @ApiOperation(value = "Update dish category by ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Dish category updated", response = SimpleProductCategory.class),
+            @ApiResponse(code = 201, message = "Dish category updated"),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 404, message = "Dish category not found")
     })
-    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    SimpleDishCategory updateDishCategory(@PathVariable("id") long id,
-                                          @RequestBody SimpleDishCategory category);
+    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
+    void updateDishCategory(@ApiParam(value = "ID of the Dish category", required = true)
+                            @PathVariable("id") long id,
+                            @ApiParam(value = "Dish category", required = true)
+                            @RequestBody SimpleDishCategory category);
 
-    @ApiOperation(value = "Delete dish category by ID",
-            response = SimpleDishCategory.class
-    )
+    @ApiOperation(value = "Delete dish category by ID")
     @ApiResponses(value = {
             @ApiResponse(code = 204, message = "Dish category deleted"),
             @ApiResponse(code = 404, message = "Dish category not found")
     })
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteDishCategory(@PathVariable("id") long id);
+    void deleteDishCategory(@ApiParam(value = "ID of the Dish category", required = true)
+                            @PathVariable("id") long id);
 }

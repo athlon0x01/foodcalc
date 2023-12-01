@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
-import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.endpoint.DishCategoriesApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
@@ -47,7 +46,7 @@ public class DishCategoryEndpoint implements DishCategoriesApi {
         return categoryService.addDishCategory(category.getName());
     }
 
-    public SimpleDishCategory updateDishCategory(@PathVariable("id") long id,
+    public void updateDishCategory(@PathVariable("id") long id,
                                    @RequestBody @Valid SimpleDishCategory category) {
         if (id != category.getId()) {
             LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.getId());
@@ -55,16 +54,11 @@ public class DishCategoryEndpoint implements DishCategoriesApi {
                     + " doesn't match with request body Id = " + category.getId());
         }
         LOG.debug("Updating dish category {}", category);
-        if (!categoryService.updateDishCategory(category)) {
-            throw new FoodcalcException("Dish category failed to update");
-        }
-        return category;
+        categoryService.updateDishCategory(category);
     }
 
     public void deleteDishCategory(@PathVariable("id") long id) {
         LOG.debug("Deleting dish category id = {}", id);
-        if(!categoryService.deleteDishCategory(id)) {
-            throw new FoodcalcException("Dish category failed to delete");
-        }
+        categoryService.deleteDishCategory(id);
     }
 }

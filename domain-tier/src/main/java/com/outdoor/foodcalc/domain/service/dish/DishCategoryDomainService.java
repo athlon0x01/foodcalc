@@ -1,9 +1,11 @@
 package com.outdoor.foodcalc.domain.service.dish;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 
 import com.outdoor.foodcalc.domain.repository.dish.IDishCategoryRepo;
+import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +27,12 @@ public class DishCategoryDomainService {
 
     private final IDishCategoryRepo categoryRepo;
 
+    private final IDishRepo dishRepo;
+
     @Autowired
-    public DishCategoryDomainService(IDishCategoryRepo categoryRepo) {
+    public DishCategoryDomainService(IDishCategoryRepo categoryRepo, IDishRepo dishRepo) {
         this.categoryRepo = categoryRepo;
+        this.dishRepo = dishRepo;
     }
 
     /**
@@ -64,25 +69,40 @@ public class DishCategoryDomainService {
      * Updates selected {@link DishCategory} with new value.
      *
      * @param category updated category
+     * @throws NotFoundException If dish category doesn't exist
+     * @throws FoodcalcDomainException If dish category wasn't updated
      */
-    public boolean updateCategory(DishCategory category) {
+    public void updateCategory(DishCategory category) {
         if (!categoryRepo.exist(category.getCategoryId())) {
             LOG.error("Dish category with id={} doesn't exist", category.getCategoryId());
-            throw new NotFoundException("Dish category doesn't exist");
+            throw new NotFoundException("Dish category with id=" + category.getCategoryId() + " doesn't exist");
         }
-        return categoryRepo.updateCategory(category);
+        if(!categoryRepo.updateCategory(category)) {
+            LOG.error("Failed to update dish category with id=" + category.getCategoryId());
+            throw new FoodcalcDomainException("Failed to update dish category with id=" + category.getCategoryId());
+        }
     }
 
     /**
      * Removes selected {@link DishCategory}.
      *
      * @param id category Id to delete
+     * @throws NotFoundException If dish category doesn't exist
+     * @throws FoodcalcDomainException If dish category wasn't deleted
      */
-    public boolean deleteCategory(long id) {
+    public void deleteCategory(long id) {
         if (!categoryRepo.exist(id)) {
             LOG.error("Dish category with id={} doesn't exist", id);
-            throw new NotFoundException("Dish category doesn't exist");
+            throw new NotFoundException("Dish category with id=" + id + " doesn't exist");
         }
-        return categoryRepo.deleteCategory(id);
+        if (dishRepo.countDishesInCategory(id) == 0) {
+            if (!categoryRepo.deleteCategory(id)) {
+                LOG.error("Failed to delete dish category with id=" + id);
+                throw new FoodcalcDomainException("Failed to delete dish category with id=" + id);
+            }
+        } else {
+            LOG.error("Dish category with id = {} is not empty", id);
+            throw new IllegalArgumentException("Dish category with id=" + id + " is not empty");
+            }
     }
 }

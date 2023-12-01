@@ -1,9 +1,10 @@
 package com.outdoor.foodcalc.domain.service.dish;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.repository.dish.IDishCategoryRepo;
-import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
+import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -33,6 +34,9 @@ public class DishCategoryDomainServiceTest {
 
     @Mock
     private IDishCategoryRepo categoryRepo;
+
+    @Mock
+    private IDishRepo dishRepo;
 
     @Before
     public void setUp() {
@@ -76,9 +80,9 @@ public class DishCategoryDomainServiceTest {
     @Test
     public void updateCategoryTest() {
         when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
-        when(categoryRepo.updateCategory(dummyCategory)).thenReturn(false);
+        when(categoryRepo.updateCategory(dummyCategory)).thenReturn(true);
 
-        assertFalse(categoryService.updateCategory(dummyCategory));
+        categoryService.updateCategory(dummyCategory);
 
         verify(categoryRepo).exist(CATEGORY_ID);
         verify(categoryRepo).updateCategory(dummyCategory);
@@ -91,13 +95,24 @@ public class DishCategoryDomainServiceTest {
         categoryService.updateCategory(dummyCategory);
     }
 
+    @Test(expected = FoodcalcDomainException.class)
+    public void updateCategoryFailTest() {
+        when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
+        when(categoryRepo.updateCategory(dummyCategory)).thenReturn(false);
+
+        categoryService.updateCategory(dummyCategory);
+    }
+
     @Test
     public void deleteCategoryTest() {
         when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
+        when(dishRepo.countDishesInCategory(CATEGORY_ID)).thenReturn(0L);
         when(categoryRepo.deleteCategory(CATEGORY_ID)).thenReturn(true);
 
-        assertTrue(categoryService.deleteCategory(CATEGORY_ID));
+        categoryService.deleteCategory(CATEGORY_ID);
 
+        verify(categoryRepo).exist(CATEGORY_ID);
+        verify(dishRepo).countDishesInCategory(CATEGORY_ID);
         verify(categoryRepo).deleteCategory(CATEGORY_ID);
     }
 
@@ -108,4 +123,20 @@ public class DishCategoryDomainServiceTest {
         categoryService.deleteCategory(CATEGORY_ID);
     }
 
+    @Test(expected = FoodcalcDomainException.class)
+    public void deleteCategoryFailTest() {
+        when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
+        when(dishRepo.countDishesInCategory(CATEGORY_ID)).thenReturn(0L);
+        when(categoryRepo.deleteCategory(CATEGORY_ID)).thenReturn(false);
+
+        categoryService.deleteCategory(CATEGORY_ID);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void deleteCategoryNotEmptyTest() {
+        when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
+        when(dishRepo.countDishesInCategory(CATEGORY_ID)).thenReturn(3L);
+
+        categoryService.deleteCategory(CATEGORY_ID);
+    }
 }

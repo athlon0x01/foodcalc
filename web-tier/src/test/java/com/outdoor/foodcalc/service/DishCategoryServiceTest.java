@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.service;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
@@ -13,8 +14,8 @@ import org.mockito.MockitoAnnotations;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  * JUnit tests for {@link DishCategoryService} class
@@ -98,19 +99,48 @@ public class DishCategoryServiceTest {
 
     @Test
     public void updateDishCategoryTest() {
-        when(domainService.updateCategory(DOMAIN_CAT_1)).thenReturn(true);
+        doNothing().when(domainService).updateCategory(DOMAIN_CAT_1);
 
-        assertTrue(categoryService.updateDishCategory(SIMPLE_DISH_CAT_1));
+        categoryService.updateDishCategory(SIMPLE_DISH_CAT_1);
 
         verify(domainService).updateCategory(DOMAIN_CAT_1);
     }
 
+    @Test(expected = NotFoundException.class)
+    public void updateDishCategoryNotFoundTest() {
+        doThrow(NotFoundException.class).when(domainService).updateCategory(DOMAIN_CAT_1);
+
+        categoryService.updateDishCategory(SIMPLE_DISH_CAT_1);
+    }
+
+    @Test(expected = FoodcalcDomainException.class)
+    public void updateDishCategoryFailTest() {
+        doThrow(FoodcalcDomainException.class).when(domainService).updateCategory(DOMAIN_CAT_1);
+
+        categoryService.updateDishCategory(SIMPLE_DISH_CAT_1);
+    }
+
     @Test
     public void deleteDishCategoryTest() {
-        when(domainService.deleteCategory(CATEGORY_1_ID)).thenReturn(true);
+        doNothing().when(domainService).deleteCategory(CATEGORY_1_ID);
 
-        assertTrue(categoryService.deleteDishCategory(CATEGORY_1_ID));
+        categoryService.deleteDishCategory(CATEGORY_1_ID);
 
         verify(domainService).deleteCategory(CATEGORY_1_ID);
     }
+
+    @Test(expected = NotFoundException.class)
+    public void deleteDishCategoryNotFoundTest() {
+        doThrow(NotFoundException.class).when(domainService).deleteCategory(CATEGORY_1_ID);
+
+        categoryService.deleteDishCategory(CATEGORY_1_ID);
+    }
+
+    @Test(expected = FoodcalcDomainException.class)
+    public void deleteDishCategoryFailTest() {
+        doThrow(FoodcalcDomainException.class).when(domainService).deleteCategory(CATEGORY_1_ID);
+
+        categoryService.deleteDishCategory(CATEGORY_1_ID);
+    }
+
 }
