@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.service.product;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
@@ -78,9 +79,9 @@ public class ProductCategoryDomainServiceTest {
     @Test
     public void updateCategoryTest() {
         when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
-        when(categoryRepo.updateCategory(dummyCategory)).thenReturn(false);
+        when(categoryRepo.updateCategory(dummyCategory)).thenReturn(true);
 
-        assertFalse(categoryService.updateCategory(dummyCategory));
+        categoryService.updateCategory(dummyCategory);
 
         verify(categoryRepo).exist(CATEGORY_ID);
         verify(categoryRepo).updateCategory(dummyCategory);
@@ -93,16 +94,26 @@ public class ProductCategoryDomainServiceTest {
         categoryService.updateCategory(dummyCategory);
     }
 
+    @Test(expected = FoodcalcDomainException.class)
+    public void updateCategoryFailTest() {
+        when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
+        when(categoryRepo.updateCategory(dummyCategory)).thenReturn(false);
+
+        categoryService.updateCategory(dummyCategory);
+    }
+
+
     @Test
     public void deleteCategoryTest() {
         when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
-        when(categoryRepo.deleteCategory(CATEGORY_ID)).thenReturn(true);
         when(productRepo.countProductsInCategory(CATEGORY_ID)).thenReturn(0L);
+        when(categoryRepo.deleteCategory(CATEGORY_ID)).thenReturn(true);
 
-        assertTrue(categoryService.deleteCategory(CATEGORY_ID));
+        categoryService.deleteCategory(CATEGORY_ID);
 
-        verify(categoryRepo).deleteCategory(CATEGORY_ID);
+        verify(categoryRepo).exist(CATEGORY_ID);
         verify(productRepo).countProductsInCategory(CATEGORY_ID);
+        verify(categoryRepo).deleteCategory(CATEGORY_ID);
     }
 
     @Test(expected = NotFoundException.class)
