@@ -1,36 +1,61 @@
 <template>
   <div>
     <h2 class="food-plan-header">Food plan</h2>
-    <div v-if="foodPlan !== null" class="container">
-      <div class="row">
-        <div class="col-md-2 border bg-light"><strong>Name</strong></div>
-        <div class="col-md-9 border">
-          <input v-validate="'required'" v-model="foodPlan.name" name="planName"
-                 v-bind:class="{ validationError: errors.has('planName')}"
-                 placeholder='Enter food plan name here..' style="width: 100%"/>
-          <p v-if="errors.has('planName') > 0" class="alert">{{errors.first('planName')}}</p>
+    <template v-if="foodPlan !== null">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-2 border bg-light"><strong>Name</strong></div>
+          <div class="col-md-9 border">
+            <input v-validate="'required'" v-model="foodPlan.name" name="planName"
+                   v-bind:class="{ validationError: errors.has('planName')}"
+                   placeholder='Enter food plan name here..' style="width: 100%"/>
+            <p v-if="errors.has('planName') > 0" class="alert">{{errors.first('planName')}}</p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-2 border bg-light"><strong>Description</strong></div>
+          <div class="col-md-9 border">
+            <textarea v-model="foodPlan.description" name="planDescription" style="width: 100%"/>
+          </div>
+          <div class="col-md-1">
+            <b-button variant="outline-success" size="sm" v-on:click="updatePlanInfo">Update Info</b-button>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-2 border bg-light"><strong>Members</strong></div>
+          <div class="col-md-9 border">
+            <input type="number" min="0" step="1" v-model="foodPlan.members" name="planMembers"/>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-2 border bg-light"><strong>Duration</strong></div>
+          <div class="col-md-9 border">{{foodPlan.days.length}}</div>
+        </div>
+        <div class="row headerRow bg-light">
+          <div class="col-md-2"/>
+          <div class="col-md-2 border"><em>Calorific</em></div>
+          <div class="col-md-2 border"><em>Proteins</em></div>
+          <div class="col-md-2 border"><em>Fats</em></div>
+          <div class="col-md-2 border"><em>Carbs</em></div>
+          <div class="col-md-2 border"><em>Weight</em></div>
+        </div>
+        <div class="row">
+          <div class="col-md-2 border"><em><strong>Total</strong></em></div>
+          <div class="col-md-2 border"><em><strong>{{foodPlan.calorific}}</strong></em></div>
+          <div class="col-md-2 border"><em><strong>{{foodPlan.proteins}}</strong></em></div>
+          <div class="col-md-2 border"><em><strong>{{foodPlan.fats}}</strong></em></div>
+          <div class="col-md-2 border"><em><strong>{{foodPlan.carbs}}</strong></em></div>
+          <div class="col-md-2 border"><em><strong>{{foodPlan.weight}}</strong></em></div>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-2 border bg-light"><strong>Description</strong></div>
-        <div class="col-md-9 border">
-          <input v-model="foodPlan.description" name="planDescription" style="width: 100%"/>
+      <template v-if="foodPlan.days.length > 0">
+        <!--Food plan days-->
+        <div v-for="foodDay in foodPlan.days" :key="foodDay.id">
+          <food-day v-bind:food-day="foodDay"/>
         </div>
-        <div class="col-md-1">
-          <b-button variant="outline-success" size="sm" v-on:click="updatePlanInfo">Update Info</b-button>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-2 border bg-light"><strong>Members</strong></div>
-        <div class="col-md-9 border">
-          <input type="number" min="0" step="1" v-model="foodPlan.members" name="planMembers"/>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-2 border bg-light"><strong>Duration</strong></div>
-        <div class="col-md-9 border">{{foodPlan.duration}}</div>
-      </div>
-    </div>
+      </template>
+      <b-button variant="link" v-on:click="addDay">Add new day</b-button>
+    </template>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
       <p>{{errorMessage}}</p>
@@ -40,10 +65,11 @@
 
 <script>
 import axios from 'axios'
+import FoodDay from 'src/components/plan/FoodDay'
 
 export default {
   name: 'FoodPlan',
-
+  components: {FoodDay},
   data () {
     return {
       foodPlansEndpointUrl: '/api/plans/',
@@ -77,6 +103,10 @@ export default {
           console.log('Couldn\'t update food plan info due to validation errors')
         }
       })
+    },
+
+    addDay () {
+      console.log('New day will be added')
     }
   },
 
