@@ -14,7 +14,6 @@ import org.mockito.MockitoAnnotations;
 import java.util.*;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 /**
@@ -142,5 +141,4 @@ public class DishCategoryServiceTest {
 
         categoryService.deleteDishCategory(CATEGORY_1_ID);
     }
-
 }
