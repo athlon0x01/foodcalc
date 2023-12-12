@@ -51,10 +51,10 @@
       <template v-if="foodPlan.days.length > 0">
         <!--Food plan days-->
         <div v-for="foodDay in foodPlan.days" :key="foodDay.id">
-          <food-day v-bind:food-day="foodDay"/>
+          <food-day-view v-bind:food-day="foodDay"/>
         </div>
       </template>
-      <b-button variant="link" v-on:click="addDay">Add new day</b-button>
+      <router-link :to="{name: 'NewFoodDayPage', params: {planId: this.$route.params.planId}}">Add new day</router-link>
     </template>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
@@ -65,11 +65,11 @@
 
 <script>
 import axios from 'axios'
-import FoodDay from 'src/components/plan/FoodDay'
+import FoodDayView from 'src/components/plan/FoodDayView'
 
 export default {
   name: 'FoodPlan',
-  components: {FoodDay},
+  components: {FoodDayView},
   data () {
     return {
       foodPlansEndpointUrl: '/api/plans/',
@@ -103,10 +103,6 @@ export default {
           console.log('Couldn\'t update food plan info due to validation errors')
         }
       })
-    },
-
-    addDay () {
-      console.log('New day will be added')
     }
   },
 

@@ -10,6 +10,7 @@ import ProductCategories from 'src/components/directory/ProductCategories'
 import DishCategories from 'src/components/directory/DishCategories'
 import MealTypes from 'src/components/directory/MealTypes'
 import FoodPlan from 'src/components/plan/FoodPlan'
+import FoodDay from 'src/components/plan/FoodDay'
 
 Vue.use(Router)
 
@@ -65,10 +66,21 @@ export default new Router({
         }
       ]
     },
+    // I didn't manage to do proper nested structure for plan / days / meals pages routes
     {
       path: '/plan/:planId',
       name: 'FoodPlanPage',
       component: FoodPlan
+    },
+    {
+      path: '/plan/:planId/new-day',
+      name: 'NewFoodDayPage',
+      component: FoodDay
+    },
+    {
+      path: '/plan/:planId/day/:dayId',
+      name: 'FoodDayPage',
+      component: FoodDay
     }
   ]
 })

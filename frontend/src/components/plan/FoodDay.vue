@@ -1,54 +1,63 @@
 <template>
   <div>
-    <h3 class="food-day-header">{{foodDay.date}}</h3>
-    <p>{{foodDay.description}}</p>
+    <template v-if="this.addMode">
+      <h3 class="food-day-header">New Day will be here</h3>
+    </template>
+    <template v-else>
+      <h3 class="food-day-header">{{planDate}}</h3>
+    </template>
     <div class="container">
       <div class="row justify-content-md-center" style="padding-bottom:5px">
         <div class="col-md-2">
-          <b-button variant="outline-success" size="sm" v-on:click="editDay">Edit</b-button>
+          <b-button variant="outline-success" size="sm" v-on:click="applyChanges">Do it!</b-button>
         </div>
         <div class="col-md-4"/>
         <div class="col-md-2">
-          <b-button variant="outline-danger" size="sm" v-on:click="deleteDay">Delete</b-button>
+          <b-button variant="outline-danger" size="sm" v-on:click="goBack">Cancel</b-button>
         </div>
-      </div>
-      <div class="row headerRow bg-light">
-        <div class="col-md-2"/>
-        <div class="col-md-2 border"><em>Calorific</em></div>
-        <div class="col-md-2 border"><em>Proteins</em></div>
-        <div class="col-md-2 border"><em>Fats</em></div>
-        <div class="col-md-2 border"><em>Carbs</em></div>
-        <div class="col-md-2 border"><em>Weight</em></div>
-      </div>
-      <div class="row">
-        <div class="col-md-2 border"><em><strong>Day Total</strong></em></div>
-        <div class="col-md-2 border"><em><strong>{{foodDay.calorific}}</strong></em></div>
-        <div class="col-md-2 border"><em><strong>{{foodDay.proteins}}</strong></em></div>
-        <div class="col-md-2 border"><em><strong>{{foodDay.fats}}</strong></em></div>
-        <div class="col-md-2 border"><em><strong>{{foodDay.carbs}}</strong></em></div>
-        <div class="col-md-2 border"><em><strong>{{foodDay.weight}}</strong></em></div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'FoodDay',
-  props: {
-    foodDay: {
-      type: Object,
-      required: true
+  data () {
+    return {
+      planDayEndpointUrl: '/api/plans/',
+      addMode: true,
+      planDate: null,
+      errorMessage: null
     }
   },
 
   methods: {
-    editDay () {
-      console.log(this.foodDay.date + ' day will be edited')
+    applyChanges () {
+      console.log('Will do later')
     },
 
-    deleteDay () {
-      console.log(this.foodDay.date + ' day will be deleted')
+    goBack () {
+      this.$router.push({path: '/plan/' + this.$route.params.planId})
+    }
+  },
+
+  mounted () {
+    console.log('food day id - ' + this.$route.params.dayId)
+    this.addMode = this.$route.params.dayId === undefined
+    this.planDayEndpointUrl = '/api/plans/' + this.$route.params.planId + '/days/'
+    if (!this.addMode) {
+      // load food plan full preview on page init
+      axios.get(this.planDayEndpointUrl + this.$route.params.dayId)
+        .then(response => {
+          let planDay = response.data
+          this.planDate = planDay.date
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to load Food plan day...')
+        })
     }
   }
 }
