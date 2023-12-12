@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.endpoint.impl.ProductCategoryEndpoint;
 import com.outdoor.foodcalc.model.product.SimpleProductCategory;
@@ -125,21 +126,18 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void updateCategoryTest() throws Exception {
-        when(service.updateCategory(dummyCategory)).thenReturn(true);
+        doNothing().when(service).updateCategory(dummyCategory);
 
-        MvcResult mvcResult = put("/product-categories/" + CATEGORY_ID, dummyCategory)
+        put("/product-categories/" + CATEGORY_ID, dummyCategory)
             .andReturn();
-
-        SimpleProductCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleProductCategory.class);
-        assertEquals(dummyCategory, actual);
 
         verify(service).updateCategory(dummyCategory);
     }
 
     @Test
     public void updateCategoryNotFoundTest() throws Exception {
-        String message = "Product category doesn't exist";
-        when(service.updateCategory(dummyCategory)).thenThrow(new NotFoundException(message));
+        String message = "Product category with id=" + CATEGORY_ID + " doesn't exist";
+        doThrow(new NotFoundException(message)).when(service).updateCategory(dummyCategory);
 
         put404("/product-categories/" + CATEGORY_ID, dummyCategory)
                 .andExpect(jsonPath("$", is(message)));
@@ -159,19 +157,20 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void updateCategoryInternalErrorTest() throws Exception {
-        String message = "Product category failed to update";
-        when(service.updateCategory(dummyCategory)).thenReturn(false);
+        String message = "Failed to update product category with id=" + CATEGORY_ID;
+        doThrow(new FoodcalcDomainException(message)).when(service).updateCategory(dummyCategory);
 
-        putJson("/product-categories/" + CATEGORY_ID, dummyCategory)
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$", is(message)));
+
+        putJson("/product-categories/" + CATEGORY_ID, dummyCategory).
+                andExpect(status().is5xxServerError()).
+                andExpect(jsonPath("$", is(message)));
 
         verify(service).updateCategory(dummyCategory);
     }
 
     @Test
     public void deleteCategoryTest() throws Exception {
-        when(service.deleteCategory(CATEGORY_ID)).thenReturn(true);
+        doNothing().when(service).deleteCategory(CATEGORY_ID);
 
         delete("/product-categories/" + CATEGORY_ID);
 
@@ -180,23 +179,23 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void deleteCategoryNotFoundTest() throws Exception {
-        String message = "Product category doesn't exist";
-        when(service.deleteCategory(CATEGORY_ID)).thenThrow(new NotFoundException(message));
+        String message = "Product category with id=" + CATEGORY_ID + " doesn't exist";
+        doThrow(new NotFoundException(message)).when(service).deleteCategory(CATEGORY_ID);
 
-        delete404("/product-categories/" + CATEGORY_ID)
-                .andExpect(jsonPath("$", is(message)));
+        delete404("/product-categories/" + CATEGORY_ID).andExpect(jsonPath("$", is(message)));
 
         verify(service).deleteCategory(CATEGORY_ID);
     }
 
     @Test
     public void deleteInternalErrorTest() throws Exception {
-        String message = "Product category failed to delete";
-        when(service.deleteCategory(CATEGORY_ID)).thenReturn(false);
+        String message = "Failed to delete product category with id=" + CATEGORY_ID;
+        doThrow(new FoodcalcDomainException(message))
+                .when(service).deleteCategory(CATEGORY_ID);
 
-        deleteJson("/product-categories/" + CATEGORY_ID)
-                .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$", is(message)));
+        deleteJson("/product-categories/" + CATEGORY_ID).
+                andExpect(status().isInternalServerError()).
+                andExpect(jsonPath("$", is(message)));
 
         verify(service).deleteCategory(CATEGORY_ID);
     }
