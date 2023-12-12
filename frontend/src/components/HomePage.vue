@@ -22,7 +22,7 @@
       </div>
     </div>
     <div v-if="foodPlans.length === 0 && errorMessage === null">
-      <p><i>No Food Plans yet...</i></p>
+      <p><em>No Food Plans yet...</em></p>
     </div>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">

@@ -89,15 +89,17 @@ public class FoodPlanEndpoint {
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public SimpleFoodPlan addFoodPlan(@RequestBody @Valid SimpleFoodPlan foodPlan) {
-        LOG.debug("Adding new food");
+        LOG.debug("Adding new food plan");
         long maxId = foodPlans.stream().map(FoodPlan::getId).max(Long::compareTo).orElse(1L) + 1L;
         FoodPlan plan = new FoodPlan(maxId, foodPlan.getName(), null, foodPlan.getMembers(), 0, Collections.emptyList());
         foodPlans.add(plan);
         foodPlan.setId(maxId);
+        foodDayEndpoint.addFoodPlan(maxId);
         return foodPlan;
     }
 
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateFoodPlan(@PathVariable("id") long id,
                                @RequestBody @Valid SimpleFoodPlan foodPlan) {
         LOG.debug("Updating food plan id = {}", id);

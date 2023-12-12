@@ -3,13 +3,14 @@ package com.outdoor.foodcalc.endpoint.impl;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.plan.DayPlan;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
+import com.outdoor.foodcalc.model.plan.SimpleFoodDay;
+import com.outdoor.foodcalc.model.plan.SimpleFoodPlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -64,9 +65,47 @@ public class FoodDayEndpoint {
 
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
     public FoodDayView getDay(@PathVariable("planId") long planId,
-                                    @PathVariable("id") long id) {
+                              @PathVariable("id") long id) {
         LOG.debug("Getting food plan id = {} day - {}", planId, id);
         return getFirstDay(planId, id).map(this::mapView)
                 .orElseThrow(() -> new NotFoundException("Food Day plan with id = " + id + " wasn't found"));
+    }
+
+    @DeleteMapping("{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteFoodDay(@PathVariable("planId") long planId,
+                              @PathVariable("id") long id) {
+        LOG.debug("Removing food plan id = {}, day - {}", planId, id);
+        var plan = getDays(planId);
+        getFirstDay(planId, id).ifPresent(plan::remove);
+    }
+
+    void addFoodPlan(long planId) {
+        days.put(planId, new ArrayList<>());
+    }
+
+    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public SimpleFoodDay addFoodDay(@PathVariable("planId") long planId,
+                                    @RequestBody @Valid SimpleFoodDay foodDay) {
+        LOG.debug("Adding new food day, plan - {}", planId);
+        var plan = getDays(planId);
+        long maxId = plan.stream().map(DayPlan::getDayId).max(Long::compareTo).orElse(1L) + 1L;
+        DayPlan dayPlan = new DayPlan(maxId, foodDay.getDate(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        dayPlan.setDescription(foodDay.getDescription());
+        plan.add(dayPlan);
+        foodDay.setId(maxId);
+        return foodDay;
+    }
+
+    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateFoodPDay(@PathVariable("planId") long planId,
+                               @PathVariable("id") long id,
+                               @RequestBody @Valid SimpleFoodDay foodDay) {
+        LOG.debug("Updating food plan id = {}, day - {}", planId, id);
+        DayPlan day = getFirstDay(planId, id)
+                .orElseThrow(() -> new NotFoundException("Food day id = " + id + " for plan with id = " + planId + " wasn't found"));
+        day.setDate(foodDay.getDate());
+        day.setDescription(foodDay.getDescription());
     }
 }
