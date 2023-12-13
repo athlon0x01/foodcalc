@@ -48,7 +48,7 @@ export default {
     },
 
     deleteDay () {
-      console.log(this.foodDay.date + ' day will be deleted')
+      this.$emit('remove', this.foodDay.id)
     }
   }
 }

@@ -51,7 +51,7 @@
       <template v-if="foodPlan.days.length > 0">
         <!--Food plan days-->
         <div v-for="foodDay in foodPlan.days" :key="foodDay.id">
-          <food-day-view v-bind:food-day="foodDay"/>
+          <food-day-view v-bind:food-day="foodDay" v-on:remove="removeFoodDay"/>
         </div>
       </template>
       <router-link :to="{name: 'NewFoodDayPage', params: {planId: this.$route.params.planId}}">Add new day</router-link>
@@ -103,6 +103,18 @@ export default {
           console.log('Couldn\'t update food plan info due to validation errors')
         }
       })
+    },
+
+    removeFoodDay (dayId) {
+      axios.delete(this.foodPlansEndpointUrl + this.$route.params.planId + '/days/' + dayId)
+        .then(() => {
+          this.foodPlan.days = this.foodPlan.days.filter(day => day.id !== dayId)
+          this.errorMessage = null
+        })
+        .catch(e => {
+          let foodDay = this.foodPlan.days.find(day => day.id === dayId)
+          this.getErrorMessage(e, 'Failed to delete ' + foodDay.date)
+        })
     }
   },
 

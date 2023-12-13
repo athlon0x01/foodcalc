@@ -4,7 +4,6 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.plan.DayPlan;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
 import com.outdoor.foodcalc.model.plan.SimpleFoodDay;
-import com.outdoor.foodcalc.model.plan.SimpleFoodPlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,8 +31,8 @@ public class FoodDayEndpoint {
         day12.setDescription("Dummy Lorem ipsum");
         DayPlan day21 = new DayPlan(21L, LocalDate.of(2023, 9, 19), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         day21.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        this.days.put(1L, List.of(day11, day12));
-        this.days.put(2L, List.of(day21));
+        this.days.put(1L, new ArrayList<>(List.of(day11, day12)));
+        this.days.put(2L, new ArrayList<>(List.of(day21)));
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
@@ -76,8 +75,8 @@ public class FoodDayEndpoint {
     public void deleteFoodDay(@PathVariable("planId") long planId,
                               @PathVariable("id") long id) {
         LOG.debug("Removing food plan id = {}, day - {}", planId, id);
-        var plan = getDays(planId);
-        getFirstDay(planId, id).ifPresent(plan::remove);
+        var planDays = getDays(planId);
+        getFirstDay(planId, id).ifPresent(planDays::remove);
     }
 
     void addFoodPlan(long planId) {
