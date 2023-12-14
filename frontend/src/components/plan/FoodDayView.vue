@@ -1,8 +1,10 @@
 <template>
   <div>
     <h3 class="food-day-header">{{foodDay.date}}</h3>
-    <p>{{foodDay.description}}</p>
     <div class="container">
+      <div class="row">
+        <p>{{foodDay.description}}</p>
+      </div>
       <div class="row justify-content-md-center" style="padding-bottom:5px">
         <div class="col-md-2">
           <b-button variant="outline-success" size="sm" v-on:click="editDay">Edit</b-button>

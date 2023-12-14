@@ -1,21 +1,30 @@
 <template>
   <div>
-    <template v-if="this.addMode">
-      <h3 class="food-day-header">New Day will be here</h3>
-    </template>
-    <template v-else>
-      <h3 class="food-day-header">{{planDate}}</h3>
-    </template>
+    <h3 class="food-day-header">Food Plan Day {{dateTitle}}</h3>
     <div class="container">
-      <div class="row justify-content-md-center" style="padding-bottom:5px">
+      <div class="row">
+        <div class="col-md-2 border bg-light"><strong>Date</strong></div>
+        <div><input type="date" v-model="dayDate" name="dayDate"/></div>
+      </div>
+      <div class="row">
+        <div class="col-md-2 border bg-light"><strong>Description</strong></div>
+        <div class="col-md-10 border">
+          <textarea v-model="dayDescription" name="dayDescription" style="width: 100%"/>
+        </div>
+      </div>
+      <div class="row justify-content-md-center" style="padding-top:5px">
         <div class="col-md-2">
-          <b-button variant="outline-success" size="sm" v-on:click="applyChanges">Do it!</b-button>
+          <b-button variant="outline-success" size="sm" v-on:click="updateDay">Update</b-button>
         </div>
         <div class="col-md-4"/>
         <div class="col-md-2">
           <b-button variant="outline-danger" size="sm" v-on:click="goBack">Cancel</b-button>
         </div>
       </div>
+    </div>
+    <!--Errors output-->
+    <div v-if="errorMessage !== null" class="alert">
+      <p>{{errorMessage}}</p>
     </div>
   </div>
 </template>
@@ -28,15 +37,42 @@ export default {
   data () {
     return {
       planDayEndpointUrl: '/api/plans/',
-      addMode: true,
-      planDate: null,
+      dateTitle: null,
+      dayDate: null,
+      dayDescription: null,
       errorMessage: null
     }
   },
 
   methods: {
-    applyChanges () {
-      console.log('Will do later')
+    getErrorMessage (error, defaultMessage) {
+      if (error.response !== undefined && error.response.data !== undefined &&
+        (typeof error.response.data === 'string' || error.response.data instanceof String)) {
+        this.errorMessage = error.response.data
+      } else {
+        console.log(error)
+        this.errorMessage = defaultMessage
+      }
+    },
+
+    updateDay () {
+      if (this.dayDate != null) {
+        let newDateObj = new Date(this.dayDate)
+        let newDateString = newDateObj.getDate() + '-' + Number(newDateObj.getMonth() + 1) + '-' + newDateObj.getFullYear()
+        let planDay = {
+          date: newDateString,
+          description: this.dayDescription
+        }
+        axios.put(this.planDayEndpointUrl + this.$route.params.dayId, planDay)
+          .then(() => {
+            this.goBack()
+          })
+          .catch(e => {
+            this.getErrorMessage(e, 'Failed to update food plan day ' + JSON.stringify(planDay))
+          })
+      } else {
+        this.errorMessage = 'Please define proper date'
+      }
     },
 
     goBack () {
@@ -45,20 +81,19 @@ export default {
   },
 
   mounted () {
-    console.log('food day id - ' + this.$route.params.dayId)
-    this.addMode = this.$route.params.dayId === undefined
     this.planDayEndpointUrl = '/api/plans/' + this.$route.params.planId + '/days/'
-    if (!this.addMode) {
-      // load food plan full preview on page init
-      axios.get(this.planDayEndpointUrl + this.$route.params.dayId)
-        .then(response => {
-          let planDay = response.data
-          this.planDate = planDay.date
-        })
-        .catch(e => {
-          this.getErrorMessage(e, 'Failed to load Food plan day...')
-        })
-    }
+    // load food plan day full preview on page init
+    axios.get(this.planDayEndpointUrl + this.$route.params.dayId)
+      .then(response => {
+        let planDay = response.data
+        this.dateTitle = planDay.date
+        this.dayDescription = planDay.description
+        let dateParts = planDay.date.split('-')
+        this.dayDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0]
+      })
+      .catch(e => {
+        this.getErrorMessage(e, 'Failed to load Food plan day...')
+      })
   }
 }
 </script>

@@ -54,7 +54,24 @@
           <food-day-view v-bind:food-day="foodDay" v-on:remove="removeFoodDay"/>
         </div>
       </template>
-      <router-link :to="{name: 'NewFoodDayPage', params: {planId: this.$route.params.planId}}">Add new day</router-link>
+      <!--Add new food plan day section-->
+      <b-button variant="link" size="sm" v-on:click="addMode = true">Add new day</b-button>
+      <div v-if="addMode" class="container">
+        <div class="row">
+          <div class="col-md-4"/>
+          <div class="col-md-2 border bg-light"><em>Date</em></div>
+          <div><input type="date" v-model="newDayDate" name="newDayDate"/></div>
+        </div>
+        <div class="row" style="padding-top:10px;">
+          <div class="col-md-5"/>
+          <div class="col-md-1">
+            <b-button variant="outline-success" size="sm" v-on:click="addNewDay">Add</b-button>
+          </div>
+          <div class="col-md-1">
+            <b-button variant="outline-danger" size="sm" v-on:click="cancelAddMode">Cancel</b-button>
+          </div>
+        </div>
+      </div>
     </template>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
@@ -74,6 +91,8 @@ export default {
     return {
       foodPlansEndpointUrl: '/api/plans/',
       foodPlan: null,
+      addMode: false,
+      newDayDate: null,
       errorMessage: null
     }
   },
@@ -105,6 +124,32 @@ export default {
       })
     },
 
+    addNewDay () {
+      if (this.newDayDate != null) {
+        let newDateObj = new Date(this.newDayDate)
+        let newDateString = newDateObj.getDate() + '-' + Number(newDateObj.getMonth() + 1) + '-' + newDateObj.getFullYear()
+        let planDay = {
+          date: newDateString
+        }
+        axios.post(this.foodPlansEndpointUrl + this.$route.params.planId + '/days/', planDay)
+          .then(() => {
+            this.addMode = false
+            this.errorMessage = null
+            this.getFoodPlan()
+          })
+          .catch(e => {
+            this.getErrorMessage(e, 'Failed to add food plan day ' + JSON.stringify(planDay))
+          })
+      } else {
+        this.errorMessage = 'Please define proper date'
+      }
+    },
+
+    cancelAddMode () {
+      this.addMode = false
+      this.errorMessage = null
+    },
+
     removeFoodDay (dayId) {
       axios.delete(this.foodPlansEndpointUrl + this.$route.params.planId + '/days/' + dayId)
         .then(() => {
@@ -115,18 +160,22 @@ export default {
           let foodDay = this.foodPlan.days.find(day => day.id === dayId)
           this.getErrorMessage(e, 'Failed to delete ' + foodDay.date)
         })
+    },
+
+    getFoodPlan () {
+      axios.get(this.foodPlansEndpointUrl + this.$route.params.planId)
+        .then(response => {
+          this.foodPlan = response.data
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to load Food plan...')
+        })
     }
   },
 
   mounted () {
     // load food plan full preview on page init
-    axios.get(this.foodPlansEndpointUrl + this.$route.params.planId)
-      .then(response => {
-        this.foodPlan = response.data
-      })
-      .catch(e => {
-        this.getErrorMessage(e, 'Failed to load Food plan...')
-      })
+    this.getFoodPlan()
   }
 }
 </script>

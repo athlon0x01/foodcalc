@@ -90,7 +90,6 @@ public class FoodDayEndpoint {
         var plan = getDays(planId);
         long maxId = plan.stream().map(DayPlan::getDayId).max(Long::compareTo).orElse(1L) + 1L;
         DayPlan dayPlan = new DayPlan(maxId, foodDay.getDate(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        dayPlan.setDescription(foodDay.getDescription());
         plan.add(dayPlan);
         foodDay.setId(maxId);
         return foodDay;
