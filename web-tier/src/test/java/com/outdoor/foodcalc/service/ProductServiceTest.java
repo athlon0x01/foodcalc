@@ -150,16 +150,15 @@ public class ProductServiceTest {
     @Test
     public void updateProductTest() {
         ProductView productView = PRODUCT_VIEW_1;
-
         Product domainProduct = Product.builder().productId(productView.getId()).name(productView.getName())
                 .category(CATEGORY1).calorific(productView.getCalorific())
                 .proteins(productView.getProteins()).fats(productView.getFats()).carbs(productView.getCarbs())
                 .defaultWeight(Math.round(productView.getWeight() *10)).build();
 
         when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.of(CATEGORY1));
-        when(productDomainService.updateProduct(domainProduct)).thenReturn(true);
+        doNothing().when(productDomainService).updateProduct(any());
 
-        assertTrue(productService.updateProduct(productView));
+        productService.updateProduct(productView);
 
         verify(categoryDomainService).getCategory(productView.getCategoryId());
         verify(productDomainService).updateProduct(domainProduct);
@@ -176,9 +175,9 @@ public class ProductServiceTest {
 
     @Test
     public void deleteProductTest() {
-        when(productDomainService.deleteProduct(DOMAIN_PRODUCT_2.getProductId())).thenReturn(true);
+        doNothing().when(productDomainService).deleteProduct(DOMAIN_PRODUCT_2.getProductId());
 
-        assertTrue(productService.deleteProduct(DOMAIN_PRODUCT_2.getProductId()));
+        productService.deleteProduct(DOMAIN_PRODUCT_2.getProductId());
 
         verify(productDomainService).deleteProduct(DOMAIN_PRODUCT_2.getProductId());
     }
