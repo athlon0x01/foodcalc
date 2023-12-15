@@ -57,11 +57,12 @@ public interface ProductCategoriesApi {
 
     @ApiOperation(value = "Update product category by ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "Product category updated"),
+            @ApiResponse(code = 204, message = "Product category updated"),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 404, message = "Product category not found")
     })
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     void updateCategory(@ApiParam(value = "ID of the product category", required = true)
                                          @PathVariable("id") long id,
                                          @ApiParam(value = "Product category", required = true)
