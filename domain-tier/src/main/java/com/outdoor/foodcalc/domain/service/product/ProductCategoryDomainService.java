@@ -100,8 +100,8 @@ public class ProductCategoryDomainService {
                 throw new FoodcalcDomainException("Failed to delete product category with id=" + id);
             }
         } else {
-            LOG.error("Dish category with id = {} is not empty", id);
-            throw new IllegalArgumentException("Dish category with id=" + id + " is not empty");
+            LOG.error("Product category with id = {} is not empty", id);
+            throw new IllegalArgumentException("Product category with id=" + id + " is not empty");
         }
     }
 }
