@@ -80,8 +80,8 @@ public class ProductCategoryService {
      *
      * @param model updated category
      */
-    public boolean updateCategory(SimpleProductCategory model) {
-        return categoryDomainService.updateCategory(new ProductCategory(model.getId(), model.getName()));
+    public void updateCategory(SimpleProductCategory model) {
+        categoryDomainService.updateCategory(new ProductCategory(model.getId(), model.getName()));
     }
 
     /**
@@ -89,7 +89,7 @@ public class ProductCategoryService {
      *
      * @param id category Id to delete
      */
-    public boolean deleteCategory(long id) {
-        return categoryDomainService.deleteCategory(id);
+    public void deleteCategory(long id) {
+        categoryDomainService.deleteCategory(id);
     }
 }

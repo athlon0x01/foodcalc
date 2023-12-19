@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.service.product;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
@@ -66,30 +67,41 @@ public class ProductCategoryDomainService {
      * Updates selected {@link ProductCategory} with new value.
      *
      * @param category updated category
+     * @throws NotFoundException If product category doesn't exist
+     * @throws FoodcalcDomainException If product category wasn't updated
      */
-    public boolean updateCategory(ProductCategory category) {
+    public void updateCategory(ProductCategory category) {
         if (!categoryRepo.exist(category.getCategoryId())){
             LOG.error("Product category with id={} doesn't exist", category.getCategoryId());
             throw new NotFoundException("Product category doesn't exist");
         }
-        return categoryRepo.updateCategory(category);
+        if(!categoryRepo.updateCategory(category)) {
+            LOG.error("Failed to update product category with id=" + category.getCategoryId());
+            throw new FoodcalcDomainException("Failed to update product category with id=" + category.getCategoryId());
+        }
     }
 
     /**
      * Removes selected {@link ProductCategory}.
      *
      * @param id category Id to delete
+     * @throws NotFoundException If product category doesn't exist
+     * @throws FoodcalcDomainException If product category wasn't deleted
+     * @throws IllegalArgumentException If product category isn't empty
      */
-    public boolean deleteCategory(long id) {
+    public void deleteCategory(long id) {
         if (!categoryRepo.exist(id)){
             LOG.error("Product category with id={} doesn't exist", id);
             throw new NotFoundException("Product category doesn't exist");
         }
         if (productRepo.countProductsInCategory(id) == 0) {
-            return categoryRepo.deleteCategory(id);
+            if (!categoryRepo.deleteCategory(id)) {
+                LOG.error("Failed to delete product category with id=" + id);
+                throw new FoodcalcDomainException("Failed to delete product category with id=" + id);
+            }
         } else {
             LOG.error("Product category with id = {} is not empty", id);
-            throw new IllegalArgumentException("Product category is not empty");
+            throw new IllegalArgumentException("Product category with id=" + id + " is not empty");
         }
     }
 }
