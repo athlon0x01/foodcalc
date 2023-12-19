@@ -54,17 +54,15 @@ public interface ProductsApi {
     ProductView addProduct(@ApiParam(value = "Product", required = true)
                            @RequestBody ProductView product);
 
-    @ApiOperation(value = "Update product by ID",
-            notes = "Updates product and returns updated value",
-            response = ProductView.class
-    )
+    @ApiOperation(value = "Update product by ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Product updated", response = ProductView.class),
+            @ApiResponse(code = 204, message = "Product updated", response = ProductView.class),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 404, message = "Product not found")
     })
-    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    ProductView updateProduct(@ApiParam(value = "ID of the product", required = true)
+    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void updateProduct(@ApiParam(value = "ID of the product", required = true)
                               @PathVariable("id") long id,
                               @ApiParam(value = "Product", required = true)
                               @RequestBody ProductView product);
