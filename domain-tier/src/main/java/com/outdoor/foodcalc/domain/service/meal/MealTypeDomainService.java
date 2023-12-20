@@ -73,6 +73,7 @@ public class MealTypeDomainService {
             throw new NotFoundException("Meal type with id=" + mealType.getTypeId() + " doesn't exist");
         }
         if(!mealTypeRepo.updateMealType(mealType)) {
+            LOG.error("Failed to update meal type with id={}", mealType.getTypeId());
             throw new FoodcalcDomainException("Failed to update meal type with id=" + mealType.getTypeId());
         }
     }
@@ -87,9 +88,10 @@ public class MealTypeDomainService {
     public void deleteMealType(int id) {
         if (!mealTypeRepo.exist(id)) {
             LOG.error("Meal type with id={} doesn't exist", id);
-            throw new NotFoundException("Meal type doesn't exist");
+            throw new NotFoundException("Meal type with id=" + id + " doesn't exist");
         }
         if(!mealTypeRepo.deleteMealType(id)) {
+            LOG.error("Failed to delete product category with id={}", id);
             throw new FoodcalcDomainException("Failed to delete meal type with id=" + id);
         }
     }
