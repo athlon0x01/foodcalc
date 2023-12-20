@@ -61,11 +61,12 @@ public interface DishApi {
     @ApiOperation(value = "Update dish by ID"
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Dish updated"),
+            @ApiResponse(code = 204, message = "Dish updated"),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 404, message = "Dish not found")
     })
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     void updateDish(@ApiParam(value = "ID of the Dish", required = true)
                           @PathVariable("id") long id,
                           @ApiParam(value = "Dish", required = true)

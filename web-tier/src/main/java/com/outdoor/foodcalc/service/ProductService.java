@@ -121,7 +121,7 @@ public class ProductService {
      * @param productModel updated
      * @return if product updated
      */
-    public boolean updateProduct(ProductView productModel) {
+    public void updateProduct(ProductView productModel) {
         final ProductCategory category = productCategoryDomainService.getCategory(productModel.getCategoryId())
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Product Category, id = " + productModel.getCategoryId()));
@@ -136,7 +136,7 @@ public class ProductService {
                 .defaultWeight(Math.round(productModel.getWeight() *10))
                 .build();
 
-        return productDomainService.updateProduct(productToUpdate);
+        productDomainService.updateProduct(productToUpdate);
     }
 
     /**
@@ -145,8 +145,8 @@ public class ProductService {
      * @param id product Id to delete
      * @return if product deleted
      */
-    public boolean deleteProduct(long id) {
-        return productDomainService.deleteProduct(id);
+    public void deleteProduct(long id) {
+        productDomainService.deleteProduct(id);
     }
 
     private ProductView mapSimpleProduct(Product product) {

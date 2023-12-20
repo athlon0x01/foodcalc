@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.endpoint.impl.ProductEndpoint;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
@@ -125,14 +126,11 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void updateProductTest() throws Exception {
-        ProductView productToUpdate = PRODUCT_VIEW;
-        when(service.updateProduct(productToUpdate)).thenReturn(true);
+        doNothing().when(service).updateProduct(PRODUCT_VIEW);
 
-        MvcResult mvcResult = put("/products/" + PRODUCT_ID, productToUpdate).andReturn();
-        ProductView actualProduct = mapper.readValue(mvcResult.getResponse().getContentAsString(), ProductView.class);
-        assertEquals(productToUpdate, actualProduct);
+        put("/products/" + PRODUCT_ID, PRODUCT_VIEW).andReturn();
 
-        verify(service).updateProduct(productToUpdate);
+        verify(service).updateProduct(PRODUCT_VIEW);
     }
 
     @Test
@@ -140,7 +138,7 @@ public class ProductEndpointTest extends ApiUnitTest {
         String message = "Path variable Id = 55 doesn't match with request body Id = " + PRODUCT_ID;
         ProductView productToUpdate = PRODUCT_VIEW;
 
-        put400("/products/55", productToUpdate)
+        put400("/products/55", PRODUCT_VIEW)
                 .andExpect(jsonPath("$", is(message)));
 
         verify(service, never()).updateProduct(productToUpdate);
@@ -148,9 +146,9 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void updateProductInternalErrorTest() throws Exception {
-        String message = "Product failed to update";
         ProductView productToUpdate = PRODUCT_VIEW;
-        when(service.updateProduct(productToUpdate)).thenReturn(false);
+        String message = "Failed to update product with id=" + PRODUCT_VIEW.getId();
+        doThrow(new FoodcalcDomainException(message)).when(service).updateProduct(productToUpdate);
 
         putJson("/products/" + productToUpdate.getId(), productToUpdate)
                 .andExpect(status().isInternalServerError())
@@ -161,9 +159,9 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void updateProductNotFoundTest() throws Exception {
-        String message = "Product doesn't exist";
         ProductView productToUpdate = PRODUCT_VIEW;
-        when(service.updateProduct(productToUpdate)).thenThrow(new NotFoundException(message));
+        String message = "Product with id=" + PRODUCT_VIEW.getId() + " doesn't exist";
+        doThrow(new NotFoundException(message)).when(service).updateProduct(productToUpdate);
 
         put404("/products/" + productToUpdate.getId(), productToUpdate)
                 .andExpect(jsonPath("$", is(message)));
@@ -173,9 +171,9 @@ public class ProductEndpointTest extends ApiUnitTest {
 
     @Test
     public void deleteProductTest() throws Exception {
-        when(service.deleteProduct(PRODUCT_ID)).thenReturn(true);
+        doNothing().when(service).deleteProduct(PRODUCT_ID);
 
-        delete("/products/" + PRODUCT_ID);
+        delete("/products/" + PRODUCT_ID).andReturn();
 
         verify(service).deleteProduct(PRODUCT_ID);
     }
@@ -183,18 +181,17 @@ public class ProductEndpointTest extends ApiUnitTest {
     @Test
     public void deleteProductNotFoundTest() throws Exception {
         String message = "Product doesn't exist";
-        when(service.deleteProduct(PRODUCT_ID)).thenThrow(new NotFoundException(message));
+        doThrow(new NotFoundException(message)).when(service).deleteProduct(PRODUCT_ID);
 
-        delete404("/products/" + PRODUCT_ID)
-                .andExpect(jsonPath("$", is(message)));
+        delete404("/products/" + PRODUCT_ID).andExpect(jsonPath("$", is(message)));
 
         verify(service).deleteProduct(PRODUCT_ID);
     }
 
     @Test
     public void deleteProductInternalErrorTest() throws Exception {
-        String message = "Product failed to delete";
-        when(service.deleteProduct(PRODUCT_ID)).thenReturn(false);
+        String message = "Failed to delete product with id=" + PRODUCT_ID;
+        doThrow(new FoodcalcDomainException(message)).when(service).deleteProduct(PRODUCT_ID);
 
         deleteJson("/products/" + PRODUCT_ID)
                 .andExpect(status().isInternalServerError())

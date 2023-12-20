@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
-import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.endpoint.ProductsApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
@@ -46,7 +45,7 @@ public class ProductEndpoint implements ProductsApi {
         return productService.addProduct(product);
     }
 
-    public ProductView updateProduct(@PathVariable("id") long id,
+    public void updateProduct(@PathVariable("id") long id,
                                      @RequestBody @Valid ProductView product) {
         if (id != product.getId()) {
             LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, product.getId());
@@ -54,16 +53,11 @@ public class ProductEndpoint implements ProductsApi {
                     + " doesn't match with request body Id = " + product.getId());
         }
         LOG.debug("Updating product {}", product);
-        if (!productService.updateProduct(product)) {
-            throw new FoodcalcException("Product failed to update");
-        }
-        return product;
+        productService.updateProduct(product);
     }
 
     public void deleteProduct(@PathVariable("id") long id) {
         LOG.debug("Deleting meal type id = {}", id);
-        if (!productService.deleteProduct(id)) {
-            throw new FoodcalcException("Product failed to delete");
-        }
+        productService.deleteProduct(id);
     }
 }

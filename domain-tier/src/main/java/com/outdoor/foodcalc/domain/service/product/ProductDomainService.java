@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.service.product;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
@@ -63,27 +64,34 @@ public class ProductDomainService {
      * Updates selected {@link Product} with new value.
      *
      * @param product to update
-     * @return if product was updated
-     */
-    public boolean updateProduct(Product product) {
+     * @throws NotFoundException If product doesn't exist
+     * @throws FoodcalcDomainException If product wasn't updated
+     * */
+    public void updateProduct(Product product) {
         if(!productRepo.existsProduct(product.getProductId())) {
             LOG.error("Product with id={} doesn't exist", product.getProductId());
-            throw new NotFoundException("Product doesn't exist");
+            throw new NotFoundException("Product with id=" + product.getProductId() + " doesn't exist");
         }
-        return productRepo.updateProduct(product);
+
+        if(!productRepo.updateProduct(product)) {
+            throw new FoodcalcDomainException("Failed to update product with id=" + product.getProductId());
+        }
     }
 
     /**
      * Deletes selected {@link Product}.
      *
      * @param id product to delete
-     * @return if product was deleted
-     */
-    public boolean deleteProduct(long id) {
+     * @throws NotFoundException If product doesn't exist
+     * @throws FoodcalcDomainException If product wasn't deleted
+     * */
+    public void deleteProduct(long id) {
         if(!productRepo.existsProduct(id)) {
             LOG.error("Product with id={} doesn't exist", id);
             throw new NotFoundException("Product doesn't exist");
         }
-        return productRepo.deleteProduct(id);
+        if(!productRepo.deleteProduct(id)) {
+            throw new FoodcalcDomainException("Failed to delete product with id=" + id);
+        }
     }
 }
