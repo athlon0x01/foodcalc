@@ -45,7 +45,7 @@ public class MealTypesEndpoint implements MealTypesApi {
         return mealTypesService.addMealType(mealTypeView.getName());
     }
 
-    public MealTypeView updateMealType(@PathVariable("id") int id,
+    public void updateMealType(@PathVariable("id") int id,
                                        @RequestBody @Valid MealTypeView mealTypeView) {
         if (id != mealTypeView.getId()) {
             LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, mealTypeView.getId());
@@ -53,16 +53,11 @@ public class MealTypesEndpoint implements MealTypesApi {
                     + " doesn't match with request body Id = " + mealTypeView.getId());
         }
         LOG.debug("Updating meal type {}", mealTypeView);
-        if (!mealTypesService.updateMealType(mealTypeView)) {
-            throw new FoodcalcException("Meal type failed to update");
-        }
-        return mealTypeView;
+        mealTypesService.updateMealType(mealTypeView);
     }
 
     public void deleteMealType(@PathVariable("id") int id) {
         LOG.debug("Deleting meal type id = {}", id);
-        if (!mealTypesService.deleteMealType(id)) {
-            throw new FoodcalcException("Meal type failed to delete");
-        }
+        mealTypesService.deleteMealType(id);
     }
 }

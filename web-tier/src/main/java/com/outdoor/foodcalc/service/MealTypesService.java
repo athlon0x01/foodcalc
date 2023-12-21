@@ -78,8 +78,8 @@ public class MealTypesService {
      *
      * @param model updated meal type view
      */
-    public boolean updateMealType(MealTypeView model) {
-        return domainService.updateMealType(new MealType(model.getId(), model.getName()));
+    public void updateMealType(MealTypeView model) {
+        domainService.updateMealType(new MealType(model.getId(), model.getName()));
     }
 
     /**
@@ -87,7 +87,7 @@ public class MealTypesService {
      *
      * @param id meal type Id to delete
      */
-    public boolean deleteMealType(int id) {
-        return domainService.deleteMealType(id);
+    public void deleteMealType(int id) {
+        domainService.deleteMealType(id);
     }
 }

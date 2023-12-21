@@ -1,7 +1,9 @@
 package com.outdoor.foodcalc.endpoint;
 
+import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
@@ -43,16 +45,18 @@ public interface MealTypesApi {
     @ResponseStatus(HttpStatus.CREATED)
     MealTypeView addMealType(@RequestBody MealTypeView mealTypeView);
 
-    @ApiOperation(value = "Update meal type by ID",
-                    response = MealTypeView.class)
+    @ApiOperation(value = "Update meal type by ID")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Meal type updated",response = MealTypeView.class),
+            @ApiResponse(code = 204, message = "Meal type updated"),
             @ApiResponse(code = 400, message = "Bad request"),
             @ApiResponse(code = 404, message = "Meal type not found")
     })
-    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    MealTypeView updateMealType(@PathVariable("id") int id,
-                                @RequestBody MealTypeView mealTypeView);
+    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    void updateMealType(@ApiParam(value = "ID of the Meal type", required = true)
+                        @PathVariable("id") int id,
+                        @ApiParam(value = "Meal type", required = true)
+                        @RequestBody MealTypeView mealTypeView);
 
     @ApiOperation(value = "Delete meal type by ID",
                     response = MealTypeView.class)

@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.service.meal;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.repository.meal.IMealTypeRepo;
@@ -63,27 +64,35 @@ public class MealTypeDomainService {
      * Updates selected {@link MealType} with new value.
      *
      * @param mealType updated meal type
-     * @return if meal type was updated
-     */
-    public boolean updateMealType(MealType mealType) {
+     * @throws NotFoundException If meal type doesn't exist
+     * @throws FoodcalcDomainException If meal type wasn't updated
+     * */
+    public void updateMealType(MealType mealType) {
         if (!mealTypeRepo.exist(mealType.getTypeId())) {
             LOG.error("Meal type with id={} doesn't exist", mealType.getTypeId());
-            throw new NotFoundException("Meal type doesn't exist");
+            throw new NotFoundException("Meal type with id=" + mealType.getTypeId() + " doesn't exist");
         }
-        return mealTypeRepo.updateMealType(mealType);
+        if(!mealTypeRepo.updateMealType(mealType)) {
+            LOG.error("Failed to update meal type with id={}", mealType.getTypeId());
+            throw new FoodcalcDomainException("Failed to update meal type with id=" + mealType.getTypeId());
+        }
     }
 
     /**
      * Removes selected {@link MealType}.
      *
      * @param id meal type Id to delete
-     * @return if meal type was deleted
-     */
-    public boolean deleteMealType(int id) {
+     * @throws NotFoundException If meal type doesn't exist
+     * @throws FoodcalcDomainException If meal type wasn't deleted
+     * */
+    public void deleteMealType(int id) {
         if (!mealTypeRepo.exist(id)) {
             LOG.error("Meal type with id={} doesn't exist", id);
-            throw new NotFoundException("Meal type doesn't exist");
+            throw new NotFoundException("Meal type with id=" + id + " doesn't exist");
         }
-        return mealTypeRepo.deleteMealType(id);
+        if(!mealTypeRepo.deleteMealType(id)) {
+            LOG.error("Failed to delete product category with id={}", id);
+            throw new FoodcalcDomainException("Failed to delete meal type with id=" + id);
+        }
     }
 }

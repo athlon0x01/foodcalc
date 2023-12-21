@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.endpoint;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
 import com.outdoor.foodcalc.service.MealTypesService;
@@ -120,13 +121,10 @@ public class MealTypesEndpointTest extends ApiUnitTest{
 
     @Test
     public void updateMealTypeTest() throws Exception {
-        when(service.updateMealType(dummyMealTypeView)).thenReturn(true);
+        doNothing().when(service).updateMealType(dummyMealTypeView);
 
-        MvcResult mvcResult = put("/meal-types/" + MEAL_TYPE_ID, dummyMealTypeView)
+        put("/meal-types/" + MEAL_TYPE_ID, dummyMealTypeView)
                 .andReturn();
-
-        MealTypeView actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), MealTypeView.class);
-        assertEquals(dummyMealTypeView, actual);
 
         verify(service).updateMealType(dummyMealTypeView);
     }
@@ -143,9 +141,21 @@ public class MealTypesEndpointTest extends ApiUnitTest{
     }
 
     @Test
+    public void updateMealTypeNotFoundTest() throws Exception {
+        String message = "Meal type with id=" + MEAL_TYPE_ID + " doesn't exist";
+        doThrow(new NotFoundException(message)).when(service).updateMealType(dummyMealTypeView);
+
+        put404("/meal-types/" + MEAL_TYPE_ID, dummyMealTypeView)
+                .andExpect(jsonPath("$", is(message)));
+
+        verify(service).updateMealType(dummyMealTypeView);
+    }
+
+    @Test
     public void updateMealTypeInternalErrorTest() throws Exception {
-        String message = "Meal type failed to update";
-        when(service.updateMealType(dummyMealTypeView)).thenReturn(false);
+        String message = "Failed to delete meal type with id=" + MEAL_TYPE_ID;
+        doThrow(new FoodcalcDomainException(message)).when(service).updateMealType(dummyMealTypeView);
+
 
         putJson("/meal-types/" + MEAL_TYPE_ID, dummyMealTypeView)
                 .andExpect(status().isInternalServerError())
@@ -156,7 +166,7 @@ public class MealTypesEndpointTest extends ApiUnitTest{
 
     @Test
     public void deleteMealTypeTest() throws Exception {
-        when(service.deleteMealType(MEAL_TYPE_ID)).thenReturn(true);
+        doNothing().when(service).deleteMealType(MEAL_TYPE_ID);
 
         delete("/meal-types/" + MEAL_TYPE_ID);
 
@@ -165,8 +175,8 @@ public class MealTypesEndpointTest extends ApiUnitTest{
 
     @Test
     public void deleteMealTypeNotFoundTest() throws Exception {
-        String message = "MealType doesn't exist";
-        when(service.deleteMealType(MEAL_TYPE_ID)).thenThrow(new NotFoundException(message));
+        String message = "Meal type with id=" + MEAL_TYPE_ID + " doesn't exist";
+        doThrow(new NotFoundException(message)).when(service).deleteMealType(MEAL_TYPE_ID);
 
         delete404("/meal-types/" + MEAL_TYPE_ID)
                 .andExpect(jsonPath("$", is(message)));
@@ -176,8 +186,8 @@ public class MealTypesEndpointTest extends ApiUnitTest{
 
     @Test
     public void deleteMealTypeInternalErrorTest() throws Exception {
-        String message = "Meal type failed to delete";
-        when(service.deleteMealType(MEAL_TYPE_ID)).thenReturn(false);
+        String message = "Failed to delete meal type with id=" + MEAL_TYPE_ID;
+        doThrow(new FoodcalcDomainException(message)).when(service).deleteMealType(MEAL_TYPE_ID);
 
         deleteJson("/meal-types/" + MEAL_TYPE_ID)
                 .andExpect(status().isInternalServerError())
