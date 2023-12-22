@@ -1,8 +1,8 @@
 package com.outdoor.foodcalc.domain.repository.dish;
 
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -38,7 +38,7 @@ public class DishCategoryRepoTest {
     @InjectMocks
     private DishCategoryRepo repo;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }

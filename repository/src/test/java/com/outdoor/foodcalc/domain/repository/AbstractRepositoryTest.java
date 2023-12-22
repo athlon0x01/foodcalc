@@ -1,8 +1,8 @@
 package com.outdoor.foodcalc.domain.repository;
 
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -51,7 +51,7 @@ public class AbstractRepositoryTest {
     @InjectMocks
     private CategoryRepo repo;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(repo, "jdbcTemplate", jdbcTemplate);

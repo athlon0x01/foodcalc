@@ -5,8 +5,9 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductCategoryRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -37,7 +38,7 @@ public class ProductCategoryDomainServiceTest {
     @Mock
     private IProductRepo productRepo;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
@@ -87,19 +88,23 @@ public class ProductCategoryDomainServiceTest {
         verify(categoryRepo).updateCategory(dummyCategory);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateNotExistingCategoryTest() {
         when(categoryRepo.exist(CATEGORY_ID)).thenReturn(false);
 
-        categoryService.updateCategory(dummyCategory);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            categoryService.updateCategory(dummyCategory);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void updateCategoryFailTest() {
         when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
         when(categoryRepo.updateCategory(dummyCategory)).thenReturn(false);
 
-        categoryService.updateCategory(dummyCategory);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            categoryService.updateCategory(dummyCategory);
+        });
     }
 
 
@@ -116,19 +121,23 @@ public class ProductCategoryDomainServiceTest {
         verify(categoryRepo).deleteCategory(CATEGORY_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteNotExistingCategoryTest() {
         when(categoryRepo.exist(CATEGORY_ID)).thenReturn(false);
 
-        categoryService.deleteCategory(CATEGORY_ID);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            categoryService.deleteCategory(CATEGORY_ID);
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void deleteNotEmptyCategoryTest() {
         when(categoryRepo.exist(CATEGORY_ID)).thenReturn(true);
         when(productRepo.countProductsInCategory(CATEGORY_ID)).thenReturn(1L);
 
-        categoryService.deleteCategory(CATEGORY_ID);
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            categoryService.deleteCategory(CATEGORY_ID);
+        });
     }
 
 }

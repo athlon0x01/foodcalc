@@ -5,8 +5,9 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -40,7 +41,7 @@ public class ProductDomainServiceTest {
     @Mock
     private IProductRepo productRepo;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
@@ -91,19 +92,23 @@ public class ProductDomainServiceTest {
         verify(productRepo).updateProduct(dummyProduct);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateNotExistingProductTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(false);
 
-        productService.updateProduct(dummyProduct);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.updateProduct(dummyProduct);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void updateProductFailTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(true);
         when(productRepo.updateProduct(dummyProduct)).thenReturn(false);
 
-        productService.updateProduct(dummyProduct);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            productService.updateProduct(dummyProduct);
+        });
     }
 
     @Test
@@ -117,18 +122,22 @@ public class ProductDomainServiceTest {
         verify(productRepo).deleteProduct(PRODUCT_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteNotExistingProductTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(false);
 
-        productService.deleteProduct(PRODUCT_ID);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.deleteProduct(PRODUCT_ID);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void deleteProductFailTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(true);
         when(productRepo.deleteProduct(PRODUCT_ID)).thenReturn(false);
 
-        productService.deleteProduct(PRODUCT_ID);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            productService.deleteProduct(PRODUCT_ID);
+        });
     }
 }

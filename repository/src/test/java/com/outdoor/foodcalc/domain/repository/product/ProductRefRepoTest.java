@@ -5,12 +5,9 @@ import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -34,9 +31,6 @@ import static org.mockito.Mockito.*;
  * @author Olga Borovyk
  */
 public class ProductRefRepoTest {
-
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private static final Long DISH_ID = 67890L;
 
@@ -73,8 +67,10 @@ public class ProductRefRepoTest {
 
     private ProductRefRepo repo;
 
-    @Before
+
+    @BeforeEach
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         repo = new ProductRefRepo(productRepo);
         ReflectionTestUtils.setField(repo, "jdbcTemplate", jdbcTemplate);
     }

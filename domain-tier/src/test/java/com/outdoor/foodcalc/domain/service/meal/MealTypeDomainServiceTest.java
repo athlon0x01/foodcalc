@@ -5,8 +5,9 @@ import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.repository.meal.IMealTypeRepo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -35,7 +36,7 @@ public class MealTypeDomainServiceTest {
     @Mock
     private IMealTypeRepo mealTypeRepo;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
@@ -85,19 +86,23 @@ public class MealTypeDomainServiceTest {
         verify(mealTypeRepo).updateMealType(dummyMealType);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateNotExistingMealTypeTest() {
         when(mealTypeRepo.exist(MEAL_TYPE_ID)).thenReturn(false);
 
-        mealTypeDomainService.updateMealType(dummyMealType);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            mealTypeDomainService.updateMealType(dummyMealType);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void updateMealTypeFailTest() {
         when(mealTypeRepo.exist(MEAL_TYPE_ID)).thenReturn(true);
         when(mealTypeRepo.updateMealType(dummyMealType)).thenReturn(false);
 
-        mealTypeDomainService.updateMealType(dummyMealType);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            mealTypeDomainService.updateMealType(dummyMealType);
+        });
     }
 
     @Test
@@ -111,18 +116,22 @@ public class MealTypeDomainServiceTest {
         verify(mealTypeRepo).deleteMealType(MEAL_TYPE_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteNotExistingMealTypeTest() {
         when(mealTypeRepo.exist(MEAL_TYPE_ID)).thenReturn(false);
 
-        mealTypeDomainService.deleteMealType(MEAL_TYPE_ID);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            mealTypeDomainService.deleteMealType(MEAL_TYPE_ID);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void deleteMealTypeFailTest() {
         when(mealTypeRepo.exist(MEAL_TYPE_ID)).thenReturn(true);
         when(mealTypeRepo.deleteMealType(MEAL_TYPE_ID)).thenReturn(false);
 
-        mealTypeDomainService.deleteMealType(MEAL_TYPE_ID);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            mealTypeDomainService.deleteMealType(MEAL_TYPE_ID);
+        });
     }
 }

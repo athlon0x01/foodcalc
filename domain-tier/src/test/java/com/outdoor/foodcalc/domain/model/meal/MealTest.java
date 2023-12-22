@@ -6,8 +6,8 @@ import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
@@ -26,7 +26,7 @@ public class MealTest {
     private Meal meal;
     private MealRef mealRef;
 
-    @Before
+    @BeforeEach
     public void setup() {
         ProductCategory category = new ProductCategory(222, "Test Category");
         Product buckwheat = Product.builder().productId(123).name("Buckwheat").category(category).

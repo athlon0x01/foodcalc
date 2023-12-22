@@ -10,8 +10,9 @@ import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
 import com.outdoor.foodcalc.model.dish.*;
 import com.outdoor.foodcalc.model.product.ProductView;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -27,7 +28,7 @@ public class DishServiceTest {
     @InjectMocks
     private DishService dishService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
@@ -169,10 +170,13 @@ public class DishServiceTest {
         verify(productService).getProduct(product3.getProductId());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getDishNotFoundTest() {
         when(dishDomainService.getDish(DISH_1_ID)).thenReturn(Optional.empty());
-        dishService.getDish(DISH_1_ID);
+
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            dishService.getDish(DISH_1_ID);
+        });
     }
 
     @Test
@@ -201,14 +205,16 @@ public class DishServiceTest {
         verify(productService).getDomainProduct(dishProduct3.getProductId());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void addDishCategoryFailTest() {
         List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
         SimpleDish simpleDishToAdd = SimpleDish.builder().id(77777).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
         when(dishCategoryDomainService.getCategory(simpleDishToAdd.getCategoryId())).thenReturn(Optional.empty());
 
-        dishService.addDish(simpleDishToAdd);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            dishService.addDish(simpleDishToAdd);
+        });
     }
 
     @Test
@@ -228,7 +234,7 @@ public class DishServiceTest {
         verify(dishDomainService).updateDish(any());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateDishCategoryFailTest() {
         List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
         SimpleDish simpleDishToUpdate = SimpleDish.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
@@ -236,7 +242,9 @@ public class DishServiceTest {
 
         when(dishCategoryDomainService.getCategory(simpleDishToUpdate.getCategoryId())).thenReturn(Optional.empty());
 
-        dishService.updateDish(simpleDishToUpdate);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            dishService.updateDish(simpleDishToUpdate);
+        });
     }
 
     @Test

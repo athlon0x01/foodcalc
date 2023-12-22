@@ -7,8 +7,9 @@ import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -60,7 +61,7 @@ public class ProductServiceTest {
     @InjectMocks
     private ProductService productService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
@@ -107,11 +108,13 @@ public class ProductServiceTest {
         verify(productDomainService).getProduct(domainProduct.getProductId());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getNotExistingProductTest() {
         when(productDomainService.getProduct(1)).thenReturn(Optional.empty());
 
-        productService.getProduct(1);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.getProduct(1);
+        });
     }
 
     @Test
@@ -138,13 +141,15 @@ public class ProductServiceTest {
         verify(productDomainService).addProduct(domainProduct);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void addProductWithoutCategoryTest() {
         ProductView productView = PRODUCT_VIEW_1;
 
         when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.empty());
 
-        productService.addProduct(productView);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.addProduct(productView);
+        });
     }
 
     @Test
@@ -164,13 +169,15 @@ public class ProductServiceTest {
         verify(productDomainService).updateProduct(domainProduct);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateProductWithoutCategoryTest() {
         ProductView productView = PRODUCT_VIEW_1;
 
         when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.empty());
 
-        productService.updateProduct(productView);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.updateProduct(productView);
+        });
     }
 
     @Test

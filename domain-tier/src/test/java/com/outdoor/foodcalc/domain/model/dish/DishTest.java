@@ -3,8 +3,8 @@ package com.outdoor.foodcalc.domain.model.dish;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -24,7 +24,7 @@ public class DishTest {
     private DishRef dishRef;
     private Collection<ProductRef> products;
 
-    @Before
+    @BeforeEach
     public void setup() {
         products = new ArrayList<>();
         ProductCategory category = new ProductCategory(222, "Test Category");

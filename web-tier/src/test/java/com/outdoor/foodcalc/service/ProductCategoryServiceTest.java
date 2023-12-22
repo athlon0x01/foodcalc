@@ -5,8 +5,9 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.model.product.SimpleProductCategory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -44,7 +45,7 @@ public class ProductCategoryServiceTest {
     @Mock
     private ProductCategoryDomainService categoryDomainService;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockitoAnnotations.initMocks(this);
     }
@@ -78,12 +79,14 @@ public class ProductCategoryServiceTest {
         verify(categoryDomainService).getCategory(CATEGORY_1_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getNotExistingCategoryTest() {
         Optional<ProductCategory> domainCategory = Optional.empty();
         when(categoryDomainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
 
-        categoryService.getCategory(CATEGORY_1_ID);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            categoryService.getCategory(CATEGORY_1_ID);
+        });
     }
 
     @Test
@@ -107,18 +110,22 @@ public class ProductCategoryServiceTest {
         verify(categoryDomainService).updateCategory(PRODUCT_CATEGORY_1);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateCategoryNotFoundTest() {
         doThrow(NotFoundException.class).when(categoryDomainService).updateCategory(PRODUCT_CATEGORY_1);
 
-        categoryService.updateCategory(SIMPLE_PRODUCT_CATEGORY_1);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            categoryService.updateCategory(SIMPLE_PRODUCT_CATEGORY_1);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void updateCategoryFailTest() {
         doThrow(FoodcalcDomainException.class).when(categoryDomainService).updateCategory(PRODUCT_CATEGORY_1);
 
-        categoryService.updateCategory(SIMPLE_PRODUCT_CATEGORY_1);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            categoryService.updateCategory(SIMPLE_PRODUCT_CATEGORY_1);
+        });
     }
 
     @Test
@@ -130,17 +137,21 @@ public class ProductCategoryServiceTest {
         verify(categoryDomainService).deleteCategory(CATEGORY_1_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteDishCategoryNotFoundTest() {
         doThrow(NotFoundException.class).when(categoryDomainService).deleteCategory(CATEGORY_1_ID);
 
-        categoryService.deleteCategory(CATEGORY_1_ID);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            categoryService.deleteCategory(CATEGORY_1_ID);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void deleteDishCategoryFailTest() {
         doThrow(FoodcalcDomainException.class).when(categoryDomainService).deleteCategory(CATEGORY_1_ID);
 
-        categoryService.deleteCategory(CATEGORY_1_ID);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            categoryService.deleteCategory(CATEGORY_1_ID);
+        });
     }
 }
