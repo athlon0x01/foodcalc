@@ -21,9 +21,11 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public class FoodDayEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(FoodDayEndpoint.class);
+    private final MealEndpoint mealEndpoint;
     private final Map<Long, List<DayPlan>> days;
 
-    public FoodDayEndpoint() {
+    public FoodDayEndpoint(MealEndpoint mealEndpoint) {
+        this.mealEndpoint = mealEndpoint;
         this.days = new HashMap<>();
         DayPlan day11 = new DayPlan(11L, LocalDate.of(2023, 11, 23), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         day11.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
@@ -59,6 +61,7 @@ public class FoodDayEndpoint {
                 .id(day.getDayId())
                 .date(day.getDate())
                 .description(day.getDescription())
+                .meals(mealEndpoint.getAllMeals(day.getDayId()))
                 .build();
     }
 
@@ -92,6 +95,7 @@ public class FoodDayEndpoint {
         DayPlan dayPlan = new DayPlan(maxId, foodDay.getDate(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         plan.add(dayPlan);
         foodDay.setId(maxId);
+        mealEndpoint.addDayMeal(maxId);
         return foodDay;
     }
 
