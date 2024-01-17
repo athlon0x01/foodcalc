@@ -21,6 +21,14 @@
           <b-button variant="outline-danger" size="sm" v-on:click="goBack">Cancel</b-button>
         </div>
       </div>
+      <!--day meals-->
+      <template v-if="dayMeals.length > 0">
+        <div v-for="meal in dayMeals" :key="meal.id">
+          <meal-view v-bind:meal="meal"
+                     v-bind:editable="true"/>
+        </div>
+        <div style="padding-bottom: 5px"/>
+      </template>
     </div>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
@@ -31,15 +39,18 @@
 
 <script>
 import axios from 'axios'
+import MealView from 'src/components/meal/MealView'
 
 export default {
   name: 'FoodDay',
+  components: {MealView},
   data () {
     return {
       planDayEndpointUrl: '/api/plans/',
       dateTitle: null,
       dayDate: null,
       dayDescription: null,
+      dayMeals: [],
       errorMessage: null
     }
   },
@@ -88,6 +99,7 @@ export default {
         let planDay = response.data
         this.dateTitle = planDay.date
         this.dayDescription = planDay.description
+        this.dayMeals = planDay.meals
         let dateParts = planDay.date.split('-')
         this.dayDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0]
       })

@@ -14,6 +14,13 @@
           <b-button variant="outline-danger" size="sm" v-on:click="deleteDay">Delete</b-button>
         </div>
       </div>
+      <!--day meals-->
+      <template v-if="foodDay.meals.length > 0">
+        <div v-for="meal in foodDay.meals" :key="meal.id">
+          <meal-view v-bind:meal="meal"/>
+        </div>
+        <div style="padding-bottom: 5px"/>
+      </template>
       <div class="row headerRow bg-light">
         <div class="col-md-2"/>
         <div class="col-md-2 border"><em>Calorific</em></div>
@@ -35,8 +42,11 @@
 </template>
 
 <script>
+import MealView from 'src/components/meal/MealView'
+
 export default {
   name: 'FoodDayView',
+  components: {MealView},
   props: {
     foodDay: {
       type: Object,

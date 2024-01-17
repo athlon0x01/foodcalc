@@ -18,7 +18,7 @@ import java.util.List;
 @SuperBuilder
 public class MealView extends FoodView {
     private String description;
-    private MealTypeView typeView;
+    private String type;
     private List<DishView> dishes;
     private List<ProductView> products;
 }
