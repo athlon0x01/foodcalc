@@ -5,12 +5,14 @@ import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import com.outdoor.foodcalc.model.meal.MealView;
+import com.outdoor.foodcalc.model.meal.SimpleMeal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
+import javax.validation.Valid;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -75,7 +77,7 @@ public class MealEndpoint {
 
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
     public MealView getMeal(@PathVariable("dayId") long dayId,
-                              @PathVariable("id") long id) {
+                            @PathVariable("id") long id) {
         LOG.debug("Getting meal = {} day - {}", id, dayId);
         return getFirstMeal(dayId, id).map(this::mapView)
                 .orElseThrow(() -> new NotFoundException("Meal with id = " + id + " wasn't found"));
@@ -84,7 +86,7 @@ public class MealEndpoint {
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteMeal(@PathVariable("dayId") long dayId,
-                              @PathVariable("id") long id) {
+                           @PathVariable("id") long id) {
         LOG.debug("Removing meal id = {}, day - {}", id, dayId);
         var dayMeals = getMeals(dayId);
         getFirstMeal(dayId, id).ifPresent(dayMeals::remove);
@@ -92,5 +94,39 @@ public class MealEndpoint {
 
     void addDayMeal(long dayId) {
         meals.put(dayId, new ArrayList<>());
+    }
+
+    private MealType getMealType(long id) {
+        var mealTypes = mealTypeService.getMealTypes();
+        return mealTypes.stream()
+                .filter(type -> id == type.getTypeId())
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("MealType with id = " + id + " wasn't found"));
+    }
+
+    @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
+    public SimpleMeal addMeal(@PathVariable("dayId") long dayId,
+                              @RequestBody @Valid SimpleMeal meal) {
+        LOG.debug("Adding new meal, day - {}", dayId);
+        var dayMeals = getMeals(dayId);
+        long maxId = dayMeals.stream().map(Meal::getMealId).max(Long::compareTo).orElse(1L) + 1L;
+        Meal newMeal = new Meal(maxId, getMealType(meal.getTypeId()), Collections.emptyList(), Collections.emptyList());
+        dayMeals.add(newMeal);
+        meal.setId(maxId);
+        return meal;
+    }
+
+    @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateMeal(@PathVariable("dayId") long dayId,
+                           @PathVariable("id") long id,
+                           @RequestBody @Valid SimpleMeal newMeal) {
+        LOG.debug("Updating meal id = {}, day - {}", id, dayId);
+        Meal meal = getFirstMeal(dayId, id)
+                .orElseThrow(() -> new NotFoundException("Meal id = " + id + " for day id = " + dayId + " wasn't found"));
+        meal.setDescription(newMeal.getDescription());
+        if (meal.getType().getTypeId() != newMeal.getTypeId()) {
+            meal.setType(getMealType(newMeal.getTypeId()));
+        }
     }
 }

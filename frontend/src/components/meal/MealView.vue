@@ -52,13 +52,13 @@ export default {
 
   methods: {
     editMeal () {
-      // this.$router.push({path: '/plan/' + this.$route.params.planId + '/day/' + this.meal.id})
       console.log('Going to edit meal, id - ' + this.meal.id)
+      // this.$router.push({path: '/plan/' + this.$route.params.planId + '/day/' + this.meal.id})
     },
 
     deleteMeal () {
-      // this.$emit('remove', this.meal.id)
       console.log('Going to delete meal, id - ' + this.meal.id)
+      this.$emit('remove', this.meal.id)
     }
   }
 }

@@ -179,7 +179,7 @@ export default {
           this.dishCategories = response.data
         })
         .catch(e => {
-          this.getErrorMessage(e, 'Failed to load Products...')
+          this.getErrorMessage(e, 'Failed to load Dish categories...')
         })
     },
 
