@@ -27,6 +27,7 @@
       <div v-for="meal in dayMeals" :key="meal.id">
         <meal-view v-bind:meal="meal"
                    v-bind:editable="true"
+                   v-bind:date-title=dateTitle
                    v-on:remove="removeMeal"/>
       </div>
       <div style="padding-bottom: 5px"/>

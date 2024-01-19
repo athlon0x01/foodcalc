@@ -11,6 +11,7 @@ import DishCategories from 'src/components/directory/DishCategories'
 import MealTypes from 'src/components/directory/MealTypes'
 import FoodPlan from 'src/components/plan/FoodPlan'
 import FoodDay from 'src/components/plan/FoodDay'
+import EditMeal from 'src/components/meal/EditMeal'
 
 Vue.use(Router)
 
@@ -73,14 +74,14 @@ export default new Router({
       component: FoodPlan
     },
     {
-      path: '/plan/:planId/new-day',
-      name: 'NewFoodDayPage',
-      component: FoodDay
-    },
-    {
       path: '/plan/:planId/day/:dayId',
       name: 'FoodDayPage',
       component: FoodDay
+    },
+    {
+      path: '/plan/:planId/day/:dayId/meal/:mealId',
+      name: 'MealPage',
+      component: EditMeal
     }
   ]
 })

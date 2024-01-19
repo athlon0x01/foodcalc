@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h4 class="meal-header">{{meal.type}}</h4>
+    <h4 class="meal-header">{{meal.type.name}}</h4>
     <div class="container">
       <div class="row">
         <p>{{meal.description}}</p>
@@ -47,17 +47,22 @@ export default {
     editable: {
       type: Boolean,
       required: false
+    },
+    dateTitle: {
+      type: String,
+      required: false
     }
   },
 
   methods: {
     editMeal () {
-      console.log('Going to edit meal, id - ' + this.meal.id)
-      // this.$router.push({path: '/plan/' + this.$route.params.planId + '/day/' + this.meal.id})
+      this.$router.push({
+        path: '/plan/' + this.$route.params.planId + '/day/' + this.$route.params.dayId + '/meal/' + this.meal.id,
+        query: {dateTitle: this.dateTitle}
+      })
     },
 
     deleteMeal () {
-      console.log('Going to delete meal, id - ' + this.meal.id)
       this.$emit('remove', this.meal.id)
     }
   }

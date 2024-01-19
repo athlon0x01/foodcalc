@@ -4,6 +4,7 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
+import com.outdoor.foodcalc.model.meal.MealTypeView;
 import com.outdoor.foodcalc.model.meal.MealView;
 import com.outdoor.foodcalc.model.meal.SimpleMeal;
 import org.slf4j.Logger;
@@ -63,7 +64,7 @@ public class MealEndpoint {
         return MealView.builder()
                 .id(meal.getMealId())
                 .description(meal.getDescription())
-                .type(meal.getType().getName())
+                .type(new MealTypeView(meal.getType().getTypeId(), meal.getType().getName()))
                 .build();
     }
 
