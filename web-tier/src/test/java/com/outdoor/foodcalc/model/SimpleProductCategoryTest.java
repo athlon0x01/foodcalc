@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import javax.validation.ConstraintViolation;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * {@link SimpleProductCategory} model validation te

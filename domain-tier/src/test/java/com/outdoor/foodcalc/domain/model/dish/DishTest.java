@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Dish entity unit test
@@ -47,7 +46,7 @@ public class DishTest {
     @Test
     public void foodDetailsTest() {
         //check weight
-        assertEquals(116.5f, dish.getWeight(), DELTA);
+        assertEquals (116.5f, dish.getWeight(), DELTA);
         assertEquals(116.5f, dishRef.getWeight(), DELTA);
 
         //check calorific
