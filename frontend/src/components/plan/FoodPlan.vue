@@ -127,7 +127,11 @@ export default {
     addNewDay () {
       if (this.newDayDate != null) {
         let newDateObj = new Date(this.newDayDate)
-        let newDateString = newDateObj.getDate() + '-' + Number(newDateObj.getMonth() + 1) + '-' + newDateObj.getFullYear()
+        let month = Number(newDateObj.getMonth() + 1)
+        if (newDateObj.getMonth() < 9) {
+          month = '0' + month
+        }
+        let newDateString = newDateObj.getDate() + '-' + month + '-' + newDateObj.getFullYear()
         let planDay = {
           date: newDateString
         }
