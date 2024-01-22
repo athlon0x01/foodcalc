@@ -6,11 +6,11 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.repository.meal.IMealTypeRepo;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +25,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Olga Borovyk
  */
+@ExtendWith(MockitoExtension.class)
 public class MealTypeDomainServiceTest {
 
     private static final int MEAL_TYPE_ID = 12345;
@@ -35,11 +36,6 @@ public class MealTypeDomainServiceTest {
 
     @Mock
     private IMealTypeRepo mealTypeRepo;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getMealTypesTest() {

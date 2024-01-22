@@ -6,11 +6,11 @@ import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.repository.dish.IDishCategoryRepo;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
@@ -25,6 +25,8 @@ import static org.mockito.Mockito.when;
  *
  * @author Olga Borovyk
  */
+
+@ExtendWith(MockitoExtension.class)
 public class DishCategoryDomainServiceTest {
 
     private static final long CATEGORY_ID = 12345;
@@ -38,11 +40,6 @@ public class DishCategoryDomainServiceTest {
 
     @Mock
     private IDishRepo dishRepo;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getCategoriesTest() {

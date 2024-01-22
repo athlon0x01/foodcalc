@@ -10,11 +10,11 @@ import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
@@ -26,6 +26,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Olga Borovyk
  */
+@ExtendWith(MockitoExtension.class)
 public class DishDomainServiceTest {
 
     private static final Long DISH_ID = 12345L;
@@ -63,11 +64,6 @@ public class DishDomainServiceTest {
 
     @InjectMocks
     private DishDomainService service;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getAllDishesTest() {
@@ -164,7 +160,7 @@ public class DishDomainServiceTest {
         Dish dishToAdd = new Dish(-1,"borsch", "dummyDescr",
                 dummyDishCategory, Collections.singletonList(dummyProductRef));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
-        when(productRefRepo.addDishProducts(dishToAdd)).thenReturn(false);
+        lenient().when(productRefRepo.addDishProducts(dishToAdd)).thenReturn(false);
 
         Assertions.assertThrows(FoodcalcDomainException.class, () -> {
             service.addDish(dishToAdd);
