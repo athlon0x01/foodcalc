@@ -2,8 +2,13 @@ package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.plan.DayPlan;
+import com.outdoor.foodcalc.domain.model.product.Product;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
+import com.outdoor.foodcalc.model.dish.DishProduct;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
 import com.outdoor.foodcalc.model.plan.SimpleFoodDay;
+import com.outdoor.foodcalc.model.product.ProductView;
+import com.outdoor.foodcalc.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -22,10 +27,12 @@ public class FoodDayEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(FoodDayEndpoint.class);
     private final MealEndpoint mealEndpoint;
+    private final ProductService productService;
     private final Map<Long, List<DayPlan>> days;
 
-    public FoodDayEndpoint(MealEndpoint mealEndpoint) {
+    public FoodDayEndpoint(MealEndpoint mealEndpoint, ProductService productService) {
         this.mealEndpoint = mealEndpoint;
+        this.productService = productService;
         this.days = new HashMap<>();
         DayPlan day11 = new DayPlan(11L, LocalDate.of(2023, 11, 23), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         day11.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
@@ -62,6 +69,9 @@ public class FoodDayEndpoint {
                 .date(day.getDate())
                 .description(day.getDescription())
                 .meals(mealEndpoint.getAllMeals(day.getDayId()))
+                .products(day.getProducts().stream()
+                        .map(this::mapProductRef)
+                        .collect(Collectors.toList()))
                 .calorific(day.getCalorific())
                 .carbs(day.getCarbs())
                 .fats(day.getFats())
@@ -114,5 +124,20 @@ public class FoodDayEndpoint {
                 .orElseThrow(() -> new NotFoundException("Food day id = " + id + " for plan with id = " + planId + " wasn't found"));
         day.setDate(foodDay.getDate());
         day.setDescription(foodDay.getDescription());
+        day.setProducts(foodDay.getProducts().stream()
+                .map(this::buildProductRef)
+                .collect(Collectors.toList()));
+    }
+
+    private ProductView mapProductRef(ProductRef product) {
+        //TODO mapping without reloading the product
+        final ProductView view = productService.getProduct(product.getProductId());
+        view.setWeight(product.getWeight());
+        return view;
+    }
+
+    private ProductRef buildProductRef(DishProduct product) {
+        Product domainProduct = productService.getDomainProduct(product.getProductId());
+        return new ProductRef(domainProduct, Math.round(product.getWeight() * 10));
     }
 }
