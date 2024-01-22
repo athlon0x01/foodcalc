@@ -3,10 +3,15 @@ package com.outdoor.foodcalc.endpoint.impl;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
+import com.outdoor.foodcalc.domain.model.product.Product;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
+import com.outdoor.foodcalc.model.dish.DishProduct;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
 import com.outdoor.foodcalc.model.meal.MealView;
 import com.outdoor.foodcalc.model.meal.SimpleMeal;
+import com.outdoor.foodcalc.model.product.ProductView;
+import com.outdoor.foodcalc.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -27,10 +32,12 @@ public class MealEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(MealEndpoint.class);
 
     private final MealTypeDomainService mealTypeService;
+    private final ProductService productService;
     private final Map<Long, List<Meal>> meals = new HashMap<>();
 
-    public MealEndpoint(MealTypeDomainService mealTypeService) {
+    public MealEndpoint(MealTypeDomainService mealTypeService, ProductService productService) {
         this.mealTypeService = mealTypeService;
+        this.productService = productService;
     }
 
     @PostConstruct
@@ -65,7 +72,22 @@ public class MealEndpoint {
                 .id(meal.getMealId())
                 .description(meal.getDescription())
                 .type(new MealTypeView(meal.getType().getTypeId(), meal.getType().getName()))
+                .products(meal.getProducts().stream()
+                        .map(this::mapProductRef)
+                        .collect(Collectors.toList()))
+                .calorific(meal.getCalorific())
+                .carbs(meal.getCarbs())
+                .fats(meal.getFats())
+                .proteins(meal.getProteins())
+                .weight(meal.getWeight())
                 .build();
+    }
+
+    private ProductView mapProductRef(ProductRef product) {
+        //TODO mapping without reloading the product
+        final ProductView view = productService.getProduct(product.getProductId());
+        view.setWeight(product.getWeight());
+        return view;
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
@@ -129,5 +151,13 @@ public class MealEndpoint {
         if (meal.getType().getTypeId() != newMeal.getTypeId()) {
             meal.setType(getMealType(newMeal.getTypeId()));
         }
+        meal.setProducts(newMeal.getProducts().stream()
+                .map(this::buildProductRef)
+                .collect(Collectors.toList()));
+    }
+
+    private ProductRef buildProductRef(DishProduct product) {
+        Product domainProduct = productService.getDomainProduct(product.getProductId());
+        return new ProductRef(domainProduct, Math.round(product.getWeight() * 10));
     }
 }

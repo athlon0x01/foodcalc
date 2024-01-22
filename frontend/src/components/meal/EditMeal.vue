@@ -27,6 +27,42 @@
           <b-button variant="outline-danger" size="sm" v-on:click="goBack">Cancel</b-button>
         </div>
       </div>
+      <!--Products section-->
+      <template v-if="mealProducts.length > 0" class="row">
+        <!--Header-->
+        <h5 style="padding-top:10px">Products</h5>
+        <div class="row headerRow bg-light">
+          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-1 border"><strong>Calorific</strong></div>
+          <div class="col-md-1 border"><strong>Proteins</strong></div>
+          <div class="col-md-1 border"><strong>Fats</strong></div>
+          <div class="col-md-1 border"><strong>Carbs</strong></div>
+          <div class="col-md-1 border"><strong>Weight</strong></div>
+        </div>
+        <div class="row headerRow bg-light">
+          <div class="col-md-5 border"><em>Total</em></div>
+          <div class="col-md-1 border"><em>{{ productCalorific }}</em></div>
+          <div class="col-md-1 border"><em>{{ productProteins }}</em></div>
+          <div class="col-md-1 border"><em>{{ productFats }}</em></div>
+          <div class="col-md-1 border"><em>{{ productCarbs }}</em></div>
+          <div class="col-md-1 border"><em>{{ productWeight }}</em></div>
+        </div>
+        <!--Content-->
+        <div v-for="product in mealProducts" :key="product.id">
+          <product-view v-bind:product="product"
+                        v-bind:select-mode="false"
+                        v-bind:manage-mode="true"
+                        v-on:productUp="moveProductUp"
+                        v-on:productDown="moveProductDown"
+                        v-on:weightUpdated="updateProductWeight"
+                        v-on:productRemoved="removeProduct"/>
+        </div>
+      </template>
+    </div>
+    <b-button variant="link" size="sm" v-on:click="addProductsModeChange">{{ productsTitle }}</b-button>
+    <div v-if="addProductsMode !== undefined && addProductsMode" class="border border-dark">
+      <select-product-view v-on:hideProducts="hideProductsToAdd"
+                           v-on:productSelected="addProduct"/>
     </div>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
@@ -37,17 +73,28 @@
 
 <script>
 import axios from 'axios'
+import SelectProductView from 'src/components/directory/product/SelectProductView'
+import ProductView from 'src/components/directory/product/ProductView'
 
 export default {
   name: 'EditMeal',
+  components: {SelectProductView, ProductView},
   data () {
     return {
       mealsEndpointUrl: '/api/plans/',
       mealTypesEndpointUrl: '/api/meal-types/',
+      addProductsMode: false,
+      productsTitle: 'Show Products to add',
       mealTypes: [],
       mealTitle: null,
       mealTypeId: null,
       mealDescription: null,
+      mealProducts: [],
+      productCalorific: 0,
+      productProteins: 0,
+      productFats: 0,
+      productCarbs: 0,
+      productWeight: 0,
       errorMessage: null
     }
   },
@@ -63,12 +110,87 @@ export default {
       }
     },
 
+    addProductsModeChange () {
+      this.addProductsMode = !this.addProductsMode
+      this.productsTitle = this.addProductsMode ? 'Hide Products to be added' : 'Show Products to add'
+    },
+
+    hideProductsToAdd () {
+      this.addProductsMode = false
+      this.productsTitle = 'Show Products to add'
+    },
+
+    addProduct (product) {
+      if (this.mealProducts.find(p => p.id === product.id) === undefined) {
+        this.mealProducts.push(product)
+        this.updateProductsTotal()
+      } else {
+        console.log('Meal already contains ' + JSON.stringify(product))
+      }
+    },
+
+    removeProduct (productId) {
+      this.mealProducts = this.mealProducts.filter(p => p.id !== productId)
+      this.updateProductsTotal()
+    },
+
+    moveProductUp (productId) {
+      const ndx = this.mealProducts.findIndex(p => p.id === productId)
+      if (ndx > 0) {
+        let product = this.mealProducts[ndx]
+        this.mealProducts[ndx] = this.mealProducts[ndx - 1]
+        this.mealProducts[ndx - 1] = product
+        this.$forceUpdate()
+      }
+    },
+
+    moveProductDown (productId) {
+      const ndx = this.mealProducts.findIndex(p => p.id === productId)
+      if (ndx < this.mealProducts.length - 1) {
+        let product = this.mealProducts[ndx]
+        this.mealProducts[ndx] = this.mealProducts[ndx + 1]
+        this.mealProducts[ndx + 1] = product
+        this.$forceUpdate()
+      }
+    },
+
+    updateProductWeight (productId, weight) {
+      let product = this.mealProducts.find(p => p.id === productId)
+      if (product !== undefined) {
+        product.weight = weight
+        this.productWeight = this.calculateProductsTotal(this.mealProducts, p => Number(p.weight))
+      }
+    },
+
+    calculateProductsTotal (products, propertyGetter) {
+      let total = products.reduce((total, product) => propertyGetter(product) + total, 0)
+      return total.toFixed(1)
+    },
+
+    updateProductsTotal () {
+      this.productCalorific = this.calculateProductsTotal(this.mealProducts, p => Number(p.calorific))
+      this.productProteins = this.calculateProductsTotal(this.mealProducts, p => Number(p.proteins))
+      this.productFats = this.calculateProductsTotal(this.mealProducts, p => Number(p.fats))
+      this.productCarbs = this.calculateProductsTotal(this.mealProducts, p => Number(p.carbs))
+      this.productWeight = this.calculateProductsTotal(this.mealProducts, p => Number(p.weight))
+    },
+
+    mapProducts () {
+      return this.mealProducts.map(p => {
+        return {
+          productId: p.id,
+          weight: p.weight
+        }
+      })
+    },
+
     updateMeal () {
       if (this.mealTypeId > 0) {
         let newMeal = {
           id: this.$route.params.mealId,
           typeId: this.mealTypeId,
-          description: this.mealDescription
+          description: this.mealDescription,
+          products: this.mapProducts()
         }
         axios.put(this.mealsEndpointUrl + this.$route.params.mealId, newMeal)
           .then(() => {
@@ -93,6 +215,12 @@ export default {
           this.mealTitle = meal.type.name
           this.mealTypeId = meal.type.id
           this.mealDescription = meal.description
+          this.mealProducts = meal.products
+          this.productCalorific = meal.calorific
+          this.productProteins = meal.proteins
+          this.productFats = meal.fats
+          this.productCarbs = meal.carbs
+          this.productWeight = meal.weight
         })
         .catch(e => {
           this.getErrorMessage(e, 'Failed to load Meal...')

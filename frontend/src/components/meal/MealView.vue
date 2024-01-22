@@ -16,6 +16,26 @@
           </div>
         </div>
       </template>
+      <!--Products section-->
+      <template v-if="meal.products.length > 0" class="row">
+        <!--Header-->
+        <h5 style="padding-top:10px">Products</h5>
+        <div class="row headerRow bg-light">
+          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-1 border"><strong>Calorific</strong></div>
+          <div class="col-md-1 border"><strong>Proteins</strong></div>
+          <div class="col-md-1 border"><strong>Fats</strong></div>
+          <div class="col-md-1 border"><strong>Carbs</strong></div>
+          <div class="col-md-1 border"><strong>Weight</strong></div>
+        </div>
+        <!--Content-->
+        <div v-for="product in meal.products" :key="product.id">
+          <product-view v-bind:product="product"
+                        v-bind:select-mode="false"
+                        v-bind:manage-mode="false"/>
+        </div>
+        <div style="padding-bottom: 10px"/>
+      </template>
       <div class="row headerRow bg-light">
         <div class="col-md-2"/>
         <div class="col-md-2 border"><em>Calorific</em></div>
@@ -37,8 +57,11 @@
 </template>
 
 <script>
+import ProductView from 'src/components/directory/product/ProductView'
+
 export default {
   name: 'MealView',
+  components: {ProductView},
   props: {
     meal: {
       type: Object,

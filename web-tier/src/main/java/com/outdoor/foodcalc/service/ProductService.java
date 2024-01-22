@@ -71,7 +71,8 @@ public class ProductService {
                 .build();
     }
 
-    Product getDomainProduct(long id) {
+    //TODO revert back to package scope
+    public Product getDomainProduct(long id) {
         Optional<Product> domainProduct = productDomainService.getProduct(id);
         if(!domainProduct.isPresent()) {
             LOG.error("Product with id={} wasn't found", id);

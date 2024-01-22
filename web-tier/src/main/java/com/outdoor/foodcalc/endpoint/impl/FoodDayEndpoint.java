@@ -62,6 +62,11 @@ public class FoodDayEndpoint {
                 .date(day.getDate())
                 .description(day.getDescription())
                 .meals(mealEndpoint.getAllMeals(day.getDayId()))
+                .calorific(day.getCalorific())
+                .carbs(day.getCarbs())
+                .fats(day.getFats())
+                .proteins(day.getProteins())
+                .weight(day.getWeight())
                 .build();
     }
 

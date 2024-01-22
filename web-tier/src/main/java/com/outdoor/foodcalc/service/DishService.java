@@ -121,6 +121,7 @@ public class DishService {
                 .categoryId(dish.getCategory().getCategoryId())
                 .products(dish.getAllProducts().stream()
                         .map(pr -> {
+                            //TODO mapping without reloading the product
                             final ProductView product = productService.getProduct(pr.getProductId());
                             product.setWeight(pr.getWeight());
                             return product;
