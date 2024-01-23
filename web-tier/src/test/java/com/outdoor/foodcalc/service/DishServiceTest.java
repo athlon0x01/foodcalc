@@ -11,11 +11,11 @@ import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
 import com.outdoor.foodcalc.model.dish.*;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
@@ -23,15 +23,11 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 public class DishServiceTest {
 
     @InjectMocks
     private DishService dishService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Mock
     private DishDomainService dishDomainService;

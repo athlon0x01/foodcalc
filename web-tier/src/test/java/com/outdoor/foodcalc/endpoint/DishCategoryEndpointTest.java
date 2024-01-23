@@ -7,7 +7,8 @@ import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
 import com.outdoor.foodcalc.service.DishCategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -26,6 +27,7 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 public class DishCategoryEndpointTest extends ApiUnitTest {
 
@@ -47,7 +49,6 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
     }
 

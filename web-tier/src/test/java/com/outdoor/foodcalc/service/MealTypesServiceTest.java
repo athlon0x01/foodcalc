@@ -6,11 +6,11 @@ import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Olga Borovyk.
  */
+@ExtendWith(MockitoExtension.class)
 public class MealTypesServiceTest {
 
     private static final int TYPE_1_ID = 11111;
@@ -43,11 +44,6 @@ public class MealTypesServiceTest {
 
     @InjectMocks
     private MealTypesService mealTypesService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getMealTypesTest() {

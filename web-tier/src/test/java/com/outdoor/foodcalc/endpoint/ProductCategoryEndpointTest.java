@@ -8,7 +8,8 @@ import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Anton Borovyk.
  */
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 public class ProductCategoryEndpointTest extends ApiUnitTest {
 
@@ -53,7 +55,6 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
     }
 

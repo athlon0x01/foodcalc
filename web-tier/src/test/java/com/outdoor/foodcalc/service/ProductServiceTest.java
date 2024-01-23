@@ -8,11 +8,11 @@ import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
@@ -24,6 +24,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk.
  */
+@ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
 
     private static final double DELTA = 0.00001;
@@ -60,11 +61,6 @@ public class ProductServiceTest {
 
     @InjectMocks
     private ProductService productService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Mock
     private ProductDomainService productDomainService;

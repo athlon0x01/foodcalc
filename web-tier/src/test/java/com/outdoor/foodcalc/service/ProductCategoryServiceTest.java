@@ -6,11 +6,11 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
@@ -24,6 +24,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk.
  */
+@ExtendWith(MockitoExtension.class)
 public class ProductCategoryServiceTest {
 
     private static final long CATEGORY_1_ID = 12345;
@@ -44,11 +45,6 @@ public class ProductCategoryServiceTest {
 
     @Mock
     private ProductCategoryDomainService categoryDomainService;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getCategoriesTest() {
