@@ -7,7 +7,9 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -30,6 +32,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Olga Borovyk
  */
+@ExtendWith(MockitoExtension.class)
 public class ProductRefRepoTest {
 
     private static final Long DISH_ID = 67890L;
@@ -70,7 +73,6 @@ public class ProductRefRepoTest {
 
     @BeforeEach
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         repo = new ProductRefRepo(productRepo);
         ReflectionTestUtils.setField(repo, "jdbcTemplate", jdbcTemplate);
     }

@@ -3,9 +3,10 @@ package com.outdoor.foodcalc.domain.repository;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -29,6 +30,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Anton Borovyk.
  */
+@ExtendWith(MockitoExtension.class)
 public class AbstractRepositoryTest {
 
     private static final String SQL = "select * from w";
@@ -53,7 +55,6 @@ public class AbstractRepositoryTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ReflectionTestUtils.setField(repo, "jdbcTemplate", jdbcTemplate);
     }
 

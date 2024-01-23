@@ -1,9 +1,10 @@
 package com.outdoor.foodcalc.domain.repository.meal;
 
 import com.outdoor.foodcalc.domain.model.meal.MealType;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -25,6 +26,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Olga Borovyk.
  */
+@ExtendWith(MockitoExtension.class)
 public class MealTypeRepoTest {
 
     private static final Integer TYPE_ID = 12345;
@@ -38,11 +40,6 @@ public class MealTypeRepoTest {
 
     @InjectMocks
     private MealTypeRepo repo;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getMealTypesTest() {

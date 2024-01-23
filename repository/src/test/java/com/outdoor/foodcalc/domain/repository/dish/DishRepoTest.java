@@ -4,7 +4,9 @@ import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -27,6 +29,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Olga Borovyk
  */
+@ExtendWith(MockitoExtension.class)
 public class DishRepoTest {
 
     @Mock
@@ -49,7 +52,6 @@ public class DishRepoTest {
 
     @BeforeEach
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         sqlParamsMatcher = params -> params.getValues()
                 .equals(repo.getSqlParameterSource(dummyDish).getValues());
     }
