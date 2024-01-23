@@ -72,12 +72,19 @@ export default {
     foodDay: {
       type: Object,
       required: true
+    },
+    planTitle: {
+      type: String,
+      required: false
     }
   },
 
   methods: {
     editDay () {
-      this.$router.push({path: '/plan/' + this.$route.params.planId + '/day/' + this.foodDay.id})
+      this.$router.push({
+        path: '/plan/' + this.$route.params.planId + '/day/' + this.foodDay.id,
+        query: {planTitle: this.planTitle}
+      })
     },
 
     deleteDay () {

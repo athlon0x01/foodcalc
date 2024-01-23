@@ -71,6 +71,10 @@ export default {
       type: Boolean,
       required: false
     },
+    planTitle: {
+      type: String,
+      required: false
+    },
     dateTitle: {
       type: String,
       required: false
@@ -81,7 +85,10 @@ export default {
     editMeal () {
       this.$router.push({
         path: '/plan/' + this.$route.params.planId + '/day/' + this.$route.params.dayId + '/meal/' + this.meal.id,
-        query: {dateTitle: this.dateTitle}
+        query: {
+          planTitle: this.planTitle,
+          dateTitle: this.dateTitle
+        }
       })
     },
 

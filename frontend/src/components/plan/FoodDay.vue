@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h3 class="food-day-header">Food Plan Day {{dateTitle}}</h3>
+    <div class="container" style="text-align: left">
+      <b-button variant="link" v-on:click="goBack">{{this.$route.query.planTitle}}</b-button>
+    </div>
+    <h3 class="food-day-header">Day {{dateTitle}}</h3>
     <div class="container">
       <div class="row">
         <div class="col-md-2 border bg-light"><strong>Date</strong></div>
@@ -63,6 +66,7 @@
       <div v-for="meal in dayMeals" :key="meal.id">
         <meal-view v-bind:meal="meal"
                    v-bind:editable="true"
+                   v-bind:plan-title="planTitle"
                    v-bind:date-title=dateTitle
                    v-on:remove="removeMeal"/>
       </div>
@@ -113,6 +117,7 @@ export default {
       planDayEndpointUrl: '/api/plans/',
       mealTypesEndpointUrl: '/api/meal-types/',
       mealTypes: [],
+      planTitle: null,
       dateTitle: null,
       dayDate: null,
       dayDescription: null,
@@ -304,6 +309,7 @@ export default {
   },
 
   mounted () {
+    this.planTitle = this.$route.query.planTitle
     this.planDayEndpointUrl = '/api/plans/' + this.$route.params.planId + '/days/'
     // load food plan day full preview on page init
     this.getFoodDay()
@@ -323,6 +329,5 @@ export default {
 .food-day-header{
   text-align: center;
   color: #445588;
-  padding-top:10px;
 }
 </style>

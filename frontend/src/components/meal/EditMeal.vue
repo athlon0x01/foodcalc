@@ -1,6 +1,9 @@
 <template>
   <div>
-    <h4 class="meal-header">Day {{this.$route.query.dateTitle}} {{mealTitle}}</h4>
+    <div class="container" style="text-align: left">
+      <b-button variant="link" v-on:click="goBackToPlan">{{this.$route.query.planTitle}}</b-button>\<b-button variant="link" v-on:click="goBack">{{this.$route.query.dateTitle}}</b-button>
+    </div>
+    <h4 class="meal-header">{{mealTitle}}</h4>
     <div class="container">
       <div class="row">
         <div class="col-md-2 border bg-light"><strong>Date</strong></div>
@@ -204,8 +207,15 @@ export default {
       }
     },
 
+    goBackToPlan () {
+      this.$router.push({path: '/plan/' + this.$route.params.planId})
+    },
+
     goBack () {
-      this.$router.push({path: '/plan/' + this.$route.params.planId + '/day/' + this.$route.params.dayId})
+      this.$router.push({
+        path: '/plan/' + this.$route.params.planId + '/day/' + this.$route.params.dayId,
+        query: {planTitle: this.$route.query.planTitle}
+      })
     },
 
     getMeal () {
@@ -248,6 +258,5 @@ export default {
 .meal-header{
   text-align: center;
   color: #666600;
-  padding-top:10px;
 }
 </style>
