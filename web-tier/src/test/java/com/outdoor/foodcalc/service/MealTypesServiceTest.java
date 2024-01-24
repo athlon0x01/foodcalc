@@ -5,18 +5,18 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -25,6 +25,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Olga Borovyk.
  */
+@ExtendWith(MockitoExtension.class)
 public class MealTypesServiceTest {
 
     private static final int TYPE_1_ID = 11111;
@@ -43,11 +44,6 @@ public class MealTypesServiceTest {
 
     @InjectMocks
     private MealTypesService mealTypesService;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getMealTypesTest() {
@@ -77,11 +73,13 @@ public class MealTypesServiceTest {
         verify(domainService).getMealType(TYPE_1_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getMealTypeFailTest() {
         when(domainService.getMealType(TYPE_1_ID)).thenReturn(Optional.empty());
 
-        mealTypesService.getMealType(TYPE_1_ID);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            mealTypesService.getMealType(TYPE_1_ID);
+        });
     }
 
     @Test
@@ -106,18 +104,22 @@ public class MealTypesServiceTest {
         verify(domainService).updateMealType(TYPE_1);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateCategoryNotFoundTest() {
         doThrow(NotFoundException.class).when(domainService).updateMealType(TYPE_1);
 
-        mealTypesService.updateMealType(VIEW_1);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            mealTypesService.updateMealType(VIEW_1);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void updateCategoryFailTest() {
         doThrow(FoodcalcDomainException.class).when(domainService).updateMealType(TYPE_1);
 
-        mealTypesService.updateMealType(VIEW_1);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            mealTypesService.updateMealType(VIEW_1);
+        });
     }
 
     @Test
@@ -129,17 +131,21 @@ public class MealTypesServiceTest {
         verify(domainService).deleteMealType(TYPE_1_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteDishCategoryNotFoundTest() {
         doThrow(NotFoundException.class).when(domainService).deleteMealType(TYPE_1_ID);
 
-        mealTypesService.deleteMealType(TYPE_1_ID);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            mealTypesService.deleteMealType(TYPE_1_ID);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void deleteDishCategoryFailTest() {
         doThrow(FoodcalcDomainException.class).when(domainService).deleteMealType(TYPE_1_ID);
 
-        mealTypesService.deleteMealType(TYPE_1_ID);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            mealTypesService.deleteMealType(TYPE_1_ID);
+        });
     }
 }

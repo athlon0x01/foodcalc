@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.model;
 
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.BeforeAll;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -17,7 +17,7 @@ public abstract class BaseModelValidationTest {
 
     static Validator validator;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUpValidator() {
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();

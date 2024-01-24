@@ -9,16 +9,16 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -26,10 +26,8 @@ import static org.mockito.Mockito.*;
  *
  * @author Olga Borovyk
  */
+@ExtendWith(MockitoExtension.class)
 public class DishDomainServiceTest {
-
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private static final Long DISH_ID = 12345L;
 
@@ -147,22 +145,26 @@ public class DishDomainServiceTest {
         verify(productRefRepo).addDishProducts(addedDish);
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void addDishFailTest() {
         Dish dishToAdd = new Dish(-1,"borsch", dummyDishCategory);
         when(dishRepo.addDish(dishToAdd)).thenReturn(-1L);
 
-        service.addDish(dishToAdd);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            service.addDish(dishToAdd);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void addDishProductsFailTest() {
         Dish dishToAdd = new Dish(-1,"borsch", "dummyDescr",
                 dummyDishCategory, Collections.singletonList(dummyProductRef));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
-        when(productRefRepo.addDishProducts(dishToAdd)).thenReturn(false);
+        lenient().when(productRefRepo.addDishProducts(dishToAdd)).thenReturn(false);
 
-        service.addDish(dishToAdd);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            service.addDish(dishToAdd);
+        });
     }
 
     // dish with products : existsDish true, deleteDishProducts 1L, addDishProducts true, updateDish true
@@ -201,25 +203,29 @@ public class DishDomainServiceTest {
         verify(dishRepo).updateDish(dishToUpdate);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateNotExistDishTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(false);
 
-        service.updateDish(dishToUpdate);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            service.updateDish(dishToUpdate);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void updateDishAddProductsFailTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
         when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(1L);
         when(productRefRepo.addDishProducts(dishToUpdate)).thenReturn(false);
 
-        service.updateDish(dishToUpdate);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            service.updateDish(dishToUpdate);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void updateDishFailTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
@@ -227,7 +233,9 @@ public class DishDomainServiceTest {
         when(productRefRepo.addDishProducts(dishToUpdate)).thenReturn(true);
         when(dishRepo.updateDish(dishToUpdate)).thenReturn(false);
 
-        service.updateDish(dishToUpdate);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            service.updateDish(dishToUpdate);
+        });
     }
 
     @Test
@@ -256,19 +264,23 @@ public class DishDomainServiceTest {
         verify(dishRepo).deleteDish(DISH_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteNotExistDishTest() {
         when(dishRepo.existsDish(DISH_ID)).thenReturn(false);
 
-        service.deleteDish(DISH_ID);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            service.deleteDish(DISH_ID);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void deleteDishFailTest() {
         when(dishRepo.existsDish(DISH_ID)).thenReturn(true);
         when(productRefRepo.deleteDishProducts(DISH_ID)).thenReturn(1L);
         when(dishRepo.deleteDish(DISH_ID)).thenReturn(false);
 
-        service.deleteDish(DISH_ID);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            service.deleteDish(DISH_ID);
+        });
     }
 }

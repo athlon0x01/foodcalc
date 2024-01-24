@@ -2,12 +2,11 @@ package com.outdoor.foodcalc.domain.repository.product;
 
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -18,7 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -26,10 +25,8 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk
  */
+@ExtendWith(MockitoExtension.class)
 public class ProductRepoTest {
-
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     private static final Long CATEGORY_ID = 12345L;
 
@@ -49,7 +46,7 @@ public class ProductRepoTest {
     @InjectMocks
     private ProductRepo repo;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         sqlParamsMatcher = params -> params.getValues()
                 .equals(repo.getSqlParameterSource(dummyProduct).getValues());

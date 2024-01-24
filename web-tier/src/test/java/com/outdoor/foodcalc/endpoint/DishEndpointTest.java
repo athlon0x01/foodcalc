@@ -9,13 +9,13 @@ import com.outdoor.foodcalc.endpoint.impl.DishEndpoint;
 import com.outdoor.foodcalc.model.dish.*;
 import com.outdoor.foodcalc.model.product.ProductView;
 import com.outdoor.foodcalc.service.DishService;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  *
  * @author Olga Borovyk.
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(MockitoExtension.class)
 @SpringBootTest
 public class DishEndpointTest extends ApiUnitTest{
 
@@ -91,7 +91,7 @@ public class DishEndpointTest extends ApiUnitTest{
              .calorific(1.1f).proteins(1.1f).fats(1.1f).carbs(1.1f).weight(20f)
              .products(Collections.emptyList()).build();
 
-     @Before
+     @BeforeEach
      public void setUp() {
           setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
      }

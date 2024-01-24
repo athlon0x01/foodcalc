@@ -5,17 +5,18 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk
  */
+@ExtendWith(MockitoExtension.class)
 public class ProductDomainServiceTest {
 
     private static final Long PRODUCT_ID = 54321L;
@@ -39,11 +41,6 @@ public class ProductDomainServiceTest {
 
     @Mock
     private IProductRepo productRepo;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getAllProductsTest() {
@@ -91,19 +88,23 @@ public class ProductDomainServiceTest {
         verify(productRepo).updateProduct(dummyProduct);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateNotExistingProductTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(false);
 
-        productService.updateProduct(dummyProduct);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.updateProduct(dummyProduct);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void updateProductFailTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(true);
         when(productRepo.updateProduct(dummyProduct)).thenReturn(false);
 
-        productService.updateProduct(dummyProduct);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            productService.updateProduct(dummyProduct);
+        });
     }
 
     @Test
@@ -117,18 +118,22 @@ public class ProductDomainServiceTest {
         verify(productRepo).deleteProduct(PRODUCT_ID);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void deleteNotExistingProductTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(false);
 
-        productService.deleteProduct(PRODUCT_ID);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.deleteProduct(PRODUCT_ID);
+        });
     }
 
-    @Test(expected = FoodcalcDomainException.class)
+    @Test
     public void deleteProductFailTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(true);
         when(productRepo.deleteProduct(PRODUCT_ID)).thenReturn(false);
 
-        productService.deleteProduct(PRODUCT_ID);
+        Assertions.assertThrows(FoodcalcDomainException.class, () -> {
+            productService.deleteProduct(PRODUCT_ID);
+        });
     }
 }

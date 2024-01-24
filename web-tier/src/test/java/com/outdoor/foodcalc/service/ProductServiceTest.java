@@ -7,15 +7,16 @@ import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.*;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -23,6 +24,7 @@ import static org.mockito.Mockito.*;
  *
  * @author Anton Borovyk.
  */
+@ExtendWith(MockitoExtension.class)
 public class ProductServiceTest {
 
     private static final double DELTA = 0.00001;
@@ -59,11 +61,6 @@ public class ProductServiceTest {
 
     @InjectMocks
     private ProductService productService;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Mock
     private ProductDomainService productDomainService;
@@ -107,11 +104,13 @@ public class ProductServiceTest {
         verify(productDomainService).getProduct(domainProduct.getProductId());
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void getNotExistingProductTest() {
         when(productDomainService.getProduct(1)).thenReturn(Optional.empty());
 
-        productService.getProduct(1);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.getProduct(1);
+        });
     }
 
     @Test
@@ -138,13 +137,15 @@ public class ProductServiceTest {
         verify(productDomainService).addProduct(domainProduct);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void addProductWithoutCategoryTest() {
         ProductView productView = PRODUCT_VIEW_1;
 
         when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.empty());
 
-        productService.addProduct(productView);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.addProduct(productView);
+        });
     }
 
     @Test
@@ -164,13 +165,15 @@ public class ProductServiceTest {
         verify(productDomainService).updateProduct(domainProduct);
     }
 
-    @Test(expected = NotFoundException.class)
+    @Test
     public void updateProductWithoutCategoryTest() {
         ProductView productView = PRODUCT_VIEW_1;
 
         when(categoryDomainService.getCategory(productView.getCategoryId())).thenReturn(Optional.empty());
 
-        productService.updateProduct(productView);
+        Assertions.assertThrows(NotFoundException.class, () -> {
+            productService.updateProduct(productView);
+        });
     }
 
     @Test

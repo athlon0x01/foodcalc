@@ -1,12 +1,12 @@
 package com.outdoor.foodcalc.domain.model.product;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.util.ReflectionUtils;
 
 import java.lang.reflect.Method;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Product & ProductRef unit tests
@@ -19,7 +19,7 @@ public class ProductTest {
     private Product product;
     private ProductRef productRef;
 
-    @Before
+    @BeforeEach
     public void setup() {
         product = Product.builder().productId(111).name("Corn").description("The Corn")
                 .category(new ProductCategory(22, "Cereals"))

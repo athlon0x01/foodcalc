@@ -2,15 +2,11 @@ package com.outdoor.foodcalc.domain.repository.dish;
 
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.mockito.ArgumentMatcher;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.*;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,7 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
@@ -33,10 +29,8 @@ import static org.mockito.Mockito.*;
  *
  * @author Olga Borovyk
  */
+@ExtendWith(MockitoExtension.class)
 public class DishRepoTest {
-
-    @Rule
-    public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock
     private NamedParameterJdbcTemplate jdbcTemplate;
@@ -56,7 +50,7 @@ public class DishRepoTest {
 
     private static final Dish dummyDish = new Dish(DISH_ID, "dummy dish", dummyCategory);
 
-    @Before
+    @BeforeEach
     public void setUp() {
         sqlParamsMatcher = params -> params.getValues()
                 .equals(repo.getSqlParameterSource(dummyDish).getValues());

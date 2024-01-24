@@ -1,13 +1,13 @@
 package com.outdoor.foodcalc.domain.repository.product;
 
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -19,9 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.argThat;
 import static org.mockito.Mockito.doReturn;
@@ -35,6 +33,7 @@ import static org.mockito.Mockito.when;
  *
  * @author Anton Borovyk.
  */
+@ExtendWith(MockitoExtension.class)
 public class ProductCategoryRepoTest {
 
 
@@ -48,11 +47,6 @@ public class ProductCategoryRepoTest {
 
     @InjectMocks
     private ProductCategoryRepo repo;
-
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Test
     public void getCategoriesTest() {
