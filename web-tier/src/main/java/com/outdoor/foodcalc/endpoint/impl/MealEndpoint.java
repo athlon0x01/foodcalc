@@ -1,16 +1,20 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
+import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import com.outdoor.foodcalc.model.dish.DishProduct;
+import com.outdoor.foodcalc.model.dish.DishView;
+import com.outdoor.foodcalc.model.dish.SimpleDish;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
 import com.outdoor.foodcalc.model.meal.MealView;
 import com.outdoor.foodcalc.model.meal.SimpleMeal;
 import com.outdoor.foodcalc.model.product.ProductView;
+import com.outdoor.foodcalc.service.DishService;
 import com.outdoor.foodcalc.service.ProductService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +37,13 @@ public class MealEndpoint {
 
     private final MealTypeDomainService mealTypeService;
     private final ProductService productService;
+    private final DishService dishService;
     private final Map<Long, List<Meal>> meals = new HashMap<>();
 
-    public MealEndpoint(MealTypeDomainService mealTypeService, ProductService productService) {
+    public MealEndpoint(MealTypeDomainService mealTypeService, ProductService productService, DishService dishService) {
         this.mealTypeService = mealTypeService;
         this.productService = productService;
+        this.dishService = dishService;
     }
 
     @PostConstruct
@@ -75,6 +81,9 @@ public class MealEndpoint {
                 .products(meal.getProducts().stream()
                         .map(this::mapProductRef)
                         .collect(Collectors.toList()))
+                .dishes(meal.getDishes().stream()
+                        .map(this::mapDishRef)
+                        .collect(Collectors.toList()))
                 .calorific(meal.getCalorific())
                 .carbs(meal.getCarbs())
                 .fats(meal.getFats())
@@ -88,6 +97,21 @@ public class MealEndpoint {
         final ProductView view = productService.getProduct(product.getProductId());
         view.setWeight(product.getWeight());
         return view;
+    }
+
+    private DishView mapDishRef(DishRef dish) {
+        return DishView.builder()
+                .id(dish.getDishId())
+                .name(dish.getName())
+                .categoryId(dish.getCategoryId())
+                .products(dish.getAllProducts().stream()
+                        .map(this::mapProductRef)
+                        .collect(Collectors.toList()))
+                .calorific(dish.getCalorific())
+                .proteins(dish.getCalorific())
+                .carbs(dish.getCarbs())
+                .weight(dish.getWeight())
+                .build();
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
@@ -154,6 +178,26 @@ public class MealEndpoint {
         meal.setProducts(newMeal.getProducts().stream()
                 .map(this::buildProductRef)
                 .collect(Collectors.toList()));
+        meal.setDishes(newMeal.getDishes().stream()
+                .map(dishService::getDishRef)
+                .collect(Collectors.toList()));
+    }
+
+    @PutMapping(path = "{mealId}/dishes/{id}", consumes = APPLICATION_JSON_VALUE)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void updateMealDish(@PathVariable("dayId") long dayId,
+                               @PathVariable("mealId") long mealId,
+                               @PathVariable("id") long id,
+                               @RequestBody @Valid SimpleDish newDish) {
+        LOG.debug("Updating dish id = {} meal id = {}, day - {}", id, mealId, dayId);
+        Meal meal = getFirstMeal(dayId, mealId)
+                .orElseThrow(() -> new NotFoundException("Meal id = " + mealId + " for day id = " + dayId + " wasn't found"));
+        DishRef dishRef = dishService.mapDishRef(newDish);
+        for (int i=0; i<meal.getDishes().size(); i++) {
+            if (meal.getDishes().get(i).getDishId() == dishRef.getDishId()) {
+                meal.getDishes().set(i, dishRef);
+            }
+        }
     }
 
     private ProductRef buildProductRef(DishProduct product) {

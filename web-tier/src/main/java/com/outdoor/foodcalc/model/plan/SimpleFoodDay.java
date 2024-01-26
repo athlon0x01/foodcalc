@@ -18,4 +18,5 @@ public class SimpleFoodDay {
     @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate date;
     private List<DishProduct> products;
+    private List<Long> dishes;
 }

@@ -15,4 +15,5 @@ public class SimpleMeal {
     private String description;
     private long typeId;
     private List<DishProduct> products;
+    private List<Long> dishes;
 }

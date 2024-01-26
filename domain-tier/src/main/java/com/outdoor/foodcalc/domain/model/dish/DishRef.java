@@ -41,6 +41,10 @@ public class DishRef implements IValueObject<DishRef>, FoodDetails, ProductsCont
         return dish.getCategory().getName();
     }
 
+    public long getCategoryId() {
+        return dish.getCategory().getCategoryId();
+    }
+
     public List<ProductRef> getProducts() {
         return Collections.unmodifiableList(dish.getProducts());
     }
