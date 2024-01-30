@@ -21,6 +21,22 @@
         </div>
         <div style="padding-bottom: 5px"/>
       </template>
+      <!--Dishes section-->
+      <template v-if="foodDay.dishes.length > 0" class="row">
+        <!--Header-->
+        <h5 style="padding-top:10px">Dishes</h5>
+        <div class="row headerRow bg-light">
+          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-1 border"><strong>Calorific</strong></div>
+          <div class="col-md-1 border"><strong>Proteins</strong></div>
+          <div class="col-md-1 border"><strong>Fats</strong></div>
+          <div class="col-md-1 border"><strong>Carbs</strong></div>
+          <div class="col-md-1 border"><strong>Weight</strong></div>
+        </div>
+        <div v-for="dish in foodDay.dishes" :key="dish.id">
+          <dish-view v-bind:dish="dish"/>
+        </div>
+      </template>
       <!--Products section-->
       <template v-if="foodDay.products.length > 0" class="row">
         <!--Header-->
@@ -64,10 +80,11 @@
 <script>
 import MealView from 'src/components/meal/MealView'
 import ProductView from 'src/components/directory/product/ProductView'
+import DishView from 'src/components/directory/dish/DishView'
 
 export default {
   name: 'FoodDayView',
-  components: {MealView, ProductView},
+  components: {MealView, ProductView, DishView},
   props: {
     foodDay: {
       type: Object,

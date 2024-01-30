@@ -125,9 +125,9 @@ public class FoodDayEndpoint {
 
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateFoodPDay(@PathVariable("planId") long planId,
-                               @PathVariable("id") long id,
-                               @RequestBody @Valid SimpleFoodDay foodDay) {
+    public void updateFoodDay(@PathVariable("planId") long planId,
+                              @PathVariable("id") long id,
+                              @RequestBody @Valid SimpleFoodDay foodDay) {
         LOG.debug("Updating food plan id = {}, day - {}", planId, id);
         DayPlan day = getFirstDay(planId, id)
                 .orElseThrow(() -> new NotFoundException("Food day id = " + id + " for plan with id = " + planId + " wasn't found"));
@@ -143,19 +143,34 @@ public class FoodDayEndpoint {
 
     @PutMapping(path = "{dayId}/dishes/{id}", consumes = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateMealDish(@PathVariable("planId") long planId,
-                               @PathVariable("dayId") long dayId,
-                               @PathVariable("id") long id,
-                               @RequestBody @Valid SimpleDish newDish) {
+    public void updateDayDish(@PathVariable("planId") long planId,
+                              @PathVariable("dayId") long dayId,
+                              @PathVariable("id") long id,
+                              @RequestBody @Valid SimpleDish newDish) {
         LOG.debug("Updating dish id = {}, day - {}", id, dayId);
-        DayPlan day = getFirstDay(planId, id)
+        DayPlan day = getFirstDay(planId, dayId)
                 .orElseThrow(() -> new NotFoundException("Food day id = " + id + " for plan with id = " + planId + " wasn't found"));
         DishRef dishRef = dishService.mapDishRef(newDish);
-        for (int i=0; i<day.getDishes().size(); i++) {
+        for (int i = 0; i < day.getDishes().size(); i++) {
             if (day.getDishes().get(i).getDishId() == dishRef.getDishId()) {
                 day.getDishes().set(i, dishRef);
             }
         }
+    }
+
+    @PostMapping(path = "{dayId}/dishes/{id}", produces = APPLICATION_JSON_VALUE)
+    public DishView addDayDish(@PathVariable("planId") long planId,
+                               @PathVariable("dayId") long dayId,
+                               @PathVariable("id") long id) {
+        LOG.debug("Adding new dish to day - {}", dayId);
+        DayPlan day = getFirstDay(planId, dayId)
+                .orElseThrow(() -> new NotFoundException("Food day id = " + id + " for plan with id = " + planId + " wasn't found"));
+        DishRef dishRef = dishService.getDishRef(id);
+        //TODO new dish should be persisted and linked to the meal
+        List<DishRef> dishes = new ArrayList<>(day.getDishes());
+        dishes.add(dishRef);
+        day.setDishes(dishes);
+        return mapDishRef(dishRef);
     }
 
     private DishView mapDishRef(DishRef dish) {

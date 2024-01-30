@@ -24,6 +24,24 @@
           <b-button variant="outline-danger" size="sm" v-on:click="goBack">Cancel</b-button>
         </div>
       </div>
+      <!--Dishes section-->
+      <template v-if="dayDishes.length > 0" class="row">
+        <!--Header-->
+        <h5 style="padding-top:10px">Dishes</h5>
+        <div class="row headerRow bg-light">
+          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-1 border"><strong>Calorific</strong></div>
+          <div class="col-md-1 border"><strong>Proteins</strong></div>
+          <div class="col-md-1 border"><strong>Fats</strong></div>
+          <div class="col-md-1 border"><strong>Carbs</strong></div>
+          <div class="col-md-1 border"><strong>Weight</strong></div>
+        </div>
+        <div v-for="dish in dayDishes" :key="dish.id">
+          <dish-view v-bind:dish="dish"
+                     v-bind:manage-mode="true"
+                     v-on:remove="removeDish"/>
+        </div>
+      </template>
       <!--Products section-->
       <template v-if="dayProducts.length > 0" class="row">
         <!--Header-->
@@ -55,6 +73,11 @@
                         v-on:productRemoved="removeProduct"/>
         </div>
       </template>
+    </div>
+    <b-button variant="link" size="sm" v-on:click="addDishesModeChange">{{ dishesTitle }}</b-button>
+    <div v-if="addDishesMode !== undefined && addDishesMode" class="border border-dark">
+      <select-dish-view v-on:hideDishes="hideDishesToAdd"
+                        v-on:dishSelected="addDish"/>
     </div>
     <b-button variant="link" size="sm" v-on:click="addProductsModeChange">{{ productsTitle }}</b-button>
     <div v-if="addProductsMode !== undefined && addProductsMode" class="border border-dark">
@@ -108,10 +131,12 @@ import axios from 'axios'
 import MealView from 'src/components/meal/MealView'
 import SelectProductView from 'src/components/directory/product/SelectProductView'
 import ProductView from 'src/components/directory/product/ProductView'
+import DishView from 'src/components/directory/dish/DishView'
+import SelectDishView from 'src/components/dish/SelectDishView.vue'
 
 export default {
   name: 'FoodDay',
-  components: {SelectProductView, ProductView, MealView},
+  components: {SelectProductView, ProductView, MealView, DishView, SelectDishView},
   data () {
     return {
       planDayEndpointUrl: '/api/plans/',
@@ -122,6 +147,7 @@ export default {
       dayDate: null,
       dayDescription: null,
       dayMeals: [],
+      dayDishes: [],
       dayProducts: [],
       productCalorific: 0,
       productProteins: 0,
@@ -130,6 +156,8 @@ export default {
       productWeight: 0,
       addProductsMode: false,
       productsTitle: 'Show Products to add',
+      addDishesMode: false,
+      dishesTitle: 'Show Dishes to add',
       addMode: false,
       typeId: 0,
       errorMessage: null
@@ -145,6 +173,33 @@ export default {
         console.log(error)
         this.errorMessage = defaultMessage
       }
+    },
+
+    addDishesModeChange () {
+      this.addDishesMode = !this.addDishesMode
+      this.dishesTitle = this.addDishesMode ? 'Hide Dishes to be added' : 'Show Dishes to add'
+    },
+
+    hideDishesToAdd () {
+      this.addDishesMode = false
+      this.dishesTitle = 'Show Dishes to add'
+    },
+
+    addDish (dishId) {
+      axios.post(this.planDayEndpointUrl + this.$route.params.dayId + '/dishes/' + dishId)
+        .then(response => {
+          let newDish = response.data
+          this.dayDishes.push(newDish)
+          // this.updateProductsTotal()
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to add dish id - ' + dishId)
+        })
+    },
+
+    removeDish (dishId) {
+      this.dayDishes = this.dayDishes.filter(d => d.id !== dishId)
+      // this.updateProductsTotal()
     },
 
     addProductsModeChange () {
@@ -221,6 +276,10 @@ export default {
       })
     },
 
+    mapDishes () {
+      return this.dayDishes.map(d => d.id)
+    },
+
     updateDay () {
       if (this.dayDate != null) {
         let newDateObj = new Date(this.dayDate)
@@ -232,7 +291,8 @@ export default {
         let planDay = {
           date: newDateString,
           description: this.dayDescription,
-          products: this.mapProducts()
+          products: this.mapProducts(),
+          dishes: this.mapDishes()
         }
         axios.put(this.planDayEndpointUrl + this.$route.params.dayId, planDay)
           .then(() => {
@@ -295,6 +355,7 @@ export default {
           this.dayMeals = planDay.meals
           let dateParts = planDay.date.split('-')
           this.dayDate = dateParts[2] + '-' + dateParts[1] + '-' + dateParts[0]
+          this.dayDishes = planDay.dishes
           this.dayProducts = planDay.products
           this.productCalorific = planDay.calorific
           this.productProteins = planDay.proteins
