@@ -57,7 +57,7 @@ public class MealEndpoint {
 
     private Meal buildRandomMeal(long id, List<MealType> types, Random random) {
         var type = types.get(random.nextInt(types.size()));
-        Meal meal = new Meal(id, type, Collections.emptyList(), Collections.emptyList());
+        Meal meal = new Meal(id, type, new ArrayList<>(), new ArrayList<>());
         meal.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore " + type.getName());
         return meal;
     }
@@ -198,6 +198,21 @@ public class MealEndpoint {
                 meal.getDishes().set(i, dishRef);
             }
         }
+    }
+
+    @PostMapping(path = "{mealId}/dishes/{id}", produces = APPLICATION_JSON_VALUE)
+    public DishView addMealDish(@PathVariable("dayId") long dayId,
+                                @PathVariable("mealId") long mealId,
+                                @PathVariable("id") long id) {
+        LOG.debug("Adding new dish to meal - {}, day - {}", mealId, dayId);
+        Meal meal = getFirstMeal(dayId, mealId)
+                .orElseThrow(() -> new NotFoundException("Meal id = " + mealId + " for day id = " + dayId + " wasn't found"));
+        DishRef dishRef = dishService.getDishRef(id);
+        //TODO new dish should be persisted and linked to the meal
+        List<DishRef> dishes = new ArrayList<>(meal.getDishes());
+        dishes.add(dishRef);
+        meal.setDishes(dishes);
+        return mapDishRef(dishRef);
     }
 
     private ProductRef buildProductRef(DishProduct product) {

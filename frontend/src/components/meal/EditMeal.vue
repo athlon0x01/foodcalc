@@ -30,6 +30,24 @@
           <b-button variant="outline-danger" size="sm" v-on:click="goBack">Cancel</b-button>
         </div>
       </div>
+      <!--Dishes section-->
+      <template v-if="mealDishes.length > 0" class="row">
+        <!--Header-->
+        <h5 style="padding-top:10px">Dishes</h5>
+        <div class="row headerRow bg-light">
+          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-1 border"><strong>Calorific</strong></div>
+          <div class="col-md-1 border"><strong>Proteins</strong></div>
+          <div class="col-md-1 border"><strong>Fats</strong></div>
+          <div class="col-md-1 border"><strong>Carbs</strong></div>
+          <div class="col-md-1 border"><strong>Weight</strong></div>
+        </div>
+        <div v-for="dish in mealDishes" :key="dish.id">
+          <dish-view v-bind:dish="dish"
+                     v-bind:manage-mode="true"
+                     v-on:remove="removeDish"/>
+        </div>
+      </template>
       <!--Products section-->
       <template v-if="mealProducts.length > 0" class="row">
         <!--Header-->
@@ -62,6 +80,11 @@
         </div>
       </template>
     </div>
+    <b-button variant="link" size="sm" v-on:click="addDishesModeChange">{{ dishesTitle }}</b-button>
+    <div v-if="addDishesMode !== undefined && addDishesMode" class="border border-dark">
+      <select-dish-view v-on:hideDishes="hideDishesToAdd"
+                        v-on:dishSelected="addDish"/>
+    </div>
     <b-button variant="link" size="sm" v-on:click="addProductsModeChange">{{ productsTitle }}</b-button>
     <div v-if="addProductsMode !== undefined && addProductsMode" class="border border-dark">
       <select-product-view v-on:hideProducts="hideProductsToAdd"
@@ -78,21 +101,26 @@
 import axios from 'axios'
 import SelectProductView from 'src/components/directory/product/SelectProductView'
 import ProductView from 'src/components/directory/product/ProductView'
+import DishView from 'src/components/directory/dish/DishView'
+import SelectDishView from 'src/components/dish/SelectDishView.vue'
 
 export default {
   name: 'EditMeal',
-  components: {SelectProductView, ProductView},
+  components: {SelectDishView, SelectProductView, ProductView, DishView},
   data () {
     return {
       mealsEndpointUrl: '/api/plans/',
       mealTypesEndpointUrl: '/api/meal-types/',
       addProductsMode: false,
       productsTitle: 'Show Products to add',
+      addDishesMode: false,
+      dishesTitle: 'Show Dishes to add',
       mealTypes: [],
       mealTitle: null,
       mealTypeId: null,
       mealDescription: null,
       mealProducts: [],
+      mealDishes: [],
       productCalorific: 0,
       productProteins: 0,
       productFats: 0,
@@ -113,6 +141,33 @@ export default {
       }
     },
 
+    addDishesModeChange () {
+      this.addDishesMode = !this.addDishesMode
+      this.dishesTitle = this.addDishesMode ? 'Hide Dishes to be added' : 'Show Dishes to add'
+    },
+
+    hideDishesToAdd () {
+      this.addDishesMode = false
+      this.dishesTitle = 'Show Dishes to add'
+    },
+
+    addDish (dishId) {
+      axios.post(this.mealsEndpointUrl + this.$route.params.mealId + '/dishes/' + dishId)
+        .then(response => {
+          let newDish = response.data
+          this.mealDishes.push(newDish)
+          // this.updateProductsTotal()
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to add dish id - ' + dishId)
+        })
+    },
+
+    removeDish (dishId) {
+      this.mealDishes = this.mealDishes.filter(d => d.id !== dishId)
+      // this.updateProductsTotal()
+    },
+
     addProductsModeChange () {
       this.addProductsMode = !this.addProductsMode
       this.productsTitle = this.addProductsMode ? 'Hide Products to be added' : 'Show Products to add'
@@ -128,7 +183,7 @@ export default {
         this.mealProducts.push(product)
         this.updateProductsTotal()
       } else {
-        console.log('Meal already contains ' + JSON.stringify(product))
+        console.log('Meal already contains product ' + JSON.stringify(product))
       }
     },
 
@@ -187,13 +242,18 @@ export default {
       })
     },
 
+    mapDishes () {
+      return this.mealDishes.map(d => d.id)
+    },
+
     updateMeal () {
       if (this.mealTypeId > 0) {
         let newMeal = {
           id: this.$route.params.mealId,
           typeId: this.mealTypeId,
           description: this.mealDescription,
-          products: this.mapProducts()
+          products: this.mapProducts(),
+          dishes: this.mapDishes()
         }
         axios.put(this.mealsEndpointUrl + this.$route.params.mealId, newMeal)
           .then(() => {
@@ -225,6 +285,7 @@ export default {
           this.mealTitle = meal.type.name
           this.mealTypeId = meal.type.id
           this.mealDescription = meal.description
+          this.mealDishes = meal.dishes
           this.mealProducts = meal.products
           this.productCalorific = meal.calorific
           this.productProteins = meal.proteins
