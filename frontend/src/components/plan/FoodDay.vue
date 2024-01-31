@@ -38,7 +38,9 @@
         </div>
         <div v-for="dish in dayDishes" :key="dish.id">
           <dish-view v-bind:dish="dish"
+                     v-bind:go-back-path="goBackPath"
                      v-bind:manage-mode="true"
+                     v-bind:update-dish-endpoint="updateDishEndpoint"
                      v-on:remove="removeDish"/>
         </div>
       </template>
@@ -141,6 +143,8 @@ export default {
     return {
       planDayEndpointUrl: '/api/plans/',
       mealTypesEndpointUrl: '/api/meal-types/',
+      updateDishEndpoint: '',
+      goBackPath: null,
       mealTypes: [],
       planTitle: null,
       dateTitle: null,
@@ -382,6 +386,13 @@ export default {
       .catch(e => {
         this.getErrorMessage(e, 'Failed to load Meal types...')
       })
+    this.updateDishEndpoint = '/api/plans/' + this.$route.params.planId + '/days/' + this.$route.params.dayId + '/dishes/'
+    this.goBackPath = {
+      path: '/plan/' + this.$route.params.planId + '/day/' + this.$route.params.dayId,
+      query: {
+        planTitle: this.$route.query.planTitle
+      }
+    }
   }
 }
 </script>

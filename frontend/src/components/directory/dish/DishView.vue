@@ -35,12 +35,20 @@ export default {
       type: Object,
       required: true
     },
+    goBackPath: {
+      type: Object,
+      required: false
+    },
     selectMode: {
       type: Boolean,
       required: false
     },
     manageMode: {
       type: Boolean,
+      required: false
+    },
+    updateDishEndpoint: {
+      type: String,
       required: false
     }
   },
@@ -51,7 +59,14 @@ export default {
     },
 
     editDish () {
-      this.$router.push({name: 'EditDishPage', params: {oldDish: this.dish}})
+      this.$router.push({
+        name: 'EditDishPage',
+        params: {
+          goBackPath: this.goBackPath,
+          oldDish: this.dish,
+          updateDishEndpoint: this.updateDishEndpoint
+        }
+      })
     },
 
     removeDish () {

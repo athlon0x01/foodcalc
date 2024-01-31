@@ -6,8 +6,10 @@
     <template v-if="category.dishes.length > 0">
       <div v-for="dish in category.dishes" :key="category.id + '-' + dish.id">
         <dish-view v-bind:dish="dish"
+                   v-bind:go-back-path="goBackPath"
                    v-bind:select-mode="selectMode"
                    v-bind:manage-mode="manageMode"
+                   v-bind:update-dish-endpoint="updateDishEndpoint"
                    v-on:remove="removeDish"
                    v-on:dishSelected="selectDish"/>
       </div>
@@ -26,12 +28,20 @@ export default {
       type: Object,
       required: true
     },
+    goBackPath: {
+      type: Object,
+      required: false
+    },
     selectMode: {
       type: Boolean,
       required: false
     },
     manageMode: {
       type: Boolean,
+      required: false
+    },
+    updateDishEndpoint: {
+      type: String,
       required: false
     }
   },

@@ -153,7 +153,9 @@ public class FoodDayEndpoint {
         DishRef dishRef = dishService.mapDishRef(newDish);
         for (int i = 0; i < day.getDishes().size(); i++) {
             if (day.getDishes().get(i).getDishId() == dishRef.getDishId()) {
-                day.getDishes().set(i, dishRef);
+                List<DishRef> dishes = new ArrayList<>(day.getDishes());
+                dishes.set(i, dishRef);
+                day.setDishes(dishes);
             }
         }
     }

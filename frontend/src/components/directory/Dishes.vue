@@ -17,6 +17,8 @@
       <div v-for="category in categoriesWithDishes" :key="category.id">
         <category-with-dishes v-bind:category="category"
                               v-bind:manage-mode="true"
+                              v-bind:go-back-path="goBackPath"
+                              v-bind:update-dish-endpoint="dishesEndpointUrl"
                               v-on:remove="removeDish"/>
       </div>
     </div>
@@ -41,6 +43,7 @@ export default {
   data () {
     return {
       dishesEndpointUrl: '/api/dishes/',
+      goBackPath: {name: 'DishesPage'},
       categoriesWithDishes: [],
       errorMessage: null
     }

@@ -195,7 +195,9 @@ public class MealEndpoint {
         DishRef dishRef = dishService.mapDishRef(newDish);
         for (int i=0; i<meal.getDishes().size(); i++) {
             if (meal.getDishes().get(i).getDishId() == dishRef.getDishId()) {
-                meal.getDishes().set(i, dishRef);
+                List<DishRef> dishes = new ArrayList<>(meal.getDishes());
+                dishes.set(i, dishRef);
+                meal.setDishes(dishes);
             }
         }
     }
