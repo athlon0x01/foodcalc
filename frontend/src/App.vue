@@ -38,4 +38,8 @@ export default {
   text-align: center;
   padding-top:30px;
 }
+.food-plan-header{
+  text-align: center;
+  color: #009926;
+}
 </style>

@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <h2 class="directory-header">Dishes list</h2>
-
+  <div style="padding:10px">
+    <p style="text-align: center"><em>Select Dishes to de added</em></p>
     <!--Dishes list-->
     <div v-if="hasDishes()" class="container border">
       <!--Header-->
@@ -16,19 +15,20 @@
       <!--Content-->
       <div v-for="category in categoriesWithDishes" :key="category.id">
         <category-with-dishes v-bind:category="category"
-                              v-bind:manage-mode="true"
-                              v-bind:go-back-path="goBackPath"
-                              v-bind:update-dish-endpoint="dishesEndpointUrl"
-                              v-on:remove="removeDish"/>
+                              v-bind:select-mode="true"
+                              v-on:select="selectDish"/>
       </div>
     </div>
     <div v-if="!hasDishes() && errorMessage === null">
       <p><em>No Dishes yet...</em></p>
+      <router-link :to="{ name : 'EditDishPage' }">Add new</router-link>
     </div>
-    <router-link :to="{ name : 'EditDishPage' }">Add new</router-link>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
       <p>{{errorMessage}}</p>
+    </div>
+    <div style="padding-top:10px">
+      <b-button variant="outline-info" size="sm" v-on:click="closeMe" >Hide Dishes to be added</b-button>
     </div>
   </div>
 </template>
@@ -38,31 +38,23 @@ import axios from 'axios'
 import CategoryWithDishes from 'src/components/directory/dish/CategoryWithDishes'
 
 export default {
-  name: 'Dishes',
+  name: 'SelectDishView',
   components: {CategoryWithDishes},
   data () {
     return {
       dishesEndpointUrl: '/api/dishes/',
-      goBackPath: {name: 'DishesPage'},
       categoriesWithDishes: [],
       errorMessage: null
     }
   },
 
   methods: {
-    getErrorMessage (error, defaultMessage) {
-      if (error.response !== undefined && error.response.data !== undefined &&
-        (typeof error.response.data === 'string' || error.response.data instanceof String)) {
-        this.errorMessage = error.response.data
-      } else {
-        console.log(error)
-        this.errorMessage = defaultMessage
-      }
+    closeMe () {
+      this.$emit('hideDishes')
     },
 
-    clearErrors () {
-      this.errorMessage = null
-      this.errors.clear()
+    selectDish (dishId) {
+      this.$emit('dishSelected', dishId)
     },
 
     hasDishes () {
@@ -80,18 +72,7 @@ export default {
           this.categoriesWithDishes = response.data
         })
         .catch(e => {
-          this.getErrorMessage(e, 'Failed to load Products...')
-        })
-    },
-
-    removeDish (dishId) {
-      axios.delete(this.dishesEndpointUrl + dishId)
-        .then(() => {
-          this.clearErrors()
-          this.getAllDishes()
-        })
-        .catch(e => {
-          this.getErrorMessage(e, 'Failed to delete dish with id = ' + dishId)
+          this.getErrorMessage(e, 'Failed to load Dishes...')
         })
     }
   },

@@ -64,6 +64,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
      */
     @Override
     public float getCalorific() {
+        //TODO proper calculation
         return product.getCalorific() * weight / 1000.f;
     }
 

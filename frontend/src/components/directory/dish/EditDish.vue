@@ -57,7 +57,7 @@
       </div>
       <div style="margin-top: 15px">
         <b-button variant="outline-success" size="sm" v-on:click="addNewDish">{{ addButtonTitle }}</b-button>
-        <router-link :to="{ name : 'DishesPage' }"><b-button variant="outline-danger" size="sm" >Cancel</b-button></router-link>
+        <b-button variant="outline-danger" size="sm" v-on:click="goBack" >Cancel</b-button>
       </div>
     </div>
   </div>
@@ -74,6 +74,14 @@ export default {
   props: {
     oldDish: {
       type: Object,
+      required: false
+    },
+    goBackPath: {
+      type: Object,
+      required: false
+    },
+    updateDishEndpoint: {
+      type: String,
       required: false
     }
   },
@@ -104,6 +112,14 @@ export default {
   methods: {
     editMode () {
       return this.oldDish !== undefined
+    },
+
+    getGoBackPath () {
+      if (this.goBackPath !== undefined) {
+        return this.goBackPath
+      } else {
+        return {name: 'DishesPage'}
+      }
     },
 
     addProductsModeChange () {
@@ -179,7 +195,7 @@ export default {
           this.dishCategories = response.data
         })
         .catch(e => {
-          this.getErrorMessage(e, 'Failed to load Products...')
+          this.getErrorMessage(e, 'Failed to load Dish categories...')
         })
     },
 
@@ -225,14 +241,18 @@ export default {
     },
 
     updateDish (dish) {
-      axios.put(this.dishesEndpointUrl + dish.id, dish)
+      axios.put(this.$props.updateDishEndpoint + dish.id, dish)
         .then(() => {
-          // on success go to Dishes Page
-          this.$router.push({name: 'DishesPage'})
+          // on success go back to Dishes \ Meals \ Day page
+          this.$router.push(this.getGoBackPath())
         })
         .catch(e => {
           this.getErrorMessage(e, 'Failed to update dish ' + JSON.stringify(dish))
         })
+    },
+
+    goBack () {
+      this.$router.push(this.getGoBackPath())
     },
 
     calculateProductsTotal (products, propertyGetter) {

@@ -1,7 +1,8 @@
 package com.outdoor.foodcalc.model.product;
 
-import lombok.Builder;
-import lombok.Data;
+import com.outdoor.foodcalc.model.FoodView;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.Min;
@@ -13,17 +14,13 @@ import javax.validation.constraints.NotEmpty;
  * @author Anton Borovyk
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Jacksonized
-@Builder
-public class ProductView {
-    private long id;
+@SuperBuilder
+public class ProductView extends FoodView {
     @NotEmpty
     private String name;
     @Min(1)
     private long categoryId;
-    private float calorific;
-    private float proteins;
-    private float fats;
-    private float carbs;
-    private float weight;
 }

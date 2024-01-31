@@ -16,12 +16,14 @@ import static java.util.stream.Collectors.toList;
  *
  * @author Anton Borovyk
  */
+//TODO add createdOn, lastUpdated dates
 public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPlan> {
 
     private final long id;
     private String name;
     private String description;
     private int members;
+    //TODO it should be count of days
     private int duration;
     private List<DayPlanRef> days;
 
