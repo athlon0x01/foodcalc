@@ -35,7 +35,7 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
         return weight / 10.f;
     }
 
-    private int getInternalWeight() {
+    public int getInternalWeight() {
         return weight;
     }
 
