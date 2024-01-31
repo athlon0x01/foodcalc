@@ -46,14 +46,16 @@ public class MealEndpoint {
         this.dishService = dishService;
     }
 
-    @PostConstruct
-    public void init() {
-        var mealTypes = mealTypeService.getMealTypes();
-        Random random = new Random();
-        meals.put(11L, new ArrayList<>(List.of(buildRandomMeal(111L, mealTypes, random), buildRandomMeal(112L, mealTypes, random))));
-        meals.put(12L, new ArrayList<>(List.of(buildRandomMeal(121L, mealTypes, random), buildRandomMeal(122L, mealTypes, random))));
-        meals.put(21L, new ArrayList<>(List.of(buildRandomMeal(211L, mealTypes, random), buildRandomMeal(212L, mealTypes, random))));
-    }
+// TODO Use for UI test data generation, but do not commit, because it breaks tests
+
+//    @PostConstruct
+//    public void init() {
+//        var mealTypes = mealTypeService.getMealTypes();
+//        Random random = new Random();
+//        meals.put(11L, new ArrayList<>(List.of(buildRandomMeal(111L, mealTypes, random), buildRandomMeal(112L, mealTypes, random))));
+//        meals.put(12L, new ArrayList<>(List.of(buildRandomMeal(121L, mealTypes, random), buildRandomMeal(122L, mealTypes, random))));
+//        meals.put(21L, new ArrayList<>(List.of(buildRandomMeal(211L, mealTypes, random), buildRandomMeal(212L, mealTypes, random))));
+//    }
 
     private Meal buildRandomMeal(long id, List<MealType> types, Random random) {
         var type = types.get(random.nextInt(types.size()));
