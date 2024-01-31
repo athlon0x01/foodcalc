@@ -71,7 +71,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
                     .addValue("dish", dish.getDishId())
                     .addValue("product", dish.getProducts().get(i).getProductId())
                     .addValue("ndx", i)
-                    .addValue("weight", dish.getProducts().get(i).getWeight());
+                    .addValue("weight", dish.getProducts().get(i).getInternalWeight());
         }
         return mappedArray;
     }
