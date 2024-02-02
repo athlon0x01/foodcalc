@@ -58,10 +58,10 @@ public class DishServiceTest {
             .category(new ProductCategory(77777, "test product cat1")).build();
     private static final Product product2 = Product.builder().productId(121212).name("second prod").description("")
             .category(new ProductCategory(77777, "test product cat1")).calorific(1.1f)
-            .proteins(3).fats(4.5f).carbs(7).defaultWeight(110).build();
+            .proteins(3).fats(4.5f).carbs(7).defaultWeight(100).build();
     private static final Product product3 = Product.builder().productId(131313).name("third prod").description("")
             .category(new ProductCategory(88888, "test product cat2")).calorific(13)
-            .proteins(11.5f).fats(7).carbs(32.2f).defaultWeight(55).build();
+            .proteins(11.5f).fats(7).carbs(32.2f).defaultWeight(100).build();
 
     private static final ProductRef productRef1 = new ProductRef(product1, 200);
     private static final ProductRef productRef2 = new ProductRef(product2, 300);
@@ -97,7 +97,7 @@ public class DishServiceTest {
 
     private static final DishView dishView1 = DishView.builder().id(domainDish1.getDishId())
             .name(domainDish1.getName()).categoryId(domainDish1.getCategory().getCategoryId())
-            .calorific(6.83f).proteins(6.83f).fats(0.0f).carbs(18.2f).weight(100.0f)
+            .calorific(6.83f).proteins(6.83f).fats(4.85f).carbs(18.2f).weight(100.0f)
             .products(Arrays.asList(productView1, productView2, productView3)).build();
     private static final DishView dishView2 = DishView.builder().id(domainDish2.getDishId())
             .name(domainDish2.getName()).categoryId(domainDish2.getCategory().getCategoryId())
@@ -105,7 +105,7 @@ public class DishServiceTest {
             .products(new ArrayList<>()).build();
     private static final DishView dishView3 = DishView.builder().id(domainDish3.getDishId())
         .name(domainDish3.getName()).categoryId(domainDish3.getCategory().getCategoryId())
-            .calorific(6.83f).proteins(6.83f).fats(0.0f).carbs(18.2f).weight(100.0f)
+            .calorific(6.83f).proteins(6.83f).fats(4.85f).carbs(18.2f).weight(100.0f)
             .products(Arrays.asList(productView1, productView2, productView3)).build();
 
     private static final DishProduct dishProduct1 = DishProduct.builder()
