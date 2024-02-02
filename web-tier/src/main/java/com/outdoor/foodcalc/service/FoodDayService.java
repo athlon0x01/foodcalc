@@ -65,9 +65,9 @@ public class FoodDayService {
         var products = foodDay.getProducts().stream()
                 .map(productService::getProductRef)
                 .collect(Collectors.toList());
-        //TODO update dish order
-        DayPlan day = new DayPlan(id, foodDay.getDate(), oldDay.getMeals(), oldDay.getDishes(), products);
-        repository.updateDayInPlan(plan, day, oldDay.getDescription());
+        var updatedDishes = repository.rebuildDishes(oldDay.getDishes(), foodDay.getDishes());
+        DayPlan day = new DayPlan(id, foodDay.getDate(), oldDay.getMeals(), updatedDishes, products);
+        repository.updateDayInPlan(plan, day, foodDay.getDescription());
     }
 
     public DishView addDayDish(long planId, long dayId, long id) {
@@ -78,7 +78,7 @@ public class FoodDayService {
         //TODO new dish should be persisted and linked to the day
         List<DishRef> dishes = new ArrayList<>(oldDay.getDishes());
         dishes.add(dishRef);
-        DayPlan day = new DayPlan(id, oldDay.getDate(), oldDay.getMeals(), dishes, oldDay.getProducts());
+        DayPlan day = new DayPlan(dayId, oldDay.getDate(), oldDay.getMeals(), dishes, oldDay.getProducts());
         repository.updateDayInPlan(plan, day, oldDay.getDescription());
         return dishService.mapDishView(dishRef);
     }
@@ -94,7 +94,7 @@ public class FoodDayService {
                 dishes.set(i, dishRef);
             }
         }
-        DayPlan day = new DayPlan(id, oldDay.getDate(), oldDay.getMeals(), dishes, oldDay.getProducts());
+        DayPlan day = new DayPlan(dayId, oldDay.getDate(), oldDay.getMeals(), dishes, oldDay.getProducts());
         repository.updateDayInPlan(plan, day, oldDay.getDescription());
     }
 

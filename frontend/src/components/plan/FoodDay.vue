@@ -287,12 +287,17 @@ export default {
     updateDay () {
       if (this.dayDate != null) {
         let newDateObj = new Date(this.dayDate)
+        let day = Number(newDateObj.getDate())
+        if (newDateObj.getDate() < 9) {
+          day = '0' + day
+        }
         let month = Number(newDateObj.getMonth() + 1)
         if (newDateObj.getMonth() < 9) {
           month = '0' + month
         }
-        let newDateString = newDateObj.getDate() + '-' + month + '-' + newDateObj.getFullYear()
+        let newDateString = day + '-' + month + '-' + newDateObj.getFullYear()
         let planDay = {
+          id: this.$route.params.dayId,
           date: newDateString,
           description: this.dayDescription,
           products: this.mapProducts(),

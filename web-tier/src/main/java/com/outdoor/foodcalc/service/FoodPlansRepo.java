@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
+import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealRef;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
@@ -20,9 +21,9 @@ public class FoodPlansRepo {
 
     private final MealTypeDomainService mealTypeService;
     private final Map<Long, FoodPlan> foodPlans = new HashMap<>();
-    private long maxPlanId = 2L;
-    private long maxDayId = 103L;
-    private long maxMealId = 10106L;
+    private long maxPlanId = 3L;
+    private long maxDayId = 104L;
+    private long maxMealId = 10107L;
     private long maxDishId = 1010101L;
 
     public FoodPlansRepo(MealTypeDomainService mealTypeService) {
@@ -87,7 +88,7 @@ public class FoodPlansRepo {
     }
 
     public void addFoodPlan(FoodPlan foodPlan) {
-        foodPlans.put(maxPlanId++, foodPlan);
+        foodPlans.put(foodPlan.getId(), foodPlan);
     }
 
     public DayPlanRef getDay(long planId, long id) {
@@ -127,5 +128,18 @@ public class FoodPlansRepo {
         }
         DayPlan newDay = new DayPlan(day.getDayId(), day.getDate(), meals, day.getDishes(), day.getProducts());
         updateDayInPlan(plan, newDay, day.getDescription());
+    }
+
+    public Optional<DishRef> getDishById(List<DishRef> dishes, long id) {
+        return dishes.stream()
+                .filter(dish -> dish.getDishId() == id)
+                .findFirst();
+    }
+
+    public List<DishRef> rebuildDishes(List<DishRef> dishes, List<Long> ids) {
+        List<DishRef> newDishes = new ArrayList<>();
+        ids.forEach(id -> getDishById(dishes, id)
+                .ifPresent(newDishes::add));
+        return newDishes;
     }
 }

@@ -50,7 +50,7 @@ public class MealService {
         var meals = day.getMeals().stream()
                 .filter(meal -> id != meal.getMealId())
                 .collect(Collectors.toList());
-        DayPlan newDay = new DayPlan(id, day.getDate(), meals, day.getDishes(), day.getProducts());
+        DayPlan newDay = new DayPlan(dayId, day.getDate(), meals, day.getDishes(), day.getProducts());
         repository.updateDayInPlan(plan, newDay, day.getDescription());
     }
 
@@ -58,7 +58,7 @@ public class MealService {
         var plan = repository.getFoodPlan(planId);
         var day = repository.getDay(planId, dayId);
         Meal newMeal = new Meal(repository.getMaxMealIdAndIncrement(), getMealType(meal.getTypeId()), Collections.emptyList(), Collections.emptyList());
-        var meals = day.getMeals();
+        var meals = new ArrayList<>(day.getMeals());
         meals.add(new MealRef(newMeal));
         DayPlan newDay = new DayPlan(dayId, day.getDate(), meals, day.getDishes(), day.getProducts());
         repository.updateDayInPlan(plan, newDay, day.getDescription());
@@ -72,9 +72,9 @@ public class MealService {
         var products = newMeal.getProducts().stream()
                 .map(productService::getProductRef)
                 .collect(Collectors.toList());
-        //TODO update dish order
-        Meal domainMeal = new Meal(id, getMealType(newMeal.getTypeId()), meal.getDishes(), products);
-        repository.updateMealInDay(plan, day, domainMeal, meal.getDescription());
+        var updatedDishes = repository.rebuildDishes(meal.getDishes(), newMeal.getDishes());
+        Meal domainMeal = new Meal(id, getMealType(newMeal.getTypeId()), updatedDishes, products);
+        repository.updateMealInDay(plan, day, domainMeal, newMeal.getDescription());
     }
 
     public void updateMealDish(long planId, long dayId, long mealId, SimpleDish newDish) {
