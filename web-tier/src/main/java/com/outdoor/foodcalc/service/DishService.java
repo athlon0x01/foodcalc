@@ -130,6 +130,7 @@ public class DishService {
                         .collect(Collectors.toList()))
                 .calorific(dish.getCalorific())
                 .proteins(dish.getCalorific())
+                .fats(dish.getFats())
                 .carbs(dish.getCarbs())
                 .weight(dish.getWeight())
                 .build();
