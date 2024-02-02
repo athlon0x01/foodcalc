@@ -152,6 +152,14 @@ public class DishService {
         return new DishRef(domainDish);
     }
 
+    public DishRef getDishRefCopy(long id, long newId) {
+        Dish domainDish = dishDomainService.getDish(id)
+                .orElseThrow(() ->
+                        new NotFoundException("Dish wasn't found"));
+        Dish newDish = new Dish(newId, domainDish.getName(), domainDish.getDescription(), domainDish.getCategory(), domainDish.getProducts());
+        return new DishRef(newDish);
+    }
+
     public DishRef mapDishRef(SimpleDish simpleDish) {
         final DishCategory category = dishCategoryDomainService.getCategory(simpleDish.getCategoryId())
                 .orElseThrow(() ->
@@ -159,5 +167,26 @@ public class DishService {
 
         Dish updatedDish = new Dish(simpleDish.getId(), simpleDish.getName(), "", category, mapProductRefs(simpleDish));
         return new DishRef(updatedDish);
+    }
+
+    //TODO avoid code duplication
+    DishView mapDishView(DishRef dish) {
+        return DishView.builder()
+                .id(dish.getDishId())
+                .name(dish.getName())
+                .categoryId(dish.getCategoryId())
+                .products(dish.getAllProducts().stream()
+                        .map(pr -> {
+                            //TODO mapping without reloading the product
+                            final ProductView product = productService.getProduct(pr.getProductId());
+                            product.setWeight(pr.getWeight());
+                            return product;
+                        })
+                        .collect(Collectors.toList()))
+                .calorific(dish.getCalorific())
+                .proteins(dish.getCalorific())
+                .carbs(dish.getCarbs())
+                .weight(dish.getWeight())
+                .build();
     }
 }

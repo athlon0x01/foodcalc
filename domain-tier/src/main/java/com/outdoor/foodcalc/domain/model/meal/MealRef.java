@@ -29,8 +29,16 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsCont
         return meal.getMealId();
     }
 
+    public int getTypeId() {
+        return meal.getType().getTypeId();
+    }
+
     public String getTypeName() {
         return meal.getType().getName();
+    }
+
+    public String getDescription() {
+        return meal.getDescription();
     }
 
     public List<DishRef> getDishes() {

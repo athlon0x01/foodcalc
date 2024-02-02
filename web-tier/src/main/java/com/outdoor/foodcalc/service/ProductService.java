@@ -3,8 +3,10 @@ package com.outdoor.foodcalc.service;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
+import com.outdoor.foodcalc.model.dish.DishProduct;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.slf4j.Logger;
@@ -79,6 +81,11 @@ public class ProductService {
             throw new NotFoundException("Product wasn't found");
         }
         return domainProduct.get();
+    }
+
+    ProductRef getProductRef(DishProduct product) {
+        Product domainProduct = getDomainProduct(product.getProductId());
+        return new ProductRef(domainProduct, Math.round(product.getWeight() * 10));
     }
 
     /**
@@ -160,6 +167,19 @@ public class ProductService {
                 .fats(product.getFats())
                 .carbs(product.getCarbs())
                 .weight(product.getDefaultWeight())
+                .build();
+    }
+
+    ProductView mapProductRef(ProductRef product) {
+        return ProductView.builder()
+                .id(product.getProductId())
+                .name(product.getName())
+                .categoryId(product.getProductCategoryId())
+                .calorific(product.getCalorific())
+                .proteins(product.getProteins())
+                .fats(product.getFats())
+                .carbs(product.getCarbs())
+                .weight(product.getWeight())
                 .build();
     }
 }
