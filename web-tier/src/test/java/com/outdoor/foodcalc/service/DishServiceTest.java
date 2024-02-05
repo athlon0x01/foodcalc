@@ -41,6 +41,9 @@ public class DishServiceTest {
     @Mock
     private ProductService productService;
 
+    @Mock
+    private FoodPlansRepo repo;
+
     private static final long CATEGORY_1_ID = 12345;
     private static final long CATEGORY_2_ID = 54321;
     private static final long CATEGORY_3_ID = 33321;
@@ -219,6 +222,7 @@ public class DishServiceTest {
         SimpleDish simpleDishToUpdate = SimpleDish.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
 
+        when(repo.getDishOwner(domainDish1.getDishId())).thenReturn(Optional.empty());
         when(dishCategoryDomainService.getCategory(simpleDishToUpdate.getCategoryId()))
                 .thenReturn(Optional.of(DOMAIN_CAT_1));
         when(productService.getDomainProduct(dishProduct1.getProductId())).thenReturn(product1);

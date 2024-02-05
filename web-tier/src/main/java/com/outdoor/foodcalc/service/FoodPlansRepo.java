@@ -33,11 +33,15 @@ public class FoodPlansRepo {
 
     @PostConstruct
     public void init() {
-        var mealTypes = mealTypeService.getMealTypes();
-        Random random = new Random();
-        List<MealRef> mealRefs1 = List.of(buildRandomMeal(10101L, mealTypes, random), buildRandomMeal(10102L, mealTypes, random));
-        List<MealRef> mealRefs2 = List.of(buildRandomMeal(10103L, mealTypes, random), buildRandomMeal(10104L, mealTypes, random));
-        List<MealRef> mealRefs3 = List.of(buildRandomMeal(10105L, mealTypes, random), buildRandomMeal(10106L, mealTypes, random));
+        //dummy initialization for UI
+//        var mealTypes = mealTypeService.getMealTypes();
+//        Random random = new Random();
+//        List<MealRef> mealRefs1 = List.of(buildRandomMeal(10101L, mealTypes, random), buildRandomMeal(10102L, mealTypes, random));
+//        List<MealRef> mealRefs2 = List.of(buildRandomMeal(10103L, mealTypes, random), buildRandomMeal(10104L, mealTypes, random));
+//        List<MealRef> mealRefs3 = List.of(buildRandomMeal(10105L, mealTypes, random), buildRandomMeal(10106L, mealTypes, random));
+        List<MealRef> mealRefs1 = Collections.emptyList();
+        List<MealRef> mealRefs2 = Collections.emptyList();
+        List<MealRef> mealRefs3 = Collections.emptyList();
 
         DayPlan day11 = new DayPlan(101L, LocalDate.of(2023, 11, 23), mealRefs1, Collections.emptyList(), Collections.emptyList());
         day11.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
