@@ -1,8 +1,8 @@
 <template>
   <div>
     <h4 class="meal-header">{{meal.type.name}}</h4>
-    <div class="container">
-      <div class="row">
+    <div class="container border border-primary">
+      <div class="row" style="padding-left: 10px">
         <p>{{meal.description}}</p>
       </div>
       <template v-if="editable">

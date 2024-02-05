@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
+import com.outdoor.foodcalc.domain.model.ProductsContainer;
 import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealRef;
@@ -141,5 +142,49 @@ public class FoodPlansRepo {
         ids.forEach(id -> getDishById(dishes, id)
                 .ifPresent(newDishes::add));
         return newDishes;
+    }
+
+    public Optional<ProductsContainer> getDishOwner(long dishId) {
+        for (FoodPlan plan : foodPlans.values()) {
+            for (DayPlanRef day : plan.getDays()) {
+                var dishRef = day.getDishes().stream().filter(dish -> dish.getDishId() == dishId).findFirst();
+                if (dishRef.isPresent()) {
+                    return Optional.of(day);
+                }
+                for (MealRef meal : day.getMeals()) {
+                    dishRef = meal.getDishes().stream().filter(dish -> dish.getDishId() == dishId).findFirst();
+                    if (dishRef.isPresent()) {
+                        return Optional.of(meal);
+                    }
+                }
+            }
+        }
+        return Optional.empty();
+    }
+
+    public FoodPlan getPlanByDayId(long dayId) {
+        FoodPlan thePlan = null;
+        for (FoodPlan plan : foodPlans.values()) {
+            for (DayPlanRef day : plan.getDays()) {
+                if (day.getDayId() == dayId) {
+                    thePlan = plan;
+                    break;
+                }
+            }
+        }
+        return thePlan;
+    }
+
+    public DayPlanRef getDayByMealId(long mealId) {
+        for (FoodPlan plan : foodPlans.values()) {
+            for (DayPlanRef day : plan.getDays()) {
+                for (MealRef meal : day.getMeals()) {
+                    if (meal.getMealId() == mealId) {
+                        return day;
+                    }
+                }
+            }
+        }
+        return null;
     }
 }

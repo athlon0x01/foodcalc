@@ -46,10 +46,6 @@ export default {
     manageMode: {
       type: Boolean,
       required: false
-    },
-    updateDishEndpoint: {
-      type: String,
-      required: false
     }
   },
 
@@ -63,8 +59,7 @@ export default {
         name: 'EditDishPage',
         params: {
           goBackPath: this.goBackPath,
-          oldDish: this.dish,
-          updateDishEndpoint: this.updateDishEndpoint
+          oldDish: this.dish
         }
       })
     },

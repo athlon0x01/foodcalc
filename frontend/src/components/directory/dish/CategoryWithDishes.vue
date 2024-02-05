@@ -9,7 +9,6 @@
                    v-bind:go-back-path="goBackPath"
                    v-bind:select-mode="selectMode"
                    v-bind:manage-mode="manageMode"
-                   v-bind:update-dish-endpoint="updateDishEndpoint"
                    v-on:remove="removeDish"
                    v-on:dishSelected="selectDish"/>
       </div>
@@ -38,10 +37,6 @@ export default {
     },
     manageMode: {
       type: Boolean,
-      required: false
-    },
-    updateDishEndpoint: {
-      type: String,
       required: false
     }
   },

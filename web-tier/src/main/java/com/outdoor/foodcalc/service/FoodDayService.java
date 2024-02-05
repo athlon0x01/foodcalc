@@ -4,7 +4,6 @@ import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.plan.DayPlan;
 import com.outdoor.foodcalc.domain.model.plan.DayPlanRef;
 import com.outdoor.foodcalc.model.dish.DishView;
-import com.outdoor.foodcalc.model.dish.SimpleDish;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
 import com.outdoor.foodcalc.model.plan.SimpleFoodDay;
 import org.springframework.stereotype.Service;
@@ -81,21 +80,6 @@ public class FoodDayService {
         DayPlan day = new DayPlan(dayId, oldDay.getDate(), oldDay.getMeals(), dishes, oldDay.getProducts());
         repository.updateDayInPlan(plan, day, oldDay.getDescription());
         return dishService.mapDishView(dishRef);
-    }
-
-    public void updateDayDish(long planId, long dayId, long id,
-                              SimpleDish newDish) {
-        var plan = repository.getFoodPlan(planId);
-        var oldDay = repository.getDay(planId, dayId);
-        DishRef dishRef = dishService.mapDishRef(newDish);
-        List<DishRef> dishes = new ArrayList<>(oldDay.getDishes());
-        for (int i = 0; i < dishes.size(); i++) {
-            if (dishes.get(i).getDishId() == dishRef.getDishId()) {
-                dishes.set(i, dishRef);
-            }
-        }
-        DayPlan day = new DayPlan(dayId, oldDay.getDate(), oldDay.getMeals(), dishes, oldDay.getProducts());
-        repository.updateDayInPlan(plan, day, oldDay.getDescription());
     }
 
     FoodDayView mapView(DayPlanRef day) {

@@ -8,7 +8,6 @@ import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.model.plan.DayPlan;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import com.outdoor.foodcalc.model.dish.DishView;
-import com.outdoor.foodcalc.model.dish.SimpleDish;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
 import com.outdoor.foodcalc.model.meal.MealView;
 import com.outdoor.foodcalc.model.meal.SimpleMeal;
@@ -75,21 +74,6 @@ public class MealService {
         var updatedDishes = repository.rebuildDishes(meal.getDishes(), newMeal.getDishes());
         Meal domainMeal = new Meal(id, getMealType(newMeal.getTypeId()), updatedDishes, products);
         repository.updateMealInDay(plan, day, domainMeal, newMeal.getDescription());
-    }
-
-    public void updateMealDish(long planId, long dayId, long mealId, SimpleDish newDish) {
-        var plan = repository.getFoodPlan(planId);
-        var day = repository.getDay(planId, dayId);
-        var meal = repository.getMeal(planId, dayId, mealId);
-        DishRef dishRef = dishService.mapDishRef(newDish);
-        List<DishRef> dishes = new ArrayList<>(meal.getDishes());
-        for (int i = 0; i < dishes.size(); i++) {
-            if (dishes.get(i).getDishId() == dishRef.getDishId()) {
-                dishes.set(i, dishRef);
-            }
-        }
-        Meal domainMeal = new Meal(mealId, getMealType(meal.getTypeId()), dishes, meal.getProducts());
-        repository.updateMealInDay(plan, day, domainMeal, meal.getDescription());
     }
 
     public DishView addMealDish(long planId, long dayId, long mealId, long id) {

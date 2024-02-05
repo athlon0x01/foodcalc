@@ -2,7 +2,6 @@ package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.DishView;
-import com.outdoor.foodcalc.model.dish.SimpleDish;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
 import com.outdoor.foodcalc.model.plan.SimpleFoodDay;
 import com.outdoor.foodcalc.service.FoodDayService;
@@ -67,21 +66,6 @@ public class FoodDayEndpoint {
         }
         LOG.debug("Updating food plan id = {}, day - {}", planId, id);
         foodDayService.updateFoodDay(planId, id, foodDay);
-    }
-
-    @PutMapping(path = "{dayId}/dishes/{id}", consumes = APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateDayDish(@PathVariable("planId") long planId,
-                              @PathVariable("dayId") long dayId,
-                              @PathVariable("id") long id,
-                              @RequestBody @Valid SimpleDish newDish) {
-        if (id != newDish.getId()) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, newDish.getId());
-            throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + newDish.getId());
-        }
-        LOG.debug("Updating dish id = {}, day - {}", id, dayId);
-        foodDayService.updateDayDish(planId, dayId, id, newDish);
     }
 
     @PostMapping(path = "{dayId}/dishes/{id}", produces = APPLICATION_JSON_VALUE)
