@@ -1,8 +1,8 @@
 <template>
   <div>
     <h3 class="food-day-header">{{foodDay.date}}</h3>
-    <div class="container">
-      <div class="row">
+    <div class="container border border-primary">
+      <div class="row" style="padding-left: 10px">
         <p>{{foodDay.description}}</p>
       </div>
       <div class="row justify-content-md-center" style="padding-bottom:5px">
@@ -23,18 +23,20 @@
       </template>
       <!--Dishes section-->
       <template v-if="foodDay.dishes.length > 0" class="row">
-        <!--Header-->
-        <h5 style="padding-top:10px">Dishes</h5>
-        <div class="row headerRow bg-light">
-          <div class="col-md-5 border"><strong>Name</strong></div>
-          <div class="col-md-1 border"><strong>Calorific</strong></div>
-          <div class="col-md-1 border"><strong>Proteins</strong></div>
-          <div class="col-md-1 border"><strong>Fats</strong></div>
-          <div class="col-md-1 border"><strong>Carbs</strong></div>
-          <div class="col-md-1 border"><strong>Weight</strong></div>
-        </div>
-        <div v-for="dish in foodDay.dishes" :key="dish.id">
-          <dish-view v-bind:dish="dish"/>
+        <div class="container border border-success">
+          <!--Header-->
+          <h5 style="padding-top:10px">Dishes</h5>
+          <div class="row headerRow bg-light">
+            <div class="col-md-5 border"><strong>Name</strong></div>
+            <div class="col-md-1 border"><strong>Calorific</strong></div>
+            <div class="col-md-1 border"><strong>Proteins</strong></div>
+            <div class="col-md-1 border"><strong>Fats</strong></div>
+            <div class="col-md-1 border"><strong>Carbs</strong></div>
+            <div class="col-md-1 border"><strong>Weight</strong></div>
+          </div>
+          <div v-for="dish in foodDay.dishes" :key="dish.id">
+            <dish-view v-bind:dish="dish"/>
+          </div>
         </div>
       </template>
       <!--Products section-->

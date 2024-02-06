@@ -40,7 +40,6 @@
           <dish-view v-bind:dish="dish"
                      v-bind:go-back-path="goBackPath"
                      v-bind:manage-mode="true"
-                     v-bind:update-dish-endpoint="updateDishEndpoint"
                      v-on:remove="removeDish"/>
         </div>
       </template>
@@ -143,7 +142,6 @@ export default {
     return {
       planDayEndpointUrl: '/api/plans/',
       mealTypesEndpointUrl: '/api/meal-types/',
-      updateDishEndpoint: '',
       goBackPath: null,
       mealTypes: [],
       planTitle: null,
@@ -287,12 +285,17 @@ export default {
     updateDay () {
       if (this.dayDate != null) {
         let newDateObj = new Date(this.dayDate)
+        let day = Number(newDateObj.getDate())
+        if (newDateObj.getDate() < 9) {
+          day = '0' + day
+        }
         let month = Number(newDateObj.getMonth() + 1)
         if (newDateObj.getMonth() < 9) {
           month = '0' + month
         }
-        let newDateString = newDateObj.getDate() + '-' + month + '-' + newDateObj.getFullYear()
+        let newDateString = day + '-' + month + '-' + newDateObj.getFullYear()
         let planDay = {
+          id: this.$route.params.dayId,
           date: newDateString,
           description: this.dayDescription,
           products: this.mapProducts(),
@@ -386,7 +389,6 @@ export default {
       .catch(e => {
         this.getErrorMessage(e, 'Failed to load Meal types...')
       })
-    this.updateDishEndpoint = '/api/plans/' + this.$route.params.planId + '/days/' + this.$route.params.dayId + '/dishes/'
     this.goBackPath = {
       path: '/plan/' + this.$route.params.planId + '/day/' + this.$route.params.dayId,
       query: {

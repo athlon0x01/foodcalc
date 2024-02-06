@@ -79,10 +79,6 @@ export default {
     goBackPath: {
       type: Object,
       required: false
-    },
-    updateDishEndpoint: {
-      type: String,
-      required: false
     }
   },
 
@@ -241,7 +237,7 @@ export default {
     },
 
     updateDish (dish) {
-      axios.put(this.$props.updateDishEndpoint + dish.id, dish)
+      axios.put(this.dishesEndpointUrl + dish.id, dish)
         .then(() => {
           // on success go back to Dishes \ Meals \ Day page
           this.$router.push(this.getGoBackPath())

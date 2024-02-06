@@ -4,6 +4,11 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.dish.DishRef;
+import com.outdoor.foodcalc.domain.model.meal.Meal;
+import com.outdoor.foodcalc.domain.model.meal.MealRef;
+import com.outdoor.foodcalc.domain.model.meal.MealType;
+import com.outdoor.foodcalc.domain.model.plan.DayPlan;
+import com.outdoor.foodcalc.domain.model.plan.DayPlanRef;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
@@ -15,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,13 +29,15 @@ public class DishService {
     private final DishCategoryDomainService dishCategoryDomainService;
     private final DishCategoryService dishCategoryService;
     private final ProductService productService;
+    private final FoodPlansRepo repository;
 
     @Autowired
-    public DishService(DishDomainService dishDomainService, DishCategoryDomainService dishCategoryDomainService, DishCategoryService dishCategoryService, ProductService productService) {
+    public DishService(DishDomainService dishDomainService, DishCategoryDomainService dishCategoryDomainService, DishCategoryService dishCategoryService, ProductService productService, FoodPlansRepo repository) {
         this.dishDomainService = dishDomainService;
         this.dishCategoryDomainService = dishCategoryDomainService;
         this.dishCategoryService = dishCategoryService;
         this.productService = productService;
+        this.repository = repository;
     }
 
     /**
@@ -103,7 +111,37 @@ public class DishService {
                         new NotFoundException("Failed to get Dish Category, id = " + simpleDish.getCategoryId() ));
 
         Dish updatedDish = new Dish(simpleDish.getId(), simpleDish.getName(), "", category, mapProductRefs(simpleDish));
-        dishDomainService.updateDish(updatedDish);
+        //TODO will de changed latter
+        var dishOwner = repository.getDishOwner(updatedDish.getDishId());
+        if (dishOwner.isPresent()) {
+            if (dishOwner.get() instanceof MealRef) {
+                MealRef meal = (MealRef) dishOwner.get();
+                var day = repository.getDayByMealId(meal.getMealId());
+                var plan = repository.getPlanByDayId(day.getDayId());
+                List<DishRef> dishes = updateDishes(updatedDish, meal::getDishes);
+                Meal domainMeal = new Meal(meal.getMealId(), new MealType(meal.getTypeId(), meal.getTypeName()), dishes, meal.getProducts());
+                repository.updateMealInDay(plan, day, domainMeal, meal.getDescription());
+            } else if (dishOwner.get() instanceof DayPlanRef) {
+                DayPlanRef oldDay = (DayPlanRef) dishOwner.get();
+                var plan = repository.getPlanByDayId(oldDay.getDayId());
+                List<DishRef> dishes = updateDishes(updatedDish, oldDay::getDishes);
+                DayPlan day = new DayPlan(oldDay.getDayId(), oldDay.getDate(), oldDay.getMeals(), dishes, oldDay.getProducts());
+                repository.updateDayInPlan(plan, day, oldDay.getDescription());
+            }
+        } else {
+            dishDomainService.updateDish(updatedDish);
+        }
+    }
+
+    private List<DishRef> updateDishes(Dish dish, Supplier<List<DishRef>> dishesSupplier) {
+        DishRef dishRef = new DishRef(dish);
+        List<DishRef> dishes = new ArrayList<>(dishesSupplier.get());
+        for (int i = 0; i < dishes.size(); i++) {
+            if (dishes.get(i).getDishId() == dishRef.getDishId()) {
+                dishes.set(i, dishRef);
+            }
+        }
+        return dishes;
     }
 
     /**
@@ -145,11 +183,12 @@ public class DishService {
     }
 
     //TODO temporary methods to be refactored later
-    public DishRef getDishRef(long id) {
+    public DishRef getDishRefCopy(long id, long newId) {
         Dish domainDish = dishDomainService.getDish(id)
                 .orElseThrow(() ->
                         new NotFoundException("Dish wasn't found"));
-        return new DishRef(domainDish);
+        Dish newDish = new Dish(newId, domainDish.getName(), domainDish.getDescription(), domainDish.getCategory(), domainDish.getProducts());
+        return new DishRef(newDish);
     }
 
     public DishRef mapDishRef(SimpleDish simpleDish) {
@@ -159,5 +198,26 @@ public class DishService {
 
         Dish updatedDish = new Dish(simpleDish.getId(), simpleDish.getName(), "", category, mapProductRefs(simpleDish));
         return new DishRef(updatedDish);
+    }
+
+    //TODO avoid code duplication
+    DishView mapDishView(DishRef dish) {
+        return DishView.builder()
+                .id(dish.getDishId())
+                .name(dish.getName())
+                .categoryId(dish.getCategoryId())
+                .products(dish.getAllProducts().stream()
+                        .map(pr -> {
+                            //TODO mapping without reloading the product
+                            final ProductView product = productService.getProduct(pr.getProductId());
+                            product.setWeight(pr.getWeight());
+                            return product;
+                        })
+                        .collect(Collectors.toList()))
+                .calorific(dish.getCalorific())
+                .proteins(dish.getCalorific())
+                .carbs(dish.getCarbs())
+                .weight(dish.getWeight())
+                .build();
     }
 }
