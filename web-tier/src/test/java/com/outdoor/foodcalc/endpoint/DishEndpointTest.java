@@ -9,6 +9,7 @@ import com.outdoor.foodcalc.endpoint.impl.DishEndpoint;
 import com.outdoor.foodcalc.model.dish.*;
 import com.outdoor.foodcalc.model.product.ProductView;
 import com.outdoor.foodcalc.service.DishService;
+import com.outdoor.foodcalc.utils.JsonToObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +22,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.*;
@@ -49,6 +49,7 @@ public class DishEndpointTest extends ApiUnitTest{
      public void setMapper(ObjectMapper mapper) {
          super.setMapper(mapper);
      }
+     JsonToObjectMapper jsonMapper;
 
      private static final long CATEGORY_1_ID = 12345;
      private static final long CATEGORY_2_ID = 33321;
@@ -70,7 +71,6 @@ public class DishEndpointTest extends ApiUnitTest{
      private static final long DISH_2_ID = 33333;
      private static final long DISH_3_ID = 44444;
 
-
      private static final ProductView productView1 = ProductView.builder()
              .id(productRef1.getProductId()).name(productRef1.getName()).categoryId(productRef1.getProductCategoryId())
              .calorific(1.123f).proteins(1.123f).fats(1.123f).carbs(1.123f).weight(20f).build();
@@ -82,35 +82,28 @@ public class DishEndpointTest extends ApiUnitTest{
              .id(DISH_1_ID).name("dishView1").categoryId(CATEGORY_1_ID)
              .calorific(1.123f).proteins(1.123f).fats(1.123f).carbs(1.123f).weight(20f)
              .products(Arrays.asList(productView1, productView2)).build();
-     private static final DishView dishView2 = DishView.builder()
-             .id(DISH_2_ID).name("dishView2").categoryId(CATEGORY_1_ID)
-             .calorific(1.123f).proteins(1.123f).fats(1.123f).carbs(1.123f).weight(20f)
-             .products(Collections.emptyList()).build();
-     private static final DishView dishView3 = DishView.builder()
-             .id(DISH_3_ID).name("dishView3").categoryId(CATEGORY_2_ID)
-             .calorific(1.999f).proteins(1.123f).fats(1.123f).carbs(1.123f).weight(20f)
-             .products(Collections.emptyList()).build();
 
      @BeforeEach
      public void setUp() {
           setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
+          jsonMapper = new JsonToObjectMapper(mapper);
      }
 
      private SimpleDish createSimpleDish(long id) {
           DishProduct product1 = DishProduct.builder().productId(1000).weight(100.1f).build();
           DishProduct product2 = DishProduct.builder().productId(2000).weight(200.2f).build();
-          SimpleDish simpleDish = SimpleDish.builder()
+          return SimpleDish.builder()
                   .id(id).name("test simpleDish").categoryId(CATEGORY_1_ID)
                   .products(List.of(product1, product2)).build();
-          return simpleDish;
      }
 
      @Test
      public void getAllDishesTest() throws Exception {
-          CategoryWithDishes categoryWithDishes1 = CategoryWithDishes.builder()
-                  .id(CATEGORY_1_ID).name(CATEGORY_1_NAME).dishes(Arrays.asList(dishView1, dishView2)).build();
-          CategoryWithDishes categoryWithDishes2 = CategoryWithDishes.builder()
-                  .id(CATEGORY_2_ID).name(CATEGORY_2_NAME).dishes(Collections.singletonList(dishView3)).build();
+          CategoryWithDishes categoryWithDishes1 = jsonMapper
+                  .deserializeObject("CategoryWithDishes1.json", CategoryWithDishes.class);
+          CategoryWithDishes categoryWithDishes2 = jsonMapper
+                  .deserializeObject("CategoryWithDishes2.json", CategoryWithDishes.class);
+
           List<CategoryWithDishes> expected = List.of(categoryWithDishes1, categoryWithDishes2);
 
           when(service.getAllDishes()).thenReturn(expected);
