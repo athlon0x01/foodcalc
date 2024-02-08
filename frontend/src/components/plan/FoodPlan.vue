@@ -18,7 +18,7 @@
             <textarea v-model="foodPlan.description" name="planDescription" style="width: 100%"/>
           </div>
           <div class="col-md-1">
-            <b-button variant="outline-success" size="sm" v-on:click="updatePlanInfo">Update Info</b-button>
+            <b-button variant="outline-success" size="sm" v-on:click="updatePlanInfo">Update Plan</b-button>
           </div>
         </div>
         <div class="row">
@@ -110,10 +110,22 @@ export default {
       }
     },
 
+    mapDays () {
+      return this.foodPlan.days.map(d => d.id)
+    },
+
     updatePlanInfo () {
       this.$validator.validateAll().then((result) => {
         if (result) {
-          axios.put(this.foodPlansEndpointUrl + this.$route.params.planId, this.foodPlan)
+          let newPlan = {
+            id: this.foodPlan.id,
+            name: this.foodPlan.name,
+            description: this.foodPlan.description,
+            duration: this.foodPlan.duration,
+            members: this.foodPlan.members,
+            days: this.mapDays()
+          }
+          axios.put(this.foodPlansEndpointUrl + this.$route.params.planId, newPlan)
             .then(() => {
               this.errorMessage = null
             })
