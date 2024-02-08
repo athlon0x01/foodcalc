@@ -43,7 +43,10 @@ public class MealTypesService {
     }
 
     private MealTypeView mapMealType(MealType mealType) {
-        return new MealTypeView(mealType.getTypeId(), mealType.getName());
+        return MealTypeView.builder()
+                .id(mealType.getTypeId())
+                .name(mealType.getName())
+                .build();
     }
 
     /**
@@ -79,7 +82,8 @@ public class MealTypesService {
      * @param model updated meal type view
      */
     public void updateMealType(MealTypeView model) {
-        domainService.updateMealType(new MealType(model.getId(), model.getName()));
+        //TODO fix MealType.id
+        domainService.updateMealType(new MealType((int) model.getId(), model.getName()));
     }
 
     /**

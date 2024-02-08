@@ -32,8 +32,8 @@ public class DishCategoryServiceTest {
     private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_1 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
     private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_2 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
 
-    private static final DishCategory SIMPLE_DISH_CAT_1 = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-    private static final DishCategory SIMPLE_DISH_CAT_2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+    private static final DishCategory SIMPLE_DISH_CAT_1 = DishCategory.builder().id(CATEGORY_1_ID).name(CATEGORY_1_NAME).build();
+    private static final DishCategory SIMPLE_DISH_CAT_2 = DishCategory.builder().id(CATEGORY_2_ID).name(CATEGORY_2_NAME).build();
 
     @Mock
     private DishCategoryDomainService domainService;

@@ -2,12 +2,13 @@ package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.endpoint.ProductCategoriesApi;
 import com.outdoor.foodcalc.model.product.ProductCategory;
-import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
  * @author Anton Borovyk.
  */
 @RestController
-public class ProductCategoryEndpoint implements ProductCategoriesApi {
+public class ProductCategoryEndpoint extends AbstractEndpoint implements ProductCategoriesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductCategoryEndpoint.class);
 
@@ -45,12 +46,8 @@ public class ProductCategoryEndpoint implements ProductCategoriesApi {
     }
 
     public void updateCategory(@PathVariable("id") long id,
-                                                @RequestBody @Valid ProductCategory category) {
-        if (id != category.getId()) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.getId());
-            throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + category.getId());
-        }
+                               @RequestBody @Valid ProductCategory category) {
+        verifyEntityId(id, category);
         LOG.debug("Updating product category {}", category);
         categoryService.updateCategory(category);
     }

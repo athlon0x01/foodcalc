@@ -1,11 +1,11 @@
 package com.outdoor.foodcalc.model.meal;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.outdoor.foodcalc.model.EntityView;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Objects;
 
 /**
  * View model for {@link com.outdoor.foodcalc.domain.model.meal.MealType} class.
@@ -13,12 +13,11 @@ import java.util.Objects;
  * @author Anton Borovyk.
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class MealTypeView {
-
-    private int id;
-
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@Jacksonized
+@SuperBuilder
+public class MealTypeView extends EntityView {
     @NotEmpty
     private String name;
 }

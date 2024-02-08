@@ -35,9 +35,9 @@ public class ProductCategoryServiceTest {
 
     private static final com.outdoor.foodcalc.domain.model.product.ProductCategory PRODUCT_CATEGORY_2 = new com.outdoor.foodcalc.domain.model.product.ProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
 
-    private static final ProductCategory SIMPLE_PRODUCT_CATEGORY_1 = new ProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+    private static final ProductCategory SIMPLE_PRODUCT_CATEGORY_1 = ProductCategory.builder().id(CATEGORY_1_ID).name(CATEGORY_1_NAME).build();
 
-    private static final ProductCategory SIMPLE_PRODUCT_CATEGORY_2 = new ProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+    private static final ProductCategory SIMPLE_PRODUCT_CATEGORY_2 = ProductCategory.builder().id(CATEGORY_2_ID).name(CATEGORY_2_NAME).build();
 
     @InjectMocks
     private ProductCategoryService categoryService;

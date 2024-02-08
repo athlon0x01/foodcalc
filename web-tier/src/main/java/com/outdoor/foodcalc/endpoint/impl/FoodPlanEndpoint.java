@@ -1,8 +1,7 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
-import com.outdoor.foodcalc.model.ValidationException;
-import com.outdoor.foodcalc.model.plan.FoodPlanView;
 import com.outdoor.foodcalc.model.plan.FoodPlanInfo;
+import com.outdoor.foodcalc.model.plan.FoodPlanView;
 import com.outdoor.foodcalc.service.FoodPlanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("${spring.data.rest.basePath}/plans")
-public class FoodPlanEndpoint {
+public class FoodPlanEndpoint extends AbstractEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(FoodPlanEndpoint.class);
     private final FoodPlanService foodPlanService;
@@ -54,11 +53,7 @@ public class FoodPlanEndpoint {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateFoodPlanInfo(@PathVariable("id") long id,
                                    @RequestBody @Valid FoodPlanInfo foodPlan) {
-        if (id != foodPlan.getId()) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, foodPlan.getId());
-            throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + foodPlan.getId());
-        }
+        verifyEntityId(id, foodPlan);
         LOG.debug("Updating food plan id = {}", id);
         foodPlanService.updateFoodPlan(id, foodPlan);
     }

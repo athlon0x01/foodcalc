@@ -1,7 +1,6 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.endpoint.DishCategoriesApi;
-import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.DishCategory;
 import com.outdoor.foodcalc.service.DishCategoryService;
 import org.slf4j.Logger;
@@ -20,7 +19,7 @@ import java.util.List;
  * @author Anton Borovyk.
  */
 @RestController
-public class DishCategoryEndpoint implements DishCategoriesApi {
+public class DishCategoryEndpoint extends AbstractEndpoint implements DishCategoriesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(DishCategoryEndpoint.class);
 
@@ -48,11 +47,7 @@ public class DishCategoryEndpoint implements DishCategoriesApi {
 
     public void updateDishCategory(@PathVariable("id") long id,
                                    @RequestBody @Valid DishCategory category) {
-        if (id != category.getId()) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.getId());
-            throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + category.getId());
-        }
+        verifyEntityId(id, category);
         LOG.debug("Updating dish category {}", category);
         categoryService.updateDishCategory(category);
     }

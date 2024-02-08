@@ -1,7 +1,10 @@
 package com.outdoor.foodcalc.model.plan;
 
-import lombok.Builder;
+import com.outdoor.foodcalc.model.EntityView;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.Min;
@@ -9,11 +12,11 @@ import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Jacksonized
-@Builder
-public class FoodPlanInfo {
-
-    private long id;
+@SuperBuilder
+public class FoodPlanInfo extends EntityView {
     @NotEmpty
     private String name;
     @Min(1)

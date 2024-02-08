@@ -42,7 +42,10 @@ public class DishCategoryService {
     }
 
     private DishCategory mapDishCategory(com.outdoor.foodcalc.domain.model.dish.DishCategory category) {
-        return new DishCategory(category.getCategoryId(), category.getName());
+        return DishCategory.builder()
+                .id(category.getCategoryId())
+                .name(category.getName())
+                .build();
     }
 
     /**

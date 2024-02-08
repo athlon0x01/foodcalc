@@ -33,7 +33,10 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     private static final long CATEGORY_ID = 12345;
     private static final String CATEGORY_NAME = "Test category";
-    private static final DishCategory dummyCategory = new DishCategory(CATEGORY_ID, CATEGORY_NAME);
+    private static final DishCategory dummyCategory = DishCategory.builder()
+            .id(CATEGORY_ID)
+            .name(CATEGORY_NAME)
+            .build();
 
     @MockBean
     private DishCategoryService service;
@@ -95,8 +98,9 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryTest() throws Exception {
-        DishCategory category = new DishCategory();
-        category.setName(CATEGORY_NAME);
+        DishCategory category = DishCategory.builder()
+                .name(CATEGORY_NAME)
+                .build();
 
         when(service.addDishCategory(category.getName())).thenReturn(dummyCategory);
 
@@ -111,7 +115,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryValidationErrorTest() throws Exception {
-            DishCategory category = new DishCategory();
+            DishCategory category = DishCategory.builder().build();
 
             post400("/dish-categories/", category);
 

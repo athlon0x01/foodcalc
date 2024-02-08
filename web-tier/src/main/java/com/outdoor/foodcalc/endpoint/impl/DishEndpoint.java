@@ -1,21 +1,22 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.endpoint.DishApi;
-import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.CategoryWithDishes;
-import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.dish.DishInfo;
+import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.service.DishService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-public class DishEndpoint implements DishApi {
+public class DishEndpoint extends AbstractEndpoint implements DishApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(DishEndpoint.class);
 
@@ -42,12 +43,8 @@ public class DishEndpoint implements DishApi {
     }
 
     public void updateDish(@PathVariable("id") long id,
-                                   @RequestBody @Valid DishInfo dish) {
-        if (id != dish.getId()) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, dish.getId());
-            throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + dish.getId());
-        }
+                           @RequestBody @Valid DishInfo dish) {
+        verifyEntityId(id, dish);
         LOG.debug("Updating dish {}", dish);
         dishService.updateDish(dish);
     }

@@ -50,9 +50,9 @@ public class DishServiceTest {
     private static final String CATEGORY_1_NAME = "First category";
     private static final String CATEGORY_2_NAME = "Second category";
     private static final String CATEGORY_3_NAME = "Empty";
-    private static final DishCategory SIMPLE_CAT_1 = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-    private static final DishCategory SIMPLE_CAT_2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
-    private static final DishCategory SIMPLE_CAT_3 = new DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
+    private static final DishCategory SIMPLE_CAT_1 = DishCategory.builder().id(CATEGORY_1_ID).name(CATEGORY_1_NAME).build();
+    private static final DishCategory SIMPLE_CAT_2 = DishCategory.builder().id(CATEGORY_2_ID).name(CATEGORY_2_NAME).build();
+    private static final DishCategory SIMPLE_CAT_3 = DishCategory.builder().id(CATEGORY_3_ID).name(CATEGORY_3_NAME).build();
     private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_1 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
     private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_2 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
     private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_3 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);

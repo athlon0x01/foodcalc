@@ -39,7 +39,10 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     private static final long CATEGORY_ID = 12345;
     private static final String CATEGORY_NAME = "Test category";
-    private static final ProductCategory dummyCategory = new ProductCategory(CATEGORY_ID, CATEGORY_NAME);
+    private static final ProductCategory dummyCategory = ProductCategory.builder()
+            .id(CATEGORY_ID)
+            .name(CATEGORY_NAME)
+            .build();
 
     @MockBean
     private ProductCategoryService service;
@@ -102,7 +105,9 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryTest() throws Exception {
-        ProductCategory category = new ProductCategory(1, CATEGORY_NAME);
+        ProductCategory category = ProductCategory.builder()
+                .name(CATEGORY_NAME)
+                .build();
 
         when(service.addCategory(CATEGORY_NAME)).thenReturn(dummyCategory);
 
@@ -117,7 +122,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryValidationErrorTest() throws Exception {
-        ProductCategory category = new ProductCategory();
+        ProductCategory category = ProductCategory.builder().build();
 
         post400("/product-categories", category);
 

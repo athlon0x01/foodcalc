@@ -57,8 +57,10 @@ public class ProductCategoryService {
     }
 
     private ProductCategory mapProductCategory(com.outdoor.foodcalc.domain.model.product.ProductCategory productCategory) {
-        return new ProductCategory(
-                productCategory.getCategoryId(), productCategory.getName());
+        return ProductCategory.builder()
+                .id(productCategory.getCategoryId())
+                .name(productCategory.getName())
+                .build();
     }
 
     /**

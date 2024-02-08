@@ -1,8 +1,9 @@
 package com.outdoor.foodcalc.model.product;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.outdoor.foodcalc.model.EntityView;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -12,12 +13,11 @@ import javax.validation.constraints.NotEmpty;
  * @author Anton Borovyk.
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ProductCategory {
-
-    private long id;
-
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+@Jacksonized
+@SuperBuilder
+public class ProductCategory extends EntityView {
     @NotEmpty
     private String name;
 
