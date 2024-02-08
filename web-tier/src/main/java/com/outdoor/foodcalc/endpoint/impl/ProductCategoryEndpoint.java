@@ -1,7 +1,7 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.endpoint.ProductCategoriesApi;
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.ProductCategory;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.slf4j.Logger;
@@ -29,23 +29,23 @@ public class ProductCategoryEndpoint implements ProductCategoriesApi {
         this.categoryService = categoryService;
     }
 
-    public List<SimpleProductCategory> getCategories() {
+    public List<ProductCategory> getCategories() {
         LOG.debug("Getting all product categories");
         return categoryService.getCategories();
     }
 
-    public SimpleProductCategory getCategory(@PathVariable("id") long id) {
+    public ProductCategory getCategory(@PathVariable("id") long id) {
         LOG.debug("Getting product category id = {}", id);
         return categoryService.getCategory(id);
     }
 
-    public SimpleProductCategory addCategory(@RequestBody @Valid SimpleProductCategory category) {
+    public ProductCategory addCategory(@RequestBody @Valid ProductCategory category) {
         LOG.debug("Adding new product category - {}", category);
         return categoryService.addCategory(category.getName());
     }
 
     public void updateCategory(@PathVariable("id") long id,
-                                                @RequestBody @Valid SimpleProductCategory category) {
+                                                @RequestBody @Valid ProductCategory category) {
         if (id != category.getId()) {
             LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.getId());
             throw new ValidationException("Path variable Id = " + id

@@ -2,7 +2,7 @@ package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.plan.FoodPlanView;
-import com.outdoor.foodcalc.model.plan.SimpleFoodPlan;
+import com.outdoor.foodcalc.model.plan.FoodPlanInfo;
 import com.outdoor.foodcalc.service.FoodPlanService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public class FoodPlanEndpoint {
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public List<SimpleFoodPlan> getAllFoodPlans() {
+    public List<FoodPlanInfo> getAllFoodPlans() {
         LOG.debug("Getting all food plans");
         return foodPlanService.getAllFoodPlans();
     }
@@ -45,15 +45,15 @@ public class FoodPlanEndpoint {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public SimpleFoodPlan addFoodPlan(@RequestBody @Valid SimpleFoodPlan foodPlan) {
+    public FoodPlanInfo addFoodPlan(@RequestBody @Valid FoodPlanInfo foodPlan) {
         LOG.debug("Adding new food plan");
         return foodPlanService.addFoodPlan(foodPlan);
     }
 
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void updateFoodPlan(@PathVariable("id") long id,
-                               @RequestBody @Valid SimpleFoodPlan foodPlan) {
+    public void updateFoodPlanInfo(@PathVariable("id") long id,
+                                   @RequestBody @Valid FoodPlanInfo foodPlan) {
         if (id != foodPlan.getId()) {
             LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, foodPlan.getId());
             throw new ValidationException("Path variable Id = " + id

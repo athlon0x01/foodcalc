@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.endpoint;
 
-import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;

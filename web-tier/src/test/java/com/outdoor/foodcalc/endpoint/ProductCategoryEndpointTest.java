@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.endpoint.impl.ProductCategoryEndpoint;
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.ProductCategory;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     private static final long CATEGORY_ID = 12345;
     private static final String CATEGORY_NAME = "Test category";
-    private static final SimpleProductCategory dummyCategory = new SimpleProductCategory(CATEGORY_ID, CATEGORY_NAME);
+    private static final ProductCategory dummyCategory = new ProductCategory(CATEGORY_ID, CATEGORY_NAME);
 
     @MockBean
     private ProductCategoryService service;
@@ -60,7 +60,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void getCategoriesTest() throws Exception {
-        List<SimpleProductCategory> expected = Collections.singletonList(dummyCategory);
+        List<ProductCategory> expected = Collections.singletonList(dummyCategory);
 
         when(service.getCategories()).thenReturn(expected);
 
@@ -68,7 +68,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
             .andExpect(jsonPath("$", hasSize(1)))
             .andReturn();
 
-        SimpleProductCategory[] actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleProductCategory[].class);
+        ProductCategory[] actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), ProductCategory[].class);
         assertEquals(expected, Arrays.asList(actual));
 
         verify(service).getCategories();
@@ -76,14 +76,14 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void getCategoryTest() throws Exception {
-        SimpleProductCategory expected = dummyCategory;
+        ProductCategory expected = dummyCategory;
 
         when(service.getCategory(CATEGORY_ID)).thenReturn(expected);
 
         MvcResult mvcResult = get("/product-categories/" + CATEGORY_ID)
             .andReturn();
 
-        SimpleProductCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleProductCategory.class);
+        ProductCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), ProductCategory.class);
         assertEquals(expected, actual);
 
         verify(service).getCategory(CATEGORY_ID);
@@ -102,14 +102,14 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryTest() throws Exception {
-        SimpleProductCategory category = new SimpleProductCategory(1, CATEGORY_NAME);
+        ProductCategory category = new ProductCategory(1, CATEGORY_NAME);
 
         when(service.addCategory(CATEGORY_NAME)).thenReturn(dummyCategory);
 
         MvcResult mvcResult = post("/product-categories", category)
             .andReturn();
 
-        SimpleProductCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleProductCategory.class);
+        ProductCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), ProductCategory.class);
         assertEquals(dummyCategory, actual);
 
         verify(service).addCategory(CATEGORY_NAME);
@@ -117,7 +117,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryValidationErrorTest() throws Exception {
-        SimpleProductCategory category = new SimpleProductCategory();
+        ProductCategory category = new ProductCategory();
 
         post400("/product-categories", category);
 

@@ -2,7 +2,7 @@ package com.outdoor.foodcalc.endpoint;
 
 import com.outdoor.foodcalc.model.dish.CategoryWithDishes;
 import com.outdoor.foodcalc.model.dish.DishView;
-import com.outdoor.foodcalc.model.dish.SimpleDish;
+import com.outdoor.foodcalc.model.dish.DishInfo;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -10,7 +10,6 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -47,16 +46,16 @@ public interface DishApi {
 
     @ApiOperation(value = "Create a new dish",
             notes = "Creates a new dish and returns this entity",
-            response = SimpleDish.class
+            response = DishInfo.class
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "New dish created", response = SimpleDish.class),
+            @ApiResponse(code = 201, message = "New dish created", response = DishInfo.class),
             @ApiResponse(code = 400, message = "Bad request")
     })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    SimpleDish addDish(@ApiParam(value = "Dish", required = true)
-                       @RequestBody SimpleDish dish);
+    DishInfo addDish(@ApiParam(value = "Dish", required = true)
+                       @RequestBody DishInfo dish);
 
     @ApiOperation(value = "Update dish by ID"
     )
@@ -70,7 +69,7 @@ public interface DishApi {
     void updateDish(@ApiParam(value = "ID of the Dish", required = true)
                           @PathVariable("id") long id,
                           @ApiParam(value = "Dish", required = true)
-                          @RequestBody SimpleDish dish);
+                          @RequestBody DishInfo dish);
 
     @ApiOperation(value = "Delete dish by ID"
     )

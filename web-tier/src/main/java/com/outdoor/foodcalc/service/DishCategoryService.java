@@ -1,9 +1,8 @@
 package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
-import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
-import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
+import com.outdoor.foodcalc.model.dish.DishCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Service for all operations with {@link DishCategory} objects,
+ * Service for all operations with {@link com.outdoor.foodcalc.domain.model.dish.DishCategory} objects,
  * including transformation domain objects to view models and vise versa.
  *
  * @author Olga Borovyk.
@@ -32,28 +31,28 @@ public class DishCategoryService {
     }
 
     /**
-     * Gets all {@link DishCategory} objects mapped to {@link SimpleDishCategory}.
+     * Gets all {@link com.outdoor.foodcalc.domain.model.dish.DishCategory} objects mapped to {@link DishCategory}.
      *
      * @return list of categories
      */
-    public List<SimpleDishCategory> getDishCategories() {
+    public List<DishCategory> getDishCategories() {
         return categoryDomainService.getCategories().stream()
                 .map(this::mapDishCategory)
                 .collect(Collectors.toList());
     }
 
-    private SimpleDishCategory mapDishCategory(DishCategory category) {
-        return new SimpleDishCategory(category.getCategoryId(), category.getName());
+    private DishCategory mapDishCategory(com.outdoor.foodcalc.domain.model.dish.DishCategory category) {
+        return new DishCategory(category.getCategoryId(), category.getName());
     }
 
     /**
-     * Gets all {@link DishCategory} objects mapped to {@link SimpleDishCategory}.
+     * Gets all {@link com.outdoor.foodcalc.domain.model.dish.DishCategory} objects mapped to {@link DishCategory}.
      *
      * @param id category Id to load
      * @return loaded category
      */
-    public SimpleDishCategory getDishCategory(long id) {
-        Optional<DishCategory> category = categoryDomainService.getCategory(id);
+    public DishCategory getDishCategory(long id) {
+        Optional<com.outdoor.foodcalc.domain.model.dish.DishCategory> category = categoryDomainService.getCategory(id);
         if (!category.isPresent()) {
             LOG.error("Dish category with id={} wasn't found", id);
             throw new NotFoundException("Dish category wasn't found");
@@ -62,28 +61,28 @@ public class DishCategoryService {
     }
 
     /**
-     * Add new {@link DishCategory}.
+     * Add new {@link com.outdoor.foodcalc.domain.model.dish.DishCategory}.
      *
      * @param categoryName name of new category
      * @return new category
      */
-    public SimpleDishCategory addDishCategory(String categoryName) {
+    public DishCategory addDishCategory(String categoryName) {
         return mapDishCategory(
                 categoryDomainService.addCategory(
-                        new DishCategory(-1, categoryName)));
+                        new com.outdoor.foodcalc.domain.model.dish.DishCategory(-1, categoryName)));
     }
 
     /**
-     * Updates selected {@link DishCategory} with new value.
+     * Updates selected {@link com.outdoor.foodcalc.domain.model.dish.DishCategory} with new value.
      *
      * @param model updated category
      */
-    public void updateDishCategory(SimpleDishCategory model) {
-        categoryDomainService.updateCategory(new DishCategory(model.getId(), model.getName()));
+    public void updateDishCategory(DishCategory model) {
+        categoryDomainService.updateCategory(new com.outdoor.foodcalc.domain.model.dish.DishCategory(model.getId(), model.getName()));
     }
 
     /**
-     * Removes selected {@link DishCategory}.
+     * Removes selected {@link com.outdoor.foodcalc.domain.model.dish.DishCategory}.
      *
      * @param id category Id to delete
      */

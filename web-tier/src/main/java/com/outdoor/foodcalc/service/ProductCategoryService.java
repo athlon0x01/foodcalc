@@ -1,9 +1,8 @@
 package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
-import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.ProductCategory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Service for all operations with {@link ProductCategory} objects,
+ * Service for all operations with {@link com.outdoor.foodcalc.domain.model.product.ProductCategory} objects,
  * including transformation domain objects to view models and vise versa.
  *
  * @author Anton Borovyk.
@@ -32,24 +31,24 @@ public class ProductCategoryService {
     }
 
     /**
-     * Gets all {@link ProductCategory} objects mapped to {@link SimpleProductCategory}.
+     * Gets all {@link com.outdoor.foodcalc.domain.model.product.ProductCategory} objects mapped to {@link ProductCategory}.
      *
      * @return list of categories
      */
-    public List<SimpleProductCategory> getCategories() {
+    public List<ProductCategory> getCategories() {
         return categoryDomainService.getCategories().stream()
             .map(this::mapProductCategory)
             .collect(Collectors.toList());
     }
 
     /**
-     * Gets all {@link ProductCategory} objects mapped to {@link SimpleProductCategory}.
+     * Gets all {@link com.outdoor.foodcalc.domain.model.product.ProductCategory} objects mapped to {@link ProductCategory}.
      *
      * @param id category Id to load
      * @return loaded category
      */
-    public SimpleProductCategory getCategory(long id) {
-        Optional<ProductCategory> category = categoryDomainService.getCategory(id);
+    public ProductCategory getCategory(long id) {
+        Optional<com.outdoor.foodcalc.domain.model.product.ProductCategory> category = categoryDomainService.getCategory(id);
         if (!category.isPresent()) {
             LOG.error("Product category with id={} wasn't found", id);
             throw new NotFoundException("Product category wasn't found");
@@ -57,35 +56,35 @@ public class ProductCategoryService {
         return mapProductCategory(category.get());
     }
 
-    private SimpleProductCategory mapProductCategory(ProductCategory productCategory) {
-        return new SimpleProductCategory(
+    private ProductCategory mapProductCategory(com.outdoor.foodcalc.domain.model.product.ProductCategory productCategory) {
+        return new ProductCategory(
                 productCategory.getCategoryId(), productCategory.getName());
     }
 
     /**
-     * Add new {@link ProductCategory}.
+     * Add new {@link com.outdoor.foodcalc.domain.model.product.ProductCategory}.
      *
      * @param categoryName name of new category
      * @return new category
      */
-    public SimpleProductCategory addCategory(String categoryName) {
+    public ProductCategory addCategory(String categoryName) {
         return mapProductCategory(
             categoryDomainService.addCategory(
-                new ProductCategory(-1, categoryName)));
+                new com.outdoor.foodcalc.domain.model.product.ProductCategory(-1, categoryName)));
     }
 
 
     /**
-     * Updates selected {@link ProductCategory} with new value.
+     * Updates selected {@link com.outdoor.foodcalc.domain.model.product.ProductCategory} with new value.
      *
      * @param model updated category
      */
-    public void updateCategory(SimpleProductCategory model) {
-        categoryDomainService.updateCategory(new ProductCategory(model.getId(), model.getName()));
+    public void updateCategory(ProductCategory model) {
+        categoryDomainService.updateCategory(new com.outdoor.foodcalc.domain.model.product.ProductCategory(model.getId(), model.getName()));
     }
 
     /**
-     * Removes selected {@link ProductCategory}.
+     * Removes selected {@link com.outdoor.foodcalc.domain.model.product.ProductCategory}.
      *
      * @param id category Id to delete
      */

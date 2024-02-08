@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.model.dish;
+package com.outdoor.foodcalc.model.plan;
 
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +11,14 @@ import java.util.List;
 @Data
 @Jacksonized
 @Builder
-public class SimpleDish {
+public class FoodPlanInfo {
+
     private long id;
     @NotEmpty
     private String name;
     @Min(1)
-    private long categoryId;
-    private List<DishProduct> products;
+    private int members;
+    private int duration;
+    private String description;
+    private List<Long> days;
 }

@@ -6,7 +6,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
-import com.outdoor.foodcalc.model.dish.DishProduct;
+import com.outdoor.foodcalc.model.product.SimpleProduct;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public class ProductService {
         return domainProduct.get();
     }
 
-    ProductRef getProductRef(DishProduct product) {
+    ProductRef getProductRef(SimpleProduct product) {
         Product domainProduct = getDomainProduct(product.getProductId());
         return new ProductRef(domainProduct, Math.round(product.getWeight() * 10));
     }

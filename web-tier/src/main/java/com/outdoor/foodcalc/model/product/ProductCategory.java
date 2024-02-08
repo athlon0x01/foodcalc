@@ -1,25 +1,24 @@
-package com.outdoor.foodcalc.model.dish;
+package com.outdoor.foodcalc.model.product;
 
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotEmpty;
-import java.util.Objects;
 
 /**
- * View model for {@link com.outdoor.foodcalc.domain.model.dish.DishCategory} class.
+ * View model for {@link com.outdoor.foodcalc.domain.model.product.ProductCategory} class.
  *
  * @author Anton Borovyk.
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class SimpleDishCategory {
+public class ProductCategory {
 
     private long id;
 
     @NotEmpty
     private String name;
+
 }

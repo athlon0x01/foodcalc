@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.endpoint;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
-import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
+import com.outdoor.foodcalc.model.dish.DishCategory;
 import com.outdoor.foodcalc.service.DishCategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,7 +33,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     private static final long CATEGORY_ID = 12345;
     private static final String CATEGORY_NAME = "Test category";
-    private static final SimpleDishCategory dummyCategory = new SimpleDishCategory(CATEGORY_ID, CATEGORY_NAME);
+    private static final DishCategory dummyCategory = new DishCategory(CATEGORY_ID, CATEGORY_NAME);
 
     @MockBean
     private DishCategoryService service;
@@ -54,7 +54,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void getCategoriesTest() throws Exception {
-        List<SimpleDishCategory> expected = Collections.singletonList(dummyCategory);
+        List<DishCategory> expected = Collections.singletonList(dummyCategory);
 
         when(service.getDishCategories()).thenReturn(expected);
 
@@ -62,7 +62,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andReturn();
 
-        SimpleDishCategory[] actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleDishCategory[].class);
+        DishCategory[] actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), DishCategory[].class);
         assertEquals(expected, Arrays.asList(actual));
 
         verify(service).getDishCategories();
@@ -70,13 +70,13 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void getCategoryTest() throws Exception {
-        SimpleDishCategory expected = dummyCategory;
+        DishCategory expected = dummyCategory;
 
         when(service.getDishCategory(CATEGORY_ID)).thenReturn(expected);
 
         MvcResult mvcResult = get("/dish-categories/" + CATEGORY_ID).andReturn();
 
-        SimpleDishCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleDishCategory.class);
+        DishCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), DishCategory.class);
         assertEquals(expected, actual);
 
         verify(service).getDishCategory(CATEGORY_ID);
@@ -95,7 +95,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryTest() throws Exception {
-        SimpleDishCategory category = new SimpleDishCategory();
+        DishCategory category = new DishCategory();
         category.setName(CATEGORY_NAME);
 
         when(service.addDishCategory(category.getName())).thenReturn(dummyCategory);
@@ -103,7 +103,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
         MvcResult mvcResult = post("/dish-categories", category)
                 .andReturn();
 
-        SimpleDishCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleDishCategory.class);
+        DishCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), DishCategory.class);
         assertEquals(dummyCategory, actual);
 
         verify(service).addDishCategory(category.getName());
@@ -111,7 +111,7 @@ public class DishCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryValidationErrorTest() throws Exception {
-            SimpleDishCategory category = new SimpleDishCategory();
+            DishCategory category = new DishCategory();
 
             post400("/dish-categories/", category);
 

@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.model.dish;
+package com.outdoor.foodcalc.model.product;
 
 import lombok.Builder;
 import lombok.Data;
@@ -10,7 +10,7 @@ import javax.validation.constraints.PositiveOrZero;
 @Data
 @Jacksonized
 @Builder
-public class DishProduct {
+public class SimpleProduct {
     @Min(1)
     private long productId;
     @PositiveOrZero

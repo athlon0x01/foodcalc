@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.endpoint;
 
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.ProductCategory;
 import io.swagger.annotations.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -19,40 +19,40 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public interface ProductCategoriesApi {
 
     @ApiOperation(value = "Get all products categories",
-        response = SimpleProductCategory.class,
+        response = ProductCategory.class,
         responseContainer = "List"
     )
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "All product categories returned", response = SimpleProductCategory.class, responseContainer = "List")
+        @ApiResponse(code = 200, message = "All product categories returned", response = ProductCategory.class, responseContainer = "List")
     })
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    List<SimpleProductCategory> getCategories();
+    List<ProductCategory> getCategories();
 
 
     @ApiOperation(value = "Get product category by ID",
-        response = SimpleProductCategory.class
+        response = ProductCategory.class
     )
     @ApiResponses(value = {
-        @ApiResponse(code = 200, message = "Requested product category returned", response = SimpleProductCategory.class),
+        @ApiResponse(code = 200, message = "Requested product category returned", response = ProductCategory.class),
         @ApiResponse(code = 404, message = "Product category not found")
     })
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
-    SimpleProductCategory getCategory(@ApiParam(value = "ID of the product category", required = true)
+    ProductCategory getCategory(@ApiParam(value = "ID of the product category", required = true)
                                                       @PathVariable("id") long id);
 
 
     @ApiOperation(value = "Create new product category",
         notes = "Create new product category and returns this entity",
-        response = SimpleProductCategory.class
+        response = ProductCategory.class
     )
     @ApiResponses(value = {
-        @ApiResponse(code = 201, message = "New product category created", response = SimpleProductCategory.class),
+        @ApiResponse(code = 201, message = "New product category created", response = ProductCategory.class),
         @ApiResponse(code = 400, message = "Bad request")
     })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    SimpleProductCategory addCategory(@ApiParam(value = "Product category", required = true)
-                                      @RequestBody SimpleProductCategory category);
+    ProductCategory addCategory(@ApiParam(value = "Product category", required = true)
+                                      @RequestBody ProductCategory category);
 
 
     @ApiOperation(value = "Update product category by ID")
@@ -66,7 +66,7 @@ public interface ProductCategoriesApi {
     void updateCategory(@ApiParam(value = "ID of the product category", required = true)
                                          @PathVariable("id") long id,
                                          @ApiParam(value = "Product category", required = true)
-                                         @RequestBody SimpleProductCategory category);
+                                         @RequestBody ProductCategory category);
 
     @ApiOperation(value = "Delete product category by ID"
     )

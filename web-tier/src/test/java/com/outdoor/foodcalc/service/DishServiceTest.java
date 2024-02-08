@@ -2,13 +2,13 @@ package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
-import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
 import com.outdoor.foodcalc.model.dish.*;
+import com.outdoor.foodcalc.model.product.SimpleProduct;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -50,12 +50,12 @@ public class DishServiceTest {
     private static final String CATEGORY_1_NAME = "First category";
     private static final String CATEGORY_2_NAME = "Second category";
     private static final String CATEGORY_3_NAME = "Empty";
-    private static final SimpleDishCategory SIMPLE_CAT_1 = new SimpleDishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-    private static final SimpleDishCategory SIMPLE_CAT_2 = new SimpleDishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
-    private static final SimpleDishCategory SIMPLE_CAT_3 = new SimpleDishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
-    private static final DishCategory DOMAIN_CAT_1 = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-    private static final DishCategory DOMAIN_CAT_2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
-    private static final DishCategory DOMAIN_CAT_3 = new DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
+    private static final DishCategory SIMPLE_CAT_1 = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+    private static final DishCategory SIMPLE_CAT_2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+    private static final DishCategory SIMPLE_CAT_3 = new DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
+    private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_1 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+    private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_2 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+    private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_3 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
 
     private static final Product product1 = Product.builder().productId(101010).name("first prod")
             .category(new ProductCategory(77777, "test product cat1")).build();
@@ -111,17 +111,17 @@ public class DishServiceTest {
             .calorific(6.83f).proteins(6.83f).fats(4.85f).carbs(18.2f).weight(100.0f)
             .products(Arrays.asList(productView1, productView2, productView3)).build();
 
-    private static final DishProduct dishProduct1 = DishProduct.builder()
+    private static final SimpleProduct dishProduct1 = SimpleProduct.builder()
             .productId(productRef1.getProductId()).weight(productRef1.getWeight()).build();
-    private static final DishProduct dishProduct2 = DishProduct.builder()
+    private static final SimpleProduct dishProduct2 = SimpleProduct.builder()
             .productId(productRef2.getProductId()).weight(productRef2.getWeight()).build();
 
-    private static final DishProduct dishProduct3 = DishProduct.builder()
+    private static final SimpleProduct dishProduct3 = SimpleProduct.builder()
             .productId(productRef3.getProductId()).weight(productRef3.getWeight()).build();
 
     @Test
     public void getAllDishesTest() {
-        List<SimpleDishCategory> dishCategoryList = Arrays.asList(SIMPLE_CAT_1, SIMPLE_CAT_2, SIMPLE_CAT_3);
+        List<DishCategory> dishCategoryList = Arrays.asList(SIMPLE_CAT_1, SIMPLE_CAT_2, SIMPLE_CAT_3);
         List<Dish> domainDishList = Arrays.asList(domainDish1, domainDish2, domainDish3);
 
         when(dishCategories.getDishCategories()).thenReturn(dishCategoryList);
@@ -180,24 +180,24 @@ public class DishServiceTest {
 
     @Test
     public void addDishTest() {
-        List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
+        List<SimpleProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
         Dish addedDomainDish = domainDish1;
-        SimpleDish simpleDishToAdd = SimpleDish.builder().id(77777).name(domainDish1.getName())
+        DishInfo dishInfoToAdd = DishInfo.builder().id(77777).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
-        SimpleDish expectedSimpleDish = SimpleDish.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
+        DishInfo expectedDishInfo = DishInfo.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
 
-        when(dishCategoryDomainService.getCategory(simpleDishToAdd.getCategoryId()))
+        when(dishCategoryDomainService.getCategory(dishInfoToAdd.getCategoryId()))
                 .thenReturn(Optional.of(addedDomainDish.getCategory()));
         when(dishDomainService.addDish(any())).thenReturn(addedDomainDish);
         when(productService.getDomainProduct(dishProduct1.getProductId())).thenReturn(product1);
         when(productService.getDomainProduct(dishProduct2.getProductId())).thenReturn(product2);
         when(productService.getDomainProduct(dishProduct3.getProductId())).thenReturn(product3);
 
-        SimpleDish actualSimpleDish = dishService.addDish(simpleDishToAdd);
-        assertEquals(expectedSimpleDish, actualSimpleDish);
+        DishInfo actualDishInfo = dishService.addDish(dishInfoToAdd);
+        assertEquals(expectedDishInfo, actualDishInfo);
 
-        verify(dishCategoryDomainService).getCategory(simpleDishToAdd.getCategoryId());
+        verify(dishCategoryDomainService).getCategory(dishInfoToAdd.getCategoryId());
         verify(dishDomainService).addDish(any());
         verify(productService).getDomainProduct(dishProduct1.getProductId());
         verify(productService).getDomainProduct(dishProduct2.getProductId());
@@ -206,44 +206,44 @@ public class DishServiceTest {
 
     @Test
     public void addDishCategoryFailTest() {
-        List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
-        SimpleDish simpleDishToAdd = SimpleDish.builder().id(77777).name(domainDish1.getName())
+        List<SimpleProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
+        DishInfo dishInfoToAdd = DishInfo.builder().id(77777).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
-        when(dishCategoryDomainService.getCategory(simpleDishToAdd.getCategoryId())).thenReturn(Optional.empty());
+        when(dishCategoryDomainService.getCategory(dishInfoToAdd.getCategoryId())).thenReturn(Optional.empty());
 
         Assertions.assertThrows(NotFoundException.class, () -> {
-            dishService.addDish(simpleDishToAdd);
+            dishService.addDish(dishInfoToAdd);
         });
     }
 
     @Test
     public void updateDishTest() {
-        List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
-        SimpleDish simpleDishToUpdate = SimpleDish.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
+        List<SimpleProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
+        DishInfo dishInfoToUpdate = DishInfo.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
 
         when(repo.getDishOwner(domainDish1.getDishId())).thenReturn(Optional.empty());
-        when(dishCategoryDomainService.getCategory(simpleDishToUpdate.getCategoryId()))
+        when(dishCategoryDomainService.getCategory(dishInfoToUpdate.getCategoryId()))
                 .thenReturn(Optional.of(DOMAIN_CAT_1));
         when(productService.getDomainProduct(dishProduct1.getProductId())).thenReturn(product1);
         when(productService.getDomainProduct(dishProduct2.getProductId())).thenReturn(product2);
         when(productService.getDomainProduct(dishProduct3.getProductId())).thenReturn(product3);
         doNothing().when(dishDomainService).updateDish(any());
 
-        dishService.updateDish(simpleDishToUpdate);
+        dishService.updateDish(dishInfoToUpdate);
         verify(dishDomainService).updateDish(any());
     }
 
     @Test
     public void updateDishCategoryFailTest() {
-        List<DishProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
-        SimpleDish simpleDishToUpdate = SimpleDish.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
+        List<SimpleProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
+        DishInfo dishInfoToUpdate = DishInfo.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
 
-        when(dishCategoryDomainService.getCategory(simpleDishToUpdate.getCategoryId())).thenReturn(Optional.empty());
+        when(dishCategoryDomainService.getCategory(dishInfoToUpdate.getCategoryId())).thenReturn(Optional.empty());
 
         Assertions.assertThrows(NotFoundException.class, () -> {
-            dishService.updateDish(simpleDishToUpdate);
+            dishService.updateDish(dishInfoToUpdate);
         });
     }
 

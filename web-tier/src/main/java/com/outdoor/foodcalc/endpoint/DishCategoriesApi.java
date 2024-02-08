@@ -1,8 +1,7 @@
 package com.outdoor.foodcalc.endpoint;
 
-import com.outdoor.foodcalc.model.dish.SimpleDish;
-import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
+import com.outdoor.foodcalc.model.dish.DishCategory;
+import com.outdoor.foodcalc.model.product.ProductCategory;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
@@ -18,34 +17,34 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 public interface DishCategoriesApi {
 
     @ApiOperation(value = "Get all dish categories",
-            response = SimpleDishCategory.class,
+            response = DishCategory.class,
             responseContainer = "List")
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "All dish categories returned", response = SimpleDishCategory.class, responseContainer = "List")
+            @ApiResponse(code = 200, message = "All dish categories returned", response = DishCategory.class, responseContainer = "List")
     })
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    List<SimpleDishCategory> getDishCategories();
+    List<DishCategory> getDishCategories();
 
     @ApiOperation(value = "Get dish category by id = {}",
-            response = SimpleDishCategory.class
+            response = DishCategory.class
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Requested dish category returned", response = SimpleDishCategory.class),
+            @ApiResponse(code = 200, message = "Requested dish category returned", response = DishCategory.class),
             @ApiResponse(code = 404, message = "Dish category not found")
     })
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
-    SimpleDishCategory getDishCategory(@PathVariable("id") long id);
+    DishCategory getDishCategory(@PathVariable("id") long id);
 
     @ApiOperation(value = "Add new dish category - {}",
-            response = SimpleDishCategory.class
+            response = DishCategory.class
     )
     @ApiResponses(value = {
-            @ApiResponse(code = 201, message = "New dish category created", response = SimpleProductCategory.class),
+            @ApiResponse(code = 201, message = "New dish category created", response = ProductCategory.class),
             @ApiResponse(code = 400, message = "Bad request")
     })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    SimpleDishCategory addDishCategory(@RequestBody SimpleDishCategory category);
+    DishCategory addDishCategory(@RequestBody DishCategory category);
 
     @ApiOperation(value = "Update dish category by ID")
     @ApiResponses(value = {
@@ -58,7 +57,7 @@ public interface DishCategoriesApi {
     void updateDishCategory(@ApiParam(value = "ID of the Dish category", required = true)
                             @PathVariable("id") long id,
                             @ApiParam(value = "Dish category", required = true)
-                            @RequestBody SimpleDishCategory category);
+                            @RequestBody DishCategory category);
 
     @ApiOperation(value = "Delete dish category by ID")
     @ApiResponses(value = {

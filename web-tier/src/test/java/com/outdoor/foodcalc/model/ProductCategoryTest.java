@@ -1,6 +1,6 @@
 package com.outdoor.foodcalc.model;
 
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.ProductCategory;
 import org.junit.jupiter.api.Test;
 
 import javax.validation.ConstraintViolation;
@@ -9,27 +9,27 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * {@link SimpleProductCategory} model validation te
+ * {@link ProductCategory} model validation te
  *
  * @author Anton Borovyk.
  */
-public class SimpleProductCategoryTest extends BaseModelValidationTest{
+public class ProductCategoryTest extends BaseModelValidationTest{
 
     @Test
     public void validationPassTest() {
-        SimpleProductCategory category = new SimpleProductCategory();
+        ProductCategory category = new ProductCategory();
         category.setName("Test");
 
-        Set<ConstraintViolation<SimpleProductCategory>> constraintViolations = validator.validate(category);
+        Set<ConstraintViolation<ProductCategory>> constraintViolations = validator.validate(category);
 
         assertEquals(0, constraintViolations.size());
     }
 
     @Test
     public void nullNameTest() {
-        SimpleProductCategory category = new SimpleProductCategory();
+        ProductCategory category = new ProductCategory();
 
-        Set<ConstraintViolation<SimpleProductCategory>> constraintViolations = validator.validate(category);
+        Set<ConstraintViolation<ProductCategory>> constraintViolations = validator.validate(category);
 
         assertEquals(1, constraintViolations.size());
         assertTrue(constraintCheck(constraintViolations, "name", "{javax.validation.constraints.NotEmpty.message}"));
@@ -37,10 +37,10 @@ public class SimpleProductCategoryTest extends BaseModelValidationTest{
 
     @Test
     public void emptyNameTest() {
-        SimpleProductCategory category = new SimpleProductCategory();
+        ProductCategory category = new ProductCategory();
         category.setName("");
 
-        Set<ConstraintViolation<SimpleProductCategory>> constraintViolations = validator.validate(category);
+        Set<ConstraintViolation<ProductCategory>> constraintViolations = validator.validate(category);
 
         assertEquals(1, constraintViolations.size());
         assertTrue(constraintCheck(constraintViolations, "name", "{javax.validation.constraints.NotEmpty.message}"));

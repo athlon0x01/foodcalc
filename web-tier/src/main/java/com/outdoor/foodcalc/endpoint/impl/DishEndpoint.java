@@ -4,7 +4,7 @@ import com.outdoor.foodcalc.endpoint.DishApi;
 import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.CategoryWithDishes;
 import com.outdoor.foodcalc.model.dish.DishView;
-import com.outdoor.foodcalc.model.dish.SimpleDish;
+import com.outdoor.foodcalc.model.dish.DishInfo;
 import com.outdoor.foodcalc.service.DishService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,13 +36,13 @@ public class DishEndpoint implements DishApi {
         return dishService.getDish(id);
     }
 
-    public SimpleDish addDish(@RequestBody @Valid SimpleDish dish) {
+    public DishInfo addDish(@RequestBody @Valid DishInfo dish) {
         LOG.debug("Adding new dish - {}", dish);
         return dishService.addDish(dish);
     }
 
     public void updateDish(@PathVariable("id") long id,
-                                   @RequestBody @Valid SimpleDish dish) {
+                                   @RequestBody @Valid DishInfo dish) {
         if (id != dish.getId()) {
             LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, dish.getId());
             throw new ValidationException("Path variable Id = " + id
