@@ -17,7 +17,7 @@ import javax.validation.constraints.NotEmpty;
 @ToString(callSuper = true)
 @Jacksonized
 @SuperBuilder
-public class DishCategory extends EntityView {
+public class DishCategoryView extends EntityView {
     @NotEmpty
     private String name;
 }

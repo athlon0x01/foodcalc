@@ -1,7 +1,7 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.endpoint.DishCategoriesApi;
-import com.outdoor.foodcalc.model.dish.DishCategory;
+import com.outdoor.foodcalc.model.dish.DishCategoryView;
 import com.outdoor.foodcalc.service.DishCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,23 +30,23 @@ public class DishCategoryEndpoint extends AbstractEndpoint implements DishCatego
         this.categoryService = categoryService;
     }
 
-    public List<DishCategory> getDishCategories() {
+    public List<DishCategoryView> getDishCategories() {
         LOG.debug("Getting all dish categories");
         return categoryService.getDishCategories();
     }
 
-    public DishCategory getDishCategory(@PathVariable("id") long id) {
+    public DishCategoryView getDishCategory(@PathVariable("id") long id) {
         LOG.debug("Getting dish category id = {}", id);
         return categoryService.getDishCategory(id);
     }
 
-    public DishCategory addDishCategory(@RequestBody @Valid DishCategory category) {
+    public DishCategoryView addDishCategory(@RequestBody @Valid DishCategoryView category) {
         LOG.debug("Adding new dish category - {}", category);
         return categoryService.addDishCategory(category.getName());
     }
 
     public void updateDishCategory(@PathVariable("id") long id,
-                                   @RequestBody @Valid DishCategory category) {
+                                   @RequestBody @Valid DishCategoryView category) {
         verifyEntityId(id, category);
         LOG.debug("Updating dish category {}", category);
         categoryService.updateDishCategory(category);

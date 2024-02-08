@@ -2,6 +2,7 @@ package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
+import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
@@ -50,12 +51,12 @@ public class DishServiceTest {
     private static final String CATEGORY_1_NAME = "First category";
     private static final String CATEGORY_2_NAME = "Second category";
     private static final String CATEGORY_3_NAME = "Empty";
-    private static final DishCategory SIMPLE_CAT_1 = DishCategory.builder().id(CATEGORY_1_ID).name(CATEGORY_1_NAME).build();
-    private static final DishCategory SIMPLE_CAT_2 = DishCategory.builder().id(CATEGORY_2_ID).name(CATEGORY_2_NAME).build();
-    private static final DishCategory SIMPLE_CAT_3 = DishCategory.builder().id(CATEGORY_3_ID).name(CATEGORY_3_NAME).build();
-    private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_1 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-    private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_2 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
-    private static final com.outdoor.foodcalc.domain.model.dish.DishCategory DOMAIN_CAT_3 = new com.outdoor.foodcalc.domain.model.dish.DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
+    private static final DishCategoryView SIMPLE_CAT_1 = DishCategoryView.builder().id(CATEGORY_1_ID).name(CATEGORY_1_NAME).build();
+    private static final DishCategoryView SIMPLE_CAT_2 = DishCategoryView.builder().id(CATEGORY_2_ID).name(CATEGORY_2_NAME).build();
+    private static final DishCategoryView SIMPLE_CAT_3 = DishCategoryView.builder().id(CATEGORY_3_ID).name(CATEGORY_3_NAME).build();
+    private static final DishCategory DOMAIN_CAT_1 = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+    private static final DishCategory DOMAIN_CAT_2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+    private static final DishCategory DOMAIN_CAT_3 = new DishCategory(CATEGORY_3_ID, CATEGORY_3_NAME);
 
     private static final Product product1 = Product.builder().productId(101010).name("first prod")
             .category(new ProductCategory(77777, "test product cat1")).build();
@@ -121,10 +122,10 @@ public class DishServiceTest {
 
     @Test
     public void getAllDishesTest() {
-        List<DishCategory> dishCategoryList = Arrays.asList(SIMPLE_CAT_1, SIMPLE_CAT_2, SIMPLE_CAT_3);
+        List<DishCategoryView> dishCategoryViewList = Arrays.asList(SIMPLE_CAT_1, SIMPLE_CAT_2, SIMPLE_CAT_3);
         List<Dish> domainDishList = Arrays.asList(domainDish1, domainDish2, domainDish3);
 
-        when(dishCategories.getDishCategories()).thenReturn(dishCategoryList);
+        when(dishCategories.getDishCategories()).thenReturn(dishCategoryViewList);
         when(dishDomainService.getAllDishes()).thenReturn(domainDishList);
         when(productService.getProduct(product1.getProductId())).thenReturn(productView1);
         when(productService.getProduct(product2.getProductId())).thenReturn(productView2);

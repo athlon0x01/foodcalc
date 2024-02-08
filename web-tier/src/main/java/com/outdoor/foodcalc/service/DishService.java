@@ -2,6 +2,7 @@ package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
+import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealRef;
@@ -46,7 +47,7 @@ public class DishService {
      */
     public List<CategoryWithDishes> getAllDishes() {
         //load dishes & categories
-        final List<DishCategory> categories = dishCategoryService.getDishCategories();
+        final List<DishCategoryView> categories = dishCategoryService.getDishCategories();
         final List<Dish> domainDishes = dishDomainService.getAllDishes();
         //group dishes by categories
         final Map<Long, List<Dish>> dishesMap = domainDishes.stream()
@@ -55,7 +56,7 @@ public class DishService {
         return mapCategoryWithDishes(categories, dishesMap);
     }
 
-    private List<CategoryWithDishes> mapCategoryWithDishes(List<DishCategory> categories, Map<Long, List<Dish>> dishesMap) {
+    private List<CategoryWithDishes> mapCategoryWithDishes(List<DishCategoryView> categories, Map<Long, List<Dish>> dishesMap) {
         return categories.stream()
                 .map(c -> {
                     final List<Dish> dishList = dishesMap.get(c.getId());
@@ -90,7 +91,7 @@ public class DishService {
      * @return new dish
      */
     public DishInfo addDish(DishInfo dishInfo) {
-        final com.outdoor.foodcalc.domain.model.dish.DishCategory category = dishCategoryDomainService.getCategory(dishInfo.getCategoryId())
+        final DishCategory category = dishCategoryDomainService.getCategory(dishInfo.getCategoryId())
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Dish Category, id = " + dishInfo.getCategoryId()));
 
@@ -105,7 +106,7 @@ public class DishService {
      * @param dishInfo updated
      */
     public void updateDish(DishInfo dishInfo) {
-        final com.outdoor.foodcalc.domain.model.dish.DishCategory category = dishCategoryDomainService.getCategory(dishInfo.getCategoryId())
+        final DishCategory category = dishCategoryDomainService.getCategory(dishInfo.getCategoryId())
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Dish Category, id = " + dishInfo.getCategoryId() ));
 
@@ -191,7 +192,7 @@ public class DishService {
     }
 
     public DishRef mapDishRef(DishInfo dishInfo) {
-        final com.outdoor.foodcalc.domain.model.dish.DishCategory category = dishCategoryDomainService.getCategory(dishInfo.getCategoryId())
+        final DishCategory category = dishCategoryDomainService.getCategory(dishInfo.getCategoryId())
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Dish Category, id = " + dishInfo.getCategoryId() ));
 
