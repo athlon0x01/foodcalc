@@ -1,10 +1,16 @@
 package com.outdoor.foodcalc.endpoint;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -169,5 +175,24 @@ public abstract class ApiUnitTest {
         MockHttpServletRequestBuilder builder = buildDelete(url);
         return mockMvc.perform(builder)
             .andDo(print());
+    }
+
+    public <T> String serializeObject(List<T> objects) throws IOException {
+        return mapper.writeValueAsString(objects);
+    }
+
+    public <T> String serializeObject(T object) throws IOException {
+        return mapper.writeValueAsString(object);
+    }
+
+
+    public <T> T deserializeObject(String fileName, Class<T> objectClass) throws IOException {
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("test-data/" + fileName);
+        return mapper.readValue(is, objectClass);
+    }
+
+    public <T> List<T> deserializeListOfObjects(String fileName, Class<T> objectClass) throws IOException {
+        InputStream is = this.getClass().getClassLoader().getResourceAsStream("test-data/" + fileName);
+        return mapper.readValue(is, new TypeReference<ArrayList<T>>() {});
     }
 }
