@@ -97,7 +97,7 @@ public class DishEndpointTest extends ApiUnitTest{
      @Test
      public void getAllDishesTest() throws Exception {
           List<CategoryWithDishes> expected = deserializeListOfObjects(
-                  "ListOfCategoriesWithDishes.json", CategoryWithDishes.class);
+                  "dish/ListOfCategoriesWithDishes.json", CategoryWithDishes.class);
 
           when(service.getAllDishes()).thenReturn(expected);
           get("/dishes")
