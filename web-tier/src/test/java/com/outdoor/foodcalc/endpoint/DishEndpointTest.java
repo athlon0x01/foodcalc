@@ -9,7 +9,6 @@ import com.outdoor.foodcalc.endpoint.impl.DishEndpoint;
 import com.outdoor.foodcalc.model.dish.*;
 import com.outdoor.foodcalc.model.product.ProductView;
 import com.outdoor.foodcalc.service.DishService;
-import com.outdoor.foodcalc.utils.JsonToObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -49,7 +48,6 @@ public class DishEndpointTest extends ApiUnitTest{
      public void setMapper(ObjectMapper mapper) {
          super.setMapper(mapper);
      }
-     JsonToObjectMapper jsonMapper;
 
      private static final long CATEGORY_1_ID = 12345;
      private static final long CATEGORY_2_ID = 33321;
@@ -86,7 +84,6 @@ public class DishEndpointTest extends ApiUnitTest{
      @BeforeEach
      public void setUp() {
           setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
-          jsonMapper = new JsonToObjectMapper(mapper);
      }
 
      private SimpleDish createSimpleDish(long id) {
@@ -99,12 +96,8 @@ public class DishEndpointTest extends ApiUnitTest{
 
      @Test
      public void getAllDishesTest() throws Exception {
-          CategoryWithDishes categoryWithDishes1 = jsonMapper
-                  .deserializeObject("CategoryWithDishes1.json", CategoryWithDishes.class);
-          CategoryWithDishes categoryWithDishes2 = jsonMapper
-                  .deserializeObject("CategoryWithDishes2.json", CategoryWithDishes.class);
-
-          List<CategoryWithDishes> expected = List.of(categoryWithDishes1, categoryWithDishes2);
+          List<CategoryWithDishes> expected = deserializeListOfObjects(
+                  "ListOfCategoriesWithDishes.json", CategoryWithDishes.class);
 
           when(service.getAllDishes()).thenReturn(expected);
           get("/dishes")
