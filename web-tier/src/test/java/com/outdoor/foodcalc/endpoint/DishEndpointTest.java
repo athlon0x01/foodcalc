@@ -7,7 +7,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.endpoint.impl.DishEndpoint;
 import com.outdoor.foodcalc.model.dish.*;
-import com.outdoor.foodcalc.model.product.SimpleProduct;
+import com.outdoor.foodcalc.model.product.ProductItem;
 import com.outdoor.foodcalc.model.product.ProductView;
 import com.outdoor.foodcalc.service.DishService;
 import org.junit.jupiter.api.BeforeEach;
@@ -98,8 +98,8 @@ public class DishEndpointTest extends ApiUnitTest{
      }
 
      private DishInfo createSimpleDish(long id) {
-          SimpleProduct product1 = SimpleProduct.builder().productId(1000).weight(100.1f).build();
-          SimpleProduct product2 = SimpleProduct.builder().productId(2000).weight(200.2f).build();
+          ProductItem product1 = ProductItem.builder().productId(1000).weight(100.1f).build();
+          ProductItem product2 = ProductItem.builder().productId(2000).weight(200.2f).build();
           DishInfo dishInfo = DishInfo.builder()
                   .id(id).name("test simpleDish").categoryId(CATEGORY_1_ID)
                   .products(List.of(product1, product2)).build();

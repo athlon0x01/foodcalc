@@ -1,7 +1,7 @@
 package com.outdoor.foodcalc.model.meal;
 
 import com.outdoor.foodcalc.model.EntityView;
-import com.outdoor.foodcalc.model.product.SimpleProduct;
+import com.outdoor.foodcalc.model.product.ProductItem;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -18,6 +18,6 @@ import java.util.List;
 public class MealInfo extends EntityView {
     private String description;
     private long typeId;
-    private List<SimpleProduct> products;
+    private List<ProductItem> products;
     private List<Long> dishes;
 }

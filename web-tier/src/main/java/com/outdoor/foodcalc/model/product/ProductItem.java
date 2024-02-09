@@ -10,7 +10,7 @@ import javax.validation.constraints.PositiveOrZero;
 @Data
 @Jacksonized
 @Builder
-public class SimpleProduct {
+public class ProductItem {
     @Min(1)
     private long productId;
     @PositiveOrZero

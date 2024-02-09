@@ -9,7 +9,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
 import com.outdoor.foodcalc.model.dish.*;
-import com.outdoor.foodcalc.model.product.SimpleProduct;
+import com.outdoor.foodcalc.model.product.ProductItem;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -112,12 +112,12 @@ public class DishServiceTest {
             .calorific(6.83f).proteins(6.83f).fats(4.85f).carbs(18.2f).weight(100.0f)
             .products(Arrays.asList(productView1, productView2, productView3)).build();
 
-    private static final SimpleProduct dishProduct1 = SimpleProduct.builder()
+    private static final ProductItem dishProduct1 = ProductItem.builder()
             .productId(productRef1.getProductId()).weight(productRef1.getWeight()).build();
-    private static final SimpleProduct dishProduct2 = SimpleProduct.builder()
+    private static final ProductItem dishProduct2 = ProductItem.builder()
             .productId(productRef2.getProductId()).weight(productRef2.getWeight()).build();
 
-    private static final SimpleProduct dishProduct3 = SimpleProduct.builder()
+    private static final ProductItem dishProduct3 = ProductItem.builder()
             .productId(productRef3.getProductId()).weight(productRef3.getWeight()).build();
 
     @Test
@@ -181,7 +181,7 @@ public class DishServiceTest {
 
     @Test
     public void addDishTest() {
-        List<SimpleProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
+        List<ProductItem> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
         Dish addedDomainDish = domainDish1;
         DishInfo dishInfoToAdd = DishInfo.builder().id(77777).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
@@ -207,7 +207,7 @@ public class DishServiceTest {
 
     @Test
     public void addDishCategoryFailTest() {
-        List<SimpleProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
+        List<ProductItem> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
         DishInfo dishInfoToAdd = DishInfo.builder().id(77777).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
         when(dishCategoryDomainService.getCategory(dishInfoToAdd.getCategoryId())).thenReturn(Optional.empty());
@@ -219,7 +219,7 @@ public class DishServiceTest {
 
     @Test
     public void updateDishTest() {
-        List<SimpleProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
+        List<ProductItem> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
         DishInfo dishInfoToUpdate = DishInfo.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
 
@@ -237,7 +237,7 @@ public class DishServiceTest {
 
     @Test
     public void updateDishCategoryFailTest() {
-        List<SimpleProduct> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
+        List<ProductItem> dishProductList = Arrays.asList(dishProduct1, dishProduct2, dishProduct3);
         DishInfo dishInfoToUpdate = DishInfo.builder().id(domainDish1.getDishId()).name(domainDish1.getName())
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
 

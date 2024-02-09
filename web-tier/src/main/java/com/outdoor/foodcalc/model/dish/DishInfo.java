@@ -1,7 +1,7 @@
 package com.outdoor.foodcalc.model.dish;
 
 import com.outdoor.foodcalc.model.EntityView;
-import com.outdoor.foodcalc.model.product.SimpleProduct;
+import com.outdoor.foodcalc.model.product.ProductItem;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -22,5 +22,5 @@ public class DishInfo extends EntityView {
     private String name;
     @Min(1)
     private long categoryId;
-    private List<SimpleProduct> products;
+    private List<ProductItem> products;
 }
