@@ -14,7 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Service for all operations with {@link com.outdoor.foodcalc.domain.model.product.ProductCategory} objects,
+ * Service for all operations with {@link ProductCategory} objects,
  * including transformation domain objects to view models and vise versa.
  *
  * @author Anton Borovyk.
