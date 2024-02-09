@@ -36,8 +36,8 @@ public class MealTypesServiceTest {
     private static final MealType TYPE_1 = new MealType(TYPE_1_ID, TYPE_1_NAME);
     private static final MealType TYPE_2 = new MealType(TYPE_2_ID, TYPE_2_NAME);
 
-    private static final MealTypeView VIEW_1 = new MealTypeView(TYPE_1_ID, TYPE_1_NAME);
-    private static final MealTypeView VIEW_2 = new MealTypeView(TYPE_2_ID, TYPE_2_NAME);
+    private static final MealTypeView VIEW_1 = MealTypeView.builder().id(TYPE_1_ID).name(TYPE_1_NAME).build();
+    private static final MealTypeView VIEW_2 = MealTypeView.builder().id(TYPE_2_ID).name(TYPE_2_NAME).build();
 
     @Mock
     private MealTypeDomainService domainService;

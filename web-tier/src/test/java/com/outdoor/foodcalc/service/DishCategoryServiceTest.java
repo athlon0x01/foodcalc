@@ -4,7 +4,7 @@ import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
-import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
+import com.outdoor.foodcalc.model.dish.DishCategoryView;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,8 +33,8 @@ public class DishCategoryServiceTest {
     private static final DishCategory DOMAIN_CAT_1 = new DishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
     private static final DishCategory DOMAIN_CAT_2 = new DishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
 
-    private static final SimpleDishCategory SIMPLE_DISH_CAT_1 = new SimpleDishCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
-    private static final SimpleDishCategory SIMPLE_DISH_CAT_2 = new SimpleDishCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+    private static final DishCategoryView SIMPLE_DISH_CAT_1 = DishCategoryView.builder().id(CATEGORY_1_ID).name(CATEGORY_1_NAME).build();
+    private static final DishCategoryView SIMPLE_DISH_CAT_2 = DishCategoryView.builder().id(CATEGORY_2_ID).name(CATEGORY_2_NAME).build();
 
     @Mock
     private DishCategoryDomainService domainService;
@@ -45,11 +45,11 @@ public class DishCategoryServiceTest {
     @Test
     public void getDishCategoriesTest() {
         List<DishCategory> domainCategories = Arrays.asList(DOMAIN_CAT_1, DOMAIN_CAT_2);
-        List<SimpleDishCategory> expected = Arrays.asList(SIMPLE_DISH_CAT_1, SIMPLE_DISH_CAT_2);
+        List<DishCategoryView> expected = Arrays.asList(SIMPLE_DISH_CAT_1, SIMPLE_DISH_CAT_2);
 
         when(domainService.getCategories()).thenReturn(domainCategories);
 
-        List<SimpleDishCategory> actual = categoryService.getDishCategories();
+        List<DishCategoryView> actual = categoryService.getDishCategories();
 
         assertNotNull(actual);
         assertEquals(2, actual.size());
@@ -64,7 +64,7 @@ public class DishCategoryServiceTest {
 
         when(domainService.getCategory(CATEGORY_1_ID)).thenReturn(domainCategory);
 
-        SimpleDishCategory actual = categoryService.getDishCategory(CATEGORY_1_ID);
+        DishCategoryView actual = categoryService.getDishCategory(CATEGORY_1_ID);
 
         assertNotNull(actual);
         assertEquals(SIMPLE_DISH_CAT_1, actual);
@@ -87,7 +87,7 @@ public class DishCategoryServiceTest {
         DishCategory categoryToAdd = new DishCategory(-1, CATEGORY_1_NAME);
         when(domainService.addCategory(categoryToAdd)).thenReturn(DOMAIN_CAT_1);
 
-        SimpleDishCategory actual = categoryService.addDishCategory(CATEGORY_1_NAME);
+        DishCategoryView actual = categoryService.addDishCategory(CATEGORY_1_NAME);
 
         assertNotNull(actual);
         assertEquals(SIMPLE_DISH_CAT_1, actual);

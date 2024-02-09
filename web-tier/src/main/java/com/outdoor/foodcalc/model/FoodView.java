@@ -5,22 +5,17 @@ import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
 @Setter
-@ToString
-@EqualsAndHashCode
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @RequiredArgsConstructor
 @Jacksonized
 @SuperBuilder
-public class FoodView {
-    private long id;
+public class FoodView extends EntityView {
     private float calorific;
     private float proteins;
     private float fats;
     private float carbs;
     private float weight;
-
-    public long getId() {
-        return id;
-    }
 
     public float getCalorific() {
         return roundToTwoDecimals(calorific);

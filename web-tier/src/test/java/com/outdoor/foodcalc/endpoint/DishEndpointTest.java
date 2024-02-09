@@ -7,6 +7,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.endpoint.impl.DishEndpoint;
 import com.outdoor.foodcalc.model.dish.*;
+import com.outdoor.foodcalc.model.product.ProductItem;
 import com.outdoor.foodcalc.model.product.ProductView;
 import com.outdoor.foodcalc.service.DishService;
 import org.junit.jupiter.api.BeforeEach;
@@ -86,12 +87,13 @@ public class DishEndpointTest extends ApiUnitTest{
           setMockMvc(MockMvcBuilders.webAppContextSetup(webApplicationContext).build());
      }
 
-     private SimpleDish createSimpleDish(long id) {
-          DishProduct product1 = DishProduct.builder().productId(1000).weight(100.1f).build();
-          DishProduct product2 = DishProduct.builder().productId(2000).weight(200.2f).build();
-          return SimpleDish.builder()
+     private DishInfo createSimpleDish(long id) {
+          ProductItem product1 = ProductItem.builder().productId(1000).weight(100.1f).build();
+          ProductItem product2 = ProductItem.builder().productId(2000).weight(200.2f).build();
+          DishInfo dishInfo = DishInfo.builder()
                   .id(id).name("test simpleDish").categoryId(CATEGORY_1_ID)
                   .products(List.of(product1, product2)).build();
+          return dishInfo;
      }
 
      @Test
@@ -168,56 +170,56 @@ public class DishEndpointTest extends ApiUnitTest{
 
      @Test
      public void addDishTest() throws Exception {
-          SimpleDish simpleDishToAdd = createSimpleDish(DISH_1_ID);
+          DishInfo dishInfoToAdd = createSimpleDish(DISH_1_ID);
 
-          SimpleDish expected = createSimpleDish(DISH_2_ID);
+          DishInfo expected = createSimpleDish(DISH_2_ID);
 
-          when(service.addDish(simpleDishToAdd)).thenReturn(expected);
-          MvcResult mvcResult = post("/dishes", simpleDishToAdd).andReturn();
+          when(service.addDish(dishInfoToAdd)).thenReturn(expected);
+          MvcResult mvcResult = post("/dishes", dishInfoToAdd).andReturn();
 
-          SimpleDish actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleDish.class);
+          DishInfo actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), DishInfo.class);
           assertEquals(expected, actual);
 
-          verify(service).addDish(simpleDishToAdd);
+          verify(service).addDish(dishInfoToAdd);
      }
 
      @Test
      public void addDishValidationErrorTest() throws Exception {
-          SimpleDish simpleDishToAdd = SimpleDish.builder().build();
-          post400("/dishes", simpleDishToAdd);
+          DishInfo dishInfoToAdd = DishInfo.builder().build();
+          post400("/dishes", dishInfoToAdd);
 
-          verify(service, never()).addDish(simpleDishToAdd);
+          verify(service, never()).addDish(dishInfoToAdd);
      }
 
      @Test
      public void updateDishTest() throws Exception {
-          SimpleDish simpleDish = createSimpleDish(DISH_1_ID);
+          DishInfo dishInfo = createSimpleDish(DISH_1_ID);
 
-          doNothing().when(service).updateDish(simpleDish);
+          doNothing().when(service).updateDish(dishInfo);
 
-          put("/dishes/" + DISH_1_ID, simpleDish).andReturn();
+          put("/dishes/" + DISH_1_ID, dishInfo).andReturn();
 
-          verify(service).updateDish(simpleDish);
+          verify(service).updateDish(dishInfo);
      }
 
      @Test
      public void updateDishIdValidationTest() throws Exception {
           String message = "Path variable Id = 55 doesn't match with request body Id = " + DISH_1_ID;
-          SimpleDish simpleDishToUpdate = createSimpleDish(DISH_1_ID);
+          DishInfo dishInfoToUpdate = createSimpleDish(DISH_1_ID);
 
-          put400("/dishes/55", simpleDishToUpdate).andExpect(jsonPath("$", is(message)));
+          put400("/dishes/55", dishInfoToUpdate).andExpect(jsonPath("$", is(message)));
 
-          verify(service, never()).updateDish(simpleDishToUpdate);
+          verify(service, never()).updateDish(dishInfoToUpdate);
      }
 
      @Test
      public void updateDishNotFoundTest() throws Exception {
-          SimpleDish simpleDishToUpdate = createSimpleDish(DISH_1_ID);
-          doThrow(NotFoundException.class).when(service).updateDish(simpleDishToUpdate);
+          DishInfo dishInfoToUpdate = createSimpleDish(DISH_1_ID);
+          doThrow(NotFoundException.class).when(service).updateDish(dishInfoToUpdate);
 
-          put404("/dishes/" + DISH_1_ID, simpleDishToUpdate).andReturn();
+          put404("/dishes/" + DISH_1_ID, dishInfoToUpdate).andReturn();
 
-          verify(service).updateDish(simpleDishToUpdate);
+          verify(service).updateDish(dishInfoToUpdate);
      }
 
      @Test

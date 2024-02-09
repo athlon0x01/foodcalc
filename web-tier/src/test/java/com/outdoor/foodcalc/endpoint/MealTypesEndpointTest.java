@@ -34,7 +34,10 @@ public class MealTypesEndpointTest extends ApiUnitTest{
     private static final int MEAL_TYPE_ID = 12345;
     private static final String MEAL_TYPE_NAME = "Test meal type";
 
-    private static final MealTypeView dummyMealTypeView = new MealTypeView(MEAL_TYPE_ID, MEAL_TYPE_NAME);
+    private static final MealTypeView dummyMealTypeView = MealTypeView.builder()
+            .id(MEAL_TYPE_ID)
+            .name(MEAL_TYPE_NAME)
+            .build();
 
     @MockBean
     private MealTypesService service;
@@ -73,7 +76,8 @@ public class MealTypesEndpointTest extends ApiUnitTest{
     public void getMealTypeTest() throws Exception {
         MealTypeView expected = dummyMealTypeView;
 
-        when(service.getMealType(dummyMealTypeView.getId())).thenReturn(expected);
+        //TODO fix it
+        when(service.getMealType((int) dummyMealTypeView.getId())).thenReturn(expected);
 
         MvcResult mvcResult = get("/meal-types/" + MEAL_TYPE_ID).andReturn();
 
@@ -96,8 +100,9 @@ public class MealTypesEndpointTest extends ApiUnitTest{
 
     @Test
     public void addMealTypeTest() throws Exception {
-        MealTypeView mealTypeView = new MealTypeView();
-        mealTypeView.setName(MEAL_TYPE_NAME);
+        MealTypeView mealTypeView = MealTypeView.builder()
+                .name(MEAL_TYPE_NAME)
+                .build();
 
         when(service.addMealType(mealTypeView.getName())).thenReturn(dummyMealTypeView);
 
@@ -112,7 +117,7 @@ public class MealTypesEndpointTest extends ApiUnitTest{
 
     @Test
     public void addMealTypeValidationErrorTest() throws Exception {
-        MealTypeView mealTypeView = new MealTypeView();
+        MealTypeView mealTypeView = MealTypeView.builder().build();
 
         post400("/meal-types/", mealTypeView);
 

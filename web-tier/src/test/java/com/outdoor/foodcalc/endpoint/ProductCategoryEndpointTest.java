@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.endpoint.impl.ProductCategoryEndpoint;
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.ProductCategoryView;
 import com.outdoor.foodcalc.service.ProductCategoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,7 +39,10 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     private static final long CATEGORY_ID = 12345;
     private static final String CATEGORY_NAME = "Test category";
-    private static final SimpleProductCategory dummyCategory = new SimpleProductCategory(CATEGORY_ID, CATEGORY_NAME);
+    private static final ProductCategoryView dummyCategory = ProductCategoryView.builder()
+            .id(CATEGORY_ID)
+            .name(CATEGORY_NAME)
+            .build();
 
     @MockBean
     private ProductCategoryService service;
@@ -60,7 +63,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void getCategoriesTest() throws Exception {
-        List<SimpleProductCategory> expected = Collections.singletonList(dummyCategory);
+        List<ProductCategoryView> expected = Collections.singletonList(dummyCategory);
 
         when(service.getCategories()).thenReturn(expected);
 
@@ -68,7 +71,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
             .andExpect(jsonPath("$", hasSize(1)))
             .andReturn();
 
-        SimpleProductCategory[] actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleProductCategory[].class);
+        ProductCategoryView[] actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), ProductCategoryView[].class);
         assertEquals(expected, Arrays.asList(actual));
 
         verify(service).getCategories();
@@ -76,14 +79,14 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void getCategoryTest() throws Exception {
-        SimpleProductCategory expected = dummyCategory;
+        ProductCategoryView expected = dummyCategory;
 
         when(service.getCategory(CATEGORY_ID)).thenReturn(expected);
 
         MvcResult mvcResult = get("/product-categories/" + CATEGORY_ID)
             .andReturn();
 
-        SimpleProductCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleProductCategory.class);
+        ProductCategoryView actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), ProductCategoryView.class);
         assertEquals(expected, actual);
 
         verify(service).getCategory(CATEGORY_ID);
@@ -102,14 +105,16 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryTest() throws Exception {
-        SimpleProductCategory category = new SimpleProductCategory(1, CATEGORY_NAME);
+        ProductCategoryView category = ProductCategoryView.builder()
+                .name(CATEGORY_NAME)
+                .build();
 
         when(service.addCategory(CATEGORY_NAME)).thenReturn(dummyCategory);
 
         MvcResult mvcResult = post("/product-categories", category)
             .andReturn();
 
-        SimpleProductCategory actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), SimpleProductCategory.class);
+        ProductCategoryView actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), ProductCategoryView.class);
         assertEquals(dummyCategory, actual);
 
         verify(service).addCategory(CATEGORY_NAME);
@@ -117,7 +122,7 @@ public class ProductCategoryEndpointTest extends ApiUnitTest {
 
     @Test
     public void addCategoryValidationErrorTest() throws Exception {
-        SimpleProductCategory category = new SimpleProductCategory();
+        ProductCategoryView category = ProductCategoryView.builder().build();
 
         post400("/product-categories", category);
 

@@ -5,7 +5,7 @@ import com.outdoor.foodcalc.domain.model.plan.DayPlan;
 import com.outdoor.foodcalc.domain.model.plan.DayPlanRef;
 import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
-import com.outdoor.foodcalc.model.plan.SimpleFoodDay;
+import com.outdoor.foodcalc.model.plan.FoodDayInfo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -46,8 +46,8 @@ public class FoodDayService {
         plan.setDays(days);
     }
 
-    public SimpleFoodDay addFoodDay(long planId,
-                                    SimpleFoodDay foodDay) {
+    public FoodDayInfo addFoodDay(long planId,
+                                  FoodDayInfo foodDay) {
         var plan = repository.getFoodPlan(planId);
         DayPlan dayPlan = new DayPlan(repository.getMaxDayIdAndIncrement(), foodDay.getDate(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         foodDay.setId(dayPlan.getDayId());
@@ -58,7 +58,7 @@ public class FoodDayService {
     }
 
     public void updateFoodDay(long planId, long id,
-                              SimpleFoodDay foodDay) {
+                              FoodDayInfo foodDay) {
         var plan = repository.getFoodPlan(planId);
         var oldDay = repository.getDay(planId, id);
         var products = foodDay.getProducts().stream()

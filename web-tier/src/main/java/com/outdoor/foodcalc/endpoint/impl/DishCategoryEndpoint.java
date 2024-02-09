@@ -1,8 +1,7 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.endpoint.DishCategoriesApi;
-import com.outdoor.foodcalc.model.ValidationException;
-import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
+import com.outdoor.foodcalc.model.dish.DishCategoryView;
 import com.outdoor.foodcalc.service.DishCategoryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +19,7 @@ import java.util.List;
  * @author Anton Borovyk.
  */
 @RestController
-public class DishCategoryEndpoint implements DishCategoriesApi {
+public class DishCategoryEndpoint extends AbstractEndpoint implements DishCategoriesApi {
 
     private static final Logger LOG = LoggerFactory.getLogger(DishCategoryEndpoint.class);
 
@@ -31,28 +30,24 @@ public class DishCategoryEndpoint implements DishCategoriesApi {
         this.categoryService = categoryService;
     }
 
-    public List<SimpleDishCategory> getDishCategories() {
+    public List<DishCategoryView> getDishCategories() {
         LOG.debug("Getting all dish categories");
         return categoryService.getDishCategories();
     }
 
-    public SimpleDishCategory getDishCategory(@PathVariable("id") long id) {
+    public DishCategoryView getDishCategory(@PathVariable("id") long id) {
         LOG.debug("Getting dish category id = {}", id);
         return categoryService.getDishCategory(id);
     }
 
-    public SimpleDishCategory addDishCategory(@RequestBody @Valid SimpleDishCategory category) {
+    public DishCategoryView addDishCategory(@RequestBody @Valid DishCategoryView category) {
         LOG.debug("Adding new dish category - {}", category);
         return categoryService.addDishCategory(category.getName());
     }
 
     public void updateDishCategory(@PathVariable("id") long id,
-                                   @RequestBody @Valid SimpleDishCategory category) {
-        if (id != category.getId()) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, category.getId());
-            throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + category.getId());
-        }
+                                   @RequestBody @Valid DishCategoryView category) {
+        verifyEntityId(id, category);
         LOG.debug("Updating dish category {}", category);
         categoryService.updateDishCategory(category);
     }

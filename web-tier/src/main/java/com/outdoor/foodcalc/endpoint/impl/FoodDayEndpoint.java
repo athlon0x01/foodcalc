@@ -1,9 +1,8 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
-import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.DishView;
+import com.outdoor.foodcalc.model.plan.FoodDayInfo;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
-import com.outdoor.foodcalc.model.plan.SimpleFoodDay;
 import com.outdoor.foodcalc.service.FoodDayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("${spring.data.rest.basePath}/plans/{planId}/days")
-public class FoodDayEndpoint {
+public class FoodDayEndpoint extends AbstractEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(FoodDayEndpoint.class);
     private final FoodDayService foodDayService;
@@ -48,8 +47,8 @@ public class FoodDayEndpoint {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public SimpleFoodDay addFoodDay(@PathVariable("planId") long planId,
-                                    @RequestBody @Valid SimpleFoodDay foodDay) {
+    public FoodDayInfo addFoodDay(@PathVariable("planId") long planId,
+                                  @RequestBody @Valid FoodDayInfo foodDay) {
         LOG.debug("Adding new food day, plan - {}", planId);
         return foodDayService.addFoodDay(planId, foodDay);
     }
@@ -58,12 +57,8 @@ public class FoodDayEndpoint {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void updateFoodDay(@PathVariable("planId") long planId,
                               @PathVariable("id") long id,
-                              @RequestBody @Valid SimpleFoodDay foodDay) {
-        if (id != foodDay.getId()) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, foodDay.getId());
-            throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + foodDay.getId());
-        }
+                              @RequestBody @Valid FoodDayInfo foodDay) {
+        verifyEntityId(id, foodDay);
         LOG.debug("Updating food plan id = {}, day - {}", planId, id);
         foodDayService.updateFoodDay(planId, id, foodDay);
     }

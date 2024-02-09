@@ -1,9 +1,8 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
-import com.outdoor.foodcalc.model.ValidationException;
 import com.outdoor.foodcalc.model.dish.DishView;
+import com.outdoor.foodcalc.model.meal.MealInfo;
 import com.outdoor.foodcalc.model.meal.MealView;
-import com.outdoor.foodcalc.model.meal.SimpleMeal;
 import com.outdoor.foodcalc.service.MealService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @RestController
 @RequestMapping("${spring.data.rest.basePath}/plans/{planId}/days/{dayId}/meals")
-public class MealEndpoint {
+public class MealEndpoint extends AbstractEndpoint {
     //TODO add to Dish table `template` column to differentiate template dishes from meal dishes
 
     private static final Logger LOG = LoggerFactory.getLogger(MealEndpoint.class);
@@ -52,9 +51,9 @@ public class MealEndpoint {
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
-    public SimpleMeal addMeal(@PathVariable("planId") long planId,
-                              @PathVariable("dayId") long dayId,
-                              @RequestBody @Valid SimpleMeal meal) {
+    public MealInfo addMeal(@PathVariable("planId") long planId,
+                            @PathVariable("dayId") long dayId,
+                            @RequestBody @Valid MealInfo meal) {
         LOG.debug("Adding new meal, day - {}", dayId);
         return mealService.addMeal(planId, dayId, meal);
     }
@@ -64,12 +63,8 @@ public class MealEndpoint {
     public void updateMeal(@PathVariable("planId") long planId,
                            @PathVariable("dayId") long dayId,
                            @PathVariable("id") long id,
-                           @RequestBody @Valid SimpleMeal newMeal) {
-        if (id != newMeal.getId()) {
-            LOG.error("Path variable Id = {} doesn't match with request body Id = {}", id, newMeal.getId());
-            throw new ValidationException("Path variable Id = " + id
-                    + " doesn't match with request body Id = " + newMeal.getId());
-        }
+                           @RequestBody @Valid MealInfo newMeal) {
+        verifyEntityId(id, newMeal);
         LOG.debug("Updating meal id = {}, day - {}", id, dayId);
         mealService.updateMeal(planId, dayId, id, newMeal);
     }

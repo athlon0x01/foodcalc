@@ -4,7 +4,7 @@ import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.ProductCategoryView;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,9 +36,9 @@ public class ProductCategoryServiceTest {
 
     private static final ProductCategory PRODUCT_CATEGORY_2 = new ProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
 
-    private static final SimpleProductCategory SIMPLE_PRODUCT_CATEGORY_1 = new SimpleProductCategory(CATEGORY_1_ID, CATEGORY_1_NAME);
+    private static final ProductCategoryView SIMPLE_PRODUCT_CATEGORY_1 = ProductCategoryView.builder().id(CATEGORY_1_ID).name(CATEGORY_1_NAME).build();
 
-    private static final SimpleProductCategory SIMPLE_PRODUCT_CATEGORY_2 = new SimpleProductCategory(CATEGORY_2_ID, CATEGORY_2_NAME);
+    private static final ProductCategoryView SIMPLE_PRODUCT_CATEGORY_2 = ProductCategoryView.builder().id(CATEGORY_2_ID).name(CATEGORY_2_NAME).build();
 
     @InjectMocks
     private ProductCategoryService categoryService;
@@ -49,11 +49,11 @@ public class ProductCategoryServiceTest {
     @Test
     public void getCategoriesTest() {
         List<ProductCategory> domainCategories = Arrays.asList(PRODUCT_CATEGORY_1, PRODUCT_CATEGORY_2);
-        List<SimpleProductCategory> expected = Arrays.asList(SIMPLE_PRODUCT_CATEGORY_1, SIMPLE_PRODUCT_CATEGORY_2);
+        List<ProductCategoryView> expected = Arrays.asList(SIMPLE_PRODUCT_CATEGORY_1, SIMPLE_PRODUCT_CATEGORY_2);
 
         when(categoryDomainService.getCategories()).thenReturn(domainCategories);
 
-        List<SimpleProductCategory> actual = categoryService.getCategories();
+        List<ProductCategoryView> actual = categoryService.getCategories();
         assertNotNull(actual);
         assertEquals(2, actual.size());
         assertEquals(expected, actual);
@@ -66,9 +66,9 @@ public class ProductCategoryServiceTest {
         when(categoryDomainService.getCategory(CATEGORY_1_ID))
                 .thenReturn(Optional.of(PRODUCT_CATEGORY_1));
 
-        SimpleProductCategory expected = SIMPLE_PRODUCT_CATEGORY_1;
+        ProductCategoryView expected = SIMPLE_PRODUCT_CATEGORY_1;
 
-        SimpleProductCategory actual = categoryService.getCategory(CATEGORY_1_ID);
+        ProductCategoryView actual = categoryService.getCategory(CATEGORY_1_ID);
         assertNotNull(actual);
         assertEquals(expected, actual);
 
@@ -89,9 +89,9 @@ public class ProductCategoryServiceTest {
     public void addCategoryTest() {
         ProductCategory domainCategory = new ProductCategory(-1, CATEGORY_1_NAME);
         when(categoryDomainService.addCategory(domainCategory)).thenReturn(PRODUCT_CATEGORY_1);
-        SimpleProductCategory expected = SIMPLE_PRODUCT_CATEGORY_1;
+        ProductCategoryView expected = SIMPLE_PRODUCT_CATEGORY_1;
 
-        SimpleProductCategory actual = categoryService.addCategory(CATEGORY_1_NAME);
+        ProductCategoryView actual = categoryService.addCategory(CATEGORY_1_NAME);
         assertEquals(expected, actual);
 
         verify(categoryDomainService).addCategory(domainCategory);

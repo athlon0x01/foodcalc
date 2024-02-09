@@ -10,7 +10,7 @@ import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
 import com.outdoor.foodcalc.model.meal.MealView;
-import com.outdoor.foodcalc.model.meal.SimpleMeal;
+import com.outdoor.foodcalc.model.meal.MealInfo;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class MealService {
         repository.updateDayInPlan(plan, newDay, day.getDescription());
     }
 
-    public SimpleMeal addMeal(long planId, long dayId, SimpleMeal meal) {
+    public MealInfo addMeal(long planId, long dayId, MealInfo meal) {
         var plan = repository.getFoodPlan(planId);
         var day = repository.getDay(planId, dayId);
         Meal newMeal = new Meal(repository.getMaxMealIdAndIncrement(), getMealType(meal.getTypeId()), Collections.emptyList(), Collections.emptyList());
@@ -64,7 +64,7 @@ public class MealService {
         return meal;
     }
 
-    public void updateMeal(long planId, long dayId, long id, SimpleMeal newMeal) {
+    public void updateMeal(long planId, long dayId, long id, MealInfo newMeal) {
         var plan = repository.getFoodPlan(planId);
         var day = repository.getDay(planId, dayId);
         var meal = repository.getMeal(planId, dayId, id);
@@ -102,7 +102,10 @@ public class MealService {
         return MealView.builder()
                 .id(meal.getMealId())
                 .description(meal.getDescription())
-                .type(new MealTypeView(meal.getTypeId(), meal.getTypeName()))
+                .type(MealTypeView.builder()
+                        .id(meal.getTypeId())
+                        .name(meal.getTypeName())
+                        .build())
                 .products(meal.getProducts().stream()
                         .map(productService::mapProductRef)
                         .collect(Collectors.toList()))

@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.service;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
-import com.outdoor.foodcalc.model.product.SimpleProductCategory;
+import com.outdoor.foodcalc.model.product.ProductCategoryView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,23 +32,23 @@ public class ProductCategoryService {
     }
 
     /**
-     * Gets all {@link ProductCategory} objects mapped to {@link SimpleProductCategory}.
+     * Gets all {@link ProductCategory} objects mapped to {@link ProductCategoryView}.
      *
      * @return list of categories
      */
-    public List<SimpleProductCategory> getCategories() {
+    public List<ProductCategoryView> getCategories() {
         return categoryDomainService.getCategories().stream()
             .map(this::mapProductCategory)
             .collect(Collectors.toList());
     }
 
     /**
-     * Gets all {@link ProductCategory} objects mapped to {@link SimpleProductCategory}.
+     * Gets all {@link ProductCategory} objects mapped to {@link ProductCategoryView}.
      *
      * @param id category Id to load
      * @return loaded category
      */
-    public SimpleProductCategory getCategory(long id) {
+    public ProductCategoryView getCategory(long id) {
         Optional<ProductCategory> category = categoryDomainService.getCategory(id);
         if (!category.isPresent()) {
             LOG.error("Product category with id={} wasn't found", id);
@@ -57,9 +57,11 @@ public class ProductCategoryService {
         return mapProductCategory(category.get());
     }
 
-    private SimpleProductCategory mapProductCategory(ProductCategory productCategory) {
-        return new SimpleProductCategory(
-                productCategory.getCategoryId(), productCategory.getName());
+    private ProductCategoryView mapProductCategory(ProductCategory productCategory) {
+        return ProductCategoryView.builder()
+                .id(productCategory.getCategoryId())
+                .name(productCategory.getName())
+                .build();
     }
 
     /**
@@ -68,7 +70,7 @@ public class ProductCategoryService {
      * @param categoryName name of new category
      * @return new category
      */
-    public SimpleProductCategory addCategory(String categoryName) {
+    public ProductCategoryView addCategory(String categoryName) {
         return mapProductCategory(
             categoryDomainService.addCategory(
                 new ProductCategory(-1, categoryName)));
@@ -80,7 +82,7 @@ public class ProductCategoryService {
      *
      * @param model updated category
      */
-    public void updateCategory(SimpleProductCategory model) {
+    public void updateCategory(ProductCategoryView model) {
         categoryDomainService.updateCategory(new ProductCategory(model.getId(), model.getName()));
     }
 

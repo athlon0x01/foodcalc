@@ -1,12 +1,15 @@
 package com.outdoor.foodcalc.service;
 
+import com.outdoor.foodcalc.domain.model.plan.DayPlanRef;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.model.plan.FoodPlanView;
-import com.outdoor.foodcalc.model.plan.SimpleFoodPlan;
+import com.outdoor.foodcalc.model.plan.FoodPlanInfo;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,7 +23,7 @@ public class FoodPlanService {
         this.dayService = foodDayService;
     }
 
-    public List<SimpleFoodPlan> getAllFoodPlans() {
+    public List<FoodPlanInfo> getAllFoodPlans() {
         return repository.getAllPlans().stream()
                 .map(this::mapPlan)
                 .collect(Collectors.toList());
@@ -34,22 +37,33 @@ public class FoodPlanService {
         repository.deleteFoodPlan(id);
     }
 
-    public SimpleFoodPlan addFoodPlan(SimpleFoodPlan foodPlan) {
+    public FoodPlanInfo addFoodPlan(FoodPlanInfo foodPlan) {
         FoodPlan plan = new FoodPlan(repository.getMaxPlanIdAndIncrement(), foodPlan.getName(), null, foodPlan.getMembers(), 0, Collections.emptyList());
         foodPlan.setId(plan.getId());
         repository.addFoodPlan(plan);
         return foodPlan;
     }
 
-    public void updateFoodPlan(long id, SimpleFoodPlan foodPlan) {
+    public void updateFoodPlan(long id, FoodPlanInfo foodPlan) {
         FoodPlan plan = repository.getFoodPlan(id);
         plan.setName(foodPlan.getName());
         plan.setDescription(foodPlan.getDescription());
+        plan.setDuration(foodPlan.getDuration());
         plan.setMembers(foodPlan.getMembers());
+        List<DayPlanRef> newDays = new ArrayList<>();
+        foodPlan.getDays().forEach(dayId -> getDayById(plan.getDays(), dayId)
+                .ifPresent(newDays::add));
+        plan.setDays(newDays);
     }
 
-    private SimpleFoodPlan mapPlan(FoodPlan plan) {
-        return SimpleFoodPlan.builder()
+    private Optional<DayPlanRef> getDayById(List<DayPlanRef> days, long id) {
+        return days.stream()
+                .filter(day -> day.getDayId() == id)
+                .findFirst();
+    }
+
+    private FoodPlanInfo mapPlan(FoodPlan plan) {
+        return FoodPlanInfo.builder()
                 .id(plan.getId())
                 .name(plan.getName())
                 .description(plan.getDescription())

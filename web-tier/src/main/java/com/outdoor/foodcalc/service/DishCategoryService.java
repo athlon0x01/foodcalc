@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.service;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
-import com.outdoor.foodcalc.model.dish.SimpleDishCategory;
+import com.outdoor.foodcalc.model.dish.DishCategoryView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,27 +32,30 @@ public class DishCategoryService {
     }
 
     /**
-     * Gets all {@link DishCategory} objects mapped to {@link SimpleDishCategory}.
+     * Gets all {@link DishCategory} objects mapped to {@link DishCategoryView}.
      *
      * @return list of categories
      */
-    public List<SimpleDishCategory> getDishCategories() {
+    public List<DishCategoryView> getDishCategories() {
         return categoryDomainService.getCategories().stream()
                 .map(this::mapDishCategory)
                 .collect(Collectors.toList());
     }
 
-    private SimpleDishCategory mapDishCategory(DishCategory category) {
-        return new SimpleDishCategory(category.getCategoryId(), category.getName());
+    private DishCategoryView mapDishCategory(DishCategory category) {
+        return DishCategoryView.builder()
+                .id(category.getCategoryId())
+                .name(category.getName())
+                .build();
     }
 
     /**
-     * Gets all {@link DishCategory} objects mapped to {@link SimpleDishCategory}.
+     * Gets all {@link DishCategory} objects mapped to {@link DishCategoryView}.
      *
      * @param id category Id to load
      * @return loaded category
      */
-    public SimpleDishCategory getDishCategory(long id) {
+    public DishCategoryView getDishCategory(long id) {
         Optional<DishCategory> category = categoryDomainService.getCategory(id);
         if (!category.isPresent()) {
             LOG.error("Dish category with id={} wasn't found", id);
@@ -67,7 +70,7 @@ public class DishCategoryService {
      * @param categoryName name of new category
      * @return new category
      */
-    public SimpleDishCategory addDishCategory(String categoryName) {
+    public DishCategoryView addDishCategory(String categoryName) {
         return mapDishCategory(
                 categoryDomainService.addCategory(
                         new DishCategory(-1, categoryName)));
@@ -78,7 +81,7 @@ public class DishCategoryService {
      *
      * @param model updated category
      */
-    public void updateDishCategory(SimpleDishCategory model) {
+    public void updateDishCategory(DishCategoryView model) {
         categoryDomainService.updateCategory(new DishCategory(model.getId(), model.getName()));
     }
 
