@@ -82,7 +82,6 @@ public class MealTypesService {
      * @param model updated meal type view
      */
     public void updateMealType(MealTypeView model) {
-        //TODO fix MealType.id
         domainService.updateMealType(new MealType(model.getId(), model.getName()));
     }
 
