@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 public class MealTypesEndpointTest extends ApiUnitTest{
 
-    private static final int MEAL_TYPE_ID = 12345;
+    private static final long MEAL_TYPE_ID = 12345;
     private static final String MEAL_TYPE_NAME = "Test meal type";
 
     private static final MealTypeView dummyMealTypeView = MealTypeView.builder()

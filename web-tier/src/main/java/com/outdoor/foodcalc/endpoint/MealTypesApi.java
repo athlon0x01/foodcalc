@@ -32,7 +32,7 @@ public interface MealTypesApi {
             @ApiResponse(code = 404, message = "Meal type not found")
     })
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
-    MealTypeView getMealType(@PathVariable("id") int id);
+    MealTypeView getMealType(@PathVariable("id") long id);
 
     @ApiOperation(value = "Add new meal type - {}",
                     response = MealTypeView.class)
@@ -53,7 +53,7 @@ public interface MealTypesApi {
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void updateMealType(@ApiParam(value = "ID of the Meal type", required = true)
-                        @PathVariable("id") int id,
+                        @PathVariable("id") long id,
                         @ApiParam(value = "Meal type", required = true)
                         @RequestBody MealTypeView mealTypeView);
 
@@ -65,5 +65,5 @@ public interface MealTypesApi {
     })
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteMealType(@PathVariable("id") int id);
+    void deleteMealType(@PathVariable("id") long id);
 }
