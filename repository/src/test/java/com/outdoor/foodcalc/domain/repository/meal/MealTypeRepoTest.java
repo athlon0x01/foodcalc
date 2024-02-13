@@ -29,7 +29,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class MealTypeRepoTest {
 
-    private static final Integer TYPE_ID = 12345;
+    private static final Long TYPE_ID = 12345L;
 
     private static final String DUMMY_TYPE = "Dummy meal type";
 
@@ -71,7 +71,7 @@ public class MealTypeRepoTest {
     @Test
     public void addMealTypeTest() {
         ArgumentMatcher<SqlParameterSource> matcher = params -> DUMMY_TYPE.equals(params.getValue("name"));
-        Integer expectedId = 54321;
+        Long expectedId = 54321L;
         String[] keyColumns = new String[] {"id"};
         KeyHolder holder = mock(KeyHolder.class);
         MealTypeRepo spyRepo = spy(repo);
@@ -81,7 +81,7 @@ public class MealTypeRepoTest {
         when(jdbcTemplate.update(eq(MealTypeRepo.INSERT_MEALTYPE_SQL), argThat(matcher),
                 eq(holder), eq(keyColumns))).thenReturn(1);
 
-        assertEquals(expectedId.intValue(), spyRepo.addMealType(dummyType));
+        assertEquals(expectedId.longValue(), spyRepo.addMealType(dummyType));
 
         verify(holder).getKey();
         verify(jdbcTemplate).update(eq(MealTypeRepo.INSERT_MEALTYPE_SQL),
@@ -194,13 +194,13 @@ public class MealTypeRepoTest {
     @Test
     public void mapRowTest() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
-        when(resultSet.getInt("id")).thenReturn(TYPE_ID);
+        when(resultSet.getLong("id")).thenReturn(TYPE_ID);
         when(resultSet.getString("name")).thenReturn(DUMMY_TYPE);
 
         MealType actualType = repo.mapRow(resultSet, 2);
         assertEquals(dummyType, actualType);
 
-        verify(resultSet).getInt("id");
+        verify(resultSet).getLong("id");
         verify(resultSet).getString("name");
     }
 }
