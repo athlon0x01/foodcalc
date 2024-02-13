@@ -14,7 +14,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class MealType implements IDomainEntity<MealType> {
 
-    private final int typeId;
+    private final long typeId;
     private String name;
 
     @Override

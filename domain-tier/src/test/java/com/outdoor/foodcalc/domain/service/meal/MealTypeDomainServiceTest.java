@@ -28,7 +28,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class MealTypeDomainServiceTest {
 
-    private static final int MEAL_TYPE_ID = 12345;
+    private static final long MEAL_TYPE_ID = 12345L;
     private static final MealType dummyMealType = new MealType(MEAL_TYPE_ID, "dummyMealType");
 
     @InjectMocks

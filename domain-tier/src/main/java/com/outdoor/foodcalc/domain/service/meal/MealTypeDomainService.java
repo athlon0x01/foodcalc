@@ -45,7 +45,7 @@ public class MealTypeDomainService {
      * @param id meal type Id
      * @return loaded meal type
      */
-    public Optional<MealType> getMealType(int id) {
+    public Optional<MealType> getMealType(long id) {
         return mealTypeRepo.getMealType(id);
     }
 
@@ -56,7 +56,7 @@ public class MealTypeDomainService {
      * @return instance of new {@link MealType}
      */
     public MealType addMealType(MealType mealType) {
-        int id = mealTypeRepo.addMealType(mealType);
+        long id = mealTypeRepo.addMealType(mealType);
         return new MealType(id, mealType.getName());
     }
 
@@ -85,7 +85,7 @@ public class MealTypeDomainService {
      * @throws NotFoundException If meal type doesn't exist
      * @throws FoodcalcDomainException If meal type wasn't deleted
      * */
-    public void deleteMealType(int id) {
+    public void deleteMealType(long id) {
         if (!mealTypeRepo.exist(id)) {
             LOG.error("Meal type with id={} doesn't exist", id);
             throw new NotFoundException("Meal type with id=" + id + " doesn't exist");
