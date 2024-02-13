@@ -35,7 +35,7 @@ public class MealTypesEndpoint extends AbstractEndpoint implements MealTypesApi 
         return mealTypesService.getMealTypes();
     }
 
-    public MealTypeView getMealType(@PathVariable("id") int id) {
+    public MealTypeView getMealType(@PathVariable("id") long id) {
         LOG.debug("Getting meal type id = {}", id);
         return mealTypesService.getMealType(id);
     }
@@ -45,14 +45,14 @@ public class MealTypesEndpoint extends AbstractEndpoint implements MealTypesApi 
         return mealTypesService.addMealType(mealTypeView.getName());
     }
 
-    public void updateMealType(@PathVariable("id") int id,
+    public void updateMealType(@PathVariable("id") long id,
                                @RequestBody @Valid MealTypeView mealTypeView) {
         verifyEntityId(id, mealTypeView);
         LOG.debug("Updating meal type {}", mealTypeView);
         mealTypesService.updateMealType(mealTypeView);
     }
 
-    public void deleteMealType(@PathVariable("id") int id) {
+    public void deleteMealType(@PathVariable("id") long id) {
         LOG.debug("Deleting meal type id = {}", id);
         mealTypesService.deleteMealType(id);
     }

@@ -55,7 +55,7 @@ public class MealTypesService {
      * @param id meal type Id to load
      * @return loaded meal type view
      */
-    public MealTypeView getMealType(int id) {
+    public MealTypeView getMealType(long id) {
         Optional<MealType> mealType = domainService.getMealType(id);
         if (mealType.isEmpty()) {
             LOG.error("Meal type with id={} wasn't found", id);
@@ -82,8 +82,7 @@ public class MealTypesService {
      * @param model updated meal type view
      */
     public void updateMealType(MealTypeView model) {
-        //TODO fix MealType.id
-        domainService.updateMealType(new MealType((int) model.getId(), model.getName()));
+        domainService.updateMealType(new MealType(model.getId(), model.getName()));
     }
 
     /**
@@ -91,7 +90,7 @@ public class MealTypesService {
      *
      * @param id meal type Id to delete
      */
-    public void deleteMealType(int id) {
+    public void deleteMealType(long id) {
         domainService.deleteMealType(id);
     }
 }

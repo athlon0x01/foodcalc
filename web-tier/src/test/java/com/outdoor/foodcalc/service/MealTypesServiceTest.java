@@ -28,8 +28,8 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class MealTypesServiceTest {
 
-    private static final int TYPE_1_ID = 11111;
-    private static final int TYPE_2_ID = 22222;
+    private static final long TYPE_1_ID = 11111;
+    private static final long TYPE_2_ID = 22222;
     private static final String TYPE_1_NAME = "First Meal type";
     private static final String TYPE_2_NAME = "Second Meal type";
 

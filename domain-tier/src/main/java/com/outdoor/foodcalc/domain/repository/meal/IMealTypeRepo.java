@@ -25,7 +25,7 @@ public interface IMealTypeRepo {
      * @param id meal type Id
      * @return loaded meal type
      */
-    Optional<MealType> getMealType(int id);
+    Optional<MealType> getMealType(long id);
 
     /**
      * Add new {@link MealType}.
@@ -33,7 +33,7 @@ public interface IMealTypeRepo {
      * @param mealType meal type to add
      * @return auto generated Id
      */
-    int addMealType(MealType mealType);
+    long addMealType(MealType mealType);
 
     /**
      * Updates selected {@link MealType} with new value.
@@ -49,7 +49,7 @@ public interface IMealTypeRepo {
      * @param id meal type Id to delete
      * @return if meal type was deleted
      */
-    boolean deleteMealType(int id);
+    boolean deleteMealType(long id);
 
     /**
      * Check if specified {@link MealType} exists.
@@ -57,5 +57,5 @@ public interface IMealTypeRepo {
      * @param id meal type Id to delete
      * @return if meal type exists.
      */
-    boolean exist(int id);
+    boolean exist(long id);
 }

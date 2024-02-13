@@ -38,13 +38,13 @@ public class MealTypeRepo extends AbstractRepository<MealType>
     }
 
     @Override
-    public Optional<MealType> getMealType(int id) {
+    public Optional<MealType> getMealType(long id) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("typeId", id);
         return getSingleObject(SELECT_MEALTYPE_SQL, parameters, this);
     }
 
     @Override
-    public int addMealType(MealType mealType) {
+    public long addMealType(MealType mealType) {
         KeyHolder holder = getKeyHolder();
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("name", mealType.getName());
         jdbcTemplate.update(INSERT_MEALTYPE_SQL, parameters, holder,new String[]{"id"});
@@ -58,13 +58,13 @@ public class MealTypeRepo extends AbstractRepository<MealType>
     }
 
     @Override
-    public boolean deleteMealType(int id) {
+    public boolean deleteMealType(long id) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("typeId", id);
         return jdbcTemplate.update(DELETE_MEALTYPE_SQL, parameters) > 0;
     }
 
     @Override
-    public boolean exist(int id) {
+    public boolean exist(long id) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("typeId", id);
         Integer count = jdbcTemplate.queryForObject(SELECT_MEALTYPE_EXISTS_SQL, parameters, Integer.class);
         return count != null && count > 0;
@@ -72,7 +72,7 @@ public class MealTypeRepo extends AbstractRepository<MealType>
 
     @Override
     public MealType mapRow(ResultSet resultSet, int i) throws SQLException {
-        return new MealType(resultSet.getInt("id"), resultSet.getString("name"));
+        return new MealType(resultSet.getLong("id"), resultSet.getString("name"));
     }
 
     /**

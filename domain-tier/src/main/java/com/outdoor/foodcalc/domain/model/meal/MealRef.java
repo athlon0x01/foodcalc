@@ -29,7 +29,7 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsCont
         return meal.getMealId();
     }
 
-    public int getTypeId() {
+    public long getTypeId() {
         return meal.getType().getTypeId();
     }
 
