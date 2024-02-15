@@ -3,35 +3,34 @@ package com.outdoor.foodcalc.domain.model.plan;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.IValueObject;
-import com.outdoor.foodcalc.domain.model.dish.DishRef;
-import com.outdoor.foodcalc.domain.model.meal.MealRef;
+import com.outdoor.foodcalc.domain.model.dish.Dish;
+import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
 
 /**
- * Day Plan entity, that contains some meals and may be some additional dishes and products.
- * Day doesn't include dishes. Dishes should be included into meals.
+ * Plan Day entity, that contains some meals and may be some additional dishes and products.
+ * In general day doesn't include dishes. Dishes should be included into meals, but some exceptions allowed.
  * F.e. Breakfast & Lunch (meals) & some nuts & sweets (products).
  *
  * @author Anton Borovyk
  */
-public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan> {
+public class PlanDay extends ComplexFoodEntity implements IDomainEntity<PlanDay> {
 
     private final long dayId;
     private LocalDate date;
     private String description;
-    private List<MealRef> meals;
-    private List<DishRef> dishes;
+    private List<Meal> meals;
+    private List<Dish> dishes;
     private List<ProductRef> products;
 
-    public DayPlan(long dayId, LocalDate date, List<MealRef> meals, List<DishRef> dishes, List<ProductRef> products) {
+    public PlanDay(long dayId, LocalDate date, List<Meal> meals, List<Dish> dishes, List<ProductRef> products) {
         this.dayId = dayId;
         this.date = date;
         this.meals = new ArrayList<>(meals);
@@ -59,24 +58,24 @@ public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan>
         this.description = description;
     }
 
-    public List<MealRef> getMeals() {
-        return Collections.unmodifiableList(meals);
+    public List<Meal> getMeals() {
+        return meals;
     }
 
-    public void setMeals(List<MealRef> meals) {
+    public void setMeals(List<Meal> meals) {
         this.meals = new ArrayList<>(meals);
     }
 
-    public List<DishRef> getDishes() {
-        return Collections.unmodifiableList(dishes);
+    public List<Dish> getDishes() {
+        return dishes;
     }
 
-    public void setDishes(List<DishRef> dishes) {
+    public void setDishes(List<Dish> dishes) {
         this.dishes = new ArrayList<>(dishes);
     }
 
     public List<ProductRef> getProducts() {
-        return Collections.unmodifiableList(products);
+        return products;
     }
 
     public void setProducts(List<ProductRef> products) {
@@ -84,7 +83,7 @@ public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan>
     }
 
     @Override
-    public boolean sameIdentityAs(DayPlan other) {
+    public boolean sameIdentityAs(PlanDay other) {
         return dayId == other.dayId;
     }
 
@@ -93,13 +92,13 @@ public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan>
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        DayPlan dayPlan = (DayPlan) o;
+        PlanDay planDay = (PlanDay) o;
 
-        if (dayId != dayPlan.dayId) return false;
-        if (date != null ? !date.equals(dayPlan.date) : dayPlan.date != null) return false;
-        if (!IValueObject.sameCollectionAs(meals, dayPlan.meals)) return false;
-        if (!IValueObject.sameCollectionAs(dishes, dayPlan.dishes)) return false;
-        return IValueObject.sameCollectionAs(products, dayPlan.products);
+        if (dayId != planDay.dayId) return false;
+        if (date != null ? !date.equals(planDay.date) : planDay.date != null) return false;
+//        if (!IValueObject.sameCollectionAs(meals, planDay.meals)) return false;
+//        if (!IValueObject.sameCollectionAs(dishes, planDay.dishes)) return false;
+        return IValueObject.sameCollectionAs(products, planDay.products);
 
     }
 
@@ -119,10 +118,10 @@ public class DayPlan extends ComplexFoodEntity implements IDomainEntity<DayPlan>
     protected Collection<Collection<ProductRef>> getProductsCollections() {
         //collect all meals products & products to one list
         final List<Collection<ProductRef>> allProductsList = meals.stream()
-                .map(MealRef::getAllProducts)
+                .map(Meal::getAllProducts)
                 .collect(toList());
         allProductsList.addAll(dishes.stream()
-                .map(DishRef::getAllProducts)
+                .map(Dish::getAllProducts)
                 .collect(toList()));
         allProductsList.add(products);
         return allProductsList;

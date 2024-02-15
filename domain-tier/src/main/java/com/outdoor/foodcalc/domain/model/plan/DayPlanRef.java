@@ -3,8 +3,8 @@ package com.outdoor.foodcalc.domain.model.plan;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.ProductsContainer;
-import com.outdoor.foodcalc.domain.model.dish.DishRef;
-import com.outdoor.foodcalc.domain.model.meal.MealRef;
+import com.outdoor.foodcalc.domain.model.dish.Dish;
+import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.time.LocalDate;
@@ -13,15 +13,15 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Day Plan Value Object, provides readonly access to {@link DayPlan Day Plan} Entity.
+ * Day Plan Value Object, provides readonly access to {@link PlanDay Day Plan} Entity.
  *
  * @author Anton Borovyk
  */
 public class DayPlanRef implements IValueObject<DayPlanRef>, FoodDetails, ProductsContainer {
 
-    private final DayPlan day;
+    private final PlanDay day;
 
-    public DayPlanRef(DayPlan day) {
+    public DayPlanRef(PlanDay day) {
         if (day == null)
             throw new IllegalArgumentException("Constructor doesn't allow null parameters!");
         this.day = day;
@@ -39,11 +39,11 @@ public class DayPlanRef implements IValueObject<DayPlanRef>, FoodDetails, Produc
         return day.getDescription();
     }
 
-    public List<MealRef> getMeals() {
+    public List<Meal> getMeals() {
         return Collections.unmodifiableList(day.getMeals());
     }
 
-    public List<DishRef> getDishes() {return Collections.unmodifiableList(day.getDishes());}
+    public List<Dish> getDishes() {return Collections.unmodifiableList(day.getDishes());}
 
     public List<ProductRef> getProducts() {
         return Collections.unmodifiableList(day.getProducts());

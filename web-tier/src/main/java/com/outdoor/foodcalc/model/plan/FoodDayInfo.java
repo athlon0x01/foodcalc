@@ -23,4 +23,5 @@ public class FoodDayInfo extends EntityView {
     private LocalDate date;
     private List<ProductItem> products;
     private List<Long> dishes;
+    private List<Long> meals;
 }

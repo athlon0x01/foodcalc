@@ -3,20 +3,20 @@ package com.outdoor.foodcalc.service;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
-import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
-import com.outdoor.foodcalc.domain.model.meal.MealRef;
-import com.outdoor.foodcalc.domain.model.meal.MealType;
-import com.outdoor.foodcalc.domain.model.plan.DayPlan;
-import com.outdoor.foodcalc.domain.model.plan.DayPlanRef;
+import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.service.dish.DishCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
-import com.outdoor.foodcalc.model.dish.*;
+import com.outdoor.foodcalc.model.dish.CategoryWithDishes;
+import com.outdoor.foodcalc.model.dish.DishCategoryView;
+import com.outdoor.foodcalc.model.dish.DishInfo;
+import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -114,31 +114,30 @@ public class DishService {
         //TODO will de changed latter
         var dishOwner = repository.getDishOwner(updatedDish.getDishId());
         if (dishOwner.isPresent()) {
-            if (dishOwner.get() instanceof MealRef) {
-                MealRef meal = (MealRef) dishOwner.get();
+            if (dishOwner.get() instanceof Meal) {
+                Meal meal = (Meal) dishOwner.get();
                 var day = repository.getDayByMealId(meal.getMealId());
                 var plan = repository.getPlanByDayId(day.getDayId());
-                List<DishRef> dishes = updateDishes(updatedDish, meal::getDishes);
-                Meal domainMeal = new Meal(meal.getMealId(), new MealType(meal.getTypeId(), meal.getTypeName()), dishes, meal.getProducts());
-                repository.updateMealInDay(plan, day, domainMeal, meal.getDescription());
-            } else if (dishOwner.get() instanceof DayPlanRef) {
-                DayPlanRef oldDay = (DayPlanRef) dishOwner.get();
-                var plan = repository.getPlanByDayId(oldDay.getDayId());
-                List<DishRef> dishes = updateDishes(updatedDish, oldDay::getDishes);
-                DayPlan day = new DayPlan(oldDay.getDayId(), oldDay.getDate(), oldDay.getMeals(), dishes, oldDay.getProducts());
-                repository.updateDayInPlan(plan, day, oldDay.getDescription());
+                List<Dish> dishes = updateDishes(updatedDish, meal::getDishes);
+                meal.setDishes(dishes);
+                plan.setLastUpdated(ZonedDateTime.now());
+            } else if (dishOwner.get() instanceof PlanDay) {
+                PlanDay day = (PlanDay) dishOwner.get();
+                var plan = repository.getPlanByDayId(day.getDayId());
+                List<Dish> dishes = updateDishes(updatedDish, day::getDishes);
+                day.setDishes(dishes);
+                plan.setLastUpdated(ZonedDateTime.now());
             }
         } else {
             dishDomainService.updateDish(updatedDish);
         }
     }
 
-    private List<DishRef> updateDishes(Dish dish, Supplier<List<DishRef>> dishesSupplier) {
-        DishRef dishRef = new DishRef(dish);
-        List<DishRef> dishes = new ArrayList<>(dishesSupplier.get());
+    private List<Dish> updateDishes(Dish dish, Supplier<List<Dish>> dishesSupplier) {
+        List<Dish> dishes = dishesSupplier.get();
         for (int i = 0; i < dishes.size(); i++) {
-            if (dishes.get(i).getDishId() == dishRef.getDishId()) {
-                dishes.set(i, dishRef);
+            if (dishes.get(i).getDishId() == dish.getDishId()) {
+                dishes.set(i, dish);
             }
         }
         return dishes;
@@ -153,7 +152,7 @@ public class DishService {
         dishDomainService.deleteDish(id);
     }
 
-    private DishView mapDishView(Dish dish) {
+    DishView mapDishView(Dish dish) {
         return DishView.builder()
                 .id(dish.getDishId())
                 .name(dish.getName())
@@ -183,41 +182,10 @@ public class DishService {
     }
 
     //TODO temporary methods to be refactored later
-    public DishRef getDishRefCopy(long id, long newId) {
+    public Dish getDishCopy(long id, long newId) {
         Dish domainDish = dishDomainService.getDish(id)
                 .orElseThrow(() ->
                         new NotFoundException("Dish wasn't found"));
-        Dish newDish = new Dish(newId, domainDish.getName(), domainDish.getDescription(), domainDish.getCategory(), domainDish.getProducts());
-        return new DishRef(newDish);
-    }
-
-    public DishRef mapDishRef(DishInfo dishInfo) {
-        final DishCategory category = dishCategoryDomainService.getCategory(dishInfo.getCategoryId())
-                .orElseThrow(() ->
-                        new NotFoundException("Failed to get Dish Category, id = " + dishInfo.getCategoryId() ));
-
-        Dish updatedDish = new Dish(dishInfo.getId(), dishInfo.getName(), "", category, mapProductRefs(dishInfo));
-        return new DishRef(updatedDish);
-    }
-
-    //TODO avoid code duplication
-    DishView mapDishView(DishRef dish) {
-        return DishView.builder()
-                .id(dish.getDishId())
-                .name(dish.getName())
-                .categoryId(dish.getCategoryId())
-                .products(dish.getAllProducts().stream()
-                        .map(pr -> {
-                            //TODO mapping without reloading the product
-                            final ProductView product = productService.getProduct(pr.getProductId());
-                            product.setWeight(pr.getWeight());
-                            return product;
-                        })
-                        .collect(Collectors.toList()))
-                .calorific(dish.getCalorific())
-                .proteins(dish.getCalorific())
-                .carbs(dish.getCarbs())
-                .weight(dish.getWeight())
-                .build();
+        return new Dish(newId, domainDish.getName(), domainDish.getDescription(), domainDish.getCategory(), domainDish.getProducts());
     }
 }

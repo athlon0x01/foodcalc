@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.domain.model.meal;
 import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.ProductsContainer;
-import com.outdoor.foodcalc.domain.model.dish.DishRef;
+import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.Collection;
@@ -41,7 +41,7 @@ public class MealRef implements IValueObject<MealRef>, FoodDetails, ProductsCont
         return meal.getDescription();
     }
 
-    public List<DishRef> getDishes() {
+    public List<Dish> getDishes() {
         return Collections.unmodifiableList(meal.getDishes());
     }
 

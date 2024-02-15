@@ -282,6 +282,10 @@ export default {
       return this.dayDishes.map(d => d.id)
     },
 
+    mapMeals () {
+      return this.dayMeals.map(m => m.id)
+    },
+
     updateDay () {
       if (this.dayDate != null) {
         let newDateObj = new Date(this.dayDate)
@@ -299,7 +303,8 @@ export default {
           date: newDateString,
           description: this.dayDescription,
           products: this.mapProducts(),
-          dishes: this.mapDishes()
+          dishes: this.mapDishes(),
+          meals: this.mapMeals()
         }
         axios.put(this.planDayEndpointUrl + this.$route.params.dayId, planDay)
           .then(() => {

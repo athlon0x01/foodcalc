@@ -1,16 +1,18 @@
 package com.outdoor.foodcalc.service;
 
-import com.outdoor.foodcalc.domain.model.dish.DishRef;
-import com.outdoor.foodcalc.domain.model.plan.DayPlan;
-import com.outdoor.foodcalc.domain.model.plan.DayPlanRef;
+import com.outdoor.foodcalc.domain.model.dish.Dish;
+import com.outdoor.foodcalc.domain.model.meal.Meal;
+import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
 import com.outdoor.foodcalc.model.plan.FoodDayInfo;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,16 +46,16 @@ public class FoodDayService {
                 .filter(day -> id != day.getDayId())
                 .collect(Collectors.toList());
         plan.setDays(days);
+        plan.setLastUpdated(ZonedDateTime.now());
     }
 
     public FoodDayInfo addFoodDay(long planId,
                                   FoodDayInfo foodDay) {
         var plan = repository.getFoodPlan(planId);
-        DayPlan dayPlan = new DayPlan(repository.getMaxDayIdAndIncrement(), foodDay.getDate(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
-        foodDay.setId(dayPlan.getDayId());
-        var days = new ArrayList<>(plan.getDays());
-        days.add(new DayPlanRef(dayPlan));
-        plan.setDays(days);
+        PlanDay planDay = new PlanDay(repository.getMaxDayIdAndIncrement(), foodDay.getDate(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        foodDay.setId(planDay.getDayId());
+        plan.getDays().add(planDay);
+        plan.setLastUpdated(ZonedDateTime.now());
         return foodDay;
     }
 
@@ -64,25 +66,37 @@ public class FoodDayService {
         var products = foodDay.getProducts().stream()
                 .map(productService::getProductRef)
                 .collect(Collectors.toList());
-        var updatedDishes = repository.rebuildDishes(oldDay.getDishes(), foodDay.getDishes());
-        DayPlan day = new DayPlan(id, foodDay.getDate(), oldDay.getMeals(), updatedDishes, products);
+        var updatedMeals = reorderMeals(oldDay.getMeals(), foodDay.getMeals());
+        var updatedDishes = repository.reorderDishes(oldDay.getDishes(), foodDay.getDishes());
+        PlanDay day = new PlanDay(id, foodDay.getDate(), updatedMeals, updatedDishes, products);
         repository.updateDayInPlan(plan, day, foodDay.getDescription());
     }
 
     public DishView addDayDish(long planId, long dayId, long id) {
         var plan = repository.getFoodPlan(planId);
-        var oldDay = repository.getDay(planId, dayId);
+        var day = repository.getDay(planId, dayId);
         //building new dish as a copy of template dish
-        DishRef dishRef = dishService.getDishRefCopy(id, repository.getMaxDishIdAndIncrement());
+        Dish dish = dishService.getDishCopy(id, repository.getMaxDishIdAndIncrement());
         //TODO new dish should be persisted and linked to the day
-        List<DishRef> dishes = new ArrayList<>(oldDay.getDishes());
-        dishes.add(dishRef);
-        DayPlan day = new DayPlan(dayId, oldDay.getDate(), oldDay.getMeals(), dishes, oldDay.getProducts());
-        repository.updateDayInPlan(plan, day, oldDay.getDescription());
-        return dishService.mapDishView(dishRef);
+        day.getDishes().add(dish);
+        plan.setLastUpdated(ZonedDateTime.now());
+        return dishService.mapDishView(dish);
     }
 
-    FoodDayView mapView(DayPlanRef day) {
+    public Optional<Meal> getMealById(List<Meal> meals, long id) {
+        return meals.stream()
+                .filter(dish -> dish.getMealId() == id)
+                .findFirst();
+    }
+
+    public List<Meal> reorderMeals(List<Meal> meals, List<Long> ids) {
+        List<Meal> newMeals = new ArrayList<>();
+        ids.forEach(id -> getMealById(meals, id)
+                .ifPresent(newMeals::add));
+        return newMeals;
+    }
+
+    FoodDayView mapView(PlanDay day) {
         return FoodDayView.builder()
                 .id(day.getDayId())
                 .date(day.getDate())

@@ -51,7 +51,7 @@ public class MealTest {
         dishProducts.add(new ProductRef(onion, 50));
         dishProducts.add(new ProductRef(salt, 20));
         Dish meatSoup = new Dish(223, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), dishProducts);
-        meal = new Meal(321, new MealType(21, "Dinner"), Arrays.asList(new DishRef(meatCereal), new DishRef(meatSoup)),
+        meal = new Meal(321, new MealType(21, "Dinner"), Arrays.asList(meatCereal, meatSoup),
                 Arrays.asList(new ProductRef(cookies, 300), new ProductRef(salt, 50))) ;
         mealRef = new MealRef(meal);
         products = new ArrayList<>();

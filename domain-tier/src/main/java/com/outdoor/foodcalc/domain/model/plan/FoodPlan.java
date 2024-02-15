@@ -4,9 +4,9 @@ import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -16,24 +16,22 @@ import static java.util.stream.Collectors.toList;
  *
  * @author Anton Borovyk
  */
-//TODO add createdOn, lastUpdated dates
 public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPlan> {
 
     private final long id;
     private String name;
     private String description;
     private int members;
-    //TODO it should be count of days
-    private int duration;
-    private List<DayPlanRef> days;
+    private ZonedDateTime createdOn;
+    private ZonedDateTime lastUpdated;
+    private List<PlanDay> days;
 
     public FoodPlan(long id, String name, String description,
-                    int members, int duration, Collection<DayPlanRef> days) {
+                    int members, Collection<PlanDay> days) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.members = members;
-        this.duration = duration;
         this.days = new ArrayList<>(days);
     }
 
@@ -65,19 +63,31 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
         this.members = members;
     }
 
+    public ZonedDateTime getCreatedOn() {
+        return createdOn;
+    }
+
+    public void setCreatedOn(ZonedDateTime createdOn) {
+        this.createdOn = createdOn;
+    }
+
+    public ZonedDateTime getLastUpdated() {
+        return lastUpdated;
+    }
+
+    public void setLastUpdated(ZonedDateTime lastUpdated) {
+        this.lastUpdated = lastUpdated;
+    }
+
     public int getDuration() {
-        return duration;
+        return days.size();
     }
 
-    public void setDuration(int duration) {
-        this.duration = duration;
+    public List<PlanDay> getDays() {
+        return days;
     }
 
-    public List<DayPlanRef> getDays() {
-        return Collections.unmodifiableList(days);
-    }
-
-    public void setDays(List<DayPlanRef> days) {
+    public void setDays(List<PlanDay> days) {
         this.days = new ArrayList<>(days);
     }
 
@@ -94,7 +104,7 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
     @Override
     protected Collection<Collection<ProductRef>> getProductsCollections() {
         //collect all day products to one list
-        return days.stream().map(DayPlanRef::getAllProducts).collect(toList());
+        return days.stream().map(PlanDay::getAllProducts).collect(toList());
     }
 
     /**
@@ -120,7 +130,6 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
 
         if (id != that.id) return false;
         if (members != that.members) return false;
-        if (duration != that.duration) return false;
         if (name != null ? !name.equals(that.name) : that.name != null) return false;
         return days.equals(that.days);
 
@@ -131,7 +140,6 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
         int result = (int) (id ^ (id >>> 32));
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + members;
-        result = 31 * result + duration;
         return result;
     }
 }
