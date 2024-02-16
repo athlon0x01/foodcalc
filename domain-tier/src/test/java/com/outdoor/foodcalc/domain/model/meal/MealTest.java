@@ -2,7 +2,6 @@ package com.outdoor.foodcalc.domain.model.meal;
 
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
-import com.outdoor.foodcalc.domain.model.dish.DishRef;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
@@ -23,7 +22,6 @@ public class MealTest {
     private static final double DELTA = 0.00001;
     private List<ProductRef> products;
     private Meal meal;
-    private MealRef mealRef;
 
     @BeforeEach
     public void setup() {
@@ -53,7 +51,6 @@ public class MealTest {
         Dish meatSoup = new Dish(223, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), dishProducts);
         meal = new Meal(321, new MealType(21, "Dinner"), Arrays.asList(meatCereal, meatSoup),
                 Arrays.asList(new ProductRef(cookies, 300), new ProductRef(salt, 50))) ;
-        mealRef = new MealRef(meal);
         products = new ArrayList<>();
         products.add(new ProductRef(buckwheat, 700));
         products.add(new ProductRef(meat, 700));
@@ -68,23 +65,18 @@ public class MealTest {
     public void foodDetailsTest() {
         //check weight
         assertEquals(238.5f, meal.getWeight(), DELTA);
-        assertEquals(238.5f, mealRef.getWeight(), DELTA);
 
         //check calorific
         assertEquals(725.76f, meal.getCalorific(), DELTA);
-        assertEquals(725.76f, mealRef.getCalorific(), DELTA);
 
         //check proteins
         assertEquals(27.13f, meal.getProteins(), DELTA);
-        assertEquals(27.13f, mealRef.getProteins(), DELTA);
 
         //check fats
         assertEquals(19.6f, meal.getFats(), DELTA);
-        assertEquals(19.6f, mealRef.getFats(), DELTA);
 
         //check carbs
         assertEquals(107.382f, meal.getCarbs(), DELTA);
-        assertEquals(107.382f, mealRef.getCarbs(), DELTA);
     }
 
     @Test
@@ -93,10 +85,5 @@ public class MealTest {
         List<ProductRef> mealProducts = (List<ProductRef>) meal.getAllProducts();
         Collections.sort(mealProducts);
         assertArrayEquals(products.toArray(), mealProducts.toArray());
-
-        //check mealRef products
-        List<ProductRef> mealRefProducts = (List<ProductRef>) mealRef.getAllProducts();
-        Collections.sort(mealRefProducts);
-        assertArrayEquals(products.toArray(), mealRefProducts.toArray());
     }
 }

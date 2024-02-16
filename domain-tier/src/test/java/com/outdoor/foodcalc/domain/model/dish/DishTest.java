@@ -20,7 +20,6 @@ public class DishTest {
 
     private static final double DELTA = 0.00001;
     private Dish dish;
-    private DishRef dishRef;
     private Collection<ProductRef> products;
 
     @BeforeEach
@@ -40,35 +39,28 @@ public class DishTest {
         products.add(new ProductRef(salt, 25));
 
         dish = new Dish(123, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), products);
-        dishRef = new DishRef(dish);
     }
 
     @Test
     public void foodDetailsTest() {
         //check weight
         assertEquals (116.5f, dish.getWeight(), DELTA);
-        assertEquals(116.5f, dishRef.getWeight(), DELTA);
 
         //check calorific
         assertEquals(346.86f, dish.getCalorific(), DELTA);
-        assertEquals(346.86f, dishRef.getCalorific(), DELTA);
 
         //check proteins
         assertEquals(14.52f, dish.getProteins(), DELTA);
-        assertEquals(14.52f, dishRef.getProteins(), DELTA);
 
         //check fats
         assertEquals(10.21f, dish.getFats(), DELTA);
-        assertEquals(10.21f, dishRef.getFats(), DELTA);
 
         //check carbs
         assertEquals(48.022f, dish.getCarbs(), DELTA);
-        assertEquals(48.022f, dishRef.getCarbs(), DELTA);
     }
 
     @Test
     public void productContainerTest() {
         assertArrayEquals(products.toArray(), dish.getAllProducts().toArray());
-        assertArrayEquals(products.toArray(), dishRef.getAllProducts().toArray());
     }
 }
