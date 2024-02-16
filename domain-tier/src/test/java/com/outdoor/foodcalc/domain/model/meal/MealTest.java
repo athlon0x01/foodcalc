@@ -58,7 +58,7 @@ public class MealTest {
         products.add(new ProductRef(salt, 95));
         products.add(new ProductRef(cookies, 300));
         products.add(new ProductRef(potato, 500));
-        Collections.sort(products);
+        products.sort(Comparator.comparingLong(ProductRef::getProductId));
     }
 
     @Test
@@ -83,7 +83,7 @@ public class MealTest {
     public void productContainerTest() {
         //check meal products
         List<ProductRef> mealProducts = (List<ProductRef>) meal.getAllProducts();
-        Collections.sort(mealProducts);
+        mealProducts.sort(Comparator.comparingLong(ProductRef::getProductId));
         assertArrayEquals(products.toArray(), mealProducts.toArray());
     }
 }

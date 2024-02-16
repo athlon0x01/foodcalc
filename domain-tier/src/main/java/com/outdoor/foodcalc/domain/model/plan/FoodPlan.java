@@ -8,6 +8,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
@@ -16,7 +17,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @author Anton Borovyk
  */
-public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPlan> {
+public class FoodPlan extends ComplexFoodEntity implements IDomainEntity {
 
     private final long id;
     private String name;
@@ -91,11 +92,6 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
         this.days = new ArrayList<>(days);
     }
 
-    @Override
-    public boolean sameIdentityAs(FoodPlan other) {
-        return id == other.id;
-    }
-
     /**
      * Combine all collection of different food entities to complex products collection.
      *
@@ -122,17 +118,28 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPla
     }
 
     @Override
+    public boolean sameValueAs(IDomainEntity other) {
+        if (this.equals(other)) {
+            FoodPlan that = (FoodPlan) other;
+
+            if (id != that.id) return false;
+            if (members != that.members) return false;
+            if (!Objects.equals(name, that.name)) return false;
+            if (!Objects.equals(description, that.description)) return false;
+            if (!Objects.equals(createdOn, that.createdOn)) return false;
+            if (!Objects.equals(lastUpdated, that.lastUpdated)) return false;
+            return sameCollectionAs(days, that.days);
+        }
+        return false;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         FoodPlan that = (FoodPlan) o;
-
-        if (id != that.id) return false;
-        if (members != that.members) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return days.equals(that.days);
-
+        return id == that.id;
     }
 
     @Override

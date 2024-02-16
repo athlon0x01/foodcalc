@@ -17,7 +17,7 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Jacksonized
 @Builder(toBuilder = true)
-public class Product implements IDomainEntity<Product>, FoodDetails {
+public class Product implements IDomainEntity, FoodDetails {
 
     private final long productId;
     private String name;
@@ -55,7 +55,8 @@ public class Product implements IDomainEntity<Product>, FoodDetails {
     }
 
     @Override
-    public boolean sameIdentityAs(Product other) {
-        return productId == other.productId;
+    public boolean sameValueAs(IDomainEntity other) {
+        //TODO fix it, make equals lighter
+        return this.equals(other);
     }
 }

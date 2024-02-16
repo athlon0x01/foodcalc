@@ -1,23 +1,24 @@
 package com.outdoor.foodcalc.domain.model.meal;
 
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
+import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
-import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
 /**
- * Meal entity. It include dishes & products.
+ * Meal entity. It includes dishes & products.
  *
  * @author Anton Borovyk
  */
-public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal> {
+public class Meal extends ComplexFoodEntity implements IDomainEntity, DishesContainer {
 
     private final long mealId;
     private String description;
@@ -68,11 +69,6 @@ public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal> {
         this.products = new ArrayList<>(products);
     }
 
-    @Override
-    public boolean sameIdentityAs(Meal other) {
-        return mealId == other.mealId;
-    }
-
     /**
      * Combine all collection of different food entities to complex products collection.
      *
@@ -87,17 +83,25 @@ public class Meal extends ComplexFoodEntity implements IDomainEntity<Meal> {
     }
 
     @Override
+    public boolean sameValueAs(IDomainEntity other) {
+        if (this.equals(other)) {
+            Meal meal = (Meal) other;
+
+            if (mealId != meal.mealId) return false;
+            if (!Objects.equals(type, meal.type)) return false;
+            if (!sameCollectionAs(dishes, meal.dishes)) return false;
+            return sameCollectionAs(products, meal.products);
+        }
+        return false;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Meal meal = (Meal) o;
-
-        if (mealId != meal.mealId) return false;
-        if (type != null ? !type.equals(meal.type) : meal.type != null) return false;
-//        if (!IValueObject.sameCollectionAs(dishes, meal.dishes)) return false;
-        return IValueObject.sameCollectionAs(products, meal.products);
-
+        return mealId == meal.mealId;
     }
 
     @Override

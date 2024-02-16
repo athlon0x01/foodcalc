@@ -3,12 +3,12 @@ package com.outdoor.foodcalc.domain.model;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.ToDoubleFunction;
 
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summingDouble;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -17,6 +17,23 @@ import static java.util.stream.Collectors.toList;
  * @author Anton Borovyk
  */
 public abstract class ComplexFoodEntity implements ProductsContainer, FoodDetails {
+
+    /**
+     * Compare if two collections contains the same values (it is similar with equals, but uses IDomainEntity#sameValueAs)
+     * @param first first collection
+     * @param second second collection
+     * @return if collections contain the same value objects
+     */
+    public <T extends IDomainEntity> boolean sameCollectionAs(Collection<T> first, Collection<T> second) {
+        if (first == second) return true;
+        if (first.size() != second.size()) return false;
+        Iterator<T> secondIt = second.iterator();
+        for (T firstObj : first) {
+            if (!firstObj.sameValueAs(secondIt.next())) return false;
+        }
+        return true;
+    }
+
 
     /**
      * Combine all collection of different food entities to complex products collection.
@@ -31,7 +48,7 @@ public abstract class ComplexFoodEntity implements ProductsContainer, FoodDetail
      */
     @Override
     public Collection<ProductRef> getAllProducts() {
-        //map products by Id;
+        //map products by Id
         final Map<Long, List<ProductRef>> productsMap = getProductsCollections().stream().flatMap(Collection::stream)
                 .collect(groupingBy(ProductRef::getProductId));
         //summarize weight of each product
@@ -44,7 +61,7 @@ public abstract class ComplexFoodEntity implements ProductsContainer, FoodDetail
      * @return summarized value for product list
      */
     private float internalDetailsCalculation(ToDoubleFunction<ProductRef> detailsFunction) {
-        return getAllProducts().stream().collect(summingDouble(detailsFunction)).floatValue();
+        return ((Double) getAllProducts().stream().mapToDouble(detailsFunction).sum()).floatValue();
     }
 
     /**

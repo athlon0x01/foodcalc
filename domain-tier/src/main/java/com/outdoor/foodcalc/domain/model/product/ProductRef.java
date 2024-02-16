@@ -1,7 +1,7 @@
 package com.outdoor.foodcalc.domain.model.product;
 
 import com.outdoor.foodcalc.domain.model.FoodDetails;
-import com.outdoor.foodcalc.domain.model.IValueObject;
+import com.outdoor.foodcalc.domain.model.IDomainEntity;
 
 import java.util.Collection;
 
@@ -10,7 +10,7 @@ import java.util.Collection;
  *
  * @author Anton Borovyk
  */
-public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Comparable<ProductRef> {
+public class ProductRef implements IDomainEntity, FoodDetails {
     private final Product product;
     //product item weight in 0.1 grams
     private int weight;
@@ -92,11 +92,6 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
         return product.getCarbs() * weight / 1000.f;
     }
 
-    @Override
-    public boolean sameValueAs(ProductRef other) {
-        return product.getProductId() == other.getProductId() && weight == other.weight;
-    }
-
     /**
      * Summarize weight of product list.
      * @param products not empty product list, that contains same products
@@ -128,18 +123,18 @@ public class ProductRef implements IValueObject<ProductRef>, FoodDetails, Compar
 
     @Override
     public int hashCode() {
-        int result = product.hashCode();
+        int result = (int) (getProductId() ^ (getProductId() >>> 32));
         result = 31 * result + weight;
         return result;
     }
 
     @Override
-    public int compareTo(ProductRef o) {
-        //compare productId first
-        if (getProductId() == o.getProductId()) {
-            return getInternalWeight() - o.getInternalWeight();
+    public boolean sameValueAs(IDomainEntity other) {
+        if (other instanceof ProductRef) {
+            ProductRef that = (ProductRef) other;
+            return getProductId() == that.getProductId() && weight == that.weight;
         }
-        else return (getProductId() < o.getProductId()) ? -1 : 1;
+        return false;
     }
 
     @Override

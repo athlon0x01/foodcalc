@@ -1,7 +1,7 @@
 package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
-import com.outdoor.foodcalc.domain.model.ProductsContainer;
+import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
@@ -146,7 +146,7 @@ public class FoodPlansRepo {
         return newDishes;
     }
 
-    public Optional<ProductsContainer> getDishOwner(long dishId) {
+    public Optional<DishesContainer> getDishOwner(long dishId) {
         for (FoodPlan plan : foodPlans.values()) {
             for (PlanDay day : plan.getDays()) {
                 var dishRef = day.getDishes().stream().filter(dish -> dish.getDishId() == dishId).findFirst();

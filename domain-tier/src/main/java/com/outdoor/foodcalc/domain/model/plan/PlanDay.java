@@ -1,8 +1,8 @@
 package com.outdoor.foodcalc.domain.model.plan;
 
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
+import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
-import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 import static java.util.stream.Collectors.toList;
 
@@ -21,7 +22,7 @@ import static java.util.stream.Collectors.toList;
  *
  * @author Anton Borovyk
  */
-public class PlanDay extends ComplexFoodEntity implements IDomainEntity<PlanDay> {
+public class PlanDay extends ComplexFoodEntity implements IDomainEntity, DishesContainer {
 
     private final long dayId;
     private LocalDate date;
@@ -83,8 +84,16 @@ public class PlanDay extends ComplexFoodEntity implements IDomainEntity<PlanDay>
     }
 
     @Override
-    public boolean sameIdentityAs(PlanDay other) {
-        return dayId == other.dayId;
+    public boolean sameValueAs(IDomainEntity other) {
+        if (this.equals(other)) {
+            PlanDay planDay = (PlanDay) other;
+            if (dayId != planDay.dayId) return false;
+            if (!Objects.equals(date, planDay.date)) return false;
+            if (!sameCollectionAs(meals, planDay.meals)) return false;
+            if (!sameCollectionAs(dishes, planDay.dishes)) return false;
+            return sameCollectionAs(products, planDay.products);
+        }
+        return false;
     }
 
     @Override
@@ -93,13 +102,7 @@ public class PlanDay extends ComplexFoodEntity implements IDomainEntity<PlanDay>
         if (o == null || getClass() != o.getClass()) return false;
 
         PlanDay planDay = (PlanDay) o;
-
-        if (dayId != planDay.dayId) return false;
-        if (date != null ? !date.equals(planDay.date) : planDay.date != null) return false;
-//        if (!IValueObject.sameCollectionAs(meals, planDay.meals)) return false;
-//        if (!IValueObject.sameCollectionAs(dishes, planDay.dishes)) return false;
-        return IValueObject.sameCollectionAs(products, planDay.products);
-
+        return dayId == planDay.dayId;
     }
 
     @Override

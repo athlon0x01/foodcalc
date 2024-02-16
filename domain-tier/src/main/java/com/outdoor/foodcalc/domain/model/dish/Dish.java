@@ -2,20 +2,16 @@ package com.outdoor.foodcalc.domain.model.dish;
 
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
-import com.outdoor.foodcalc.domain.model.IValueObject;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Dish entity, like cream soup, lemon tea, etc.
  *
  * @author Anton Borovyk
  */
-public class Dish extends ComplexFoodEntity implements IDomainEntity<Dish> {
+public class Dish extends ComplexFoodEntity implements IDomainEntity {
 
     private final long dishId;
     private String name;
@@ -82,11 +78,6 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity<Dish> {
         this.products = new ArrayList<>(products);
     }
 
-    @Override
-    public boolean sameIdentityAs(Dish other) {
-        return dishId == other.dishId;
-    }
-
     /**
      * For Dish this function in redundant
      *
@@ -108,17 +99,23 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity<Dish> {
     }
 
     @Override
+    public boolean sameValueAs(IDomainEntity other) {
+        if (this.equals(other)) {
+            Dish dish = (Dish) other;
+            if (!Objects.equals(name, dish.name)) return false;
+            if (!Objects.equals(category, dish.category)) return false;
+            return sameCollectionAs(products, dish.products);
+        }
+        return false;
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
         Dish dish = (Dish) o;
-
-        if (dishId != dish.dishId) return false;
-        if (name != null ? !name.equals(dish.name) : dish.name != null) return false;
-        if (category != null ? !category.equals(dish.category) : dish.category != null) return false;
-        return IValueObject.sameCollectionAs(products, dish.products);
-
+        return dishId == dish.dishId;
     }
 
     @Override

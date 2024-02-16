@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
+import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
@@ -20,7 +21,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 @Service
@@ -118,14 +118,12 @@ public class DishService {
                 Meal meal = (Meal) dishOwner.get();
                 var day = repository.getDayByMealId(meal.getMealId());
                 var plan = repository.getPlanByDayId(day.getDayId());
-                List<Dish> dishes = updateDishes(updatedDish, meal::getDishes);
-                meal.setDishes(dishes);
+                updateDishes(updatedDish, meal);
                 plan.setLastUpdated(ZonedDateTime.now());
             } else if (dishOwner.get() instanceof PlanDay) {
                 PlanDay day = (PlanDay) dishOwner.get();
                 var plan = repository.getPlanByDayId(day.getDayId());
-                List<Dish> dishes = updateDishes(updatedDish, day::getDishes);
-                day.setDishes(dishes);
+                updateDishes(updatedDish, day);
                 plan.setLastUpdated(ZonedDateTime.now());
             }
         } else {
@@ -133,14 +131,13 @@ public class DishService {
         }
     }
 
-    private List<Dish> updateDishes(Dish dish, Supplier<List<Dish>> dishesSupplier) {
-        List<Dish> dishes = dishesSupplier.get();
+    private void updateDishes(Dish dish, DishesContainer dishesContainer) {
+        List<Dish> dishes = dishesContainer.getDishes();
         for (int i = 0; i < dishes.size(); i++) {
             if (dishes.get(i).getDishId() == dish.getDishId()) {
                 dishes.set(i, dish);
             }
         }
-        return dishes;
     }
 
     /**

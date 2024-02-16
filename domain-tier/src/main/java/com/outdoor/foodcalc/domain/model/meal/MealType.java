@@ -12,13 +12,13 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class MealType implements IDomainEntity<MealType> {
+public class MealType implements IDomainEntity {
 
     private final long typeId;
     private String name;
 
     @Override
-    public boolean sameIdentityAs(MealType other) {
-        return typeId == other.typeId;
+    public boolean sameValueAs(IDomainEntity other) {
+        return this.equals(other);
     }
 }
