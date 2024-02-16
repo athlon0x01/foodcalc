@@ -49,7 +49,7 @@ CREATE TABLE dish_product
 --meal related tables
 CREATE TABLE meal_type
 (
-    id   serial PRIMARY KEY,
+    id   bigserial PRIMARY KEY,
     name varchar(64) UNIQUE NOT NULL
 );
 
@@ -81,11 +81,12 @@ CREATE TABLE meal_dish
 --layout items
 CREATE TABLE food_plan
 (
-    id          bigserial PRIMARY KEY,
-    name        varchar(64) NOT NULL,
-    members     smallint    NOT NULL,
-    duration    smallint,
-    description varchar(2048)
+    id           bigserial PRIMARY KEY,
+    name         varchar(64) NOT NULL,
+    members      smallint    NOT NULL,
+    createdOn    TIMESTAMP,
+    lastUpdated  TIMESTAMP,
+    description  varchar(2048)
 );
 
 CREATE TABLE day_plan
