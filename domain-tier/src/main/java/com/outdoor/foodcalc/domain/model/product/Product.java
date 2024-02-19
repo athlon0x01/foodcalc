@@ -4,7 +4,10 @@ import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.extern.jackson.Jacksonized;
+
+import java.util.Objects;
 
 /**
  * Product entity (bread, butter, milk, etc.)
@@ -14,10 +17,12 @@ import lombok.extern.jackson.Jacksonized;
 
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Jacksonized
 @Builder(toBuilder = true)
 public class Product implements IDomainEntity {
 
+    @EqualsAndHashCode.Include
     private final long productId;
     private String name;
     private String description;
@@ -47,7 +52,18 @@ public class Product implements IDomainEntity {
 
     @Override
     public boolean sameValueAs(IDomainEntity other) {
-        //TODO fix it, make equals lighter
-        return this.equals(other);
+        if (this.equals(other)) {
+            Product product = (Product) other;
+
+            if (Float.compare(product.calorific, calorific) != 0) return false;
+            if (Float.compare(product.proteins, proteins) != 0) return false;
+            if (Float.compare(product.fats, fats) != 0) return false;
+            if (Float.compare(product.carbs, carbs) != 0) return false;
+            if (defaultWeight != product.defaultWeight) return false;
+            if (!Objects.equals(name, product.name)) return false;
+            if (!Objects.equals(description, product.description)) return false;
+            return Objects.equals(category, product.category);
+        }
+        return false;
     }
 }
