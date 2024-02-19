@@ -6,12 +6,7 @@ import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-
-import static java.util.stream.Collectors.toList;
+import java.util.*;
 
 /**
  * Meal entity. It includes dishes & products.
@@ -69,17 +64,11 @@ public class Meal extends ComplexFoodEntity implements IDomainEntity, DishesCont
         this.products = new ArrayList<>(products);
     }
 
-    /**
-     * Combine all collection of different food entities to complex products collection.
-     *
-     * @return collection of fields products collection
-     */
     @Override
-    protected Collection<Collection<ProductRef>> getProductsCollections() {
-        //collect all dish products & products to one list
-        final List<Collection<ProductRef>> allProductsList = dishes.stream().map(Dish::getAllProducts).collect(toList());
-        allProductsList.add(products);
-        return allProductsList;
+    public Collection<ProductRef> getAllProducts() {
+        List<ProductRef> allProducts = new ArrayList<>(products);
+        dishes.forEach(dish -> allProducts.addAll(dish.getAllProducts()));
+        return Collections.unmodifiableList(allProducts);
     }
 
     @Override

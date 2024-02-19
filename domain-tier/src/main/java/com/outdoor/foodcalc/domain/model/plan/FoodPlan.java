@@ -5,12 +5,7 @@ import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-
-import static java.util.stream.Collectors.toList;
+import java.util.*;
 
 /**
  * Food Plan entity represent typical food carrying plan for trekking trip split to days, meals & dishes.
@@ -92,29 +87,11 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity {
         this.days = new ArrayList<>(days);
     }
 
-    /**
-     * Combine all collection of different food entities to complex products collection.
-     *
-     * @return collection of fields products collection
-     */
-    @Override
-    protected Collection<Collection<ProductRef>> getProductsCollections() {
-        //collect all day products to one list
-        return days.stream().map(PlanDay::getAllProducts).collect(toList());
-    }
-
-    /**
-     * Collect all products contained in this entity and nested entities and sums their weights
-     *
-     * @return aggregated products list(product weights are summed).
-     */
     @Override
     public Collection<ProductRef> getAllProducts() {
-        //summarize weight of each product
-        final Collection<ProductRef> products = super.getAllProducts();
-        //multiply to members count
-        products.forEach(p -> p.setWeight(p.getWeight() * members));
-        return products;
+        List<ProductRef> allProducts = new ArrayList<>();
+        days.forEach(day -> allProducts.addAll(day.getAllProducts()));
+        return Collections.unmodifiableList(allProducts);
     }
 
     @Override

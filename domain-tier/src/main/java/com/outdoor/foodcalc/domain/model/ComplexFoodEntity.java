@@ -34,25 +34,29 @@ public abstract class ComplexFoodEntity implements ProductsContainer, FoodDetail
         return true;
     }
 
-
-    /**
-     * Combine all collection of different food entities to complex products collection.
-     * @return collection of fields products collection
-     */
-    protected abstract Collection<Collection<ProductRef>> getProductsCollections();
-
-    /**
-     * Collect all products contained in this entity and nested entities and sums their weights
-     *
-     * @return aggregated products list(product weights are summed).
-     */
-    @Override
-    public Collection<ProductRef> getAllProducts() {
+    public FoodDetailsInstance getFoodDetails() {
         //map products by Id
-        final Map<Long, List<ProductRef>> productsMap = getProductsCollections().stream().flatMap(Collection::stream)
+        final Map<Long, List<ProductRef>> productsMap = getAllProducts().stream()
                 .collect(groupingBy(ProductRef::getProductId));
         //summarize weight of each product
-        return productsMap.values().stream().map(ProductRef::summarizeWeight).collect(toList());
+        List<ProductRef> products = productsMap.values().stream()
+                .map(this::reduceProducts)
+                .collect(toList());
+        return new FoodDetailsInstance(products);
+    }
+
+    /**
+     * Reduce list of the same products by summing the weight
+     * @param products not empty product list, that contains same products
+     * @return product with summarized weight
+     */
+    private ProductRef reduceProducts(Collection<ProductRef> products) {
+        //get Product entity
+        ProductRef product = products.iterator().next();
+        //summarize product weight
+        int weight = products.stream().mapToInt(ProductRef::getInternalWeight).sum();
+        //return updated ProductRef
+        return product.buildNewRef(weight);
     }
 
     /**

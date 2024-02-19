@@ -27,6 +27,10 @@ public class ProductRef implements IDomainEntity, FoodDetails {
         this.weight = weight;
     }
 
+    public ProductRef buildNewRef(int newWeight) {
+        return new ProductRef(product, newWeight);
+    }
+
     /**
      * @return weight in gram
      */

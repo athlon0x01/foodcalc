@@ -8,12 +8,7 @@ import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-
-import static java.util.stream.Collectors.toList;
+import java.util.*;
 
 /**
  * Plan Day entity, that contains some meals and may be some additional dishes and products.
@@ -84,6 +79,14 @@ public class PlanDay extends ComplexFoodEntity implements IDomainEntity, DishesC
     }
 
     @Override
+    public Collection<ProductRef> getAllProducts() {
+        List<ProductRef> allProducts = new ArrayList<>(products);
+        dishes.forEach(dish -> allProducts.addAll(dish.getAllProducts()));
+        meals.forEach(meal -> allProducts.addAll(meal.getAllProducts()));
+        return Collections.unmodifiableList(allProducts);
+    }
+
+    @Override
     public boolean sameValueAs(IDomainEntity other) {
         if (this.equals(other)) {
             PlanDay planDay = (PlanDay) other;
@@ -110,23 +113,5 @@ public class PlanDay extends ComplexFoodEntity implements IDomainEntity, DishesC
         int result = (int) (dayId ^ (dayId >>> 32));
         result = 31 * result + (date != null ? date.hashCode() : 0);
         return result;
-    }
-
-    /**
-     * Combine all collection of different food entities to complex products collection.
-     *
-     * @return collection of fields products collection
-     */
-    @Override
-    protected Collection<Collection<ProductRef>> getProductsCollections() {
-        //collect all meals products & products to one list
-        final List<Collection<ProductRef>> allProductsList = meals.stream()
-                .map(Meal::getAllProducts)
-                .collect(toList());
-        allProductsList.addAll(dishes.stream()
-                .map(Dish::getAllProducts)
-                .collect(toList()));
-        allProductsList.add(products);
-        return allProductsList;
     }
 }

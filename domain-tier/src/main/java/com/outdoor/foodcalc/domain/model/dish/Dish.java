@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
+import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
@@ -79,16 +80,6 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity {
     }
 
     /**
-     * For Dish this function in redundant
-     *
-     * @return collection of fields products collection
-     */
-    @Override
-    protected Collection<Collection<ProductRef>> getProductsCollections() {
-        return Collections.emptyList();
-    }
-
-    /**
      * Collect all products contained in this entity and nested entities and sums their weights
      *
      * @return aggregated products list(product weights are summed).
@@ -96,6 +87,11 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity {
     @Override
     public Collection<ProductRef> getAllProducts() {
         return Collections.unmodifiableList(products);
+    }
+
+    @Override
+    public FoodDetailsInstance getFoodDetails() {
+        return new FoodDetailsInstance(products);
     }
 
     @Override
