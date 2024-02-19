@@ -29,8 +29,6 @@ public class ProductTest {
 
     @Test
     public void testProductWeight() {
-        //Product weight should be 0
-        assertEquals(0, product.getWeight(), DELTA);
         //ProductRef should contain real weight
         assertEquals(80, productRef.getWeight(), DELTA);
         //ProductRef should contain internal weight in 0.1 grams

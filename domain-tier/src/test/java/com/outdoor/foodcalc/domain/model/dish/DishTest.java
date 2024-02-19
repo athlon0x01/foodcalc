@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
+import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
@@ -43,20 +44,21 @@ public class DishTest {
 
     @Test
     public void foodDetailsTest() {
+        FoodDetailsInstance details = dish.getFoodDetails();
         //check weight
-        assertEquals (116.5f, dish.getWeight(), DELTA);
+        assertEquals (116.5f, details.getWeight(), DELTA);
 
         //check calorific
-        assertEquals(346.86f, dish.getCalorific(), DELTA);
+        assertEquals(346.86f, details.getCalorific(), DELTA);
 
         //check proteins
-        assertEquals(14.52f, dish.getProteins(), DELTA);
+        assertEquals(14.52f, details.getProteins(), DELTA);
 
         //check fats
-        assertEquals(10.21f, dish.getFats(), DELTA);
+        assertEquals(10.21f, details.getFats(), DELTA);
 
         //check carbs
-        assertEquals(48.022f, dish.getCarbs(), DELTA);
+        assertEquals(48.022f, details.getCarbs(), DELTA);
     }
 
     @Test

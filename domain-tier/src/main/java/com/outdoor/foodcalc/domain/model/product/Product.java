@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.domain.model.product;
 
-import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +16,7 @@ import lombok.extern.jackson.Jacksonized;
 @AllArgsConstructor
 @Jacksonized
 @Builder(toBuilder = true)
-public class Product implements IDomainEntity, FoodDetails {
+public class Product implements IDomainEntity {
 
     private final long productId;
     private String name;
@@ -44,14 +43,6 @@ public class Product implements IDomainEntity, FoodDetails {
 
     public void setDefaultWeight(float defaultWeight) {
         this.defaultWeight = Math.round(defaultWeight * 10);
-    }
-
-    /**
-     * @return weight in gram, Product entity doesn't nave real weight.
-     */
-    @Override
-    public float getWeight() {
-        return 0;
     }
 
     @Override

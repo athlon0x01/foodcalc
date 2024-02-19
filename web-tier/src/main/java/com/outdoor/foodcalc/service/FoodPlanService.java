@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.service;
 
+import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.model.plan.FoodPlanView;
@@ -78,6 +79,7 @@ public class FoodPlanService {
     }
 
     private FoodPlanView mapPlanView(FoodPlan plan) {
+        FoodDetailsInstance planDetails = plan.getFoodDetails();
         return FoodPlanView.builder()
                 .id(plan.getId())
                 .name(plan.getName())
@@ -86,11 +88,11 @@ public class FoodPlanService {
                 .days(plan.getDays().stream()
                         .map(dayService::mapView)
                         .collect(Collectors.toList()))
-                .calorific(plan.getCalorific())
-                .carbs(plan.getCarbs())
-                .fats(plan.getFats())
-                .proteins(plan.getProteins())
-                .weight(plan.getWeight())
+                .calorific(planDetails.getCalorific())
+                .carbs(planDetails.getCarbs())
+                .fats(planDetails.getFats())
+                .proteins(planDetails.getProteins())
+                .weight(planDetails.getWeight())
                 .build();
     }
 }

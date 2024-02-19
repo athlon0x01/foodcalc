@@ -1,16 +1,13 @@
 package com.outdoor.foodcalc.domain.model.product;
 
-import com.outdoor.foodcalc.domain.model.FoodDetails;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
-
-import java.util.Collection;
 
 /**
  * Product items - components of the dish (building bricks for dish).
  *
  * @author Anton Borovyk
  */
-public class ProductRef implements IDomainEntity, FoodDetails {
+public class ProductRef implements IDomainEntity {
     private final Product product;
     //product item weight in 0.1 grams
     private int weight;
@@ -34,7 +31,6 @@ public class ProductRef implements IDomainEntity, FoodDetails {
     /**
      * @return weight in gram
      */
-    @Override
     public float getWeight() {
         return weight / 10.f;
     }
@@ -66,16 +62,13 @@ public class ProductRef implements IDomainEntity, FoodDetails {
     /**
      * @return calorific in kCal
      */
-    @Override
     public float getCalorific() {
-        //TODO proper calculation
         return product.getCalorific() * weight / 1000.f;
     }
 
     /**
      * @return proteins in gram
      */
-    @Override
     public float getProteins() {
         return product.getProteins() * weight / 1000.f;
     }
@@ -83,7 +76,6 @@ public class ProductRef implements IDomainEntity, FoodDetails {
     /**
      * @return fats in gram
      */
-    @Override
     public float getFats() {
         return product.getFats() * weight / 1000.f;
     }
@@ -91,23 +83,8 @@ public class ProductRef implements IDomainEntity, FoodDetails {
     /**
      * @return carbonates in gram
      */
-    @Override
     public float getCarbs() {
         return product.getCarbs() * weight / 1000.f;
-    }
-
-    /**
-     * Summarize weight of product list.
-     * @param products not empty product list, that contains same products
-     * @return product with summarized weight
-     */
-    public static ProductRef summarizeWeight(Collection<ProductRef> products) {
-        //get Product entity
-        Product product = products.iterator().next().product;
-        //summarize product weight
-        int weight = products.stream().mapToInt(ProductRef::getInternalWeight).sum();
-        //return new Value Object
-        return new ProductRef(product, weight);
     }
 
     @Override

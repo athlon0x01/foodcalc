@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
+import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
@@ -93,6 +94,7 @@ public class MealService {
     }
 
     MealView mapView(Meal meal) {
+        FoodDetailsInstance mealDetails = meal.getFoodDetails();
         return MealView.builder()
                 .id(meal.getMealId())
                 .description(meal.getDescription())
@@ -106,11 +108,11 @@ public class MealService {
                 .dishes(meal.getDishes().stream()
                         .map(dishService::mapDishView)
                         .collect(Collectors.toList()))
-                .calorific(meal.getCalorific())
-                .carbs(meal.getCarbs())
-                .fats(meal.getFats())
-                .proteins(meal.getProteins())
-                .weight(meal.getWeight())
+                .calorific(mealDetails.getCalorific())
+                .carbs(mealDetails.getCarbs())
+                .fats(mealDetails.getFats())
+                .proteins(mealDetails.getProteins())
+                .weight(mealDetails.getWeight())
                 .build();
     }
 }
