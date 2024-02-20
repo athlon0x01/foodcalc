@@ -57,7 +57,7 @@ CREATE TABLE meal
 (
     id          bigserial PRIMARY KEY,
     description varchar(265),
-    type        integer REFERENCES meal_type
+    type        bigserial REFERENCES meal_type
 );
 
 CREATE TABLE meal_product
@@ -84,8 +84,8 @@ CREATE TABLE food_plan
     id           bigserial PRIMARY KEY,
     name         varchar(64) NOT NULL,
     members      smallint    NOT NULL,
-    createdOn    TIMESTAMP,
-    lastUpdated  TIMESTAMP,
+    createdOn    TIMESTAMP WITH TIME ZONE NOT NULL,
+    lastUpdated  TIMESTAMP WITH TIME ZONE NOT NULL,
     description  varchar(2048)
 );
 
