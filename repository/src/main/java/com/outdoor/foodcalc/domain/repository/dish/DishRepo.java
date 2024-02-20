@@ -89,9 +89,10 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
     public Dish mapRow(ResultSet resultSet, int i) throws SQLException {
         final DishCategory category = new DishCategory(
                 resultSet.getLong("catId"), resultSet.getString("catName"));
-        return new Dish(resultSet.getLong("dishId"),
-                resultSet.getString("dishName"),
-                category);
+        return Dish.builder()
+                .dishId(resultSet.getLong("dishId"))
+                .name(resultSet.getString("dishName"))
+                .category(category).build();
     }
 
     KeyHolder getKeyHolder() {

@@ -3,135 +3,56 @@ package com.outdoor.foodcalc.domain.model.plan;
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static java.util.stream.Collectors.toList;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 /**
  * Food Plan entity represent typical food carrying plan for trekking trip split to days, meals & dishes.
  *
  * @author Anton Borovyk
  */
-//TODO add createdOn, lastUpdated dates
-public class FoodPlan extends ComplexFoodEntity implements IDomainEntity<FoodPlan> {
+@Data
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+@Jacksonized
+@Builder(toBuilder = true)
+public class FoodPlan extends ComplexFoodEntity implements IDomainEntity {
 
+    @EqualsAndHashCode.Include
     private final long id;
     private String name;
     private String description;
     private int members;
-    //TODO it should be count of days
-    private int duration;
-    private List<DayPlanRef> days;
+    private ZonedDateTime createdOn;
+    private ZonedDateTime lastUpdated;
+    @Builder.Default
+    private List<PlanDay> days = new ArrayList<>();
 
-    public FoodPlan(long id, String name, String description,
-                    int members, int duration, Collection<DayPlanRef> days) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.members = members;
-        this.duration = duration;
-        this.days = new ArrayList<>(days);
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getMembers() {
-        return members;
-    }
-
-    public void setMembers(int members) {
-        this.members = members;
-    }
-
-    public int getDuration() {
-        return duration;
-    }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
-    }
-
-    public List<DayPlanRef> getDays() {
-        return Collections.unmodifiableList(days);
-    }
-
-    public void setDays(List<DayPlanRef> days) {
-        this.days = new ArrayList<>(days);
-    }
-
-    @Override
-    public boolean sameIdentityAs(FoodPlan other) {
-        return id == other.id;
-    }
-
-    /**
-     * Combine all collection of different food entities to complex products collection.
-     *
-     * @return collection of fields products collection
-     */
-    @Override
-    protected Collection<Collection<ProductRef>> getProductsCollections() {
-        //collect all day products to one list
-        return days.stream().map(DayPlanRef::getAllProducts).collect(toList());
-    }
-
-    /**
-     * Collect all products contained in this entity and nested entities and sums their weights
-     *
-     * @return aggregated products list(product weights are summed).
-     */
     @Override
     public Collection<ProductRef> getAllProducts() {
-        //summarize weight of each product
-        final Collection<ProductRef> products = super.getAllProducts();
-        //multiply to members count
-        products.forEach(p -> p.setWeight(p.getWeight() * members));
-        return products;
+        List<ProductRef> allProducts = new ArrayList<>();
+        days.forEach(day -> allProducts.addAll(day.getAllProducts()));
+        return Collections.unmodifiableList(allProducts);
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    public boolean sameValueAs(IDomainEntity other) {
+        if (this.equals(other)) {
+            FoodPlan that = (FoodPlan) other;
 
-        FoodPlan that = (FoodPlan) o;
-
-        if (id != that.id) return false;
-        if (members != that.members) return false;
-        if (duration != that.duration) return false;
-        if (name != null ? !name.equals(that.name) : that.name != null) return false;
-        return days.equals(that.days);
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (id ^ (id >>> 32));
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + members;
-        result = 31 * result + duration;
-        return result;
+            if (members != that.members) return false;
+            if (!Objects.equals(name, that.name)) return false;
+            if (!Objects.equals(description, that.description)) return false;
+            if (!Objects.equals(createdOn, that.createdOn)) return false;
+            if (!Objects.equals(lastUpdated, that.lastUpdated)) return false;
+            return sameCollectionAs(days, that.days);
+        }
+        return false;
     }
 }

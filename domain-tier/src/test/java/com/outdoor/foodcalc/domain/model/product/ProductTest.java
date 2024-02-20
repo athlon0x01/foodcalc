@@ -2,11 +2,9 @@ package com.outdoor.foodcalc.domain.model.product;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.util.ReflectionUtils;
-
-import java.lang.reflect.Method;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Product & ProductRef unit tests
@@ -29,14 +27,10 @@ public class ProductTest {
 
     @Test
     public void testProductWeight() {
-        //Product weight should be 0
-        assertEquals(0, product.getWeight(), DELTA);
         //ProductRef should contain real weight
         assertEquals(80, productRef.getWeight(), DELTA);
         //ProductRef should contain internal weight in 0.1 grams
-        final Method getInternalWeight = ReflectionUtils.findMethod(ProductRef.class, "getInternalWeight");
-        ReflectionUtils.makeAccessible(getInternalWeight);
-        assertEquals(800, ReflectionUtils.invokeMethod(getInternalWeight, productRef ));
+        assertEquals(800, productRef.getInternalWeight());
     }
 
     @Test
@@ -69,5 +63,12 @@ public class ProductTest {
         assertEquals(22.7, product.getCarbs(), DELTA);
         //ProductRef carbs returns carbs for specified weight
         assertEquals(18.16, productRef.getCarbs(), DELTA);
+    }
+
+    @Test
+    void testEqualsProduct() {
+        Product apple = Product.builder().productId(111).name("Apple").build();
+        assertEquals(product, apple);
+        assertFalse(product.sameValueAs(apple));
     }
 }

@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.model.dish;
 
+import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
@@ -7,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -20,8 +21,7 @@ public class DishTest {
 
     private static final double DELTA = 0.00001;
     private Dish dish;
-    private DishRef dishRef;
-    private Collection<ProductRef> products;
+    private List<ProductRef> products;
 
     @BeforeEach
     public void setup() {
@@ -40,35 +40,36 @@ public class DishTest {
         products.add(new ProductRef(salt, 25));
 
         dish = new Dish(123, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), products);
-        dishRef = new DishRef(dish);
     }
 
     @Test
     public void foodDetailsTest() {
+        FoodDetailsInstance details = dish.getFoodDetails();
         //check weight
-        assertEquals (116.5f, dish.getWeight(), DELTA);
-        assertEquals(116.5f, dishRef.getWeight(), DELTA);
+        assertEquals (116.5f, details.getWeight(), DELTA);
 
         //check calorific
-        assertEquals(346.86f, dish.getCalorific(), DELTA);
-        assertEquals(346.86f, dishRef.getCalorific(), DELTA);
+        assertEquals(346.86f, details.getCalorific(), DELTA);
 
         //check proteins
-        assertEquals(14.52f, dish.getProteins(), DELTA);
-        assertEquals(14.52f, dishRef.getProteins(), DELTA);
+        assertEquals(14.52f, details.getProteins(), DELTA);
 
         //check fats
-        assertEquals(10.21f, dish.getFats(), DELTA);
-        assertEquals(10.21f, dishRef.getFats(), DELTA);
+        assertEquals(10.21f, details.getFats(), DELTA);
 
         //check carbs
-        assertEquals(48.022f, dish.getCarbs(), DELTA);
-        assertEquals(48.022f, dishRef.getCarbs(), DELTA);
+        assertEquals(48.022f, details.getCarbs(), DELTA);
     }
 
     @Test
     public void productContainerTest() {
         assertArrayEquals(products.toArray(), dish.getAllProducts().toArray());
-        assertArrayEquals(products.toArray(), dishRef.getAllProducts().toArray());
+    }
+
+    @Test
+    void equalsTest() {
+        Dish otherDish = Dish.builder().dishId(123).build();
+        assertEquals(dish, otherDish);
+        assertFalse(dish.sameValueAs(otherDish));
     }
 }

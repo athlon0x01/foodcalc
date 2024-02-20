@@ -48,7 +48,7 @@ public class DishRepoTest {
 
     private static final Long DISH_ID = 54321L;
 
-    private static final Dish dummyDish = new Dish(DISH_ID, "dummy dish", dummyCategory);
+    private static final Dish dummyDish = Dish.builder().dishId(DISH_ID).name("dummy dish").category(dummyCategory).build();
 
     @BeforeEach
     public void setUp() {

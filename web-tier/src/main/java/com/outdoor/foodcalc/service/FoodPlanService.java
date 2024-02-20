@@ -1,13 +1,14 @@
 package com.outdoor.foodcalc.service;
 
-import com.outdoor.foodcalc.domain.model.plan.DayPlanRef;
+import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
+import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.model.plan.FoodPlanView;
 import com.outdoor.foodcalc.model.plan.FoodPlanInfo;
 import org.springframework.stereotype.Service;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -38,7 +39,14 @@ public class FoodPlanService {
     }
 
     public FoodPlanInfo addFoodPlan(FoodPlanInfo foodPlan) {
-        FoodPlan plan = new FoodPlan(repository.getMaxPlanIdAndIncrement(), foodPlan.getName(), null, foodPlan.getMembers(), 0, Collections.emptyList());
+        var now = ZonedDateTime.now();
+        FoodPlan plan = FoodPlan.builder()
+                .id(repository.getMaxPlanIdAndIncrement())
+                .name(foodPlan.getName())
+                .members(foodPlan.getMembers())
+                .createdOn(now)
+                .lastUpdated(now)
+                .build();
         foodPlan.setId(plan.getId());
         repository.addFoodPlan(plan);
         return foodPlan;
@@ -48,15 +56,16 @@ public class FoodPlanService {
         FoodPlan plan = repository.getFoodPlan(id);
         plan.setName(foodPlan.getName());
         plan.setDescription(foodPlan.getDescription());
-        plan.setDuration(foodPlan.getDuration());
         plan.setMembers(foodPlan.getMembers());
-        List<DayPlanRef> newDays = new ArrayList<>();
+        plan.setLastUpdated(ZonedDateTime.now());
+        List<PlanDay> newDays = new ArrayList<>();
+        //reorder days in plan
         foodPlan.getDays().forEach(dayId -> getDayById(plan.getDays(), dayId)
                 .ifPresent(newDays::add));
         plan.setDays(newDays);
     }
 
-    private Optional<DayPlanRef> getDayById(List<DayPlanRef> days, long id) {
+    private Optional<PlanDay> getDayById(List<PlanDay> days, long id) {
         return days.stream()
                 .filter(day -> day.getDayId() == id)
                 .findFirst();
@@ -73,6 +82,7 @@ public class FoodPlanService {
     }
 
     private FoodPlanView mapPlanView(FoodPlan plan) {
+        FoodDetailsInstance planDetails = plan.getFoodDetails();
         return FoodPlanView.builder()
                 .id(plan.getId())
                 .name(plan.getName())
@@ -81,11 +91,11 @@ public class FoodPlanService {
                 .days(plan.getDays().stream()
                         .map(dayService::mapView)
                         .collect(Collectors.toList()))
-                .calorific(plan.getCalorific())
-                .carbs(plan.getCarbs())
-                .fats(plan.getFats())
-                .proteins(plan.getProteins())
-                .weight(plan.getWeight())
+                .calorific(planDetails.getCalorific())
+                .carbs(planDetails.getCarbs())
+                .fats(planDetails.getFats())
+                .proteins(planDetails.getProteins())
+                .weight(planDetails.getWeight())
                 .build();
     }
 }

@@ -5,7 +5,7 @@ package com.outdoor.foodcalc.domain.model;
  *
  * @author Anton Borovyk
  */
-public interface IDomainEntity<T> {
+public interface IDomainEntity {
 
-    boolean sameIdentityAs(T other);
+    boolean sameValueAs(IDomainEntity other);
 }

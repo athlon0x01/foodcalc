@@ -12,13 +12,13 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ProductCategory implements IDomainEntity<ProductCategory> {
+public class ProductCategory implements IDomainEntity {
 
     private final long categoryId;
     private String name;
 
     @Override
-    public boolean sameIdentityAs(ProductCategory other) {
-        return categoryId == other.categoryId;
+    public boolean sameValueAs(IDomainEntity other) {
+        return this.equals(other);
     }
 }

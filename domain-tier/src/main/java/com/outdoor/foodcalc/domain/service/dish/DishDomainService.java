@@ -78,11 +78,9 @@ public class DishDomainService {
         if(id == -1L) {
             throw new FoodcalcDomainException("Failed to add dish");
         }
-        Dish addedDish = new Dish(id,
-                dish.getName(),
-                dish.getDescription(),
-                dish.getCategory(),
-                dish.getProducts());
+        Dish addedDish = dish.toBuilder()
+                .dishId(id)
+                .build();
         if(!addedDish.getProducts().isEmpty() && !productRefRepo.addDishProducts(addedDish)) {
             throw new FoodcalcDomainException("Fail to add products for dish with id=" + addedDish.getDishId());
         }

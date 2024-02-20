@@ -44,7 +44,7 @@ public class DishDomainServiceTest {
 
     private static final Dish dummyDish = new Dish(
             DISH_ID, "borsch", "dummyDescr",
-            dummyDishCategory, Collections.EMPTY_LIST);
+            dummyDishCategory, Collections.emptyList());
 
     private static final Dish dummyDishWithProducts = new Dish(
             DISH_ID, "borsch", "dummyDescr",
@@ -69,7 +69,7 @@ public class DishDomainServiceTest {
     public void getAllDishesTest() {
         List<Dish> dishList = new ArrayList<>();
         List<Dish> expectedList = new ArrayList<>();
-        Dish someDish = new Dish(11111L, "some", dummyDishCategory);
+        Dish someDish = Dish.builder().dishId(11111L).name("some").category(dummyDishCategory).build();
         dishList.add(dummyDish);
         expectedList.add(dummyDishWithProducts);
         dishList.add(someDish);
@@ -93,7 +93,7 @@ public class DishDomainServiceTest {
     public void getDishWithoutProductsTest() {
         Optional<Dish> expectedDish = Optional.of(dummyDish);
         when(dishRepo.getDish(DISH_ID)).thenReturn(expectedDish);
-        when(productRefRepo.getDishProducts(DISH_ID)).thenReturn(Collections.EMPTY_LIST);
+        when(productRefRepo.getDishProducts(DISH_ID)).thenReturn(Collections.emptyList());
 
         Optional<Dish> actualDish = service.getDish(DISH_ID);
         assertEquals(expectedDish, actualDish);
@@ -118,8 +118,8 @@ public class DishDomainServiceTest {
 
     @Test
     public void addDishWithoutProductsTest() {
-        Dish dishToAdd = new Dish(-1,"borsch", dummyDishCategory);
-        Dish expectedDish = new Dish(DISH_ID,"borsch", dummyDishCategory);
+        Dish dishToAdd = Dish.builder().dishId(-1).name("borsch").category(dummyDishCategory).build();
+        Dish expectedDish = Dish.builder().dishId(DISH_ID).name("borsch").category(dummyDishCategory).build();
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
 
         Dish actualDish = service.addDish(dishToAdd);
@@ -147,7 +147,7 @@ public class DishDomainServiceTest {
 
     @Test
     public void addDishFailTest() {
-        Dish dishToAdd = new Dish(-1,"borsch", dummyDishCategory);
+        Dish dishToAdd = Dish.builder().dishId(-1).name("borsch").category(dummyDishCategory).build();
         when(dishRepo.addDish(dishToAdd)).thenReturn(-1L);
 
         Assertions.assertThrows(FoodcalcDomainException.class, () -> {

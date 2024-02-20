@@ -3,12 +3,11 @@ package com.outdoor.foodcalc.domain.model;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.function.ToDoubleFunction;
 
 import static java.util.stream.Collectors.groupingBy;
-import static java.util.stream.Collectors.summingDouble;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -16,74 +15,46 @@ import static java.util.stream.Collectors.toList;
  *
  * @author Anton Borovyk
  */
-public abstract class ComplexFoodEntity implements ProductsContainer, FoodDetails {
+public abstract class ComplexFoodEntity implements FoodDetails {
 
     /**
-     * Combine all collection of different food entities to complex products collection.
-     * @return collection of fields products collection
+     * Compare if two collections contains the same values (it is similar with equals, but uses IDomainEntity#sameValueAs)
+     * @param first first collection
+     * @param second second collection
+     * @return if collections contain the same value objects
      */
-    protected abstract Collection<Collection<ProductRef>> getProductsCollections();
+    public <T extends IDomainEntity> boolean sameCollectionAs(Collection<T> first, Collection<T> second) {
+        if (first == second) return true;
+        if (first.size() != second.size()) return false;
+        Iterator<T> secondIt = second.iterator();
+        for (T firstObj : first) {
+            if (!firstObj.sameValueAs(secondIt.next())) return false;
+        }
+        return true;
+    }
 
-    /**
-     * Collect all products contained in this entity and nested entities and sums their weights
-     *
-     * @return aggregated products list(product weights are summed).
-     */
-    @Override
-    public Collection<ProductRef> getAllProducts() {
-        //map products by Id;
-        final Map<Long, List<ProductRef>> productsMap = getProductsCollections().stream().flatMap(Collection::stream)
+    public FoodDetailsInstance getFoodDetails() {
+        //map products by Id
+        final Map<Long, List<ProductRef>> productsMap = getAllProducts().stream()
                 .collect(groupingBy(ProductRef::getProductId));
         //summarize weight of each product
-        return productsMap.values().stream().map(ProductRef::summarizeWeight).collect(toList());
+        List<ProductRef> products = productsMap.values().stream()
+                .map(this::reduceProducts)
+                .collect(toList());
+        return new FoodDetailsInstance(products);
     }
 
     /**
-     * Internal function to summarize some product detail, for all products list
-     * @param detailsFunction ProductRef function, used for getting values.
-     * @return summarized value for product list
+     * Reduce list of the same products by summing the weight
+     * @param products not empty product list, that contains same products
+     * @return product with summarized weight
      */
-    private float internalDetailsCalculation(ToDoubleFunction<ProductRef> detailsFunction) {
-        return getAllProducts().stream().collect(summingDouble(detailsFunction)).floatValue();
-    }
-
-    /**
-     * @return calorific in kCal
-     */
-    @Override
-    public float getCalorific() {
-        return internalDetailsCalculation(ProductRef::getCalorific);
-    }
-
-    /**
-     * @return proteins in gram
-     */
-    @Override
-    public float getProteins() {
-        return internalDetailsCalculation(ProductRef::getProteins);
-    }
-
-    /**
-     * @return fats in gram
-     */
-    @Override
-    public float getFats() {
-        return internalDetailsCalculation(ProductRef::getFats);
-    }
-
-    /**
-     * @return carbonates in gram
-     */
-    @Override
-    public float getCarbs() {
-        return internalDetailsCalculation(ProductRef::getCarbs);
-    }
-
-    /**
-     * @return weight in gram
-     */
-    @Override
-    public float getWeight() {
-        return internalDetailsCalculation(ProductRef::getWeight);
+    private ProductRef reduceProducts(Collection<ProductRef> products) {
+        //get Product entity
+        ProductRef product = products.iterator().next();
+        //summarize product weight
+        int weight = products.stream().mapToInt(ProductRef::getInternalWeight).sum();
+        //return updated ProductRef
+        return product.buildNewRef(weight);
     }
 }
