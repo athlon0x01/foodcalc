@@ -42,22 +42,23 @@ public class FoodPlansRepo {
         List<Meal> mealRefs2 = Collections.emptyList();
         List<Meal> mealRefs3 = Collections.emptyList();
 
-        PlanDay day11 = new PlanDay(101L, LocalDate.of(2023, 11, 23), mealRefs1, Collections.emptyList(), Collections.emptyList());
+        PlanDay day11 = new PlanDay(101L, LocalDate.of(2023, 11, 23), "", mealRefs1, Collections.emptyList(), Collections.emptyList());
         day11.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        PlanDay day12 = new PlanDay(102L, LocalDate.of(2023, 11, 24), mealRefs2, Collections.emptyList(), Collections.emptyList());
+        PlanDay day12 = new PlanDay(102L, LocalDate.of(2023, 11, 24), "", mealRefs2, Collections.emptyList(), Collections.emptyList());
         day12.setDescription("Dummy Lorem ipsum");
-        PlanDay day21 = new PlanDay(103L, LocalDate.of(2023, 9, 19), mealRefs3, Collections.emptyList(), Collections.emptyList());
+        PlanDay day21 = new PlanDay(103L, LocalDate.of(2023, 9, 19), "", mealRefs3, Collections.emptyList(), Collections.emptyList());
         day21.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
 
-        FoodPlan planA = new FoodPlan(1L, "Test plan A", "", 2, List.of(day11, day12));
-        FoodPlan planB = new FoodPlan(2L, "Test food plan B", "", 3, List.of(day21));
+        var now = ZonedDateTime.now();
+        FoodPlan planA = new FoodPlan(1L, "Test plan A", "", 2, now, now, List.of(day11, day12));
+        FoodPlan planB = new FoodPlan(2L, "Test food plan B", "", 3, now, now, List.of(day21));
         foodPlans.put(1L, planA);
         foodPlans.put(2L, planB);
     }
 
     private Meal buildRandomMeal(long id, List<MealType> types, Random random) {
         var type = types.get(random.nextInt(types.size()));
-        Meal meal = new Meal(id, type, Collections.emptyList(), Collections.emptyList());
+        Meal meal = new Meal(id, "", type, Collections.emptyList(), Collections.emptyList());
         meal.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore " + type.getName());
         return meal;
     }

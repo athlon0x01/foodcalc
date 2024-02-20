@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -40,10 +39,14 @@ public class FoodPlanService {
     }
 
     public FoodPlanInfo addFoodPlan(FoodPlanInfo foodPlan) {
-        FoodPlan plan = new FoodPlan(repository.getMaxPlanIdAndIncrement(), foodPlan.getName(), null, foodPlan.getMembers(), Collections.emptyList());
         var now = ZonedDateTime.now();
-        plan.setCreatedOn(now);
-        plan.setLastUpdated(now);
+        FoodPlan plan = FoodPlan.builder()
+                .id(repository.getMaxPlanIdAndIncrement())
+                .name(foodPlan.getName())
+                .members(foodPlan.getMembers())
+                .createdOn(now)
+                .lastUpdated(now)
+                .build();
         foodPlan.setId(plan.getId());
         repository.addFoodPlan(plan);
         return foodPlan;

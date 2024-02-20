@@ -5,6 +5,11 @@ import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.extern.jackson.Jacksonized;
 
 import java.util.*;
 
@@ -13,56 +18,21 @@ import java.util.*;
  *
  * @author Anton Borovyk
  */
+@Data
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+@Jacksonized
+@Builder(toBuilder = true)
 public class Meal extends ComplexFoodEntity implements IDomainEntity, DishesContainer {
 
+    @EqualsAndHashCode.Include
     private final long mealId;
     private String description;
     private MealType type;
-    private List<Dish> dishes;
-    private List<ProductRef> products;
-
-    public Meal(long mealId, MealType type, Collection<Dish> dishes, Collection<ProductRef> products) {
-        this.mealId = mealId;
-        this.type = type;
-        this.dishes = new ArrayList<>(dishes);
-        this.products = new ArrayList<>(products);
-    }
-
-    public long getMealId() {
-        return mealId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public MealType getType() {
-        return type;
-    }
-
-    public void setType(MealType type) {
-        this.type = type;
-    }
-
-    public List<Dish> getDishes() {
-        return dishes;
-    }
-
-    public void setDishes(List<Dish> dishes) {
-        this.dishes = new ArrayList<>(dishes);
-    }
-
-    public List<ProductRef> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<ProductRef> products) {
-        this.products = new ArrayList<>(products);
-    }
+    @Builder.Default
+    private List<Dish> dishes = new ArrayList<>();
+    @Builder.Default
+    private List<ProductRef> products = new ArrayList<>();
 
     @Override
     public Collection<ProductRef> getAllProducts() {
@@ -76,27 +46,11 @@ public class Meal extends ComplexFoodEntity implements IDomainEntity, DishesCont
         if (this.equals(other)) {
             Meal meal = (Meal) other;
 
-            if (mealId != meal.mealId) return false;
+            if (!Objects.equals(description, meal.description)) return false;
             if (!Objects.equals(type, meal.type)) return false;
             if (!sameCollectionAs(dishes, meal.dishes)) return false;
             return sameCollectionAs(products, meal.products);
         }
         return false;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Meal meal = (Meal) o;
-        return mealId == meal.mealId;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (mealId ^ (mealId >>> 32));
-        result = 31 * result + (type != null ? type.hashCode() : 0);
-        return result;
     }
 }

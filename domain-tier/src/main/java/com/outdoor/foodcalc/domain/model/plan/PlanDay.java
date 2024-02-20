@@ -6,6 +6,11 @@ import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.extern.jackson.Jacksonized;
 
 import java.time.LocalDate;
 import java.util.*;
@@ -17,66 +22,23 @@ import java.util.*;
  *
  * @author Anton Borovyk
  */
+@Data
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
+@Jacksonized
+@Builder(toBuilder = true)
 public class PlanDay extends ComplexFoodEntity implements IDomainEntity, DishesContainer {
 
+    @EqualsAndHashCode.Include
     private final long dayId;
     private LocalDate date;
     private String description;
-    private List<Meal> meals;
-    private List<Dish> dishes;
-    private List<ProductRef> products;
-
-    public PlanDay(long dayId, LocalDate date, List<Meal> meals, List<Dish> dishes, List<ProductRef> products) {
-        this.dayId = dayId;
-        this.date = date;
-        this.meals = new ArrayList<>(meals);
-        this.dishes = new ArrayList<>(dishes);
-        this.products = new ArrayList<>(products);
-    }
-
-    public long getDayId() {
-        return dayId;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public List<Meal> getMeals() {
-        return meals;
-    }
-
-    public void setMeals(List<Meal> meals) {
-        this.meals = new ArrayList<>(meals);
-    }
-
-    public List<Dish> getDishes() {
-        return dishes;
-    }
-
-    public void setDishes(List<Dish> dishes) {
-        this.dishes = new ArrayList<>(dishes);
-    }
-
-    public List<ProductRef> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<ProductRef> products) {
-        this.products = new ArrayList<>(products);
-    }
+    @Builder.Default
+    private List<Meal> meals = new ArrayList<>();
+    @Builder.Default
+    private List<Dish> dishes = new ArrayList<>();
+    @Builder.Default
+    private List<ProductRef> products = new ArrayList<>();
 
     @Override
     public Collection<ProductRef> getAllProducts() {
@@ -90,28 +52,12 @@ public class PlanDay extends ComplexFoodEntity implements IDomainEntity, DishesC
     public boolean sameValueAs(IDomainEntity other) {
         if (this.equals(other)) {
             PlanDay planDay = (PlanDay) other;
-            if (dayId != planDay.dayId) return false;
+            if (!Objects.equals(description, planDay.description)) return false;
             if (!Objects.equals(date, planDay.date)) return false;
             if (!sameCollectionAs(meals, planDay.meals)) return false;
             if (!sameCollectionAs(dishes, planDay.dishes)) return false;
             return sameCollectionAs(products, planDay.products);
         }
         return false;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        PlanDay planDay = (PlanDay) o;
-        return dayId == planDay.dayId;
-    }
-
-    @Override
-    public int hashCode() {
-        int result = (int) (dayId ^ (dayId >>> 32));
-        result = 31 * result + (date != null ? date.hashCode() : 0);
-        return result;
     }
 }

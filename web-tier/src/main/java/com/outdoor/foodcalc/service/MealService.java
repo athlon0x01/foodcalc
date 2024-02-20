@@ -13,7 +13,6 @@ import com.outdoor.foodcalc.model.meal.MealView;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,7 +54,10 @@ public class MealService {
     public MealInfo addMeal(long planId, long dayId, MealInfo meal) {
         var plan = repository.getFoodPlan(planId);
         var day = repository.getDay(planId, dayId);
-        Meal newMeal = new Meal(repository.getMaxMealIdAndIncrement(), getMealType(meal.getTypeId()), Collections.emptyList(), Collections.emptyList());
+        Meal newMeal = Meal.builder()
+                .mealId(repository.getMaxMealIdAndIncrement())
+                .type(getMealType(meal.getTypeId()))
+                .build();
         meal.setId(newMeal.getMealId());
         day.getMeals().add(newMeal);
         plan.setLastUpdated(ZonedDateTime.now());
@@ -70,7 +72,12 @@ public class MealService {
                 .map(productService::getProductRef)
                 .collect(Collectors.toList());
         var updatedDishes = repository.reorderDishes(meal.getDishes(), newMeal.getDishes());
-        Meal domainMeal = new Meal(id, getMealType(newMeal.getTypeId()), updatedDishes, products);
+        Meal domainMeal = meal.toBuilder()
+                .mealId(id)
+                .type(getMealType(newMeal.getTypeId()))
+                .dishes(updatedDishes)
+                .products(products)
+                .build();
         repository.updateMealInDay(plan, day, domainMeal, newMeal.getDescription());
     }
 

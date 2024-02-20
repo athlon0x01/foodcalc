@@ -96,7 +96,11 @@ public class DishService {
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Dish Category, id = " + dishInfo.getCategoryId()));
 
-        Dish dishToAdd = new Dish( -1, dishInfo.getName(), "", category, mapProductRefs(dishInfo));
+        Dish dishToAdd = Dish.builder()
+                .name(dishInfo.getName())
+                .category(category)
+                .products(mapProductRefs(dishInfo))
+                .build();
         dishInfo.setId(dishDomainService.addDish(dishToAdd).getDishId());
         return dishInfo;
     }
@@ -111,7 +115,13 @@ public class DishService {
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Dish Category, id = " + dishInfo.getCategoryId() ));
 
-        Dish updatedDish = new Dish(dishInfo.getId(), dishInfo.getName(), "", category, mapProductRefs(dishInfo));
+        //TODO verify dish description
+        Dish updatedDish = Dish.builder()
+                .dishId(dishInfo.getId())
+                .name(dishInfo.getName())
+                .category(category)
+                .products(mapProductRefs(dishInfo))
+                .build();
         //TODO will de changed latter
         var dishOwner = repository.getDishOwner(updatedDish.getDishId());
         if (dishOwner.isPresent()) {
@@ -185,6 +195,8 @@ public class DishService {
         Dish domainDish = dishDomainService.getDish(id)
                 .orElseThrow(() ->
                         new NotFoundException("Dish wasn't found"));
-        return new Dish(newId, domainDish.getName(), domainDish.getDescription(), domainDish.getCategory(), domainDish.getProducts());
+        return domainDish.toBuilder()
+                .dishId(newId)
+                .build();
     }
 }

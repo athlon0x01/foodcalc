@@ -8,7 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,7 +21,7 @@ public class DishTest {
 
     private static final double DELTA = 0.00001;
     private Dish dish;
-    private Collection<ProductRef> products;
+    private List<ProductRef> products;
 
     @BeforeEach
     public void setup() {
@@ -64,5 +64,12 @@ public class DishTest {
     @Test
     public void productContainerTest() {
         assertArrayEquals(products.toArray(), dish.getAllProducts().toArray());
+    }
+
+    @Test
+    void equalsTest() {
+        Dish otherDish = Dish.builder().dishId(123).build();
+        assertEquals(dish, otherDish);
+        assertFalse(dish.sameValueAs(otherDish));
     }
 }

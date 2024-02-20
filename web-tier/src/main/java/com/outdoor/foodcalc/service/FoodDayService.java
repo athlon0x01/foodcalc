@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -53,7 +52,10 @@ public class FoodDayService {
     public FoodDayInfo addFoodDay(long planId,
                                   FoodDayInfo foodDay) {
         var plan = repository.getFoodPlan(planId);
-        PlanDay planDay = new PlanDay(repository.getMaxDayIdAndIncrement(), foodDay.getDate(), Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        PlanDay planDay = PlanDay.builder()
+                .dayId(repository.getMaxDayIdAndIncrement())
+                .date(foodDay.getDate())
+                .build();
         foodDay.setId(planDay.getDayId());
         plan.getDays().add(planDay);
         plan.setLastUpdated(ZonedDateTime.now());
@@ -69,7 +71,13 @@ public class FoodDayService {
                 .collect(Collectors.toList());
         var updatedMeals = reorderMeals(oldDay.getMeals(), foodDay.getMeals());
         var updatedDishes = repository.reorderDishes(oldDay.getDishes(), foodDay.getDishes());
-        PlanDay day = new PlanDay(id, foodDay.getDate(), updatedMeals, updatedDishes, products);
+        PlanDay day = oldDay.toBuilder()
+                .dayId(id)
+                .date(foodDay.getDate())
+                .meals(updatedMeals)
+                .dishes(updatedDishes)
+                .products(products)
+                .build();
         repository.updateDayInPlan(plan, day, foodDay.getDescription());
     }
 
