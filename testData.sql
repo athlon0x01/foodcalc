@@ -27,7 +27,7 @@ insert into dish (name, description, category) values('borsch', 'soup with tomat
 insert into dish (name, description, category) values('buckwheat', 'buckwheat porridge', (select id from dish_category where name = 'Garnish'));
 insert into dish (name, description, category) values('stew', 'stew meat', (select id from dish_category where name = 'Meat'));
 
-insert into dish_product (dish, product, "ndx", weight) values (2, 4, 2, 300);
-insert into dish_product (dish, product, "ndx", weight) values (2, 5, 0, 100);
-insert into dish_product (dish, product, "ndx", weight) values (2, 7, 1, 30);
-insert into dish_product (dish, product, "ndx", weight) values (3, 2, 0, 60);
+insert into dish_product (dish, product, "ndx", weight) values ((select id from dish where name = 'borsch'), (select id from product where name = 'Potato'), 2, 300);
+insert into dish_product (dish, product, "ndx", weight) values ((select id from dish where name = 'borsch'), (select id from product where name = 'Tomato'), 0, 100);
+insert into dish_product (dish, product, "ndx", weight) values ((select id from dish where name = 'borsch'), (select id from product where name = 'Carrot'), 1, 30);
+insert into dish_product (dish, product, "ndx", weight) values ((select id from dish where name = 'buckwheat'), (select id from product where name = 'Carrot'), 0, 60);
