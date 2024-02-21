@@ -98,6 +98,7 @@ public class DishService {
 
         Dish dishToAdd = Dish.builder()
                 .name(dishInfo.getName())
+                .description(dishInfo.getDescription())
                 .category(category)
                 .products(mapProductRefs(dishInfo))
                 .build();
@@ -118,6 +119,7 @@ public class DishService {
         //TODO verify dish description
         Dish updatedDish = Dish.builder()
                 .dishId(dishInfo.getId())
+                .description(dishInfo.getDescription())
                 .name(dishInfo.getName())
                 .category(category)
                 .products(mapProductRefs(dishInfo))
@@ -165,8 +167,9 @@ public class DishService {
         return DishView.builder()
                 .id(dish.getDishId())
                 .name(dish.getName())
+                .description(dish.getDescription())
                 .categoryId(dish.getCategory().getCategoryId())
-                .products(dish.getAllProducts().stream()
+                .products(dish.getProducts().stream()
                         .map(pr -> {
                             //TODO mapping without reloading the product
                             final ProductView product = productService.getProduct(pr.getProductId());

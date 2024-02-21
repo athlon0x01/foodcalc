@@ -18,7 +18,7 @@
       <div class="row">
         <div class="col-md-2 border bg-light"><strong>Description</strong></div>
         <div class="col-md-10 border">
-          <textarea v-model="mealDescription" name="dayDescription" style="width: 100%"/>
+          <textarea v-model="mealDescription" name="mealDescription" style="width: 100%"/>
         </div>
       </div>
       <div class="row justify-content-md-center" style="padding-top:5px">

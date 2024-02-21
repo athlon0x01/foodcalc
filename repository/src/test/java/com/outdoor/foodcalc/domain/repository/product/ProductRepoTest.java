@@ -35,8 +35,7 @@ public class ProductRepoTest {
     private static final ProductCategory dummyCategory =  new ProductCategory(CATEGORY_ID, "dummyCategory");
 
     private static final Product dummyProduct = Product.builder().productId(PRODUCT_ID).name("dummyProduct")
-            .description("dummyDescr").category(dummyCategory).calorific(1.1f)
-            .proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
+            .category(dummyCategory).calorific(1.1f).proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
 
     private ArgumentMatcher<MapSqlParameterSource> sqlParamsMatcher;
 
@@ -226,7 +225,6 @@ public class ProductRepoTest {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getLong("productId")).thenReturn(dummyProduct.getProductId());
         when(resultSet.getString("productName")).thenReturn(dummyProduct.getName());
-        when(resultSet.getString("productDescription")).thenReturn(dummyProduct.getDescription());
         when(resultSet.getString("catName")).thenReturn(dummyProduct.getCategory().getName());
         when(resultSet.getLong("catId")).thenReturn(dummyProduct.getCategory().getCategoryId());
         when(resultSet.getFloat("calorific")).thenReturn(dummyProduct.getCalorific());
@@ -239,7 +237,6 @@ public class ProductRepoTest {
         assertEquals(dummyProduct, product);
 
         verify(resultSet).getString("productName");
-        verify(resultSet).getString("productDescription");
         verify(resultSet).getString("catName");
         verify(resultSet).getLong("productId");
         verify(resultSet).getLong("catId");

@@ -19,6 +19,12 @@
           <p v-if="errors.has('categoryId') > 0" class="alert">{{errors.first('categoryId')}}</p>
         </div>
       </div>
+      <div class="row" style="margin-top: 3px">
+        <div class="col-md-2" style="margin-top: 10px"><strong>Description</strong></div>
+        <div class="col-md-10">
+          <textarea v-model="description" name="dishDescription" style="width: 100%"/>
+        </div>
+      </div>
       <!--Products section-->
       <template v-if="products.length > 0" class="row">
         <!--Header-->
@@ -95,6 +101,7 @@ export default {
       dishId: this.editMode() ? this.oldDish.id : -1,
       name: this.editMode() ? this.oldDish.name : '',
       categoryId: this.editMode() ? this.oldDish.categoryId : 0,
+      description: this.editMode() ? this.oldDish.description : '',
       products: initialProducts,
       totalCalorific: this.calculateProductsTotal(initialProducts, p => Number(p.calorific)),
       totalProteins: this.calculateProductsTotal(initialProducts, p => Number(p.proteins)),
@@ -202,6 +209,7 @@ export default {
           let newDish = {
             id: this.dishId,
             name: this.name,
+            description: this.description,
             categoryId: this.categoryId,
             products: this.mapProducts()
           }

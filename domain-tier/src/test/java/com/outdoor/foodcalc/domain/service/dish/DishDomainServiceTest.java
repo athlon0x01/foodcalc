@@ -37,7 +37,7 @@ public class DishDomainServiceTest {
             2222L, "dummyCategory");
 
     private static final Product dummyProduct = Product.builder().productId(3333).name("dummyProduct")
-            .description("dummyDescr").category(dummyProductCategory).calorific(1.1f)
+            .category(dummyProductCategory).calorific(1.1f)
             .proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
 
     private static final ProductRef dummyProductRef = new ProductRef(dummyProduct, 6666);

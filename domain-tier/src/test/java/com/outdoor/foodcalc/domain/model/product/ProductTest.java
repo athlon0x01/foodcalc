@@ -19,7 +19,7 @@ public class ProductTest {
 
     @BeforeEach
     public void setup() {
-        product = Product.builder().productId(111).name("Corn").description("The Corn")
+        product = Product.builder().productId(111).name("Corn")
                 .category(new ProductCategory(22, "Cereals"))
                 .calorific(119.f).proteins(3.9f).fats(1.3f).carbs(22.7f).defaultWeight(700).build();
         productRef = new ProductRef(product, 800);

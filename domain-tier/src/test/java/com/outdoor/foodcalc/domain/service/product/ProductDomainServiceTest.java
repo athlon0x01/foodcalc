@@ -32,8 +32,7 @@ public class ProductDomainServiceTest {
     private static final ProductCategory dummyCategory =  new ProductCategory(12345L, "dummuCategory");
 
     private static final Product dummyProduct = Product.builder().productId(PRODUCT_ID).name("dummyProduct")
-            .description("dummyDescr").category(dummyCategory).calorific(1.1f)
-            .proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
+            .category(dummyCategory).calorific(1.1f).proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
 
 
     @InjectMocks
@@ -68,8 +67,7 @@ public class ProductDomainServiceTest {
     @Test
     public void addProductTest() {
         Product productToAdd = Product.builder().productId(-1).name("dummyProduct")
-                .description("dummyDescr").category(dummyCategory).calorific(1.1f)
-                .proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
+                .category(dummyCategory).calorific(1.1f).proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
         when(productRepo.addProduct(productToAdd)).thenReturn(PRODUCT_ID);
 
         assertEquals(dummyProduct, productService.addProduct(productToAdd));
