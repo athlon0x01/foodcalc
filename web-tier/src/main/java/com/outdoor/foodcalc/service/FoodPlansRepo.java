@@ -35,30 +35,30 @@ public class FoodPlansRepo {
         //dummy initialization for UI
 //        var mealTypes = mealTypeService.getMealTypes();
 //        Random random = new Random();
-//        List<Meal> mealRefs1 = List.of(buildRandomMeal(10101L, mealTypes, random), buildRandomMeal(10102L, mealTypes, random));
-//        List<Meal> mealRefs2 = List.of(buildRandomMeal(10103L, mealTypes, random), buildRandomMeal(10104L, mealTypes, random));
-//        List<Meal> mealRefs3 = List.of(buildRandomMeal(10105L, mealTypes, random), buildRandomMeal(10106L, mealTypes, random));
-        List<Meal> mealRefs1 = Collections.emptyList();
-        List<Meal> mealRefs2 = Collections.emptyList();
-        List<Meal> mealRefs3 = Collections.emptyList();
+//        List<Meal> mealRefs1 = new ArrayList<>(List.of(buildRandomMeal(10101L, mealTypes, random), buildRandomMeal(10102L, mealTypes, random)));
+//        List<Meal> mealRefs2 = new ArrayList<>(List.of(buildRandomMeal(10103L, mealTypes, random), buildRandomMeal(10104L, mealTypes, random)));
+//        List<Meal> mealRefs3 = new ArrayList<>(List.of(buildRandomMeal(10105L, mealTypes, random), buildRandomMeal(10106L, mealTypes, random)));
+        List<Meal> mealRefs1 = new ArrayList<>();
+        List<Meal> mealRefs2 = new ArrayList<>();
+        List<Meal> mealRefs3 = new ArrayList<>();
 
-        PlanDay day11 = new PlanDay(101L, LocalDate.of(2023, 11, 23), "", mealRefs1, Collections.emptyList(), Collections.emptyList());
+        PlanDay day11 = new PlanDay(101L, LocalDate.of(2023, 11, 23), "", mealRefs1, new ArrayList<>(), new ArrayList<>());
         day11.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        PlanDay day12 = new PlanDay(102L, LocalDate.of(2023, 11, 24), "", mealRefs2, Collections.emptyList(), Collections.emptyList());
+        PlanDay day12 = new PlanDay(102L, LocalDate.of(2023, 11, 24), "", mealRefs2, new ArrayList<>(), new ArrayList<>());
         day12.setDescription("Dummy Lorem ipsum");
-        PlanDay day21 = new PlanDay(103L, LocalDate.of(2023, 9, 19), "", mealRefs3, Collections.emptyList(), Collections.emptyList());
+        PlanDay day21 = new PlanDay(103L, LocalDate.of(2023, 9, 19), "", mealRefs3, new ArrayList<>(), new ArrayList<>());
         day21.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
 
         var now = ZonedDateTime.now();
-        FoodPlan planA = new FoodPlan(1L, "Test plan A", "", 2, now, now, List.of(day11, day12));
-        FoodPlan planB = new FoodPlan(2L, "Test food plan B", "", 3, now, now, List.of(day21));
+        FoodPlan planA = new FoodPlan(1L, "Test plan A", "", 2, now, now, new ArrayList<>(List.of(day11, day12)));
+        FoodPlan planB = new FoodPlan(2L, "Test food plan B", "", 3, now, now, new ArrayList<>(List.of(day21)));
         foodPlans.put(1L, planA);
         foodPlans.put(2L, planB);
     }
 
     private Meal buildRandomMeal(long id, List<MealType> types, Random random) {
         var type = types.get(random.nextInt(types.size()));
-        Meal meal = new Meal(id, "", type, Collections.emptyList(), Collections.emptyList());
+        Meal meal = new Meal(id, "", type, new ArrayList<>(), new ArrayList<>());
         meal.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore " + type.getName());
         return meal;
     }

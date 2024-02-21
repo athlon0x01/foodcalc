@@ -40,7 +40,7 @@ public class ProductRefRepoTest {
     private static final ProductCategory dummyCategory =  new ProductCategory(12345L, "dummyCategory");
 
     private static final Product dummyProduct = new Product(
-            54321L, "dummyProduct", "dummyDescr", dummyCategory,
+            54321L, "dummyProduct", dummyCategory,
             1.1f, 2.2f, 3.3f, 4.4f, 10);
 
     private static final Integer PRODUCT_REF_WEIGHT = 600;
@@ -51,7 +51,7 @@ public class ProductRefRepoTest {
 
     private static final Dish dummyDish = new Dish(
             DISH_ID, "borsch", "dummyDescr",
-            dummyDishCategory, Collections.EMPTY_LIST);
+            dummyDishCategory, Collections.emptyList());
 
     private static final Dish dummyDishWithProducts = new Dish(
             DISH_ID, "borsch", "dummyDescr",

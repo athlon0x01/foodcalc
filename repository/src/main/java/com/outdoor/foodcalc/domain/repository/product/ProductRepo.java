@@ -25,22 +25,22 @@ public class ProductRepo extends AbstractRepository<Product>
     implements IProductRepo, RowMapper<Product> {
 
     static final String SELECT_ALL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
-        "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
+        "c.id as catId, c.name as catName, p.calorific as calorific, " +
         "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight " +
         "from product p join product_category c on p.category = c.id";
 
     static final String SELECT_PRODUCT_SQL = "select p.id as productId, p.name as productName," +
-            "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight " +
             "from product p join product_category c on p.category = c.id " +
             "where p.id = :productId";
 
-    static final String INSERT_PRODUCT_SQL = "insert into product (name, description, category, calorific, " +
-            "proteins, fats, carbs, defweight) values (:name, :description, :categoryId, :calorific," +
+    static final String INSERT_PRODUCT_SQL = "insert into product (name, category, calorific, " +
+            "proteins, fats, carbs, defweight) values (:name, :categoryId, :calorific," +
             ":proteins, :fats, :carbs, :defweight)";
 
     static final String UPDATE_PRODUCT_SQL = "update product set name = :name," +
-            "description = :description, category = :categoryId, calorific = :calorific, proteins = :proteins," +
+            "category = :categoryId, calorific = :calorific, proteins = :proteins," +
             "fats= :fats, carbs = :carbs, defweight = :defweight " +
             "where id = :productId";
 
@@ -82,7 +82,6 @@ public class ProductRepo extends AbstractRepository<Product>
         return new MapSqlParameterSource()
                 .addValue("productId", product.getProductId())
                 .addValue("name", product.getName())
-                .addValue("description", product.getDescription())
                 .addValue("categoryId", product.getCategory().getCategoryId())
                 .addValue("calorific", product.getCalorific())
                 .addValue("proteins", product.getProteins())
@@ -117,7 +116,6 @@ public class ProductRepo extends AbstractRepository<Product>
         return Product.builder()
                 .productId(resultSet.getLong("productId"))
                 .name(resultSet.getString("productName"))
-                .description(resultSet.getString("productDescription"))
                 .category(category)
                 .calorific(resultSet.getFloat("calorific"))
                 .proteins(resultSet.getFloat("proteins"))

@@ -55,10 +55,10 @@ public class DishEndpointTest extends ApiUnitTest{
      private static final String CATEGORY_1_NAME = "First category";
      private static final String CATEGORY_2_NAME = "Empty";
 
-     private static final Product product1 = new Product(101010, "first prod", "",
+     private static final Product product1 = new Product(101010, "first prod",
              new ProductCategory(77777, "test product cat1"),
              1.1f, 3, 4.5f, 7, 110);
-     private static final Product product2 = new Product(121212, "second prod", "",
+     private static final Product product2 = new Product(121212, "second prod",
              new ProductCategory(77777, "test product cat1"),
              1.1f, 3, 4.5f, 7, 110);
 

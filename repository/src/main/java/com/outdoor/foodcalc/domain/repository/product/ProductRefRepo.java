@@ -29,7 +29,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
 
 
     static final String SELECT_ALL_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
-            "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
             "dp.dish as dish, dp.weight as weight, dp.ndx as ndx " +
             "from dish_product dp " +
@@ -37,7 +37,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
             "join product_category c on p.category = c.id ";
 
     static final String SELECT_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
-            "p.description as productDescription, c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, dp.weight as weight " +
             "from dish_product dp " +
             "join product p on dp.product  = p.id " +

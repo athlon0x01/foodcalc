@@ -20,6 +20,7 @@ import java.util.List;
 public class DishInfo extends EntityView {
     @NotEmpty
     private String name;
+    private String description;
     @Min(1)
     private long categoryId;
     private List<ProductItem> products;

@@ -18,6 +18,7 @@ import java.util.List;
 public class DishView  extends FoodView {
     @NotEmpty
     private String name;
+    private String description;
     @Min(1)
     private long categoryId;
     private List<ProductView> products;
