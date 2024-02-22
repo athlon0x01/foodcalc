@@ -14,7 +14,6 @@ import com.outdoor.foodcalc.model.dish.CategoryWithDishes;
 import com.outdoor.foodcalc.model.dish.DishCategoryView;
 import com.outdoor.foodcalc.model.dish.DishInfo;
 import com.outdoor.foodcalc.model.dish.DishView;
-import com.outdoor.foodcalc.model.product.ProductView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -170,12 +169,7 @@ public class DishService {
                 .description(dish.getDescription())
                 .categoryId(dish.getCategory().getCategoryId())
                 .products(dish.getProducts().stream()
-                        .map(pr -> {
-                            //TODO mapping without reloading the product
-                            final ProductView product = productService.getProduct(pr.getProductId());
-                            product.setWeight(pr.getWeight());
-                            return product;
-                        })
+                        .map(productService::mapProductRef)
                         .collect(Collectors.toList()))
                 .calorific(dishDetails.getCalorific())
                 .proteins(dishDetails.getCalorific())
