@@ -127,9 +127,9 @@ public class DishServiceTest {
 
         when(dishCategories.getDishCategories()).thenReturn(dishCategoryViewList);
         when(dishDomainService.getAllDishes()).thenReturn(domainDishList);
-        when(productService.getProduct(product1.getProductId())).thenReturn(productView1);
-        when(productService.getProduct(product2.getProductId())).thenReturn(productView2);
-        when(productService.getProduct(product3.getProductId())).thenReturn(productView3);
+        when(productService.mapProductRef(productRef1)).thenReturn(productView1);
+        when(productService.mapProductRef(productRef2)).thenReturn(productView2);
+        when(productService.mapProductRef(productRef3)).thenReturn(productView3);
 
         CategoryWithDishes categoryWithDishes1 = CategoryWithDishes.builder()
                 .id(DOMAIN_CAT_1.getCategoryId()).name(DOMAIN_CAT_1.getName())
@@ -147,25 +147,25 @@ public class DishServiceTest {
 
         verify(dishCategories).getDishCategories();
         verify(dishDomainService).getAllDishes();
-        verify(productService, times(2)).getProduct(product1.getProductId());
-        verify(productService, times(2)).getProduct(product2.getProductId());
-        verify(productService, times(2)).getProduct(product3.getProductId());
+        verify(productService, times(2)).mapProductRef(productRef1);
+        verify(productService, times(2)).mapProductRef(productRef2);
+        verify(productService, times(2)).mapProductRef(productRef3);
     }
 
     @Test
     public void getDishTest() {
         when(dishDomainService.getDish(domainDish1.getDishId())).thenReturn(Optional.of(domainDish1));
-        when(productService.getProduct(product1.getProductId())).thenReturn(productView1);
-        when(productService.getProduct(product2.getProductId())).thenReturn(productView2);
-        when(productService.getProduct(product3.getProductId())).thenReturn(productView3);
+        when(productService.mapProductRef(productRef1)).thenReturn(productView1);
+        when(productService.mapProductRef(productRef2)).thenReturn(productView2);
+        when(productService.mapProductRef(productRef3)).thenReturn(productView3);
 
         DishView actualDishView = dishService.getDish(domainDish1.getDishId());
         assertEquals(dishView1, actualDishView);
 
         verify(dishDomainService).getDish(domainDish1.getDishId());
-        verify(productService).getProduct(product1.getProductId());
-        verify(productService).getProduct(product2.getProductId());
-        verify(productService).getProduct(product3.getProductId());
+        verify(productService).mapProductRef(productRef1);
+        verify(productService).mapProductRef(productRef2);
+        verify(productService).mapProductRef(productRef3);
     }
 
     @Test
