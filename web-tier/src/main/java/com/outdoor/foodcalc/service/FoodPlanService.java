@@ -59,8 +59,6 @@ public class FoodPlanService {
                 .name(foodPlan.getName())
                 .members(foodPlan.getMembers())
                 .description(foodPlan.getDescription())
-                //TODO put it to UI
-                //.createdOn(now)
                 .lastUpdated(ZonedDateTime.now())
                 .days(days)
                 .build();
@@ -74,6 +72,8 @@ public class FoodPlanService {
                 .description(plan.getDescription())
                 .members(plan.getMembers())
                 .duration(plan.getDays().size())
+                .createdOn(plan.getCreatedOn())
+                .lastUpdated(plan.getLastUpdated())
                 .build();
     }
 
@@ -84,6 +84,8 @@ public class FoodPlanService {
                 .name(plan.getName())
                 .description(plan.getDescription())
                 .members(plan.getMembers())
+                .createdOn(plan.getCreatedOn())
+                .lastUpdated(plan.getLastUpdated())
                 .days(plan.getDays().stream()
                         .map(dayService::mapView)
                         .collect(Collectors.toList()))

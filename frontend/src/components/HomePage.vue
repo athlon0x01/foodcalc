@@ -6,15 +6,19 @@
     <div v-if="foodPlans.length > 0" class="container">
       <!--Header-->
       <div class="row headerRow bg-light">
-        <div class="col-md-7 border"><strong>Name</strong></div>
-        <div class="col-md-2 border"><strong>Members</strong></div>
-        <div class="col-md-2 border"><strong>Duration</strong></div>
+        <div class="col-md-5 border"><strong>Name</strong></div>
+        <div class="col-md-1 border"><strong>Members</strong></div>
+        <div class="col-md-1 border"><strong>Duration</strong></div>
+        <div class="col-md-2 border"><strong>Created On</strong></div>
+        <div class="col-md-2 border"><strong>Last Updated</strong></div>
       </div>
       <div v-for="plan in foodPlans" :key="plan.id">
         <div class="row">
-          <div class="col-md-7 text-left border"><router-link :to="{path: '/plan/' + plan.id}">{{plan.name}}</router-link></div>
-          <div class="col-md-2 border">{{plan.members}}</div>
-          <div class="col-md-2 border">{{plan.duration}}</div>
+          <div class="col-md-5 text-left border"><router-link :to="{path: '/plan/' + plan.id}">{{plan.name}}</router-link></div>
+          <div class="col-md-1 border">{{plan.members}}</div>
+          <div class="col-md-1 border">{{plan.duration}}</div>
+          <div class="col-md-2 border">{{plan.createdOn}}</div>
+          <div class="col-md-2 border">{{plan.lastUpdated}}</div>
           <div class="col-md-1">
             <b-button variant="outline-danger" size="sm" v-on:click="deletePlan(plan.id)">Delete</b-button>
           </div>

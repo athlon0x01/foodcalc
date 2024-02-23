@@ -31,6 +31,14 @@
           <div class="col-md-2 border bg-light"><strong>Duration</strong></div>
           <div class="col-md-9 border">{{foodPlan.days.length}}</div>
         </div>
+        <div class="row">
+          <div class="col-md-2 border bg-light"><strong>Created On</strong></div>
+          <div class="col-md-9 border">{{foodPlan.createdOn}}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-2 border bg-light"><strong>Last Updated</strong></div>
+          <div class="col-md-9 border">{{foodPlan.lastUpdated}}</div>
+        </div>
         <div class="row headerRow bg-light">
           <div class="col-md-2"/>
           <div class="col-md-2 border"><em>Calorific</em></div>

@@ -69,13 +69,13 @@ public class PlanDayDomainService {
         tmpRepo.updateDayInPlan(plan, foodDay, foodDay.getDescription());
     }
 
-    public Optional<Meal> getMealById(List<Meal> meals, long id) {
+    private Optional<Meal> getMealById(List<Meal> meals, long id) {
         return meals.stream()
                 .filter(dish -> dish.getMealId() == id)
                 .findFirst();
     }
 
-    public List<Meal> reorderMeals(List<Meal> meals, List<Meal> ids) {
+    private List<Meal> reorderMeals(List<Meal> meals, List<Meal> ids) {
         List<Meal> newMeals = new ArrayList<>();
         ids.forEach(id -> getMealById(meals, id.getMealId())
                 .ifPresent(newMeals::add));

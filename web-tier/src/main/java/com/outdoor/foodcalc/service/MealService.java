@@ -50,9 +50,9 @@ public class MealService {
         return mapInfo(mealDomainService.addMeal(planId, dayId, domainMeal));
     }
 
-    public void updateMeal(long planId, long dayId, long id, MealInfo meal) {
+    public void updateMeal(long planId, long dayId, MealInfo meal) {
         Meal domainMeal = Meal.builder()
-                .mealId(id)
+                .mealId(meal.getId())
                 .type(new MealType(meal.getTypeId(), ""))
                 .description(meal.getDescription())
                 .dishes(dishService.buildMockDishes(meal.getDishes()))
