@@ -26,6 +26,10 @@ public class ProductRef implements IDomainEntity {
         this.weight = weight;
     }
 
+    public ProductRef(Product product, float weight) {
+        this(product, Math.round(weight * 10));
+    }
+
     public ProductRef buildNewRef(int newWeight) {
         return new ProductRef(product, newWeight);
     }

@@ -1,12 +1,12 @@
-package com.outdoor.foodcalc.service;
+package com.outdoor.foodcalc.domain.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
-import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
+import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +16,7 @@ import java.time.ZonedDateTime;
 import java.util.*;
 
 //TODO temporary holder \ repository for food plans \ days \ meals \ dishes
+@Deprecated(forRemoval = true)
 @Component
 public class FoodPlansRepo {
 
@@ -80,8 +81,7 @@ public class FoodPlansRepo {
     }
 
     public FoodPlan getFoodPlan(long id) {
-        return Optional.ofNullable(foodPlans.get(id))
-                .orElseThrow(() -> new NotFoundException("Food plan with id = " + id + " wasn't found"));
+        return foodPlans.get(id);
     }
 
     public Collection<FoodPlan> getAllPlans() {
@@ -93,6 +93,10 @@ public class FoodPlansRepo {
     }
 
     public void addFoodPlan(FoodPlan foodPlan) {
+        foodPlans.put(foodPlan.getId(), foodPlan);
+    }
+
+    public void updateFoodPlan(FoodPlan foodPlan) {
         foodPlans.put(foodPlan.getId(), foodPlan);
     }
 
@@ -140,9 +144,9 @@ public class FoodPlansRepo {
                 .findFirst();
     }
 
-    public List<Dish> reorderDishes(List<Dish> dishes, List<Long> ids) {
+    public List<Dish> reorderDishes(List<Dish> dishes, List<Dish> ids) {
         List<Dish> newDishes = new ArrayList<>();
-        ids.forEach(id -> getDishById(dishes, id)
+        ids.forEach(id -> getDishById(dishes, id.getDishId())
                 .ifPresent(newDishes::add));
         return newDishes;
     }

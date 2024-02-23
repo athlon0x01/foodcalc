@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.model.plan;
 
 import com.outdoor.foodcalc.model.EntityView;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -9,6 +10,7 @@ import lombok.extern.jackson.Jacksonized;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -23,5 +25,6 @@ public class FoodPlanInfo extends EntityView {
     private int members;
     private int duration;
     private String description;
-    private List<Long> days;
+    @Builder.Default
+    private List<Long> days = new ArrayList<>();
 }

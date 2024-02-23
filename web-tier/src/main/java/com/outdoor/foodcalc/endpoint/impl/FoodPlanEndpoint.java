@@ -55,6 +55,6 @@ public class FoodPlanEndpoint extends AbstractEndpoint {
                                    @RequestBody @Valid FoodPlanInfo foodPlan) {
         verifyEntityId(id, foodPlan);
         LOG.debug("Updating food plan id = {}", id);
-        foodPlanService.updateFoodPlan(id, foodPlan);
+        foodPlanService.updateFoodPlan(foodPlan);
     }
 }

@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.domain.service.product;
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.Product;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,5 +94,11 @@ public class ProductDomainService {
         if(!productRepo.deleteProduct(id)) {
             throw new FoodcalcDomainException("Failed to delete product with id=" + id);
         }
+    }
+
+    public ProductRef loadProduct(ProductRef mock) {
+        return getProduct(mock.getProductId())
+                .map(product -> new ProductRef(product, mock.getInternalWeight()))
+                .orElseThrow(() -> new NotFoundException("Product with id=" + mock.getProductId() + " doesn't exist"));
     }
 }

@@ -73,10 +73,9 @@ public class ProductService {
                 .build();
     }
 
-    //TODO revert back to package scope
-    public Product getDomainProduct(long id) {
+    Product getDomainProduct(long id) {
         Optional<Product> domainProduct = productDomainService.getProduct(id);
-        if(!domainProduct.isPresent()) {
+        if (!domainProduct.isPresent()) {
             LOG.error("Product with id={} wasn't found", id);
             throw new NotFoundException("Product wasn't found");
         }
@@ -85,7 +84,16 @@ public class ProductService {
 
     ProductRef getProductRef(ProductItem product) {
         Product domainProduct = getDomainProduct(product.getProductId());
-        return new ProductRef(domainProduct, Math.round(product.getWeight() * 10));
+        return new ProductRef(domainProduct, product.getWeight());
+    }
+
+    List<ProductRef> buildMockProducts(List<ProductItem> products) {
+        return products.stream()
+                .map(product -> new ProductRef(Product.builder()
+                        .productId(product.getProductId())
+                        .build(),
+                        product.getWeight()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -127,7 +135,6 @@ public class ProductService {
      * Updates selected {@link Product} with new value.
      *
      * @param productModel updated
-     * @return if product updated
      */
     public void updateProduct(ProductView productModel) {
         final ProductCategory category = productCategoryDomainService.getCategory(productModel.getCategoryId())
@@ -151,7 +158,6 @@ public class ProductService {
      * Removes selected {@link Product}.
      *
      * @param id product Id to delete
-     * @return if product deleted
      */
     public void deleteProduct(long id) {
         productDomainService.deleteProduct(id);

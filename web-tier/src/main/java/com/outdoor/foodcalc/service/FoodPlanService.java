@@ -1,74 +1,70 @@
 package com.outdoor.foodcalc.service;
 
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
+import com.outdoor.foodcalc.domain.service.plan.FoodPlanDomainService;
 import com.outdoor.foodcalc.model.plan.FoodPlanView;
 import com.outdoor.foodcalc.model.plan.FoodPlanInfo;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class FoodPlanService {
 
-    private final FoodPlansRepo repository;
+    private final FoodPlanDomainService planDomainService;
     private final FoodDayService dayService;
 
-    public FoodPlanService(FoodPlansRepo repository, FoodDayService foodDayService) {
-        this.repository = repository;
+    public FoodPlanService(FoodPlanDomainService planDomainService, FoodDayService foodDayService) {
+        this.planDomainService = planDomainService;
         this.dayService = foodDayService;
     }
 
     public List<FoodPlanInfo> getAllFoodPlans() {
-        return repository.getAllPlans().stream()
+        return planDomainService.getAllFoodPlans().stream()
                 .map(this::mapPlan)
                 .collect(Collectors.toList());
     }
 
     public FoodPlanView getFoodPlan(long id) {
-        return mapPlanView(repository.getFoodPlan(id));
+        return planDomainService.getFoodPlan(id)
+                .map(this::mapPlanView)
+                .orElseThrow(() -> new NotFoundException("Food plan with id = " + id + " wasn't found"));
     }
 
     public void deleteFoodPlan(long id) {
-        repository.deleteFoodPlan(id);
+        planDomainService.deleteFoodPlan(id);
     }
 
     public FoodPlanInfo addFoodPlan(FoodPlanInfo foodPlan) {
         var now = ZonedDateTime.now();
         FoodPlan plan = FoodPlan.builder()
-                .id(repository.getMaxPlanIdAndIncrement())
                 .name(foodPlan.getName())
                 .members(foodPlan.getMembers())
                 .createdOn(now)
                 .lastUpdated(now)
                 .build();
-        foodPlan.setId(plan.getId());
-        repository.addFoodPlan(plan);
-        return foodPlan;
+        return mapPlan(planDomainService.addFoodPlan(plan));
     }
 
-    public void updateFoodPlan(long id, FoodPlanInfo foodPlan) {
-        FoodPlan plan = repository.getFoodPlan(id);
-        plan.setName(foodPlan.getName());
-        plan.setDescription(foodPlan.getDescription());
-        plan.setMembers(foodPlan.getMembers());
-        plan.setLastUpdated(ZonedDateTime.now());
-        List<PlanDay> newDays = new ArrayList<>();
-        //reorder days in plan
-        foodPlan.getDays().forEach(dayId -> getDayById(plan.getDays(), dayId)
-                .ifPresent(newDays::add));
-        plan.setDays(newDays);
-    }
-
-    private Optional<PlanDay> getDayById(List<PlanDay> days, long id) {
-        return days.stream()
-                .filter(day -> day.getDayId() == id)
-                .findFirst();
+    public void updateFoodPlan(FoodPlanInfo foodPlan) {
+        List<PlanDay> days = foodPlan.getDays().stream()
+                .map(dayId -> PlanDay.builder().dayId(dayId).build())
+                .collect(Collectors.toList());
+        FoodPlan plan = FoodPlan.builder()
+                .name(foodPlan.getName())
+                .members(foodPlan.getMembers())
+                .description(foodPlan.getDescription())
+                //TODO put it to UI
+                //.createdOn(now)
+                .lastUpdated(ZonedDateTime.now())
+                .days(days)
+                .build();
+        planDomainService.updateFoodPlan(plan);
     }
 
     private FoodPlanInfo mapPlan(FoodPlan plan) {
