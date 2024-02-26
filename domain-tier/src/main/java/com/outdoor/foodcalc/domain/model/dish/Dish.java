@@ -30,7 +30,7 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity {
     private String description;
     private DishCategory category;
 
-    private final Boolean template;
+    private final boolean template;
     //dish components
     @Builder.Default
     private List<ProductRef> products = new ArrayList<>();
