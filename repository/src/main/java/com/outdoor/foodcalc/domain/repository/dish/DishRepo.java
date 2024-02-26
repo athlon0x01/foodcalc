@@ -64,7 +64,7 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
                 .addValue("name", dish.getName())
                 .addValue("description", dish.getDescription())
                 .addValue("categoryId", dish.getCategory().getCategoryId())
-                .addValue("template", dish.getTemplate());
+                .addValue("template", dish.isTemplate());
     }
 
     @Override
