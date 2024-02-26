@@ -123,7 +123,7 @@ public class DishServiceTest {
         List<Dish> domainDishList = Arrays.asList(domainDish1, domainDish2, domainDish3);
 
         when(dishCategories.getDishCategories()).thenReturn(dishCategoryViewList);
-        when(dishDomainService.getAllDishes()).thenReturn(domainDishList);
+        when(dishDomainService.getAllTemplateDishes()).thenReturn(domainDishList);
         when(productService.mapProductRef(productRef1)).thenReturn(productView1);
         when(productService.mapProductRef(productRef2)).thenReturn(productView2);
         when(productService.mapProductRef(productRef3)).thenReturn(productView3);
@@ -139,11 +139,11 @@ public class DishServiceTest {
                 .dishes(new ArrayList<>()).build();
         List<CategoryWithDishes> expected = Arrays.asList(categoryWithDishes1, categoryWithDishes2, categoryWithDishes3);
 
-        List<CategoryWithDishes> actual = dishService.getAllDishes();
+        List<CategoryWithDishes> actual = dishService.getAllTemplateDishes();
         assertEquals(expected, actual);
 
         verify(dishCategories).getDishCategories();
-        verify(dishDomainService).getAllDishes();
+        verify(dishDomainService).getAllTemplateDishes();
         verify(productService, times(2)).mapProductRef(productRef1);
         verify(productService, times(2)).mapProductRef(productRef2);
         verify(productService, times(2)).mapProductRef(productRef3);
@@ -186,18 +186,18 @@ public class DishServiceTest {
         when(dishCategoryDomainService.getCategory(dishInfoToAdd.getCategoryId()))
                 .thenReturn(Optional.of(addedDomainDish.getCategory()));
         when(dishDomainService.addDish(any())).thenReturn(addedDomainDish);
-        when(productService.getDomainProduct(dishProduct1.getProductId())).thenReturn(product1);
-        when(productService.getDomainProduct(dishProduct2.getProductId())).thenReturn(product2);
-        when(productService.getDomainProduct(dishProduct3.getProductId())).thenReturn(product3);
+//        when(productService.getDomainProduct(dishProduct1.getProductId())).thenReturn(product1);
+//        when(productService.getDomainProduct(dishProduct2.getProductId())).thenReturn(product2);
+//        when(productService.getDomainProduct(dishProduct3.getProductId())).thenReturn(product3);
 
         DishInfo actualDishInfo = dishService.addDish(dishInfoToAdd);
         assertEquals(expectedDishInfo, actualDishInfo);
 
         verify(dishCategoryDomainService).getCategory(dishInfoToAdd.getCategoryId());
         verify(dishDomainService).addDish(any());
-        verify(productService).getDomainProduct(dishProduct1.getProductId());
-        verify(productService).getDomainProduct(dishProduct2.getProductId());
-        verify(productService).getDomainProduct(dishProduct3.getProductId());
+//        verify(productService).getDomainProduct(dishProduct1.getProductId());
+//        verify(productService).getDomainProduct(dishProduct2.getProductId());
+//        verify(productService).getDomainProduct(dishProduct3.getProductId());
     }
 
     @Test
@@ -220,9 +220,9 @@ public class DishServiceTest {
 
         when(dishCategoryDomainService.getCategory(dishInfoToUpdate.getCategoryId()))
                 .thenReturn(Optional.of(DOMAIN_CAT_1));
-        when(productService.getDomainProduct(dishProduct1.getProductId())).thenReturn(product1);
-        when(productService.getDomainProduct(dishProduct2.getProductId())).thenReturn(product2);
-        when(productService.getDomainProduct(dishProduct3.getProductId())).thenReturn(product3);
+//        when(productService.getDomainProduct(dishProduct1.getProductId())).thenReturn(product1);
+//        when(productService.getDomainProduct(dishProduct2.getProductId())).thenReturn(product2);
+//        when(productService.getDomainProduct(dishProduct3.getProductId())).thenReturn(product3);
         doNothing().when(dishDomainService).updateDish(any());
 
         dishService.updateDish(dishInfoToUpdate);

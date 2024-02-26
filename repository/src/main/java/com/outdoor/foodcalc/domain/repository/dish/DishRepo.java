@@ -32,7 +32,7 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
     static final String SELECT_DISH_EXIST_SQL = "select count(*) from dish where id = :dishId";
 
     @Override
-    public List<Dish> getAllDishes() {
+    public List<Dish> getAllTemplateDishes() {
         return jdbcTemplate.query(SELECT_ALL_DISHES_SQL, this);
     }
 

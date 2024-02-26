@@ -44,8 +44,8 @@ public class DishDomainService {
      *
      * @return list of dishes
      */
-    public List<Dish> getAllDishes() {
-        List<Dish> dishes = dishRepo.getAllDishes();
+    public List<Dish> getAllTemplateDishes() {
+        List<Dish> dishes = dishRepo.getAllTemplateDishes();
         Map<Long, List<ProductRef>> allDishIdWithProductRefs = productRefRepo.getAllDishProducts();
 
         dishes.stream()
@@ -153,6 +153,7 @@ public class DishDomainService {
         if(!dishRepo.existsDish(id)) {
             throw new NotFoundException("Dish with id=" + id + " doesn't exist");
         }
+        //TODO check if dish was added to day or meal
         productRefRepo.deleteDishProducts(id);
         if(!dishRepo.deleteDish(id)) {
             throw new FoodcalcDomainException("Failed to delete dish with id=" + id);

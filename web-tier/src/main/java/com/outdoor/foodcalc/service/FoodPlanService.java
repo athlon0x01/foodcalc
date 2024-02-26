@@ -56,6 +56,7 @@ public class FoodPlanService {
                 .map(dayId -> PlanDay.builder().dayId(dayId).build())
                 .collect(Collectors.toList());
         FoodPlan plan = FoodPlan.builder()
+                .id(foodPlan.getId())
                 .name(foodPlan.getName())
                 .members(foodPlan.getMembers())
                 .description(foodPlan.getDescription())

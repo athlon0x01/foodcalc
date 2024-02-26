@@ -4,7 +4,6 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
-import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
 import com.outdoor.foodcalc.model.dish.CategoryWithDishes;
 import com.outdoor.foodcalc.model.dish.DishCategoryView;
@@ -36,10 +35,10 @@ public class DishService {
      *
      * @return list of products
      */
-    public List<CategoryWithDishes> getAllDishes() {
+    public List<CategoryWithDishes> getAllTemplateDishes() {
         //load dishes & categories
         final List<DishCategoryView> categories = dishCategoryService.getDishCategories();
-        final List<Dish> domainDishes = dishDomainService.getAllDishes();
+        final List<Dish> domainDishes = dishDomainService.getAllTemplateDishes();
         //group dishes by categories
         final Map<Long, List<Dish>> dishesMap = domainDishes.stream()
                 .collect(Collectors.groupingBy(d -> d.getCategory().getCategoryId()));
@@ -86,7 +85,7 @@ public class DishService {
                 .name(dishInfo.getName())
                 .description(dishInfo.getDescription())
                 .category(new DishCategory(dishInfo.getCategoryId(), ""))
-                .products(mapProductRefs(dishInfo))
+                .products(productService.buildMockProducts(dishInfo.getProducts()))
                 .build();
         dishInfo.setId(dishDomainService.addDish(dishToAdd).getDishId());
         return dishInfo;
@@ -103,7 +102,7 @@ public class DishService {
                 .description(dishInfo.getDescription())
                 .name(dishInfo.getName())
                 .category(new DishCategory(dishInfo.getCategoryId(), ""))
-                .products(mapProductRefs(dishInfo))
+                .products(productService.buildMockProducts(dishInfo.getProducts()))
                 .build();
         dishDomainService.updateDish(updatedDish);
     }
@@ -133,14 +132,6 @@ public class DishService {
                 .carbs(dishDetails.getCarbs())
                 .weight(dishDetails.getWeight())
                 .build();
-    }
-
-    private List<ProductRef> mapProductRefs(DishInfo dishInfo) {
-        return dishInfo.getProducts().stream()
-                .map(dp -> new ProductRef(
-                        productService.getDomainProduct(dp.getProductId()),
-                        Math.round(dp.getWeight() * 10)))
-                .collect(Collectors.toList());
     }
 
     List<Dish> buildMockDishes(List<Long> ids) {

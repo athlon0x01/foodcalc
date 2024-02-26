@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.domain.repository.plan;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import org.springframework.stereotype.Repository;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +36,11 @@ public class FoodPlanRepo implements IFoodPlanRepo {
 
     @Override
     public boolean existsFoodPlan(long id) {
+        return false;
+    }
+
+    @Override
+    public boolean saveLastUpdated(long planId, ZonedDateTime lastUpdated) {
         return false;
     }
 }
