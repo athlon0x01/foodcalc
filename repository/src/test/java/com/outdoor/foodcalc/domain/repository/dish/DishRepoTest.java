@@ -61,7 +61,7 @@ public class DishRepoTest {
         List<Dish> expected = Collections.singletonList(dummyDish);
         when(jdbcTemplate.query(DishRepo.SELECT_ALL_DISHES_SQL, repo)).thenReturn(expected);
 
-        List<Dish> actual = repo.getAllDishes();
+        List<Dish> actual = repo.getAllTemplateDishes();
         assertEquals(expected, actual);
 
         verify(jdbcTemplate).query(DishRepo.SELECT_ALL_DISHES_SQL, repo);

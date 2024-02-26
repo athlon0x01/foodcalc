@@ -2,12 +2,14 @@ package com.outdoor.foodcalc.model.meal;
 
 import com.outdoor.foodcalc.model.EntityView;
 import com.outdoor.foodcalc.model.product.ProductItem;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -18,6 +20,8 @@ import java.util.List;
 public class MealInfo extends EntityView {
     private String description;
     private long typeId;
-    private List<ProductItem> products;
-    private List<Long> dishes;
+    @Builder.Default
+    private List<ProductItem> products = new ArrayList<>();
+    @Builder.Default
+    private List<Long> dishes = new ArrayList<>();
 }

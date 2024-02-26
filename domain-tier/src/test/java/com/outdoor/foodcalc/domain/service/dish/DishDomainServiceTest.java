@@ -9,6 +9,7 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
+import com.outdoor.foodcalc.domain.service.FoodPlansRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,8 +31,8 @@ import static org.mockito.Mockito.*;
 public class DishDomainServiceTest {
 
     private static final Long DISH_ID = 12345L;
-
-    private static final DishCategory dummyDishCategory = new DishCategory(1111L, "first dishes");
+    private static final long CATEGORY_ID = 1111L;
+    private static final DishCategory dummyDishCategory = new DishCategory(CATEGORY_ID, "first dishes");
 
     private static final ProductCategory dummyProductCategory =  new ProductCategory(
             2222L, "dummyCategory");
@@ -58,9 +59,12 @@ public class DishDomainServiceTest {
 
     @Mock
     private IDishRepo dishRepo;
-
     @Mock
     private IProductRefRepo productRefRepo;
+    @Mock
+    private DishCategoryDomainService dishCategoryService;
+    @Mock
+    private FoodPlansRepo tmpRepo;
 
     @InjectMocks
     private DishDomainService service;
@@ -75,17 +79,17 @@ public class DishDomainServiceTest {
         dishList.add(someDish);
         expectedList.add(someDish);
 
-        when(dishRepo.getAllDishes()).thenReturn(dishList);
+        when(dishRepo.getAllTemplateDishes()).thenReturn(dishList);
         when(productRefRepo.getAllDishProducts()).thenReturn(allDishesWithProducts);
 
-        List<Dish> actualDishList = service.getAllDishes();
+        List<Dish> actualDishList = service.getAllTemplateDishes();
         assertEquals(dishList.size(), actualDishList.size());
         assertEquals(dishList, actualDishList);
         assertEquals(expectedList.get(0).getProducts(), actualDishList.get(0).getProducts());
         assertEquals(expectedList.get(1).getProducts(), actualDishList.get(1).getProducts());
 
 
-        verify(dishRepo).getAllDishes();
+        verify(dishRepo).getAllTemplateDishes();
         verify(productRefRepo).getAllDishProducts();
     }
 
@@ -120,11 +124,13 @@ public class DishDomainServiceTest {
     public void addDishWithoutProductsTest() {
         Dish dishToAdd = Dish.builder().dishId(-1).name("borsch").category(dummyDishCategory).build();
         Dish expectedDish = Dish.builder().dishId(DISH_ID).name("borsch").category(dummyDishCategory).build();
+        when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
 
         Dish actualDish = service.addDish(dishToAdd);
         assertEquals(expectedDish, actualDish);
 
+        verify(dishCategoryService).getCategory(CATEGORY_ID);
         verify(dishRepo).addDish(dishToAdd);
         verify(productRefRepo, never()).addDishProducts(dishToAdd);
     }
@@ -135,12 +141,14 @@ public class DishDomainServiceTest {
                 dummyDishCategory, Collections.singletonList(dummyProductRef));
         Dish addedDish = new Dish(DISH_ID,"borsch", "dummyDescr",
                 dummyDishCategory, Collections.singletonList(dummyProductRef));
+        when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
         when(productRefRepo.addDishProducts(addedDish)).thenReturn(true);
 
         Dish actualDish = service.addDish(dishToAdd);
         assertEquals(dummyDishWithProducts, actualDish);
 
+        verify(dishCategoryService).getCategory(CATEGORY_ID);
         verify(dishRepo).addDish(dishToAdd);
         verify(productRefRepo).addDishProducts(addedDish);
     }
@@ -148,6 +156,7 @@ public class DishDomainServiceTest {
     @Test
     public void addDishFailTest() {
         Dish dishToAdd = Dish.builder().dishId(-1).name("borsch").category(dummyDishCategory).build();
+        when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(dishRepo.addDish(dishToAdd)).thenReturn(-1L);
 
         Assertions.assertThrows(FoodcalcDomainException.class, () -> {
@@ -159,6 +168,7 @@ public class DishDomainServiceTest {
     public void addDishProductsFailTest() {
         Dish dishToAdd = new Dish(-1,"borsch", "dummyDescr",
                 dummyDishCategory, Collections.singletonList(dummyProductRef));
+        when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
         lenient().when(productRefRepo.addDishProducts(dishToAdd)).thenReturn(false);
 
@@ -176,6 +186,7 @@ public class DishDomainServiceTest {
     public void updateDishTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
+        when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(1L);
         when(productRefRepo.addDishProducts(dishToUpdate)).thenReturn(true);
         when(dishRepo.updateDish(dishToUpdate)).thenReturn(true);
@@ -183,6 +194,7 @@ public class DishDomainServiceTest {
         service.updateDish(dishToUpdate);
 
         verify(dishRepo).existsDish(dishToUpdate.getDishId());
+        verify(dishCategoryService).getCategory(CATEGORY_ID);
         verify(productRefRepo).deleteDishProducts(dishToUpdate.getDishId());
         verify(productRefRepo).addDishProducts(dishToUpdate);
         verify(dishRepo).updateDish(dishToUpdate);
@@ -190,17 +202,18 @@ public class DishDomainServiceTest {
 
     @Test
     public void updateDishWithoutProductsTest() {
-        Dish dishToUpdate = dummyDish;
-        when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
-        when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(0L);
-        when(dishRepo.updateDish(dishToUpdate)).thenReturn(true);
+        when(dishRepo.existsDish(dummyDish.getDishId())).thenReturn(true);
+        when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
+        when(productRefRepo.deleteDishProducts(dummyDish.getDishId())).thenReturn(0L);
+        when(dishRepo.updateDish(dummyDish)).thenReturn(true);
 
-        service.updateDish(dishToUpdate);
+        service.updateDish(dummyDish);
 
-        verify(dishRepo).existsDish(dishToUpdate.getDishId());
-        verify(productRefRepo).deleteDishProducts(dishToUpdate.getDishId());
-        verify(productRefRepo, never()).addDishProducts(dishToUpdate);
-        verify(dishRepo).updateDish(dishToUpdate);
+        verify(dishRepo).existsDish(dummyDish.getDishId());
+        verify(dishCategoryService).getCategory(CATEGORY_ID);
+        verify(productRefRepo).deleteDishProducts(dummyDish.getDishId());
+        verify(productRefRepo, never()).addDishProducts(dummyDish);
+        verify(dishRepo).updateDish(dummyDish);
     }
 
     @Test
@@ -217,6 +230,7 @@ public class DishDomainServiceTest {
     public void updateDishAddProductsFailTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
+        when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(1L);
         when(productRefRepo.addDishProducts(dishToUpdate)).thenReturn(false);
 
@@ -229,6 +243,7 @@ public class DishDomainServiceTest {
     public void updateDishFailTest() {
         Dish dishToUpdate = dummyDishWithProducts;
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(true);
+        when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(productRefRepo.deleteDishProducts(dishToUpdate.getDishId())).thenReturn(1L);
         when(productRefRepo.addDishProducts(dishToUpdate)).thenReturn(true);
         when(dishRepo.updateDish(dishToUpdate)).thenReturn(false);

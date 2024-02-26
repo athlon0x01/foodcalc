@@ -101,7 +101,7 @@ public class DishEndpointTest extends ApiUnitTest{
           List<CategoryWithDishes> expected = deserializeListOfObjects(
                   "dish/ListOfCategoriesWithDishes.json", CategoryWithDishes.class);
 
-          when(service.getAllDishes()).thenReturn(expected);
+          when(service.getAllTemplateDishes()).thenReturn(expected);
           get("/dishes")
                   .andExpect(jsonPath("$", hasSize(2)))
                   .andExpect(jsonPath("$[0].id", is(((int)CATEGORY_1_ID))))
@@ -151,7 +151,7 @@ public class DishEndpointTest extends ApiUnitTest{
                   .andExpect(jsonPath("$[1].dishes[0].carbs", equalTo(1.12)))
                   .andExpect(jsonPath("$[1].dishes[0].weight", equalTo(20.0)));
 
-          verify(service).getAllDishes();
+          verify(service).getAllTemplateDishes();
      }
 
      @Test

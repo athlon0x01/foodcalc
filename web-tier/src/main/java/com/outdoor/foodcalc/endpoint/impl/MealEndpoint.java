@@ -66,7 +66,7 @@ public class MealEndpoint extends AbstractEndpoint {
                            @RequestBody @Valid MealInfo newMeal) {
         verifyEntityId(id, newMeal);
         LOG.debug("Updating meal id = {}, day - {}", id, dayId);
-        mealService.updateMeal(planId, dayId, id, newMeal);
+        mealService.updateMeal(planId, dayId, newMeal);
     }
 
     @PostMapping(path = "{mealId}/dishes/{id}", produces = APPLICATION_JSON_VALUE)

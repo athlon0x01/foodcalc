@@ -4,20 +4,17 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
-import com.outdoor.foodcalc.domain.service.product.ProductCategoryDomainService;
 import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
+import com.outdoor.foodcalc.model.product.ProductCategoryView;
 import com.outdoor.foodcalc.model.product.ProductItem;
 import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -29,16 +26,13 @@ import java.util.stream.Collectors;
 @Service
 public class ProductService {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ProductService.class);
-
     private final ProductDomainService productDomainService;
-
-    private final ProductCategoryDomainService productCategoryDomainService;
+    private final ProductCategoryService productCategoryService;
 
     @Autowired
-    public ProductService(ProductDomainService productDomainService, ProductCategoryDomainService productCategoryDomainService) {
+    public ProductService(ProductDomainService productDomainService, ProductCategoryService productCategoryService) {
         this.productDomainService = productDomainService;
-        this.productCategoryDomainService = productCategoryDomainService;
+        this.productCategoryService = productCategoryService;
     }
 
     /**
@@ -48,7 +42,7 @@ public class ProductService {
      */
     public List<CategoryWithProducts> getAllProducts() {
         //load products & categories
-        final List<ProductCategory> categories = productCategoryDomainService.getCategories();
+        final List<ProductCategoryView> categories = productCategoryService.getCategories();
         final List<Product> products = productDomainService.getAllProducts();
 
         //group products by categories
@@ -62,30 +56,28 @@ public class ProductService {
     }
 
     private CategoryWithProducts mapCategoryWithProducts(
-            ProductCategory category, Map<Long, List<Product>> productsMap) {
-        final List<Product> productList = productsMap.get(category.getCategoryId());
+            ProductCategoryView category, Map<Long, List<Product>> productsMap) {
+        final List<Product> productList = productsMap.get(category.getId());
         return CategoryWithProducts.builder()
-                .id(category.getCategoryId())
+                .id(category.getId())
                 .name(category.getName())
                 .products((productList == null) ? new ArrayList<>() : productList.stream()
-                        .map(this::mapSimpleProduct)
+                        .map(this::mapProduct)
                         .collect(Collectors.toList()))
                 .build();
     }
 
-    //TODO revert back to package scope
-    public Product getDomainProduct(long id) {
-        Optional<Product> domainProduct = productDomainService.getProduct(id);
-        if(!domainProduct.isPresent()) {
-            LOG.error("Product with id={} wasn't found", id);
-            throw new NotFoundException("Product wasn't found");
-        }
-        return domainProduct.get();
+    ProductRef buildMockProduct(ProductItem product) {
+        return new ProductRef(Product.builder()
+                .productId(product.getProductId())
+                .build(),
+                product.getWeight());
     }
 
-    ProductRef getProductRef(ProductItem product) {
-        Product domainProduct = getDomainProduct(product.getProductId());
-        return new ProductRef(domainProduct, Math.round(product.getWeight() * 10));
+    List<ProductRef> buildMockProducts(List<ProductItem> products) {
+        return products.stream()
+                .map(this::buildMockProduct)
+                .collect(Collectors.toList());
     }
 
     /**
@@ -95,48 +87,41 @@ public class ProductService {
      * @return loaded product
      */
     public ProductView getProduct(long id) {
-        Product domainProduct = getDomainProduct(id);
-        return mapSimpleProduct(domainProduct);
+        return productDomainService.getProduct(id)
+                .map(this::mapProduct)
+                .orElseThrow(() -> new NotFoundException("Failed to get Product, id = " + id));
     }
 
     /**
      * Adds new {@link Product}.
      *
-     * @param simpleProduct product to add
+     * @param view product to add
      * @return new product
      */
-    public ProductView addProduct(ProductView simpleProduct) {
-        final ProductCategory category = productCategoryDomainService.getCategory(simpleProduct.getCategoryId())
-                .orElseThrow(() ->
-                        new NotFoundException("Failed to get Product Category, id = " + simpleProduct.getCategoryId()));
+    public ProductView addProduct(ProductView view) {
         Product productToAdd = Product.builder()
-                .productId(-1)
-                .name(simpleProduct.getName())
-                .category(category)
-                .calorific(simpleProduct.getCalorific())
-                .proteins(simpleProduct.getProteins())
-                .fats(simpleProduct.getFats())
-                .carbs(simpleProduct.getCarbs())
-                .defaultWeight(Math.round(simpleProduct.getWeight() *10))
+                .name(view.getName())
+                .category(new ProductCategory(view.getCategoryId(), ""))
+                .calorific(view.getCalorific())
+                .proteins(view.getProteins())
+                .fats(view.getFats())
+                .carbs(view.getCarbs())
+                .defaultWeight(Math.round(view.getWeight() *10))
                 .build();
 
-        return mapSimpleProduct(productDomainService.addProduct(productToAdd));
+        return mapProduct(productDomainService.addProduct(productToAdd));
     }
 
     /**
      * Updates selected {@link Product} with new value.
      *
      * @param productModel updated
-     * @return if product updated
      */
     public void updateProduct(ProductView productModel) {
-        final ProductCategory category = productCategoryDomainService.getCategory(productModel.getCategoryId())
-                .orElseThrow(() ->
-                        new NotFoundException("Failed to get Product Category, id = " + productModel.getCategoryId()));
         Product productToUpdate = Product.builder()
                 .productId(productModel.getId())
                 .name(productModel.getName())
-                .category(category)
+                .category(new ProductCategory(productModel.getCategoryId(), ""))
                 .calorific(productModel.getCalorific())
                 .proteins(productModel.getProteins())
                 .fats(productModel.getFats())
@@ -151,13 +136,12 @@ public class ProductService {
      * Removes selected {@link Product}.
      *
      * @param id product Id to delete
-     * @return if product deleted
      */
     public void deleteProduct(long id) {
         productDomainService.deleteProduct(id);
     }
 
-    private ProductView mapSimpleProduct(Product product) {
+    private ProductView mapProduct(Product product) {
         return ProductView.builder()
                 .id(product.getProductId())
                 .name(product.getName())

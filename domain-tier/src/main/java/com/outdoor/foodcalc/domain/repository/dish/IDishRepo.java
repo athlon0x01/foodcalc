@@ -13,11 +13,11 @@ import java.util.Optional;
 public interface IDishRepo {
 
     /**
-     * Loads all {@link Dish}.
+     * Loads all template {@link Dish}. It means the dishes not linked to any meal or day.
      *
      * @return list of dishes
      */
-    List<Dish> getAllDishes();
+    List<Dish> getAllTemplateDishes();
 
     /**
      * Count dishes number in the dish category

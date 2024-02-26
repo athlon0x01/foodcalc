@@ -3,10 +3,11 @@ package com.outdoor.foodcalc.domain.service.product;
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.product.Product;
+import com.outdoor.foodcalc.domain.model.product.ProductCategory;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.product.IProductRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,10 +23,11 @@ public class ProductDomainService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductDomainService.class);
     private final IProductRepo productRepo;
+    private final ProductCategoryDomainService productCategoryService;
 
-    @Autowired
-    public ProductDomainService(IProductRepo productRepo) {
+    public ProductDomainService(IProductRepo productRepo, ProductCategoryDomainService productCategoryService) {
         this.productRepo = productRepo;
+        this.productCategoryService = productCategoryService;
     }
 
     /**
@@ -54,6 +56,10 @@ public class ProductDomainService {
      * @return new {@link Product} with auto generated Id
      */
     public Product addProduct(Product product) {
+        final ProductCategory category = productCategoryService.getCategory(product.getCategory().getCategoryId())
+                .orElseThrow(() ->
+                        new NotFoundException("Failed to get Product Category, id = " + product.getCategory().getCategoryId()));
+        product.setCategory(category);
         long id = productRepo.addProduct(product);
         return  product.toBuilder()
                 .productId(id)
@@ -72,6 +78,10 @@ public class ProductDomainService {
             LOG.error("Product with id={} doesn't exist", product.getProductId());
             throw new NotFoundException("Product with id=" + product.getProductId() + " doesn't exist");
         }
+        final ProductCategory category = productCategoryService.getCategory(product.getCategory().getCategoryId())
+                .orElseThrow(() ->
+                        new NotFoundException("Failed to get Product Category, id = " + product.getCategory().getCategoryId()));
+        product.setCategory(category);
 
         if(!productRepo.updateProduct(product)) {
             throw new FoodcalcDomainException("Failed to update product with id=" + product.getProductId());
@@ -93,5 +103,11 @@ public class ProductDomainService {
         if(!productRepo.deleteProduct(id)) {
             throw new FoodcalcDomainException("Failed to delete product with id=" + id);
         }
+    }
+
+    public ProductRef loadProduct(ProductRef mock) {
+        return getProduct(mock.getProductId())
+                .map(product -> new ProductRef(product, mock.getInternalWeight()))
+                .orElseThrow(() -> new NotFoundException("Product with id=" + mock.getProductId() + " doesn't exist"));
     }
 }

@@ -29,7 +29,7 @@ public class DishEndpoint extends AbstractEndpoint implements DishApi {
 
     public List<CategoryWithDishes> getAllDishes() {
         LOG.debug("Getting all dishes");
-        return dishService.getAllDishes();
+        return dishService.getAllTemplateDishes();
     }
 
     public DishView getDish(@PathVariable("id") long id) {

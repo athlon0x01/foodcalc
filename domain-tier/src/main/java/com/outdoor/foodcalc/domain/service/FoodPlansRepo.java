@@ -1,52 +1,41 @@
-package com.outdoor.foodcalc.service;
+package com.outdoor.foodcalc.domain.service;
 
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
-import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
+import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
 
 //TODO temporary holder \ repository for food plans \ days \ meals \ dishes
+@Deprecated(forRemoval = true)
 @Component
 public class FoodPlansRepo {
 
-    private final MealTypeDomainService mealTypeService;
     private final Map<Long, FoodPlan> foodPlans = new HashMap<>();
     private long maxPlanId = 3L;
     private long maxDayId = 104L;
     private long maxMealId = 10107L;
     private long maxDishId = 1010101L;
 
-    public FoodPlansRepo(MealTypeDomainService mealTypeService) {
-        this.mealTypeService = mealTypeService;
+    public FoodPlansRepo() {
+        init();
     }
 
-    @PostConstruct
     public void init() {
         //dummy initialization for UI
-//        var mealTypes = mealTypeService.getMealTypes();
-//        Random random = new Random();
-//        List<Meal> mealRefs1 = new ArrayList<>(List.of(buildRandomMeal(10101L, mealTypes, random), buildRandomMeal(10102L, mealTypes, random)));
-//        List<Meal> mealRefs2 = new ArrayList<>(List.of(buildRandomMeal(10103L, mealTypes, random), buildRandomMeal(10104L, mealTypes, random)));
-//        List<Meal> mealRefs3 = new ArrayList<>(List.of(buildRandomMeal(10105L, mealTypes, random), buildRandomMeal(10106L, mealTypes, random)));
-        List<Meal> mealRefs1 = new ArrayList<>();
-        List<Meal> mealRefs2 = new ArrayList<>();
-        List<Meal> mealRefs3 = new ArrayList<>();
-
-        PlanDay day11 = new PlanDay(101L, LocalDate.of(2023, 11, 23), "", mealRefs1, new ArrayList<>(), new ArrayList<>());
+        PlanDay day11 = new PlanDay(101L, LocalDate.of(2023, 11, 23), "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         day11.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        PlanDay day12 = new PlanDay(102L, LocalDate.of(2023, 11, 24), "", mealRefs2, new ArrayList<>(), new ArrayList<>());
+        PlanDay day12 = new PlanDay(102L, LocalDate.of(2023, 11, 24), "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         day12.setDescription("Dummy Lorem ipsum");
-        PlanDay day21 = new PlanDay(103L, LocalDate.of(2023, 9, 19), "", mealRefs3, new ArrayList<>(), new ArrayList<>());
+        PlanDay day21 = new PlanDay(103L, LocalDate.of(2023, 9, 19), "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         day21.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
 
         var now = ZonedDateTime.now();
@@ -54,13 +43,6 @@ public class FoodPlansRepo {
         FoodPlan planB = new FoodPlan(2L, "Test food plan B", "", 3, now, now, new ArrayList<>(List.of(day21)));
         foodPlans.put(1L, planA);
         foodPlans.put(2L, planB);
-    }
-
-    private Meal buildRandomMeal(long id, List<MealType> types, Random random) {
-        var type = types.get(random.nextInt(types.size()));
-        Meal meal = new Meal(id, "", type, new ArrayList<>(), new ArrayList<>());
-        meal.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore " + type.getName());
-        return meal;
     }
 
     public long getMaxPlanIdAndIncrement() {
@@ -80,8 +62,7 @@ public class FoodPlansRepo {
     }
 
     public FoodPlan getFoodPlan(long id) {
-        return Optional.ofNullable(foodPlans.get(id))
-                .orElseThrow(() -> new NotFoundException("Food plan with id = " + id + " wasn't found"));
+        return foodPlans.get(id);
     }
 
     public Collection<FoodPlan> getAllPlans() {
@@ -93,6 +74,10 @@ public class FoodPlansRepo {
     }
 
     public void addFoodPlan(FoodPlan foodPlan) {
+        foodPlans.put(foodPlan.getId(), foodPlan);
+    }
+
+    public void updateFoodPlan(FoodPlan foodPlan) {
         foodPlans.put(foodPlan.getId(), foodPlan);
     }
 
@@ -140,9 +125,9 @@ public class FoodPlansRepo {
                 .findFirst();
     }
 
-    public List<Dish> reorderDishes(List<Dish> dishes, List<Long> ids) {
+    public List<Dish> reorderDishes(List<Dish> dishes, List<Dish> ids) {
         List<Dish> newDishes = new ArrayList<>();
-        ids.forEach(id -> getDishById(dishes, id)
+        ids.forEach(id -> getDishById(dishes, id.getDishId())
                 .ifPresent(newDishes::add));
         return newDishes;
     }
