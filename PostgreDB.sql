@@ -34,6 +34,7 @@ CREATE TABLE dish
     name        varchar(64) NOT NULL,
     description varchar(1024),
     category    bigint REFERENCES dish_category
+    template    boolean NOT NULL
 );
 
 CREATE TABLE dish_product
