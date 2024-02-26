@@ -28,8 +28,8 @@ import static org.mockito.Mockito.*;
 public class ProductDomainServiceTest {
 
     private static final Long PRODUCT_ID = 54321L;
-
-    private static final ProductCategory dummyCategory =  new ProductCategory(12345L, "dummuCategory");
+    private static final long CATEGORY_ID = 12345L;
+    private static final ProductCategory dummyCategory =  new ProductCategory(CATEGORY_ID, "dummuCategory");
 
     private static final Product dummyProduct = Product.builder().productId(PRODUCT_ID).name("dummyProduct")
             .category(dummyCategory).calorific(1.1f).proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
@@ -40,6 +40,9 @@ public class ProductDomainServiceTest {
 
     @Mock
     private IProductRepo productRepo;
+
+    @Mock
+    private ProductCategoryDomainService productCategoryService;
 
     @Test
     public void getAllProductsTest() {
@@ -68,21 +71,25 @@ public class ProductDomainServiceTest {
     public void addProductTest() {
         Product productToAdd = Product.builder().productId(-1).name("dummyProduct")
                 .category(dummyCategory).calorific(1.1f).proteins(2.2f).fats(3.3f).carbs(4.4f).defaultWeight(10).build();
+        when(productCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyCategory));
         when(productRepo.addProduct(productToAdd)).thenReturn(PRODUCT_ID);
 
         assertEquals(dummyProduct, productService.addProduct(productToAdd));
 
+        verify(productCategoryService).getCategory(CATEGORY_ID);
         verify(productRepo).addProduct(productToAdd);
     }
 
     @Test
     public void updateProductTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(true);
+        when(productCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyCategory));
         when(productRepo.updateProduct(dummyProduct)).thenReturn(true);
 
         productService.updateProduct(dummyProduct);
 
         verify(productRepo).existsProduct(PRODUCT_ID);
+        verify(productCategoryService).getCategory(CATEGORY_ID);
         verify(productRepo).updateProduct(dummyProduct);
     }
 
@@ -98,6 +105,7 @@ public class ProductDomainServiceTest {
     @Test
     public void updateProductFailTest() {
         when(productRepo.existsProduct(PRODUCT_ID)).thenReturn(true);
+        when(productCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyCategory));
         when(productRepo.updateProduct(dummyProduct)).thenReturn(false);
 
         Assertions.assertThrows(FoodcalcDomainException.class, () -> {

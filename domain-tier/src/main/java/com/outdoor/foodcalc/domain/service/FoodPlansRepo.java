@@ -10,7 +10,6 @@ import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -20,34 +19,23 @@ import java.util.*;
 @Component
 public class FoodPlansRepo {
 
-    private final MealTypeDomainService mealTypeService;
     private final Map<Long, FoodPlan> foodPlans = new HashMap<>();
     private long maxPlanId = 3L;
     private long maxDayId = 104L;
     private long maxMealId = 10107L;
     private long maxDishId = 1010101L;
 
-    public FoodPlansRepo(MealTypeDomainService mealTypeService) {
-        this.mealTypeService = mealTypeService;
+    public FoodPlansRepo() {
+        init();
     }
 
-    @PostConstruct
     public void init() {
         //dummy initialization for UI
-//        var mealTypes = mealTypeService.getMealTypes();
-//        Random random = new Random();
-//        List<Meal> mealRefs1 = new ArrayList<>(List.of(buildRandomMeal(10101L, mealTypes, random), buildRandomMeal(10102L, mealTypes, random)));
-//        List<Meal> mealRefs2 = new ArrayList<>(List.of(buildRandomMeal(10103L, mealTypes, random), buildRandomMeal(10104L, mealTypes, random)));
-//        List<Meal> mealRefs3 = new ArrayList<>(List.of(buildRandomMeal(10105L, mealTypes, random), buildRandomMeal(10106L, mealTypes, random)));
-        List<Meal> mealRefs1 = new ArrayList<>();
-        List<Meal> mealRefs2 = new ArrayList<>();
-        List<Meal> mealRefs3 = new ArrayList<>();
-
-        PlanDay day11 = new PlanDay(101L, LocalDate.of(2023, 11, 23), "", mealRefs1, new ArrayList<>(), new ArrayList<>());
+        PlanDay day11 = new PlanDay(101L, LocalDate.of(2023, 11, 23), "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         day11.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        PlanDay day12 = new PlanDay(102L, LocalDate.of(2023, 11, 24), "", mealRefs2, new ArrayList<>(), new ArrayList<>());
+        PlanDay day12 = new PlanDay(102L, LocalDate.of(2023, 11, 24), "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         day12.setDescription("Dummy Lorem ipsum");
-        PlanDay day21 = new PlanDay(103L, LocalDate.of(2023, 9, 19), "", mealRefs3, new ArrayList<>(), new ArrayList<>());
+        PlanDay day21 = new PlanDay(103L, LocalDate.of(2023, 9, 19), "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
         day21.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
 
         var now = ZonedDateTime.now();
@@ -55,13 +43,6 @@ public class FoodPlansRepo {
         FoodPlan planB = new FoodPlan(2L, "Test food plan B", "", 3, now, now, new ArrayList<>(List.of(day21)));
         foodPlans.put(1L, planA);
         foodPlans.put(2L, planB);
-    }
-
-    private Meal buildRandomMeal(long id, List<MealType> types, Random random) {
-        var type = types.get(random.nextInt(types.size()));
-        Meal meal = new Meal(id, "", type, new ArrayList<>(), new ArrayList<>());
-        meal.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore " + type.getName());
-        return meal;
     }
 
     public long getMaxPlanIdAndIncrement() {
