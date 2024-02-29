@@ -51,11 +51,11 @@ public class ProductRefRepoTest {
 
     private static final Dish dummyDish = new Dish(
             DISH_ID, "borsch", "dummyDescr",
-            dummyDishCategory, Collections.emptyList());
+            dummyDishCategory, true, Collections.emptyList());
 
     private static final Dish dummyDishWithProducts = new Dish(
             DISH_ID, "borsch", "dummyDescr",
-            dummyDishCategory, Collections.singletonList(dummyProductRef));
+            dummyDishCategory, true,  Collections.singletonList(dummyProductRef));
 
     private static final Map<Long, List<ProductRef>> allDishesWithProducts = new HashMap<>();
     static {

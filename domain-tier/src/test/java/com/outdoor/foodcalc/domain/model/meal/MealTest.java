@@ -44,13 +44,13 @@ public class MealTest {
         dishProducts.add(new ProductRef(meat, 400));
         dishProducts.add(new ProductRef(onion, 40));
         dishProducts.add(new ProductRef(salt, 25));
-        Dish meatCereal = new Dish(223, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), dishProducts);
+        Dish meatCereal = new Dish(223, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), true, dishProducts);
         dishProducts.clear();
         dishProducts.add(new ProductRef(potato, 500));
         dishProducts.add(new ProductRef(meat, 300));
         dishProducts.add(new ProductRef(onion, 50));
         dishProducts.add(new ProductRef(salt, 20));
-        Dish meatSoup = new Dish(223, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), dishProducts);
+        Dish meatSoup = new Dish(223, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), true, dishProducts);
         meal = new Meal(321, "", new MealType(21, "Dinner"), Arrays.asList(meatCereal, meatSoup),
                 Arrays.asList(new ProductRef(cookies, 300), new ProductRef(salt, 50))) ;
         products = new ArrayList<>();

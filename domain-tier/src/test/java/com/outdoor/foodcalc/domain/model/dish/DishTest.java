@@ -39,7 +39,7 @@ public class DishTest {
         Product salt = Product.builder().productId(-1).name("Salt").category(category).build();
         products.add(new ProductRef(salt, 25));
 
-        dish = new Dish(123, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), products);
+        dish = new Dish(123, "Buckwheat meat cereal", "description", new DishCategory(11, "Meat Cereals"), true, products);
     }
 
     @Test

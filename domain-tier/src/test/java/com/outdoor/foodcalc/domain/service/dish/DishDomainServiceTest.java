@@ -45,11 +45,11 @@ public class DishDomainServiceTest {
 
     private static final Dish dummyDish = new Dish(
             DISH_ID, "borsch", "dummyDescr",
-            dummyDishCategory, Collections.emptyList());
+            dummyDishCategory, true, Collections.emptyList());
 
     private static final Dish dummyDishWithProducts = new Dish(
             DISH_ID, "borsch", "dummyDescr",
-            dummyDishCategory, Collections.singletonList(dummyProductRef));
+            dummyDishCategory, true, Collections.singletonList(dummyProductRef));
 
     private static final Map<Long, List<ProductRef>> allDishesWithProducts = new HashMap<>();
     static {
@@ -122,8 +122,8 @@ public class DishDomainServiceTest {
 
     @Test
     public void addDishWithoutProductsTest() {
-        Dish dishToAdd = Dish.builder().dishId(-1).name("borsch").category(dummyDishCategory).build();
-        Dish expectedDish = Dish.builder().dishId(DISH_ID).name("borsch").category(dummyDishCategory).build();
+        Dish dishToAdd = Dish.builder().dishId(-1).name("borsch").category(dummyDishCategory).template(true).build();
+        Dish expectedDish = Dish.builder().dishId(DISH_ID).name("borsch").category(dummyDishCategory).template(true).build();
         when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
 
@@ -138,9 +138,9 @@ public class DishDomainServiceTest {
     @Test
     public void addDishWithProductsTest() {
         Dish dishToAdd = new Dish(-1,"borsch", "dummyDescr",
-                dummyDishCategory, Collections.singletonList(dummyProductRef));
+                dummyDishCategory, true, Collections.singletonList(dummyProductRef));
         Dish addedDish = new Dish(DISH_ID,"borsch", "dummyDescr",
-                dummyDishCategory, Collections.singletonList(dummyProductRef));
+                dummyDishCategory, true, Collections.singletonList(dummyProductRef));
         when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
         when(productRefRepo.addDishProducts(addedDish)).thenReturn(true);
@@ -155,7 +155,7 @@ public class DishDomainServiceTest {
 
     @Test
     public void addDishFailTest() {
-        Dish dishToAdd = Dish.builder().dishId(-1).name("borsch").category(dummyDishCategory).build();
+        Dish dishToAdd = Dish.builder().dishId(-1).name("borsch").category(dummyDishCategory).template(true).build();
         when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(dishRepo.addDish(dishToAdd)).thenReturn(-1L);
 
@@ -167,7 +167,7 @@ public class DishDomainServiceTest {
     @Test
     public void addDishProductsFailTest() {
         Dish dishToAdd = new Dish(-1,"borsch", "dummyDescr",
-                dummyDishCategory, Collections.singletonList(dummyProductRef));
+                dummyDishCategory, true, Collections.singletonList(dummyProductRef));
         when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
         lenient().when(productRefRepo.addDishProducts(dishToAdd)).thenReturn(false);

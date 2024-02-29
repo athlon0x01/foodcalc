@@ -29,6 +29,7 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity {
     private String name;
     private String description;
     private DishCategory category;
+    private final boolean template;
     //dish components
     @Builder.Default
     private List<ProductRef> products = new ArrayList<>();
@@ -55,6 +56,7 @@ public class Dish extends ComplexFoodEntity implements IDomainEntity {
             if (!Objects.equals(name, dish.name)) return false;
             if (!Objects.equals(description, dish.description)) return false;
             if (!Objects.equals(category, dish.category)) return false;
+            if (template != dish.template) return false;
             return sameCollectionAs(products, dish.products);
         }
         return false;

@@ -18,12 +18,13 @@ import java.util.Optional;
 @Repository
 public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, RowMapper<Dish> {
 
-    static final String SELECT_ALL_DISHES_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
-            "c.id as catId, c.name as catName from dish d join dish_category c on d.category = c.id";
+    static final String SELECT_ALL_TEMPLATE_DISHES_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
+            "c.id as catId, c.name as catName, d.template as template from dish d join dish_category c on d.category = c.id " +
+            "where d.template = true";
     static final String SELECT_DISH_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
-            "c.id as catId, c.name as catName from dish d join dish_category c on d.category = c.id where d.id = :dishId";
-    static final String INSERT_DISH_SQL = "insert into dish (name, description, category) " +
-            "values (:name, :description, :categoryId)";
+            "c.id as catId, c.name as catName, d.template as template from dish d join dish_category c on d.category = c.id where d.id = :dishId";
+    static final String INSERT_DISH_SQL = "insert into dish (name, description, category, template) " +
+            "values (:name, :description, :categoryId, :template)";
     static final String UPDATE_DISH_SQL = "update dish set name = :name, description = :description, " +
             "category = :categoryId where id = :dishId";
     static final String DELETE_DISH_SQL = "delete from dish where id = :dishId";
@@ -33,7 +34,7 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
 
     @Override
     public List<Dish> getAllTemplateDishes() {
-        return jdbcTemplate.query(SELECT_ALL_DISHES_SQL, this);
+        return jdbcTemplate.query(SELECT_ALL_TEMPLATE_DISHES_SQL, this);
     }
 
     @Override
@@ -63,7 +64,8 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
                 .addValue("dishId", dish.getDishId())
                 .addValue("name", dish.getName())
                 .addValue("description", dish.getDescription())
-                .addValue("categoryId", dish.getCategory().getCategoryId());
+                .addValue("categoryId", dish.getCategory().getCategoryId())
+                .addValue("template", dish.isTemplate());
     }
 
     @Override
@@ -92,7 +94,10 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
         return Dish.builder()
                 .dishId(resultSet.getLong("dishId"))
                 .name(resultSet.getString("dishName"))
-                .category(category).build();
+                .description(resultSet.getString("description"))
+                .category(category)
+                .template(resultSet.getBoolean("template"))
+                .build();
     }
 
     KeyHolder getKeyHolder() {

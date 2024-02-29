@@ -48,7 +48,8 @@ public class DishRepoTest {
 
     private static final Long DISH_ID = 54321L;
 
-    private static final Dish dummyDish = Dish.builder().dishId(DISH_ID).name("dummy dish").category(dummyCategory).build();
+    private static final Dish dummyDish = Dish.builder().dishId(DISH_ID).name("dummy dish")
+            .description("111 222 444").category(dummyCategory).template(true).build();
 
     @BeforeEach
     public void setUp() {
@@ -59,12 +60,12 @@ public class DishRepoTest {
     @Test
     public void getAllDishesTest() {
         List<Dish> expected = Collections.singletonList(dummyDish);
-        when(jdbcTemplate.query(DishRepo.SELECT_ALL_DISHES_SQL, repo)).thenReturn(expected);
+        when(jdbcTemplate.query(DishRepo.SELECT_ALL_TEMPLATE_DISHES_SQL, repo)).thenReturn(expected);
 
         List<Dish> actual = repo.getAllTemplateDishes();
         assertEquals(expected, actual);
 
-        verify(jdbcTemplate).query(DishRepo.SELECT_ALL_DISHES_SQL, repo);
+        verify(jdbcTemplate).query(DishRepo.SELECT_ALL_TEMPLATE_DISHES_SQL, repo);
     }
 
     @Test

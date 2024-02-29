@@ -92,11 +92,11 @@ public class DishServiceTest {
 
 
     private static final Dish domainDish1 = new Dish(DISH_1_ID, "domain dish1", "", DOMAIN_CAT_1,
-            Arrays.asList(productRef1, productRef2, productRef3));
+            true, Arrays.asList(productRef1, productRef2, productRef3));
     private static final Dish domainDish2 = new Dish(DISH_2_ID, "domain dish2", "", DOMAIN_CAT_1,
-            new ArrayList<>());
+            true, new ArrayList<>());
     private static final Dish domainDish3 = new Dish(DISH_3_ID, "domain dish3", "", DOMAIN_CAT_2,
-            Arrays.asList(productRef1, productRef2, productRef3));
+            true, Arrays.asList(productRef1, productRef2, productRef3));
 
     private static final DishView dishView1 = DishView.builder().id(domainDish1.getDishId())
             .name(domainDish1.getName()).description("").categoryId(domainDish1.getCategory().getCategoryId())
