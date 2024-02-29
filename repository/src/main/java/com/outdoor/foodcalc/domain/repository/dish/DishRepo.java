@@ -18,8 +18,9 @@ import java.util.Optional;
 @Repository
 public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, RowMapper<Dish> {
 
-    static final String SELECT_ALL_DISHES_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
-            "c.id as catId, c.name as catName, d.template as template from dish d join dish_category c on d.category = c.id";
+    static final String SELECT_ALL_TEMPLATE_DISHES_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
+            "c.id as catId, c.name as catName, d.template as template from dish d join dish_category c on d.category = c.id " +
+            "where d.template = true";
     static final String SELECT_DISH_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
             "c.id as catId, c.name as catName, d.template as template from dish d join dish_category c on d.category = c.id where d.id = :dishId";
     static final String INSERT_DISH_SQL = "insert into dish (name, description, category, template) " +
@@ -33,7 +34,7 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
 
     @Override
     public List<Dish> getAllTemplateDishes() {
-        return jdbcTemplate.query(SELECT_ALL_DISHES_SQL, this);
+        return jdbcTemplate.query(SELECT_ALL_TEMPLATE_DISHES_SQL, this);
     }
 
     @Override
@@ -95,7 +96,8 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
                 .name(resultSet.getString("dishName"))
                 .description(resultSet.getString("description"))
                 .category(category)
-                .template(resultSet.getBoolean("template")).build();
+                .template(resultSet.getBoolean("template"))
+                .build();
     }
 
     KeyHolder getKeyHolder() {

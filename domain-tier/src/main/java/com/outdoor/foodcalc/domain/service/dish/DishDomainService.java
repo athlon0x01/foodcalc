@@ -167,6 +167,7 @@ public class DishDomainService {
                         new NotFoundException("Dish with id = " + id + "wasn't found"));
         return domainDish.toBuilder()
                 .dishId(newId)
+                .template(false)
                 .build();
     }
 

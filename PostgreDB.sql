@@ -33,7 +33,7 @@ CREATE TABLE dish
     id          bigserial PRIMARY KEY,
     name        varchar(64) NOT NULL,
     description varchar(1024),
-    category    bigint REFERENCES dish_category
+    category    bigint REFERENCES dish_category,
     template    boolean NOT NULL
 );
 

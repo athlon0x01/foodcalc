@@ -85,6 +85,7 @@ public class DishService {
                 .name(dishInfo.getName())
                 .description(dishInfo.getDescription())
                 .category(new DishCategory(dishInfo.getCategoryId(), ""))
+                .template(true)
                 .products(productService.buildMockProducts(dishInfo.getProducts()))
                 .build();
         dishInfo.setId(dishDomainService.addDish(dishToAdd).getDishId());
