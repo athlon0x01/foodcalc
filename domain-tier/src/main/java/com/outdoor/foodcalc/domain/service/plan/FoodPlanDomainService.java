@@ -1,5 +1,7 @@
 package com.outdoor.foodcalc.domain.service.plan;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
 import com.outdoor.foodcalc.domain.service.FoodPlansRepo;
@@ -32,12 +34,6 @@ public class FoodPlanDomainService {
         });
     }
 
-    public void deleteFoodPlan(long id) {
-        //TODO please make it similar to other domain delete
-        planRepo.deleteFoodPlan(id);
-        tmpRepo.deleteFoodPlan(id);
-    }
-
     public FoodPlan addFoodPlan(FoodPlan plan) {
         long id = planRepo.addFoodPlan(plan);
         FoodPlan newPlan = plan.toBuilder()
@@ -48,7 +44,22 @@ public class FoodPlanDomainService {
     }
 
     public void updateFoodPlan(FoodPlan plan) {
-        //TODO make it similar to other domain updates
-        planRepo.updateFoodPlan(plan);
+        if(!planRepo.existsFoodPlan(plan.getId())) {
+            throw new NotFoundException("Food plan with id=" + plan.getId() + " doesn't exist");
+        }
+        if(!planRepo.updateFoodPlan(plan)) {
+            throw new FoodcalcDomainException("Failed to update product category with id=" + plan.getId());
+        }
     }
+    public void deleteFoodPlan(long id) {
+        if(!planRepo.existsFoodPlan(id)) {
+            throw new NotFoundException("Food plan with id=" + id + " doesn't exist");
+        }
+        if (!planRepo.deleteFoodPlan(id)) {
+            throw new FoodcalcDomainException("Failed to delete Food plan with id=" + id);
+        }
+        tmpRepo.deleteFoodPlan(id);
+    }
+
+
 }
