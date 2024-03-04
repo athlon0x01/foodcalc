@@ -9,6 +9,7 @@ import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
+import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
 import com.outdoor.foodcalc.domain.service.FoodPlansRepo;
 import org.springframework.stereotype.Service;
@@ -26,13 +27,14 @@ import java.util.Optional;
 @Service
 public class DishDomainService {
 
-
+    private final IFoodPlanRepo planRepo;
     private final IDishRepo dishRepo;
     private final IProductRefRepo productRefRepo;
     private final DishCategoryDomainService dishCategoryService;
     private final FoodPlansRepo tmpRepo;
 
-    public DishDomainService(IDishRepo dishRepo, IProductRefRepo productRefRepo, DishCategoryDomainService dishCategoryService, FoodPlansRepo tmpRepo) {
+    public DishDomainService(IFoodPlanRepo planRepo, IDishRepo dishRepo, IProductRefRepo productRefRepo, DishCategoryDomainService dishCategoryService, FoodPlansRepo tmpRepo) {
+        this.planRepo = planRepo;
         this.dishRepo = dishRepo;
         this.productRefRepo = productRefRepo;
         this.dishCategoryService = dishCategoryService;
@@ -120,15 +122,14 @@ public class DishDomainService {
         if (dishOwner.isPresent()) {
             if (dishOwner.get() instanceof Meal) {
                 Meal meal = (Meal) dishOwner.get();
-                var day = tmpRepo.getDayByMealId(meal.getMealId());
-                var plan = tmpRepo.getPlanByDayId(day.getDayId());
+                long plan = tmpRepo.getPlanIdByMealId(meal.getMealId());
                 updateDishes(dish, meal);
-                plan.setLastUpdated(ZonedDateTime.now());
+                planRepo.saveLastUpdated(plan, ZonedDateTime.now());
             } else if (dishOwner.get() instanceof PlanDay) {
                 PlanDay day = (PlanDay) dishOwner.get();
-                var plan = tmpRepo.getPlanByDayId(day.getDayId());
+                long plan = tmpRepo.getPlanIdByDayId(day.getDayId());
                 updateDishes(dish, day);
-                plan.setLastUpdated(ZonedDateTime.now());
+                planRepo.saveLastUpdated(plan, ZonedDateTime.now());
             }
         } else {
             productRefRepo.deleteDishProducts(dish.getDishId());
