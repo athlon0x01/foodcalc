@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
  * @author Olga Borovyk.
  */
 @Service
+@Transactional(readOnly = true)
 public class DishCategoryService {
 
     private static final Logger LOG = LoggerFactory.getLogger(DishCategoryService.class);
@@ -70,6 +73,7 @@ public class DishCategoryService {
      * @param categoryName name of new category
      * @return new category
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public DishCategoryView addDishCategory(String categoryName) {
         return mapDishCategory(
                 categoryDomainService.addCategory(
@@ -81,6 +85,7 @@ public class DishCategoryService {
      *
      * @param model updated category
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void updateDishCategory(DishCategoryView model) {
         categoryDomainService.updateCategory(new DishCategory(model.getId(), model.getName()));
     }
@@ -90,6 +95,7 @@ public class DishCategoryService {
      *
      * @param id category Id to delete
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void deleteDishCategory(long id) {
         categoryDomainService.deleteCategory(id);
     }

@@ -8,12 +8,15 @@ import com.outdoor.foodcalc.domain.service.plan.FoodPlanDomainService;
 import com.outdoor.foodcalc.model.plan.FoodPlanView;
 import com.outdoor.foodcalc.model.plan.FoodPlanInfo;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class FoodPlanService {
 
     private final FoodPlanDomainService planDomainService;
@@ -36,10 +39,12 @@ public class FoodPlanService {
                 .orElseThrow(() -> new NotFoundException("Food plan with id = " + id + " wasn't found"));
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void deleteFoodPlan(long id) {
         planDomainService.deleteFoodPlan(id);
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public FoodPlanInfo addFoodPlan(FoodPlanInfo foodPlan) {
         var now = ZonedDateTime.now();
         FoodPlan plan = FoodPlan.builder()
@@ -51,6 +56,7 @@ public class FoodPlanService {
         return mapPlan(planDomainService.addFoodPlan(plan));
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void updateFoodPlan(FoodPlanInfo foodPlan) {
         List<PlanDay> days = foodPlan.getDays().stream()
                 .map(dayId -> PlanDay.builder().dayId(dayId).build())

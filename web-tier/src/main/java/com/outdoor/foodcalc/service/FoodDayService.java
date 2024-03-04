@@ -9,11 +9,14 @@ import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.plan.FoodDayInfo;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class FoodDayService {
 
     private final PlanDayDomainService dayDomainService;
@@ -40,10 +43,12 @@ public class FoodDayService {
                 .orElseThrow(() -> new NotFoundException("Food day with id = " + id + " wasn't found"));
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void deleteFoodDay(long planId, long id) {
         dayDomainService.deleteFoodDay(planId, id);
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public FoodDayInfo addFoodDay(long planId,
                                   FoodDayInfo foodDay) {
         PlanDay planDay = PlanDay.builder()
@@ -52,6 +57,7 @@ public class FoodDayService {
         return mapInfo(dayDomainService.addFoodDay(planId, planDay));
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void updateFoodDay(long planId, FoodDayInfo foodDay) {
         PlanDay day = PlanDay.builder()
                 .dayId(foodDay.getId())
@@ -66,6 +72,7 @@ public class FoodDayService {
         dayDomainService.updateFoodDay(planId, day);
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public DishView addDayDish(long planId, long dayId, long id) {
         return dishService.mapDishView(dayDomainService.addDayDish(planId, dayId, id));
     }
