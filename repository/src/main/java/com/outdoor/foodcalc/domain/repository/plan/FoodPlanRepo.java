@@ -20,9 +20,14 @@ import java.util.Optional;
 @Repository
 public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodPlanRepo, RowMapper<FoodPlan> {
 
-    static final String SELECT_ALL_FOOD_PLANS_SQL = "select * from food_plan";
+    static final String SELECT_ALL_FOOD_PLANS_SQL = "select fp.id as id, fp.name as name, fp.members as members, " +
+            "fp.createdon as createdOn, fp.lastupdated as lastUpdated, fp.description as description " +
+            "from food_plan fp";
 
-    static final String SELECT_FOOD_PLAN_SQL = "select * from food_plan where id = :id";
+    static final String SELECT_FOOD_PLAN_SQL = "select fp.id as id, fp.name as name, fp.members as members, " +
+            "fp.createdon as createdOn, fp.lastupdated as lastUpdated, fp.description as description " +
+            "from food_plan fp " +
+            "where id = :id";
 
     static final String INSERT_FOOD_PLAN_SQL = "insert into food-plan (name, members, createdon, lastupdated, description) " +
             "values (:name, :members, :createdOn, :lastUpdated, :description)";
