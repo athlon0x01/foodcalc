@@ -9,7 +9,6 @@ import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
-import com.outdoor.foodcalc.domain.service.FoodPlansRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,8 +62,6 @@ public class DishDomainServiceTest {
     private IProductRefRepo productRefRepo;
     @Mock
     private DishCategoryDomainService dishCategoryService;
-    @Mock
-    private FoodPlansRepo tmpRepo;
 
     @InjectMocks
     private DishDomainService service;

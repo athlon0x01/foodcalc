@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.endpoint.impl;
 import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.meal.MealInfo;
 import com.outdoor.foodcalc.model.meal.MealView;
+import com.outdoor.foodcalc.service.DishService;
 import com.outdoor.foodcalc.service.MealService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,16 +22,18 @@ public class MealEndpoint extends AbstractEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(MealEndpoint.class);
     private final MealService mealService;
+    private final DishService dishService;
 
-    public MealEndpoint(MealService mealService) {
+    public MealEndpoint(MealService mealService, DishService dishService) {
         this.mealService = mealService;
+        this.dishService = dishService;
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<MealView> getAllMeals(@PathVariable("planId") long planId,
                                       @PathVariable("dayId") long dayId) {
         LOG.debug("Getting food day id = {} meals", dayId);
-        return mealService.getAllMeals(planId, dayId);
+        return mealService.getDayMeals(planId, dayId);
     }
 
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
@@ -75,6 +78,6 @@ public class MealEndpoint extends AbstractEndpoint {
                                 @PathVariable("mealId") long mealId,
                                 @PathVariable("id") long id) {
         LOG.debug("Adding new dish to meal - {}, day - {}", mealId, dayId);
-        return mealService.addMealDish(planId, dayId, mealId, id);
+        return dishService.addMealDish(planId, dayId, mealId, id);
     }
 }

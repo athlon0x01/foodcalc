@@ -30,14 +30,14 @@ public class MealService {
         this.productService = productService;
     }
 
-    public List<MealView> getAllMeals(long planId, long dayId) {
-        return mealDomainService.getAllMeals(planId, dayId).stream()
+    public List<MealView> getDayMeals(long planId, long dayId) {
+        return mealDomainService.getDayMeals(dayId).stream()
                 .map(this::mapView)
                 .collect(Collectors.toList());
     }
 
     public MealView getMeal(long planId, long dayId, long id) {
-        return mealDomainService.getMeal(planId, dayId, id)
+        return mealDomainService.getMeal(dayId, id)
                 .map(this::mapView)
                 .orElseThrow(() -> new NotFoundException("Meal with id = " + id + " wasn't found"));
     }
@@ -65,11 +65,6 @@ public class MealService {
                 .products(productService.buildMockProducts(meal.getProducts()))
                 .build();
         mealDomainService.updateMeal(planId, dayId, domainMeal);
-    }
-
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public DishView addMealDish(long planId, long dayId, long mealId, long id) {
-        return dishService.mapDishView(mealDomainService.addMealDish(planId, dayId, mealId, id));
     }
 
     MealInfo mapInfo(Meal meal) {
