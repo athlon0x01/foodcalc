@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
  * @author Olga Borovyk.
  */
 @Service
+@Transactional(readOnly = true)
 public class MealTypesService {
 
     private static final Logger LOG = LoggerFactory.getLogger(MealTypesService.class);
@@ -70,6 +73,7 @@ public class MealTypesService {
      * @param mealTypeName name of new meal type
      * @return new meal type view
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public MealTypeView addMealType(String mealTypeName) {
         return mapMealType(
                 domainService.addMealType(
@@ -81,6 +85,7 @@ public class MealTypesService {
      *
      * @param model updated meal type view
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void updateMealType(MealTypeView model) {
         domainService.updateMealType(new MealType(model.getId(), model.getName()));
     }
@@ -90,6 +95,7 @@ public class MealTypesService {
      *
      * @param id meal type Id to delete
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void deleteMealType(long id) {
         domainService.deleteMealType(id);
     }

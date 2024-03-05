@@ -11,6 +11,8 @@ import com.outdoor.foodcalc.model.product.CategoryWithProducts;
 import com.outdoor.foodcalc.model.product.ProductView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
  * @author Anton Borovyk
  */
 @Service
+@Transactional(readOnly = true)
 public class ProductService {
 
     private final ProductDomainService productDomainService;
@@ -98,6 +101,7 @@ public class ProductService {
      * @param view product to add
      * @return new product
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public ProductView addProduct(ProductView view) {
         Product productToAdd = Product.builder()
                 .name(view.getName())
@@ -117,6 +121,7 @@ public class ProductService {
      *
      * @param productModel updated
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void updateProduct(ProductView productModel) {
         Product productToUpdate = Product.builder()
                 .productId(productModel.getId())
@@ -137,6 +142,7 @@ public class ProductService {
      *
      * @param id product Id to delete
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void deleteProduct(long id) {
         productDomainService.deleteProduct(id);
     }

@@ -11,6 +11,8 @@ import com.outdoor.foodcalc.model.dish.DishInfo;
 import com.outdoor.foodcalc.model.dish.DishView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +20,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@Transactional(readOnly = true)
 public class DishService {
     private final DishDomainService dishDomainService;
     private final DishCategoryService dishCategoryService;
@@ -80,6 +83,7 @@ public class DishService {
      * @param dishInfo dish to add
      * @return new dish
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public DishInfo addDish(DishInfo dishInfo) {
         Dish dishToAdd = Dish.builder()
                 .name(dishInfo.getName())
@@ -97,6 +101,7 @@ public class DishService {
      *
      * @param dishInfo updated
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void updateDish(DishInfo dishInfo) {
         Dish updatedDish = Dish.builder()
                 .dishId(dishInfo.getId())
@@ -113,6 +118,7 @@ public class DishService {
      *
      * @param id dish Id to delete
      */
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public void deleteDish(long id) {
         dishDomainService.deleteDish(id);
     }
