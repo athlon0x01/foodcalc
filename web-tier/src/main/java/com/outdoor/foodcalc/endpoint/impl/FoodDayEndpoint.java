@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.endpoint.impl;
 import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.plan.FoodDayInfo;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
+import com.outdoor.foodcalc.service.DishService;
 import com.outdoor.foodcalc.service.FoodDayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,15 +21,17 @@ public class FoodDayEndpoint extends AbstractEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(FoodDayEndpoint.class);
     private final FoodDayService foodDayService;
+    private final DishService dishService;
 
-    public FoodDayEndpoint(FoodDayService foodDayService) {
+    public FoodDayEndpoint(FoodDayService foodDayService, DishService dishService) {
         this.foodDayService = foodDayService;
+        this.dishService = dishService;
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<FoodDayView> getAllDays(@PathVariable("planId") long planId) {
         LOG.debug("Getting food plan id = {} days", planId);
-        return foodDayService.getAllDays(planId);
+        return foodDayService.getPlanDays(planId);
     }
 
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
@@ -68,6 +71,6 @@ public class FoodDayEndpoint extends AbstractEndpoint {
                                @PathVariable("dayId") long dayId,
                                @PathVariable("id") long id) {
         LOG.debug("Adding new dish to day - {}", dayId);
-        return foodDayService.addDayDish(planId, dayId, id);
+        return dishService.addDayDish(planId, dayId, id);
     }
 }

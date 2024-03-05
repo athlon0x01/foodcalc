@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.domain.repository.plan;
 
+import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 
 import java.util.List;
@@ -7,15 +8,23 @@ import java.util.Optional;
 
 public interface IPlanDayRepo {
 
-    List<PlanDay> getAllPlanDays();
+    List<PlanDay> getPlanDays(long planId);
 
-    Optional<PlanDay> getPlanDay(long id);
+    Optional<PlanDay> getPlanDay(long planId, long id);
 
-    long addPlanDay(PlanDay day);
+    long addPlanDay(long planId, PlanDay day);
 
-    boolean updatePlanDay(PlanDay day);
+    boolean updatePlanDayInfo(PlanDay day);
 
-    boolean deletePlanDay(long id);
+    boolean deletePlanDay(long planId, long id);
 
     boolean existsPlanDay(long id);
+
+    boolean addMealsToDay(PlanDay day);
+
+    long deleteDayMeals(long dayId);
+
+    boolean addDaysToPlan(FoodPlan plan);
+
+    long deleteFoodPlanDays(long planId);
 }

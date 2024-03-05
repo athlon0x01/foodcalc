@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface IMealRepo {
 
-    List<Meal> getAllMeals();
+    List<Meal> getDayMeals(long dayId);
 
-    Optional<Meal> getMeal(long id);
+    Optional<Meal> getMeal(long dayId, long id);
 
     long addMeal(Meal meal);
 

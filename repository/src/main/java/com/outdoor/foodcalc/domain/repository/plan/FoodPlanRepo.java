@@ -96,11 +96,23 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
     }
 
     @Override
-    public boolean saveLastUpdated(long planId, ZonedDateTime lastUpdated) {
+    public void saveLastUpdated(long planId, ZonedDateTime lastUpdated) {
         MapSqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("id", planId)
                 .addValue("lastUpdated", lastUpdated.toOffsetDateTime());
-        return jdbcTemplate.update(UPDATE_FOOD_PLAN_LAST_UPDATED_SQL, parameters) > 0;
+        jdbcTemplate.update(UPDATE_FOOD_PLAN_LAST_UPDATED_SQL, parameters);
+    }
+
+    @Override
+    //TODO implement me
+    public void saveLastUpdatedByDayId(long dayId, ZonedDateTime lastUpdated) {
+
+    }
+
+    @Override
+    //TODO implement me
+    public void saveLastUpdatedByMealId(long mealId, ZonedDateTime lastUpdated) {
+
     }
 
     @Override

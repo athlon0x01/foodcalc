@@ -5,7 +5,6 @@ import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.service.plan.PlanDayDomainService;
-import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.plan.FoodDayInfo;
 import com.outdoor.foodcalc.model.plan.FoodDayView;
 import org.springframework.stereotype.Service;
@@ -31,8 +30,8 @@ public class FoodDayService {
         this.productService = productService;
     }
 
-    public List<FoodDayView> getAllDays(long planId) {
-        return dayDomainService.getAllDays(planId).stream()
+    public List<FoodDayView> getPlanDays(long planId) {
+        return dayDomainService.getPlanDays(planId).stream()
                 .map(this::mapView)
                 .collect(Collectors.toList());
     }
@@ -70,11 +69,6 @@ public class FoodDayService {
                 .products(productService.buildMockProducts(foodDay.getProducts()))
                 .build();
         dayDomainService.updateFoodDay(planId, day);
-    }
-
-    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public DishView addDayDish(long planId, long dayId, long id) {
-        return dishService.mapDishView(dayDomainService.addDayDish(planId, dayId, id));
     }
 
     FoodDayInfo mapInfo(PlanDay day) {

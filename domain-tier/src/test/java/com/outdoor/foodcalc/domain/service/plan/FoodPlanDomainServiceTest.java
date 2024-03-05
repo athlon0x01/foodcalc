@@ -3,7 +3,6 @@ package com.outdoor.foodcalc.domain.service.plan;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
-import com.outdoor.foodcalc.domain.service.FoodPlansRepo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,7 +22,7 @@ class FoodPlanDomainServiceTest {
     @Mock
     private IFoodPlanRepo planRepo;
     @Mock
-    private FoodPlansRepo tmpRepo;
+    private PlanDayDomainService dayService;
 
     @InjectMocks
     private FoodPlanDomainService service;
@@ -34,7 +33,7 @@ class FoodPlanDomainServiceTest {
         PlanDay day = PlanDay.builder().dayId(54321L).date(LocalDate.of(2024, 8, 21)).build();
 
         when(planRepo.getFoodPlan(123L)).thenReturn(Optional.of(plan));
-        when(tmpRepo.getPlanDays(123L)).thenReturn(List.of(day));
+        when(dayService.getPlanDays(123L)).thenReturn(List.of(day));
 
         Optional<FoodPlan> planOptional = service.getFoodPlan(123L);
         assertTrue(planOptional.isPresent());

@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.domain.repository.meal;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -10,12 +11,12 @@ import java.util.Optional;
 public class MealRepo implements IMealRepo {
 
     @Override
-    public List<Meal> getAllMeals() {
-        return null;
+    public List<Meal> getDayMeals(long dayId) {
+        return Collections.emptyList();
     }
 
     @Override
-    public Optional<Meal> getMeal(long id) {
+    public Optional<Meal> getMeal(long dayId, long id) {
         return Optional.empty();
     }
 

@@ -2,19 +2,16 @@ package com.outdoor.foodcalc.domain.service.dish;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
-import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
-import com.outdoor.foodcalc.domain.model.meal.Meal;
-import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
-import com.outdoor.foodcalc.domain.service.FoodPlansRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -31,14 +28,12 @@ public class DishDomainService {
     private final IDishRepo dishRepo;
     private final IProductRefRepo productRefRepo;
     private final DishCategoryDomainService dishCategoryService;
-    private final FoodPlansRepo tmpRepo;
 
-    public DishDomainService(IFoodPlanRepo planRepo, IDishRepo dishRepo, IProductRefRepo productRefRepo, DishCategoryDomainService dishCategoryService, FoodPlansRepo tmpRepo) {
+    public DishDomainService(IFoodPlanRepo planRepo, IDishRepo dishRepo, IProductRefRepo productRefRepo, DishCategoryDomainService dishCategoryService) {
         this.planRepo = planRepo;
         this.dishRepo = dishRepo;
         this.productRefRepo = productRefRepo;
         this.dishCategoryService = dishCategoryService;
-        this.tmpRepo = tmpRepo;
     }
 
     /**
@@ -54,6 +49,16 @@ public class DishDomainService {
                 .filter(dish -> allDishIdWithProductRefs.containsKey(dish.getDishId()))
                 .forEach(dish -> dish.setProducts(allDishIdWithProductRefs.get(dish.getDishId())));
         return dishes;
+    }
+
+    //TODO implement me
+    public List<Dish> getMealDishes(long mealId) {
+        return Collections.emptyList();
+    }
+
+    //TODO implement me
+    public List<Dish> getDayDishes(long dayId) {
+        return Collections.emptyList();
     }
 
     /**
@@ -100,6 +105,30 @@ public class DishDomainService {
         return addedDish;
     }
 
+    public Dish addMealDish(long planId, long dayId, long mealId, long id) {
+        //building new dish as a copy of template dish
+        Dish dish = getDishCopy(id);
+        Dish savedDish = addDish(dish);
+        //TODO new dish should be linked to the meal
+//        List<Dish> mealDishes = tmpRepo.getMealDishes(mealId);
+//        mealDishes.add(dish);
+//        tmpRepo.setMealDished(mealId, mealDishes);
+        planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+        return savedDish;
+    }
+
+    public Dish addDayDish(long planId, long dayId, long id) {
+        //building new dish as a copy of template dish
+        Dish dish = getDishCopy(id);
+        Dish savedDish = addDish(dish);
+        //TODO new dish should be linked to the day
+//        List<Dish> dayDishes = tmpRepo.getDayDishes(dayId);
+//        dayDishes.add(dish);
+//        tmpRepo.setDayDished(dayId, dayDishes);
+        planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+        return savedDish;
+    }
+
     /**
      * Update {@link Dish} object.
      *
@@ -110,36 +139,31 @@ public class DishDomainService {
      * @throws FoodcalcDomainException If dish wasn't updated
      */
     public void updateDish(Dish dish) {
-        if(!dishRepo.existsDish(dish.getDishId())) {
+        if (!dishRepo.existsDish(dish.getDishId())) {
             throw new NotFoundException("Dish with id=" + dish.getDishId() + " doesn't exist");
         }
         final DishCategory category = dishCategoryService.getCategory(dish.getCategory().getCategoryId())
                 .orElseThrow(() ->
-                        new NotFoundException("Failed to get Dish Category, id = " + dish.getCategory().getCategoryId() ));
+                        new NotFoundException("Failed to get Dish Category, id = " + dish.getCategory().getCategoryId()));
         dish.setCategory(category);
-
-        var dishOwner = tmpRepo.getDishOwner(dish.getDishId());
-        if (dishOwner.isPresent()) {
-            if (dishOwner.get() instanceof Meal) {
-                Meal meal = (Meal) dishOwner.get();
-                long plan = tmpRepo.getPlanIdByMealId(meal.getMealId());
-                updateDishes(dish, meal);
-                planRepo.saveLastUpdated(plan, ZonedDateTime.now());
-            } else if (dishOwner.get() instanceof PlanDay) {
-                PlanDay day = (PlanDay) dishOwner.get();
-                long plan = tmpRepo.getPlanIdByDayId(day.getDayId());
-                updateDishes(dish, day);
-                planRepo.saveLastUpdated(plan, ZonedDateTime.now());
-            }
-        } else {
-            productRefRepo.deleteDishProducts(dish.getDishId());
-            if(!dish.getProducts().isEmpty() && !productRefRepo.addDishProducts(dish)) {
-                throw new FoodcalcDomainException("Failed to add products for dish with id=" + dish.getDishId());
-            }
-            if(!dishRepo.updateDish(dish)) {
-                throw new FoodcalcDomainException("Failed to update dish with id=" + dish.getDishId());
-            }
+        productRefRepo.deleteDishProducts(dish.getDishId());
+        if (!dish.getProducts().isEmpty() && !productRefRepo.addDishProducts(dish)) {
+            throw new FoodcalcDomainException("Failed to add products for dish with id=" + dish.getDishId());
         }
+        if (!dishRepo.updateDish(dish)) {
+            throw new FoodcalcDomainException("Failed to update dish with id=" + dish.getDishId());
+        }
+        //TODO do planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+    }
+
+    //TODO implement me
+    public void updateMealDishes(long mealId, List<Dish> ids) {
+        //reorderDishes(mealsDishes, mealId, ids);
+    }
+
+    //TODO implement me
+    public void updateDayDishes(long dayId, List<Dish> ids) {
+        //reorderDishes(mealsDishes, mealId, ids);
     }
 
     /**
@@ -161,24 +185,24 @@ public class DishDomainService {
         }
     }
 
+    //TODO implement me
+    public void deleteMealDishes(long mealId) {
+
+    }
+
+    //TODO implement me
+    public void deleteDayDishes(long dayId) {
+
+    }
+
     //TODO temporary methods to be refactored later
-    public Dish getDishCopy(long id, long newId) {
+    private Dish getDishCopy(long id) {
         Dish domainDish = getDish(id)
                 .orElseThrow(() ->
                         new NotFoundException("Dish with id = " + id + "wasn't found"));
         return domainDish.toBuilder()
-                .dishId(newId)
+                .dishId(-1)
                 .template(false)
                 .build();
-    }
-
-    @Deprecated(forRemoval = true)
-    private void updateDishes(Dish dish, DishesContainer dishesContainer) {
-        List<Dish> dishes = dishesContainer.getDishes();
-        for (int i = 0; i < dishes.size(); i++) {
-            if (dishes.get(i).getDishId() == dish.getDishId()) {
-                dishes.set(i, dish);
-            }
-        }
     }
 }

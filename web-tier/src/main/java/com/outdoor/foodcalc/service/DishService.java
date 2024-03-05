@@ -96,6 +96,16 @@ public class DishService {
         return dishInfo;
     }
 
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public DishView addMealDish(long planId, long dayId, long mealId, long id) {
+        return mapDishView(dishDomainService.addMealDish(planId, dayId, mealId, id));
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public DishView addDayDish(long planId, long dayId, long id) {
+        return mapDishView(dishDomainService.addDayDish(planId, dayId, id));
+    }
+
     /**
      * Updates selected {@link Dish} with new value.
      *

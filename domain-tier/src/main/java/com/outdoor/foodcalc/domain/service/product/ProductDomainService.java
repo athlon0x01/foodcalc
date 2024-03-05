@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +38,16 @@ public class ProductDomainService {
      */
     public List<Product> getAllProducts() {
         return productRepo.getAllProducts();
+    }
+
+    //TODO implement me
+    public List<ProductRef> getMealProducts(long mealId) {
+        return Collections.emptyList();
+    }
+
+    //TODO implement me
+    public List<ProductRef> getDayProducts(long dayId) {
+        return Collections.emptyList();
     }
 
     /**
@@ -88,6 +99,16 @@ public class ProductDomainService {
         }
     }
 
+    //TODO implement me
+    public void updateMealProducts(long mealId, List<ProductRef> products) {
+        //mealsProducts.put(mealId, new ArrayList<>(products));
+    }
+
+    //TODO implement me
+    public void updateDayProducts(long dayId, List<ProductRef> products) {
+        //mealsProducts.put(mealId, new ArrayList<>(products));
+    }
+
     /**
      * Deletes selected {@link Product}.
      *
@@ -103,6 +124,16 @@ public class ProductDomainService {
         if(!productRepo.deleteProduct(id)) {
             throw new FoodcalcDomainException("Failed to delete product with id=" + id);
         }
+    }
+
+    //TODO implement me
+    public void deleteMealProducts(long mealId) {
+
+    }
+
+    //TODO implement me
+    public void deleteDayProducts(long dayId) {
+
     }
 
     public ProductRef loadProduct(ProductRef mock) {
