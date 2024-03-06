@@ -14,7 +14,7 @@ public interface IPlanDayRepo {
 
     long addPlanDay(long planId, PlanDay day);
 
-    boolean updatePlanDay(long planId, PlanDay day);
+    boolean updatePlanDayInfo(PlanDay day);
 
     boolean deletePlanDay(long planId, long id);
 

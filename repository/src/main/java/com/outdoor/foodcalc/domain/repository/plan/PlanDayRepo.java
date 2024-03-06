@@ -27,7 +27,7 @@ public class PlanDayRepo implements IPlanDayRepo {
     }
 
     @Override
-    public boolean updatePlanDay(long planId, PlanDay day) {
+    public boolean updatePlanDayInfo(PlanDay day) {
         return false;
     }
 

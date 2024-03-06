@@ -104,6 +104,12 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
     }
 
     @Override
+    //TODO implement me
+    public boolean saveLastUpdatedByDayId(long dayId, ZonedDateTime lastUpdated) {
+        return false;
+    }
+
+    @Override
     public FoodPlan mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         OffsetDateTime odtCreatedOn = resultSet.getObject("createdOn", OffsetDateTime.class);
         ZonedDateTime createdOn = odtCreatedOn.toZonedDateTime();

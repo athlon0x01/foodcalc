@@ -31,8 +31,8 @@ public class FoodDayService {
         this.productService = productService;
     }
 
-    public List<FoodDayView> getAllDays(long planId) {
-        return dayDomainService.getAllDays(planId).stream()
+    public List<FoodDayView> getPlanDays(long planId) {
+        return dayDomainService.getPlanDays(planId).stream()
                 .map(this::mapView)
                 .collect(Collectors.toList());
     }

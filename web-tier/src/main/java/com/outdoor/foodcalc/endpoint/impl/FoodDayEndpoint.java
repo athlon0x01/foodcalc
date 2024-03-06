@@ -28,7 +28,7 @@ public class FoodDayEndpoint extends AbstractEndpoint {
     @GetMapping(produces = APPLICATION_JSON_VALUE)
     public List<FoodDayView> getAllDays(@PathVariable("planId") long planId) {
         LOG.debug("Getting food plan id = {} days", planId);
-        return foodDayService.getAllDays(planId);
+        return foodDayService.getPlanDays(planId);
     }
 
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)

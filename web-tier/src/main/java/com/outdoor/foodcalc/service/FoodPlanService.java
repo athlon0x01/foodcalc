@@ -29,7 +29,7 @@ public class FoodPlanService {
     }
 
     public List<FoodPlanInfo> getAllFoodPlans() {
-        return planDomainService.getAllFoodPlans().stream()
+        return planDomainService.getAllFoodPlansNoDays().stream()
                 .map(this::mapPlan)
                 .collect(Collectors.toList());
     }

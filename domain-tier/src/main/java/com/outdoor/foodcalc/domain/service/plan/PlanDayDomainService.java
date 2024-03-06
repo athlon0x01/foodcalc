@@ -1,8 +1,11 @@
 package com.outdoor.foodcalc.domain.service.plan;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
+import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
 import com.outdoor.foodcalc.domain.repository.plan.IPlanDayRepo;
 import com.outdoor.foodcalc.domain.service.FoodPlansRepo;
@@ -33,42 +36,57 @@ public class PlanDayDomainService {
         this.tmpRepo = tmpRepo;
     }
 
-    public List<PlanDay> getAllDays(long planId) {
-        return tmpRepo.getPlanDays(planId);
+    public List<PlanDay> getPlanDays(long planId) {
+        List<PlanDay> days = dayRepo.getPlanDays(planId);
+        //TODO optimization required
+        days.forEach(this::loadDayContent);
+        return days;
     }
 
     public Optional<PlanDay> getDay(long planId, long id) {
-        return Optional.ofNullable(tmpRepo.getDay(planId, id));
+        return dayRepo.getPlanDay(planId, id)
+                .map(day -> {
+                    loadDayContent(day);
+                    return day;
+                });
+    }
+
+    private void loadDayContent(PlanDay day) {
+        day.setMeals(tmpRepo.getDayMeals(day.getDayId()));
+        day.setDishes(tmpRepo.getDayDishes(day.getDayId()));
+        day.setProducts(tmpRepo.getDayProducts(day.getDayId()));
     }
 
     public void deleteFoodDay(long planId, long id) {
-        tmpRepo.deletePlanDay(planId, id);
+        tmpRepo.deletePlanDay(id);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
     }
 
     public PlanDay addFoodDay(long planId,
                               PlanDay foodDay) {
+        long id = dayRepo.addPlanDay(planId, foodDay);
         PlanDay newDay = foodDay.toBuilder()
-                .dayId(tmpRepo.getMaxDayIdAndIncrement())
+                .dayId(id)
                 .build();
-        tmpRepo.getPlanDays(planId).add(newDay);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
         return newDay;
     }
 
     public void updateFoodDay(long planId, PlanDay foodDay) {
-        var oldDay = tmpRepo.getDay(planId, foodDay.getDayId());
-        foodDay.setProducts(foodDay.getProducts().stream()
-                .map(productService::loadProduct)
-                .collect(Collectors.toList()));
-        foodDay.setDishes(tmpRepo.reorderDishes(oldDay.getDishes(), foodDay.getDishes()));
-        foodDay.setMeals(reorderMeals(oldDay.getMeals(), foodDay.getMeals()));
-        var planDays = tmpRepo.getPlanDays(planId);
-        for (int i = 0; i < planDays.size(); i++) {
-            if (planDays.get(i).getDayId() == foodDay.getDayId()) {
-                planDays.set(i, foodDay);
-            }
+        long dayId = foodDay.getDayId();
+        if(!dayRepo.existsPlanDay(dayId)) {
+            throw new NotFoundException("Plan day with id=" + dayId + " doesn't exist");
         }
+        if(!dayRepo.updatePlanDayInfo(foodDay)) {
+            throw new FoodcalcDomainException("Failed to plan day with id=" + dayId);
+        }
+        List<ProductRef> products = foodDay.getProducts().stream()
+                .map(productService::loadProduct)
+                .collect(Collectors.toList());
+        tmpRepo.setDayProducts(dayId, products);
+        tmpRepo.updateDayDishes(dayId, foodDay.getDishes());
+        List<Meal> meals = reorderMeals(tmpRepo.getDayMeals(dayId), foodDay.getMeals());
+        tmpRepo.setDayMeals(dayId, meals);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
     }
 
@@ -86,11 +104,12 @@ public class PlanDayDomainService {
     }
 
     public Dish addDayDish(long planId, long dayId, long id) {
-        var day = tmpRepo.getDay(planId, dayId);
         //building new dish as a copy of template dish
         Dish dish = dishService.getDishCopy(id, tmpRepo.getMaxDishIdAndIncrement());
         //TODO new dish should be persisted and linked to the day
-        day.getDishes().add(dish);
+        List<Dish> dayDishes = tmpRepo.getDayDishes(dayId);
+        dayDishes.add(dish);
+        tmpRepo.setDayDished(dayId, dayDishes);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
         return dish;
     }

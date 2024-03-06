@@ -2,11 +2,9 @@ package com.outdoor.foodcalc.domain.service.dish;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
-import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
-import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
@@ -110,33 +108,30 @@ public class DishDomainService {
      * @throws FoodcalcDomainException If dish wasn't updated
      */
     public void updateDish(Dish dish) {
-        if(!dishRepo.existsDish(dish.getDishId())) {
+        if (!dishRepo.existsDish(dish.getDishId())) {
             throw new NotFoundException("Dish with id=" + dish.getDishId() + " doesn't exist");
         }
         final DishCategory category = dishCategoryService.getCategory(dish.getCategory().getCategoryId())
                 .orElseThrow(() ->
-                        new NotFoundException("Failed to get Dish Category, id = " + dish.getCategory().getCategoryId() ));
+                        new NotFoundException("Failed to get Dish Category, id = " + dish.getCategory().getCategoryId()));
         dish.setCategory(category);
 
-        var dishOwner = tmpRepo.getDishOwner(dish.getDishId());
-        if (dishOwner.isPresent()) {
-            if (dishOwner.get() instanceof Meal) {
-                Meal meal = (Meal) dishOwner.get();
-                long plan = tmpRepo.getPlanIdByMealId(meal.getMealId());
-                updateDishes(dish, meal);
-                planRepo.saveLastUpdated(plan, ZonedDateTime.now());
-            } else if (dishOwner.get() instanceof PlanDay) {
-                PlanDay day = (PlanDay) dishOwner.get();
-                long plan = tmpRepo.getPlanIdByDayId(day.getDayId());
-                updateDishes(dish, day);
-                planRepo.saveLastUpdated(plan, ZonedDateTime.now());
-            }
+        Optional<Meal> mealByDish = tmpRepo.getMealByDish(dish.getDishId());
+        long dayId = tmpRepo.getDayByDish(dish.getDishId());
+        if (mealByDish.isPresent()) {
+            Meal meal = mealByDish.get();
+            long mealDay = tmpRepo.getDayIdByMealId(meal.getMealId());
+            updateDishes(dish, meal);
+            planRepo.saveLastUpdatedByDayId(mealDay, ZonedDateTime.now());
+        } else if (dayId != -1) {
+            updateDishes(dayId, dish);
+            planRepo.saveLastUpdatedByDayId(dayId, ZonedDateTime.now());
         } else {
             productRefRepo.deleteDishProducts(dish.getDishId());
-            if(!dish.getProducts().isEmpty() && !productRefRepo.addDishProducts(dish)) {
+            if (!dish.getProducts().isEmpty() && !productRefRepo.addDishProducts(dish)) {
                 throw new FoodcalcDomainException("Failed to add products for dish with id=" + dish.getDishId());
             }
-            if(!dishRepo.updateDish(dish)) {
+            if (!dishRepo.updateDish(dish)) {
                 throw new FoodcalcDomainException("Failed to update dish with id=" + dish.getDishId());
             }
         }
@@ -173,12 +168,23 @@ public class DishDomainService {
     }
 
     @Deprecated(forRemoval = true)
-    private void updateDishes(Dish dish, DishesContainer dishesContainer) {
-        List<Dish> dishes = dishesContainer.getDishes();
+    private void updateDishes(Dish dish, Meal meal) {
+        List<Dish> dishes = meal.getDishes();
         for (int i = 0; i < dishes.size(); i++) {
             if (dishes.get(i).getDishId() == dish.getDishId()) {
                 dishes.set(i, dish);
             }
         }
+    }
+
+    @Deprecated(forRemoval = true)
+    private void updateDishes(long dayId, Dish dish) {
+        List<Dish> dishes = tmpRepo.getDayDishes(dayId);
+        for (int i = 0; i < dishes.size(); i++) {
+            if (dishes.get(i).getDishId() == dish.getDishId()) {
+                dishes.set(i, dish);
+            }
+        }
+        tmpRepo.setDayDished(dayId, dishes);
     }
 }

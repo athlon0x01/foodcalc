@@ -1,7 +1,6 @@
 package com.outdoor.foodcalc.domain.model.plan;
 
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
-import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
@@ -27,7 +26,7 @@ import java.util.*;
 @EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 @Jacksonized
 @Builder(toBuilder = true)
-public class PlanDay extends ComplexFoodEntity implements IDomainEntity, DishesContainer {
+public class PlanDay extends ComplexFoodEntity implements IDomainEntity {
 
     @EqualsAndHashCode.Include
     private final long dayId;

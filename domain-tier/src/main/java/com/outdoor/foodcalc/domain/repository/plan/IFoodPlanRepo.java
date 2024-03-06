@@ -21,4 +21,6 @@ public interface IFoodPlanRepo {
     boolean existsFoodPlan(long id);
 
     boolean saveLastUpdated(long planId, ZonedDateTime lastUpdated);
+
+    boolean saveLastUpdatedByDayId(long dayId, ZonedDateTime lastUpdated);
 }
