@@ -38,7 +38,7 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
 
     static final String SELECT_FOOD_PLAN_EXIST_SQL = "select count(*) from food_plan where id = :id";
 
-    static final String UPDATE_FOOD_PLAN_LAST_UPDATED_SQL = "update food_plan set lastupdated = :lastUpdated, " +
+    static final String UPDATE_FOOD_PLAN_LAST_UPDATED_SQL = "update food_plan set lastupdated = :lastUpdated " +
             "where id = :id";
 
     @Override
