@@ -51,6 +51,7 @@ public class FoodPlanDomainService {
             throw new FoodcalcDomainException("Failed to update product category with id=" + plan.getId());
         }
     }
+
     public void deleteFoodPlan(long id) {
         if(!planRepo.existsFoodPlan(id)) {
             throw new NotFoundException("Food plan with id=" + id + " doesn't exist");
@@ -60,6 +61,4 @@ public class FoodPlanDomainService {
         }
         tmpRepo.deleteFoodPlan(id);
     }
-
-
 }

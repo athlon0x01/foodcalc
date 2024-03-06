@@ -12,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -29,10 +28,10 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
             "from food_plan fp " +
             "where id = :id";
 
-    static final String INSERT_FOOD_PLAN_SQL = "insert into food-plan (name, members, createdon, lastupdated, description) " +
+    static final String INSERT_FOOD_PLAN_SQL = "insert into food_plan (name, members, createdon, lastupdated, description) " +
             "values (:name, :members, :createdOn, :lastUpdated, :description)";
 
-    static final String UPDATE_FOOD_PLAN_SQL = "update food_plan set name = :name, members = :members, createdon = :createdOn, " +
+    static final String UPDATE_FOOD_PLAN_SQL = "update food_plan set name = :name, members = :members, " +
             "lastupdated = :lastUpdated, description = :description where id = :id";
 
     static final String DELETE_FOOD_PLAN_SQL = "delete from food_plan  where id = :id";
@@ -74,7 +73,12 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
 
     @Override
     public boolean updateFoodPlan(FoodPlan plan) {
-        MapSqlParameterSource parameters = getSqlParameterSource(plan);
+        MapSqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("id", plan.getId())
+                .addValue("name", plan.getName())
+                .addValue("members", plan.getMembers())
+                .addValue("lastUpdated", plan.getLastUpdated().toOffsetDateTime())
+                .addValue("description", plan.getDescription());
         return jdbcTemplate.update(UPDATE_FOOD_PLAN_SQL, parameters) > 0;
     }
 
@@ -101,18 +105,18 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
 
     @Override
     public FoodPlan mapRow(ResultSet resultSet, int rowNum) throws SQLException {
-        OffsetDateTime odtCreatedOn = resultSet.getObject("createdon", OffsetDateTime.class);
-        ZoneId zoneIdCreatedOn = ZoneId.of(resultSet.getString("createdon"));
+        OffsetDateTime odtCreatedOn = resultSet.getObject("createdOn", OffsetDateTime.class);
+        ZonedDateTime createdOn = odtCreatedOn.toZonedDateTime();
 
-        OffsetDateTime odtLastUpdated = resultSet.getObject("lastupdated", OffsetDateTime.class);
-        ZoneId zoneIdLastUpdated = ZoneId.of(resultSet.getString("lastupdated"));
+        OffsetDateTime odtLastUpdated = resultSet.getObject("lastUpdated", OffsetDateTime.class);
+        ZonedDateTime lastUpdated = odtLastUpdated.toZonedDateTime();
 
         return FoodPlan.builder()
                 .id(resultSet.getLong("id"))
                 .name(resultSet.getString("name"))
                 .members(resultSet.getInt("members"))
-                .createdOn(odtCreatedOn.atZoneSameInstant(zoneIdCreatedOn))
-                .lastUpdated(odtLastUpdated.atZoneSameInstant(zoneIdLastUpdated))
+                .createdOn(createdOn)
+                .lastUpdated(lastUpdated)
                 .description(resultSet.getString("description"))
                 .build();
     }
