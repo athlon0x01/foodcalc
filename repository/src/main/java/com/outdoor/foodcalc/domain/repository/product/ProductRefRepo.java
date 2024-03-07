@@ -28,13 +28,15 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     private final ProductRepo productRepo;
 
 
-    static final String SELECT_ALL_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+    static final String SELECT_ALL_DISH_TEMPLATE_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
             "dp.dish as dish, dp.weight as weight, dp.ndx as ndx " +
             "from dish_product dp " +
+            "join  dish d on dp.dish = d.id " +
             "join product p on dp.product  = p.id " +
-            "join product_category c on p.category = c.id ";
+            "join product_category c on p.category = c.id " +
+            "where d.template = true ";
 
     static final String SELECT_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
@@ -78,7 +80,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
 
     @Override
     public Map<Long, List<ProductRef>> getAllDishProducts() {
-        return jdbcTemplate.query(SELECT_ALL_DISH_PRODUCTS_SQL, this::extractData);
+        return jdbcTemplate.query(SELECT_ALL_DISH_TEMPLATE_PRODUCTS_SQL, this::extractData);
     }
 
     @Override
