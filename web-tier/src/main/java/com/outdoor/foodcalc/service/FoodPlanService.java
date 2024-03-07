@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -79,8 +80,8 @@ public class FoodPlanService {
                 .description(plan.getDescription())
                 .members(plan.getMembers())
                 .duration(plan.getDays().size())
-                .createdOn(plan.getCreatedOn())
-                .lastUpdated(plan.getLastUpdated())
+                .createdOn(plan.getCreatedOn().withZoneSameInstant(ZoneId.systemDefault()))
+                .lastUpdated(plan.getLastUpdated().withZoneSameInstant(ZoneId.systemDefault()))
                 .build();
     }
 

@@ -4,50 +4,20 @@ import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.DishesContainer;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
-import com.outdoor.foodcalc.domain.model.meal.MealType;
-import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
-import com.outdoor.foodcalc.domain.service.meal.MealTypeDomainService;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.ZonedDateTime;
 import java.util.*;
 
-//TODO temporary holder \ repository for food plans \ days \ meals \ dishes
+//TODO temporary holder \ repository for food days \ meals \ dishes
 @Deprecated(forRemoval = true)
 @Component
 public class FoodPlansRepo {
 
-    private final Map<Long, FoodPlan> foodPlans = new HashMap<>();
-    private long maxPlanId = 3L;
+    private final Map<Long, List<PlanDay>> foodPlanDays = new HashMap<>();
     private long maxDayId = 104L;
     private long maxMealId = 10107L;
     private long maxDishId = 1010101L;
-
-    public FoodPlansRepo() {
-        init();
-    }
-
-    public void init() {
-        //dummy initialization for UI
-        PlanDay day11 = new PlanDay(101L, LocalDate.of(2023, 11, 23), "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        day11.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-        PlanDay day12 = new PlanDay(102L, LocalDate.of(2023, 11, 24), "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        day12.setDescription("Dummy Lorem ipsum");
-        PlanDay day21 = new PlanDay(103L, LocalDate.of(2023, 9, 19), "", new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
-        day21.setDescription("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.");
-
-        var now = ZonedDateTime.now();
-        FoodPlan planA = new FoodPlan(1L, "Test plan A", "", 2, now, now, new ArrayList<>(List.of(day11, day12)));
-        FoodPlan planB = new FoodPlan(2L, "Test food plan B", "", 3, now, now, new ArrayList<>(List.of(day21)));
-        foodPlans.put(1L, planA);
-        foodPlans.put(2L, planB);
-    }
-
-    public long getMaxPlanIdAndIncrement() {
-        return maxPlanId++;
-    }
 
     public long getMaxDayIdAndIncrement() {
         return maxDayId++;
@@ -61,32 +31,32 @@ public class FoodPlansRepo {
         return maxDishId++;
     }
 
-    public FoodPlan getFoodPlan(long id) {
-        return foodPlans.get(id);
-    }
-
-    public Collection<FoodPlan> getAllPlans() {
-        return foodPlans.values();
+    public List<PlanDay> getPlanDays(long planId) {
+        List<PlanDay> planDays = foodPlanDays.get(planId);
+        return planDays == null ? new ArrayList<>() : planDays;
     }
 
     public void deleteFoodPlan(long id) {
-        foodPlans.remove(id);
+        foodPlanDays.remove(id);
     }
 
-    public void addFoodPlan(FoodPlan foodPlan) {
-        foodPlans.put(foodPlan.getId(), foodPlan);
-    }
-
-    public void updateFoodPlan(FoodPlan foodPlan) {
-        foodPlans.put(foodPlan.getId(), foodPlan);
+    public void addFoodPlan(long planId) {
+        foodPlanDays.put(planId, new ArrayList<>());
     }
 
     public PlanDay getDay(long planId, long id) {
-        var plan = getFoodPlan(planId);
-        return plan.getDays().stream()
+        var plan = getPlanDays(planId);
+        return plan.stream()
                 .filter(day -> id == day.getDayId())
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Food plan day with id = " + id + " wasn't found"));
+    }
+
+    public void deletePlanDay(long planId, long id) {
+        List<PlanDay> planDays = getPlanDays(planId);
+        planDays.stream()
+                .filter(day -> id == day.getDayId())
+                .forEach(planDays::remove);
     }
 
     public Meal getMeal(long planId, long dayId, long id) {
@@ -95,28 +65,6 @@ public class FoodPlansRepo {
                 .filter(meal -> id == meal.getMealId())
                 .findFirst()
                 .orElseThrow(() -> new NotFoundException("Meal with id = " + id + " wasn't found"));
-    }
-
-    public void updateDayInPlan(FoodPlan plan, PlanDay day, String description) {
-        day.setDescription(description);
-        var planDays = plan.getDays();
-        for (int i = 0; i < planDays.size(); i++) {
-            if (planDays.get(i).getDayId() == day.getDayId()) {
-                planDays.set(i, day);
-            }
-        }
-        plan.setLastUpdated(ZonedDateTime.now());
-    }
-
-    public void updateMealInDay(FoodPlan plan, PlanDay day, Meal meal, String description) {
-        meal.setDescription(description);
-        var meals = day.getMeals();
-        for (int i = 0; i < meals.size(); i++) {
-            if (meals.get(i).getMealId() == meal.getMealId()) {
-                meals.set(i, meal);
-            }
-        }
-        plan.setLastUpdated(ZonedDateTime.now());
     }
 
     public Optional<Dish> getDishById(List<Dish> dishes, long id) {
@@ -133,8 +81,8 @@ public class FoodPlansRepo {
     }
 
     public Optional<DishesContainer> getDishOwner(long dishId) {
-        for (FoodPlan plan : foodPlans.values()) {
-            for (PlanDay day : plan.getDays()) {
+        for (List<PlanDay> planDays : foodPlanDays.values()) {
+            for (PlanDay day : planDays) {
                 var dishRef = day.getDishes().stream().filter(dish -> dish.getDishId() == dishId).findFirst();
                 if (dishRef.isPresent()) {
                     return Optional.of(day);
@@ -150,12 +98,12 @@ public class FoodPlansRepo {
         return Optional.empty();
     }
 
-    public FoodPlan getPlanByDayId(long dayId) {
-        FoodPlan thePlan = null;
-        for (FoodPlan plan : foodPlans.values()) {
-            for (PlanDay day : plan.getDays()) {
+    public long getPlanIdByDayId(long dayId) {
+        long thePlan = -1;
+        for (var plan : foodPlanDays.entrySet()) {
+            for (PlanDay day : plan.getValue()) {
                 if (day.getDayId() == dayId) {
-                    thePlan = plan;
+                    thePlan = plan.getKey();
                     break;
                 }
             }
@@ -163,16 +111,17 @@ public class FoodPlansRepo {
         return thePlan;
     }
 
-    public PlanDay getDayByMealId(long mealId) {
-        for (FoodPlan plan : foodPlans.values()) {
-            for (PlanDay day : plan.getDays()) {
+    public long getPlanIdByMealId(long mealId) {
+        long thePlan = -1;
+        for (var plan : foodPlanDays.entrySet()) {
+            for (PlanDay day : plan.getValue()) {
                 for (Meal meal : day.getMeals()) {
                     if (meal.getMealId() == mealId) {
-                        return day;
+                        return plan.getKey();
                     }
                 }
             }
         }
-        return null;
+        return thePlan;
     }
 }
