@@ -1,6 +1,5 @@
 package com.outdoor.foodcalc.domain.repository.plan;
 
-import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 
 import java.util.List;
@@ -14,7 +13,9 @@ public interface IPlanDayRepo {
 
     long addPlanDay(long planId, PlanDay day);
 
-    boolean updatePlanDayInfo(PlanDay day);
+    boolean updatePlanDay(PlanDay day);
+
+    void updatePlanDayIndex(long dayId, int index);
 
     boolean deletePlanDay(long planId, long id);
 
@@ -23,8 +24,4 @@ public interface IPlanDayRepo {
     boolean addMealsToDay(PlanDay day);
 
     long deleteDayMeals(long dayId);
-
-    boolean addDaysToPlan(FoodPlan plan);
-
-    long deleteFoodPlanDays(long planId);
 }
