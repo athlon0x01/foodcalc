@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class PlanDayDomainService {
@@ -56,8 +57,20 @@ public class PlanDayDomainService {
         productService.deleteDayProducts(id);
         dishService.deleteDayDishes(id);
         dayRepo.deletePlanDay(planId, id);
+        //update days indexes, to have proper index number for new days
+        List<PlanDay> planDays = dayRepo.getPlanDays(planId).stream()
+                .filter(day -> day.getDayId() != id)
+                .collect(Collectors.toList());
+        updateDaysOrder(planDays);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
     }
+
+    private void updateDaysOrder(List<PlanDay> planDays) {
+        for (int i = 0; i < planDays.size(); i++) {
+            dayRepo.updatePlanDayIndex(planDays.get(i).getDayId(), i);
+        }
+    }
+
 
     public PlanDay addFoodDay(long planId,
                               PlanDay foodDay) {
@@ -80,7 +93,7 @@ public class PlanDayDomainService {
         if (!foodDay.getMeals().isEmpty() && !dayRepo.addMealsToDay(foodDay)) {
             throw new FoodcalcDomainException("Failed to add meals for day with id=" + dayId);
         }
-        if(!dayRepo.updatePlanDayInfo(foodDay)) {
+        if(!dayRepo.updatePlanDay(foodDay)) {
             throw new FoodcalcDomainException("Failed to plan day with id=" + dayId);
         }
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
