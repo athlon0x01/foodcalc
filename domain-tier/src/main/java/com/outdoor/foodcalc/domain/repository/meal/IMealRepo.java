@@ -9,13 +9,19 @@ public interface IMealRepo {
 
     List<Meal> getDayMeals(long dayId);
 
-    Optional<Meal> getMeal(long dayId, long id);
+    Optional<Meal> getMeal(long id);
 
     long addMeal(Meal meal);
 
+    void attachMeal(long dayId, long mealId);
+
     boolean updateMeal(Meal meal);
 
-    boolean deleteMeal(long id);
+    void updateDayMealIndex(long dayId, long mealId, int index);
 
-    boolean existsMeal(long id);
+    boolean deleteMeal(long mealId);
+
+    void detachMeal(long mealId);
+
+    boolean existsMeal(long mealId);
 }

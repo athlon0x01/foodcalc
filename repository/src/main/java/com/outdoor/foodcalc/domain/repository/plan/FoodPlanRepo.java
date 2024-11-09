@@ -34,7 +34,7 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
             "from food_plan fp";
 
     static final String SELECT_FOOD_PLAN_SQL = "select fp.id as id, fp.name as name, fp.members as members, " +
-            "fp.createdon as createdOn, fp.lastupdated as lastUpdated, fp.description as description " +
+            "fp.createdon as createdOn, fp.lastupdated as lastUpdated, fp.description as description, 0 as duration " +
             "from food_plan fp " +
             "where id = :id";
 

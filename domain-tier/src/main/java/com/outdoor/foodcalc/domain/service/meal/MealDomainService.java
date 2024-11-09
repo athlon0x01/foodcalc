@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class MealDomainService {
@@ -38,7 +39,7 @@ public class MealDomainService {
     }
 
     public Optional<Meal> getMeal(long dayId, long id) {
-        return mealRepo.getMeal(dayId, id).map(meal -> {
+        return mealRepo.getMeal(id).map(meal -> {
             loadMealContent(meal);
             return meal;
         });
@@ -52,14 +53,27 @@ public class MealDomainService {
     public void deleteMeal(long planId, long dayId, long id) {
         productService.deleteMealProducts(id);
         dishService.deleteMealDishes(id);
+        mealRepo.detachMeal(id);
         mealRepo.deleteMeal(id);
+        //update meals indexes, to have proper index number for new meals
+        List<Meal> meals = mealRepo.getDayMeals(dayId).stream()
+                .filter(meal -> meal.getMealId() != id)
+                .collect(Collectors.toList());
+        updateMealsOrder(dayId, meals);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+    }
+
+    private void updateMealsOrder(long dayId, List<Meal> meals) {
+        for (int i = 0; i < meals.size(); i++) {
+            mealRepo.updateDayMealIndex(dayId, meals.get(i).getMealId(), i);
+        }
     }
 
     public Meal addMeal(long planId, long dayId, Meal meal) {
         var mealType = mealTypeDomainService.getMealType(meal.getType().getTypeId())
                 .orElseThrow(() -> new NotFoundException("Failed to get Meal Type, id = " + meal.getType().getTypeId()));
         long id = mealRepo.addMeal(meal);
+        mealRepo.attachMeal(dayId, id);
         Meal newMeal = Meal.builder()
                 .mealId(id)
                 .type(mealType)
