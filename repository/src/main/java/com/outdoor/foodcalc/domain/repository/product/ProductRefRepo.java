@@ -1,6 +1,8 @@
 package com.outdoor.foodcalc.domain.repository.product;
 
 import com.outdoor.foodcalc.domain.model.dish.Dish;
+import com.outdoor.foodcalc.domain.model.meal.Meal;
+import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.AbstractRepository;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Product repository implementation responsible for {@link ProductRef} persistence.
@@ -31,27 +34,89 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_ALL_DISH_TEMPLATE_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "dp.dish as dish, dp.weight as weight, dp.ndx as ndx " +
-            "from dish_product dp " +
-            "join  dish d on dp.dish = d.id " +
-            "join product p on dp.product  = p.id " +
-            "join product_category c on p.category = c.id " +
-            "where d.template = true ";
+            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "from dish_product dp  left join  dish d on dp.dish = d.id " +
+            "left join product p on dp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where d.template = true";
 
     static final String SELECT_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, dp.weight as weight " +
             "from dish_product dp " +
-            "join product p on dp.product  = p.id " +
-            "join product_category c on p.category = c.id " +
-            "where dp.dish = :dish " +
+            "left join product p on dp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where dp.dish = :dishId " +
             "order by dp.ndx";
 
     static final String INSERT_DISH_PRODUCTS_SQL = "insert into dish_product (dish, product, ndx, weight) " +
-            "values (:dish, :product, :ndx, :weight)";
+            "values (:dishId, :product, :ndx, :weight)";
 
     static final String DELETE_DISH_PRODUCTS_SQL_COUNT = "with deleted as " +
-            "(delete from dish_product where dish = :dish returning *) " +
+            "(delete from dish_product where dish = :dishId returning *) " +
+            "select count(*) from deleted";
+
+    //------------------------------
+
+    static final String SELECT_ALL_PLAN_DAYS_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
+            "dp.day as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "from day_product dp " +
+            "left join product p on dp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where dp.day in (select id from day_plan where plan = :planId)";
+
+    static final String SELECT_DAY_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, dp.weight as weight " +
+            "from day_product dp " +
+            "left join product p on dp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where dp.day = :dayId " +
+            "order by dp.ndx";
+
+    static final String INSERT_DAY_PRODUCTS_SQL = "insert into day_product (day, product, ndx, weight) " +
+            "values (:dayId, :product, :ndx, :weight)";
+
+    static final String DELETE_DAY_PRODUCTS_SQL_COUNT = "with deleted as " +
+            "(delete from day_product where day = :dayId returning *) " +
+            "select count(*) from deleted";
+
+    //---------------------------
+
+    static final String SELECT_ALL_PLAN_MEALS_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
+            "mp.meal as itemId, mp.weight as weight, mp.ndx as ndx " +
+            "from meal_product mp " +
+            "left join product p on mp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where mp.meal in (select day_meal.meal from day_meal where day in (select id from day_plan where plan = :planId))";
+
+    static final String SELECT_ALL_DAY_MEALS_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
+            "mp.meal as itemId, mp.weight as weight, mp.ndx as ndx " +
+            "from meal_product mp " +
+            "left join product p on mp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where mp.meal in (select day_meal.meal from day_meal where day = :dayId)";
+
+    static final String SELECT_MEAL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, mp.weight as weight " +
+            "from meal_product mp " +
+            "left join product p on mp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where mp.meal = :mealId " +
+            "order by mp.ndx";
+
+    static final String INSERT_MEAL_PRODUCTS_SQL = "insert into meal_product (meal, product, ndx, weight) " +
+            "values (:mealId, :product, :ndx, :weight)";
+
+    static final String DELETE_MEAL_PRODUCTS_SQL_COUNT = "with deleted as " +
+            "(delete from meal_product where meal = :mealId returning *) " +
             "select count(*) from deleted";
 
 
@@ -66,14 +131,14 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
         return new ProductRef(product, rs.getInt("weight"));
     }
 
-    MapSqlParameterSource[] getDishProductsSqlParameterSource(Dish dish) {
-        MapSqlParameterSource[] mappedArray = new MapSqlParameterSource[dish.getProducts().size()];
-        for(int i = 0; i < dish.getProducts().size(); i++) {
+    MapSqlParameterSource[] buildProductsInsertSqlParameterSource(String item, long itemId, List<ProductRef> products) {
+        MapSqlParameterSource[] mappedArray = new MapSqlParameterSource[products.size()];
+        for(int i = 0; i < products.size(); i++) {
             mappedArray[i] = new MapSqlParameterSource()
-                    .addValue("dish", dish.getDishId())
-                    .addValue("product", dish.getProducts().get(i).getProductId())
+                    .addValue(item, itemId)
+                    .addValue("product", products.get(i).getProductId())
                     .addValue("ndx", i)
-                    .addValue("weight", dish.getProducts().get(i).getInternalWeight());
+                    .addValue("weight", products.get(i).getInternalWeight());
         }
         return mappedArray;
     }
@@ -85,39 +150,105 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
 
     @Override
     public List<ProductRef> getDishProducts(long dishId) {
-        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dish", dishId);
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dishId", dishId);
         return jdbcTemplate.query(SELECT_DISH_PRODUCTS_SQL, parameters, this::mapRow);
     }
 
     @Override
-    public boolean addDishProducts(Dish dish) {
+    public boolean insertDishProducts(Dish dish) {
         if(dish.getProducts().isEmpty()) {
             return true;
         }
-        int[] savedRows = jdbcTemplate.batchUpdate(
-                INSERT_DISH_PRODUCTS_SQL, getDishProductsSqlParameterSource(dish));
+        int[] savedRows = jdbcTemplate.batchUpdate(INSERT_DISH_PRODUCTS_SQL,
+                buildProductsInsertSqlParameterSource("dishId", dish.getDishId(), dish.getProducts()));
         return savedRows.length == dish.getProducts().size();
     }
 
     @Override
     public long deleteDishProducts(long dishId) {
-        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dish", dishId);
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dishId", dishId);
         Long count = jdbcTemplate.queryForObject(DELETE_DISH_PRODUCTS_SQL_COUNT, parameters, Long.class);
         return Optional.ofNullable(count).orElse(0L);
     }
 
     @Override
     public Map<Long, List<ProductRef>> extractData(ResultSet rs) throws SQLException, DataAccessException {
-        Map<Long, TreeMap<Integer, ProductRef>> allDishesProducts = new HashMap<>();
+        final Map<Long, TreeMap<Integer, ProductRef>> allItemsProducts = new HashMap<>();
         while (rs.next()) {
-            Long dishId = rs.getLong("dish");
+            Long itemId = rs.getLong("itemId");
+            //internal map to store products for some entity (dish \ meal \ day)
+            TreeMap<Integer, ProductRef> itemProducts = allItemsProducts.computeIfAbsent(itemId, k -> new TreeMap<>());
+            ProductRef productRef = mapRow(rs, rs.getRow());
+            //we don't store index in ProjectRef, so we use Map with index as a key to sort product refs properly
             int ndx = rs.getInt("ndx");
-            ProductRef dishProduct = mapRow(rs, rs.getRow());
-            TreeMap<Integer, ProductRef> dishProducts = allDishesProducts.computeIfAbsent(dishId, k -> new TreeMap<>());
-            dishProducts.put(ndx, dishProduct);
+            itemProducts.put(ndx, productRef);
         }
-        Map<Long, List<ProductRef>> resultMap = new HashMap<>();
-        allDishesProducts.forEach((k, v) -> resultMap.put(k, new ArrayList<>(v.values())));
-        return resultMap;
+        return allItemsProducts.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> new ArrayList<>(entry.getValue().values())));
+    }
+
+    @Override
+    public Map<Long, List<ProductRef>> getPlanAllDaysProducts(long planId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
+        return jdbcTemplate.query(SELECT_ALL_PLAN_DAYS_PRODUCTS_SQL, parameters, this::extractData);
+    }
+
+    @Override
+    public List<ProductRef> getDayProducts(long dayId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
+        return jdbcTemplate.query(SELECT_DAY_PRODUCTS_SQL, parameters, this::mapRow);
+    }
+
+    @Override
+    public boolean insertDayProducts(PlanDay day) {
+        if(day.getProducts().isEmpty()) {
+            return true;
+        }
+        int[] savedRows = jdbcTemplate.batchUpdate(INSERT_DAY_PRODUCTS_SQL,
+                buildProductsInsertSqlParameterSource("dayId", day.getDayId(), day.getProducts()));
+        return savedRows.length == day.getProducts().size();
+    }
+
+    @Override
+    public long deleteDayProducts(long dayId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
+        Long count = jdbcTemplate.queryForObject(DELETE_DAY_PRODUCTS_SQL_COUNT, parameters, Long.class);
+        return Optional.ofNullable(count).orElse(0L);
+    }
+
+    @Override
+    public Map<Long, List<ProductRef>> getPlanAllMealsProducts(long planId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
+        return jdbcTemplate.query(SELECT_ALL_PLAN_MEALS_PRODUCTS_SQL, parameters, this::extractData);
+    }
+
+    @Override
+    public Map<Long, List<ProductRef>> getDayAllMealsProducts(long dayId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
+        return jdbcTemplate.query(SELECT_ALL_DAY_MEALS_PRODUCTS_SQL, parameters, this::extractData);
+    }
+
+    @Override
+    public List<ProductRef> getMealProducts(long mealId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("mealId", mealId);
+        return jdbcTemplate.query(SELECT_MEAL_PRODUCTS_SQL, parameters, this::mapRow);
+    }
+
+    @Override
+    public boolean insertMealProducts(Meal meal) {
+        if(meal.getProducts().isEmpty()) {
+            return true;
+        }
+        int[] savedRows = jdbcTemplate.batchUpdate(INSERT_MEAL_PRODUCTS_SQL,
+                buildProductsInsertSqlParameterSource("mealId", meal.getMealId(), meal.getProducts()));
+        return savedRows.length == meal.getProducts().size();
+    }
+
+    @Override
+    public long deleteMealProducts(long mealId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("mealId", mealId);
+        Long count = jdbcTemplate.queryForObject(DELETE_MEAL_PRODUCTS_SQL_COUNT, parameters, Long.class);
+        return Optional.ofNullable(count).orElse(0L);
     }
 }

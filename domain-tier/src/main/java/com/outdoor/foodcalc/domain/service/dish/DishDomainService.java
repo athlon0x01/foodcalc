@@ -99,7 +99,7 @@ public class DishDomainService {
         Dish addedDish = dish.toBuilder()
                 .dishId(id)
                 .build();
-        if(!addedDish.getProducts().isEmpty() && !productRefRepo.addDishProducts(addedDish)) {
+        if(!productRefRepo.insertDishProducts(addedDish)) {
             throw new FoodcalcDomainException("Fail to add products for dish with id=" + addedDish.getDishId());
         }
         return addedDish;
@@ -147,7 +147,7 @@ public class DishDomainService {
                         new NotFoundException("Failed to get Dish Category, id = " + dish.getCategory().getCategoryId()));
         dish.setCategory(category);
         productRefRepo.deleteDishProducts(dish.getDishId());
-        if (!dish.getProducts().isEmpty() && !productRefRepo.addDishProducts(dish)) {
+        if (!productRefRepo.insertDishProducts(dish)) {
             throw new FoodcalcDomainException("Failed to add products for dish with id=" + dish.getDishId());
         }
         if (!dishRepo.updateDish(dish)) {
