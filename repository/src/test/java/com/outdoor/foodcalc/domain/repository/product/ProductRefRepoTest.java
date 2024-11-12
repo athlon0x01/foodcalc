@@ -121,12 +121,12 @@ public class ProductRefRepoTest {
     public void addDishProductsTest() {
         int[] savedRows = new int[]{1};
         ArgumentMatcher<MapSqlParameterSource[]> paramsMatcher = new MapSqlParameterSourceMatcher(
-                repo.getDishProductsSqlParameterSource(dummyDishWithProducts));
+                repo.buildProductsInsertSqlParameterSource("dishId", DISH_ID, dummyDishWithProducts.getProducts()));
         when(jdbcTemplate.batchUpdate(
                 eq(ProductRefRepo.INSERT_DISH_PRODUCTS_SQL), argThat(paramsMatcher)))
                 .thenReturn(savedRows);
 
-        assertTrue(repo.addDishProducts(dummyDishWithProducts));
+        assertTrue(repo.insertDishProducts(dummyDishWithProducts));
 
         verify(jdbcTemplate).batchUpdate(eq(ProductRefRepo.INSERT_DISH_PRODUCTS_SQL), argThat(paramsMatcher));
     }
@@ -134,9 +134,9 @@ public class ProductRefRepoTest {
     @Test
     public void addDishWithoutProductsTest() {
         ArgumentMatcher<MapSqlParameterSource[]> paramsMatcher = new MapSqlParameterSourceMatcher(
-                repo.getDishProductsSqlParameterSource(dummyDish));
+                repo.buildProductsInsertSqlParameterSource("dishId", DISH_ID, Collections.emptyList()));
 
-        assertTrue(repo.addDishProducts(dummyDish));
+        assertTrue(repo.insertDishProducts(dummyDish));
 
         verify(jdbcTemplate, never()).batchUpdate(anyString(), argThat(paramsMatcher));
     }
@@ -145,12 +145,12 @@ public class ProductRefRepoTest {
     public void addDishProductsFailTest() {
         int[] savedRows = new int[]{1, 2};
         ArgumentMatcher<MapSqlParameterSource[]> paramsMatcher = new MapSqlParameterSourceMatcher(
-                repo.getDishProductsSqlParameterSource(dummyDishWithProducts));
+                repo.buildProductsInsertSqlParameterSource("dishId", DISH_ID, dummyDishWithProducts.getProducts()));
         when(jdbcTemplate.batchUpdate(
                 eq(ProductRefRepo.INSERT_DISH_PRODUCTS_SQL), argThat(paramsMatcher)))
                 .thenReturn(savedRows);
 
-        assertFalse(repo.addDishProducts(dummyDishWithProducts));
+        assertFalse(repo.insertDishProducts(dummyDishWithProducts));
 
         verify(jdbcTemplate).batchUpdate(eq(ProductRefRepo.INSERT_DISH_PRODUCTS_SQL), argThat(paramsMatcher));
     }
@@ -158,7 +158,7 @@ public class ProductRefRepoTest {
     @Test
     public void getDishProductsTest() {
         List<ProductRef> expected = Collections.singletonList(dummyProductRef);
-        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dishId"));
         when(jdbcTemplate.query(
                 eq(ProductRefRepo.SELECT_DISH_PRODUCTS_SQL), argThat(matcher), Mockito.<RowMapper<ProductRef>>any()))
                 .thenReturn(expected);
@@ -172,7 +172,7 @@ public class ProductRefRepoTest {
 
     @Test
     public void deleteDishProductsTest() {
-        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dishId"));
         when(jdbcTemplate
                 .queryForObject(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL_COUNT), argThat(matcher), eq(Long.class)))
                 .thenReturn(1L);
@@ -185,7 +185,7 @@ public class ProductRefRepoTest {
 
     @Test
     public void deleteDishProductsZeroTest() {
-        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dishId"));
         when(jdbcTemplate
                 .queryForObject(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL_COUNT), argThat(matcher), eq(Long.class)))
                 .thenReturn(0L);
@@ -198,7 +198,7 @@ public class ProductRefRepoTest {
 
     @Test
     public void deleteDishProductsNullTest() {
-        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dish"));
+        ArgumentMatcher<SqlParameterSource> matcher = params -> DISH_ID.equals(params.getValue("dishId"));
         when(jdbcTemplate
                 .queryForObject(eq(ProductRefRepo.DELETE_DISH_PRODUCTS_SQL_COUNT), argThat(matcher), eq(Long.class)))
                 .thenReturn(null);
@@ -234,7 +234,7 @@ public class ProductRefRepoTest {
         ResultSet resultSet = mock(ResultSet.class);
 
         when(productRepo.mapRow(eq(resultSet), anyInt())).thenReturn(dummyProduct);
-        when(resultSet.getLong("dish")).thenReturn(DISH_ID);
+        when(resultSet.getLong("itemId")).thenReturn(DISH_ID);
         when(resultSet.getInt("ndx")).thenReturn(1).thenReturn(0);
         when(resultSet.getInt("weight")).thenReturn(PRODUCT_REF_WEIGHT);
         when(resultSet.next()).thenReturn(true).thenReturn(true).thenReturn(false);
@@ -248,7 +248,7 @@ public class ProductRefRepoTest {
         assertEquals(allDishesWithProducts.get(DISH_ID).get(0), actualMap.get(DISH_ID).get(1));
 
         verify(productRepo, times(2)).mapRow(eq(resultSet), anyInt());
-        verify(resultSet, times(2)).getLong("dish");
+        verify(resultSet, times(2)).getLong("itemId");
         verify(resultSet, times(2)).getInt("weight");
     }
 }

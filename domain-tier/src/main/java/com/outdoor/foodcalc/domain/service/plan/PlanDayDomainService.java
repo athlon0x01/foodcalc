@@ -3,15 +3,17 @@ package com.outdoor.foodcalc.domain.service.plan;
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
 import com.outdoor.foodcalc.domain.repository.plan.IPlanDayRepo;
+import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
 import com.outdoor.foodcalc.domain.service.meal.MealDomainService;
-import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -20,22 +22,29 @@ public class PlanDayDomainService {
 
     private final IFoodPlanRepo planRepo;
     private final IPlanDayRepo dayRepo;
+    private final IProductRefRepo productRefRepo;
     private final MealDomainService mealService;
-    private final ProductDomainService productService;
     private final DishDomainService dishService;
 
-    public PlanDayDomainService(IFoodPlanRepo planRepo, IPlanDayRepo dayRepo, MealDomainService mealService, ProductDomainService productService, DishDomainService dishService) {
+    public PlanDayDomainService(IFoodPlanRepo planRepo, IPlanDayRepo dayRepo, IProductRefRepo productRefRepo, MealDomainService mealService, DishDomainService dishService) {
         this.planRepo = planRepo;
         this.dayRepo = dayRepo;
+        this.productRefRepo = productRefRepo;
         this.mealService = mealService;
-        this.productService = productService;
         this.dishService = dishService;
     }
 
     public List<PlanDay> getPlanDays(long planId) {
         List<PlanDay> days = dayRepo.getPlanDays(planId);
-        //TODO optimization required
-        days.forEach(this::loadDayContent);
+        //load products for all days and set them
+        Map<Long, List<ProductRef>> allDaysProducts = productRefRepo.getPlanAllDaysProducts(planId);
+        days.forEach(day -> {
+            //TODO optimization required
+            day.setMeals(mealService.getDayMeals(day.getDayId()));
+            day.setDishes(dishService.getDayDishes(day.getDayId()));
+            Optional.ofNullable(allDaysProducts.get(day.getDayId()))
+                .ifPresent(day::setProducts);
+        });
         return days;
     }
 
@@ -50,11 +59,11 @@ public class PlanDayDomainService {
     private void loadDayContent(PlanDay day) {
         day.setMeals(mealService.getDayMeals(day.getDayId()));
         day.setDishes(dishService.getDayDishes(day.getDayId()));
-        day.setProducts(productService.getDayProducts(day.getDayId()));
+        day.setProducts(productRefRepo.getDayProducts(day.getDayId()));
     }
 
     public void deleteFoodDay(long planId, long id) {
-        productService.deleteDayProducts(id);
+        productRefRepo.deleteDayProducts(id);
         dishService.deleteDayDishes(id);
         dayRepo.deletePlanDay(planId, id);
         //update days indexes, to have proper index number for new days
@@ -88,11 +97,16 @@ public class PlanDayDomainService {
             throw new NotFoundException("Plan day with id=" + dayId + " doesn't exist");
         }
         dishService.updateDayDishes(dayId, foodDay.getDishes());
-        productService.updateDayProducts(dayId, foodDay.getProducts());
-        dayRepo.deleteDayMeals(dayId);
-        if (!foodDay.getMeals().isEmpty() && !dayRepo.addMealsToDay(foodDay)) {
-            throw new FoodcalcDomainException("Failed to add meals for day with id=" + dayId);
+        //updating products of the day
+        productRefRepo.deleteDayProducts(dayId);
+        if (!productRefRepo.insertDayProducts(foodDay)) {
+            throw new FoodcalcDomainException("Failed to add products for day with id=" + dayId);
         }
+        //TODO verify if we need it
+//        dayRepo.deleteDayMeals(dayId);
+//        if (!foodDay.getMeals().isEmpty() && !dayRepo.addMealsToDay(foodDay)) {
+//            throw new FoodcalcDomainException("Failed to add meals for day with id=" + dayId);
+//        }
         if(!dayRepo.updatePlanDay(foodDay)) {
             throw new FoodcalcDomainException("Failed to plan day with id=" + dayId);
         }

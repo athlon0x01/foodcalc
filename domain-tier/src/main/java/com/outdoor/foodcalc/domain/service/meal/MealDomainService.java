@@ -3,14 +3,16 @@ package com.outdoor.foodcalc.domain.service.meal;
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
+import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.meal.IMealRepo;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
+import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
 import com.outdoor.foodcalc.domain.service.dish.DishDomainService;
-import com.outdoor.foodcalc.domain.service.product.ProductDomainService;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -19,22 +21,28 @@ public class MealDomainService {
 
     private final IFoodPlanRepo planRepo;
     private final IMealRepo mealRepo;
+    private final IProductRefRepo productRefRepo;
     private final MealTypeDomainService mealTypeDomainService;
-    private final ProductDomainService productService;
     private final DishDomainService dishService;
 
-    public MealDomainService(IFoodPlanRepo planRepo, IMealRepo mealRepo, MealTypeDomainService mealTypeDomainService, ProductDomainService productService, DishDomainService dishService) {
+    public MealDomainService(IFoodPlanRepo planRepo, IMealRepo mealRepo, IProductRefRepo productRefRepo, MealTypeDomainService mealTypeDomainService, DishDomainService dishService) {
         this.planRepo = planRepo;
         this.mealRepo = mealRepo;
+        this.productRefRepo = productRefRepo;
         this.mealTypeDomainService = mealTypeDomainService;
-        this.productService = productService;
         this.dishService = dishService;
     }
 
     public List<Meal> getDayMeals(long dayId) {
         List<Meal> meals = mealRepo.getDayMeals(dayId);
-        //TODO optimization required
-        meals.forEach(this::loadMealContent);
+        //load products for all days and set them
+        Map<Long, List<ProductRef>> allMealsProducts = productRefRepo.getDayAllMealsProducts(dayId);
+        meals.forEach(meal -> {
+            //TODO optimization required
+            meal.setDishes(dishService.getMealDishes(dayId));
+            Optional.ofNullable(allMealsProducts.get(meal.getMealId()))
+                    .ifPresent(meal::setProducts);
+        });
         return meals;
     }
 
@@ -47,11 +55,11 @@ public class MealDomainService {
 
     private void loadMealContent(Meal meal) {
         meal.setDishes(dishService.getMealDishes(meal.getMealId()));
-        meal.setProducts(productService.getMealProducts(meal.getMealId()));
+        meal.setProducts(productRefRepo.getMealProducts(meal.getMealId()));
     }
 
     public void deleteMeal(long planId, long dayId, long id) {
-        productService.deleteMealProducts(id);
+        productRefRepo.deleteMealProducts(id);
         dishService.deleteMealDishes(id);
         mealRepo.detachMeal(id);
         mealRepo.deleteMeal(id);
@@ -89,12 +97,17 @@ public class MealDomainService {
         if(!mealRepo.existsMeal(mealId)) {
             throw new NotFoundException("Meal with id=" + mealId + " doesn't exist");
         }
+        //updating products of the day
+        productRefRepo.deleteMealProducts(mealId);
+        if (!productRefRepo.insertMealProducts(meal)) {
+            throw new FoodcalcDomainException("Failed to add products for meal with id=" + mealId);
+        }
+
+        dishService.updateMealDishes(mealId, meal.getDishes());
         if(!mealRepo.updateMeal(meal)) {
             throw new FoodcalcDomainException("Failed to update meal with id=" + mealId);
         }
         meal.setType(mealType);
-        dishService.updateMealDishes(mealId, meal.getDishes());
-        productService.updateMealProducts(mealId, meal.getProducts());
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
     }
 }

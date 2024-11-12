@@ -1,6 +1,8 @@
 package com.outdoor.foodcalc.domain.repository.product;
 
 import com.outdoor.foodcalc.domain.model.dish.Dish;
+import com.outdoor.foodcalc.domain.model.meal.Meal;
+import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 
 import java.util.List;
@@ -33,7 +35,7 @@ public interface IProductRefRepo {
      * @param dish dish to add its list of products
      * @return if list of  {@link ProductRef} was saved for dish
      */
-    boolean addDishProducts(Dish dish);
+    boolean insertDishProducts(Dish dish);
 
     /**
      * Deletes all {@link ProductRef} for dish.
@@ -42,4 +44,22 @@ public interface IProductRefRepo {
      * @return number of deleted products for dish
      */
     long deleteDishProducts(long dishId);
+
+    Map<Long, List<ProductRef>> getPlanAllDaysProducts(long planId);
+
+    List<ProductRef> getDayProducts(long dayId);
+
+    boolean insertDayProducts(PlanDay day);
+
+    long deleteDayProducts(long dayId);
+
+    Map<Long, List<ProductRef>> getPlanAllMealsProducts(long planId);
+
+    Map<Long, List<ProductRef>> getDayAllMealsProducts(long dayId);
+
+    List<ProductRef> getMealProducts(long mealId);
+
+    boolean insertMealProducts(Meal meal);
+
+    long deleteMealProducts(long mealId);
 }
