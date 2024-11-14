@@ -66,4 +66,6 @@ public interface IProductRefRepo {
     Map<Long, List<ProductRef>> getMealDishesProducts(long mealId);
 
     Map<Long, List<ProductRef>> getDayDishesProducts(long dayId);
+
+    Map<Long, List<ProductRef>> getDayAllMealsDishesProducts(long dayId);
 }
