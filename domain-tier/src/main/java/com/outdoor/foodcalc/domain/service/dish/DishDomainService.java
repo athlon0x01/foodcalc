@@ -51,9 +51,14 @@ public class DishDomainService {
         return dishes;
     }
 
-    //TODO implement me
     public List<Dish> getMealDishes(long mealId) {
-        return Collections.emptyList();
+        var dishesProducts = productRefRepo.getMealDishesProducts(mealId);
+        var dishes = dishRepo.getMealDishes(mealId);
+        dishes.forEach(
+                dish -> Optional.ofNullable(dishesProducts.get(dish.getDishId()))
+                        .ifPresent(dish::setProducts)
+        );
+        return dishes;
     }
 
     //TODO implement me
@@ -87,11 +92,15 @@ public class DishDomainService {
      * @throws FoodcalcDomainException If dish products weren't added
      * @return new {@link Dish} with auto generated id
      */
-    public Dish addDish(Dish dish) {
+    public Dish addTemplateDish(Dish dish) {
         final DishCategory category = dishCategoryService.getCategory(dish.getCategory().getCategoryId())
                 .orElseThrow(() ->
                         new NotFoundException("Failed to get Dish Category, id = " + dish.getCategory().getCategoryId() ));
         dish.setCategory(category);
+        return insertDishWithProducts(dish);
+    }
+
+    private Dish insertDishWithProducts(Dish dish) {
         long id = dishRepo.addDish(dish);
         if(id == -1L) {
             throw new FoodcalcDomainException("Failed to add dish");
@@ -105,28 +114,30 @@ public class DishDomainService {
         return addedDish;
     }
 
-    public Dish addMealDish(long planId, long dayId, long mealId, long id) {
+    public Dish addMealDish(long planId, long dayId, long mealId, long templateId) {
         //building new dish as a copy of template dish
-        Dish dish = getDishCopy(id);
-        Dish savedDish = addDish(dish);
-        //TODO new dish should be linked to the meal
-//        List<Dish> mealDishes = tmpRepo.getMealDishes(mealId);
-//        mealDishes.add(dish);
-//        tmpRepo.setMealDished(mealId, mealDishes);
-        planRepo.saveLastUpdated(planId, ZonedDateTime.now());
-        return savedDish;
+        Optional<Dish> mealDish = buildNonTemplateDish(templateId);
+        if (mealDish.isPresent()) {
+            Dish newDish = insertDishWithProducts(mealDish.get());
+            dishRepo.attachDishToMeal(mealId, newDish.getDishId());
+            planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+            return newDish;
+        } else {
+            throw new FoodcalcDomainException("Fail to load template dish with id=" + templateId);
+        }
     }
 
-    public Dish addDayDish(long planId, long dayId, long id) {
+    public Dish addDayDish(long planId, long dayId, long templateId) {
         //building new dish as a copy of template dish
-        Dish dish = getDishCopy(id);
-        Dish savedDish = addDish(dish);
-        //TODO new dish should be linked to the day
-//        List<Dish> dayDishes = tmpRepo.getDayDishes(dayId);
-//        dayDishes.add(dish);
-//        tmpRepo.setDayDished(dayId, dayDishes);
-        planRepo.saveLastUpdated(planId, ZonedDateTime.now());
-        return savedDish;
+        Optional<Dish> dayDish = buildNonTemplateDish(templateId);
+        if (dayDish.isPresent()) {
+            Dish newDish = insertDishWithProducts(dayDish.get());
+            dishRepo.attachDishToDay(dayId, newDish.getDishId());
+            planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+            return newDish;
+        } else {
+            throw new FoodcalcDomainException("Fail to load template dish with id=" + templateId);
+        }
     }
 
     /**
@@ -174,11 +185,10 @@ public class DishDomainService {
      * @throws NotFoundException If dish doesn't exist
      * @throws FoodcalcDomainException If dish wasn't deleted
      */
-    public void deleteDish(long id) {
+    public void deleteTemplateDish(long id) {
         if(!dishRepo.existsDish(id)) {
             throw new NotFoundException("Dish with id=" + id + " doesn't exist");
         }
-        //TODO check if dish was added to day or meal
         productRefRepo.deleteDishProducts(id);
         if(!dishRepo.deleteDish(id)) {
             throw new FoodcalcDomainException("Failed to delete dish with id=" + id);
@@ -195,14 +205,11 @@ public class DishDomainService {
 
     }
 
-    //TODO temporary methods to be refactored later
-    private Dish getDishCopy(long id) {
-        Dish domainDish = getDish(id)
-                .orElseThrow(() ->
-                        new NotFoundException("Dish with id = " + id + "wasn't found"));
-        return domainDish.toBuilder()
+    private Optional<Dish> buildNonTemplateDish(long id) {
+        Optional<Dish> templateDish = getDish(id);
+        return templateDish.map(dish -> dish.toBuilder()
                 .dishId(-1)
                 .template(false)
-                .build();
+                .build());
     }
 }

@@ -5,7 +5,6 @@ import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.service.meal.MealDomainService;
-import com.outdoor.foodcalc.model.dish.DishView;
 import com.outdoor.foodcalc.model.meal.MealInfo;
 import com.outdoor.foodcalc.model.meal.MealTypeView;
 import com.outdoor.foodcalc.model.meal.MealView;
@@ -36,8 +35,8 @@ public class MealService {
                 .collect(Collectors.toList());
     }
 
-    public MealView getMeal(long planId, long dayId, long id) {
-        return mealDomainService.getMeal(dayId, id)
+    public MealView getMeal(long id) {
+        return mealDomainService.getMeal(id)
                 .map(this::mapView)
                 .orElseThrow(() -> new NotFoundException("Meal with id = " + id + " wasn't found"));
     }

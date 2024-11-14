@@ -3,6 +3,8 @@ package com.outdoor.foodcalc.domain.repository.dish;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 import com.outdoor.foodcalc.domain.model.dish.DishCategory;
 import com.outdoor.foodcalc.domain.repository.AbstractRepository;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -12,15 +14,28 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Repository
-public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, RowMapper<Dish> {
+public class DishRepo extends AbstractRepository<Dish>
+        implements IDishRepo, RowMapper<Dish>, ResultSetExtractor<Map<Long, List<Dish>>> {
 
     static final String SELECT_ALL_TEMPLATE_DISHES_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
             "c.id as catId, c.name as catName, d.template as template from dish d join dish_category c on d.category = c.id " +
             "where d.template = true";
+
+    static final String SELECT_MEAL_DISHES_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
+            "c.id as catId, c.name as catName, d.template as template " +
+            "from meal_dish md left join dish d on d.id = md.dish " +
+            "left join dish_category c on d.category = c.id " +
+            "where md.meal = :mealId order by md.ndx";
+
     static final String SELECT_DISH_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
             "c.id as catId, c.name as catName, d.template as template from dish d join dish_category c on d.category = c.id where d.id = :dishId";
     static final String INSERT_DISH_SQL = "insert into dish (name, description, category, template) " +
@@ -32,9 +47,19 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
             "on d.category = c.id and c.id = :categoryId";
     static final String SELECT_DISH_EXIST_SQL = "select count(*) from dish where id = :dishId";
 
+    static final String INSERT_DAY_DISH_LINK_SQL = "insert into day_dish (day, dish, ndx) " +
+            "values (:dayId, :dishId, (select count(*) from day_dish where day = :dayId))";
+
+    static final String DELETE_DAY_DISH_LINK_SQL = "delete from day_dish where day = :dayId and dish = :dishId";
+
+    static final String INSERT_MEAL_DISH_LINK_SQL = "insert into meal_dish (meal, dish, ndx) " +
+            "values (:mealId, :dishId, (select count(*) from meal_dish where meal = :mealId))";
+
+    static final String DELETE_MEAL_DISH_LINK_SQL = "delete from meal_dish where meal = :mealId and dish = :dishId";
+
     @Override
     public List<Dish> getAllTemplateDishes() {
-        return jdbcTemplate.query(SELECT_ALL_TEMPLATE_DISHES_SQL, this);
+        return jdbcTemplate.query(SELECT_ALL_TEMPLATE_DISHES_SQL, this::mapRow);
     }
 
     @Override
@@ -102,5 +127,66 @@ public class DishRepo extends AbstractRepository<Dish> implements IDishRepo, Row
 
     KeyHolder getKeyHolder() {
         return new GeneratedKeyHolder();
+    }
+
+    @Override
+    public Map<Long, List<Dish>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+        final Map<Long, TreeMap<Integer, Dish>> allItemsDishes = new HashMap<>();
+        while (rs.next()) {
+            Long itemId = rs.getLong("itemId");
+            //internal map to store dishes for meal or day
+            TreeMap<Integer, Dish> itemDishes = allItemsDishes.computeIfAbsent(itemId, k -> new TreeMap<>());
+            Dish dish = mapRow(rs, rs.getRow());
+            //we don't store index in the entities, so we use Map with index as a key to sort dishes properly
+            int ndx = rs.getInt("ndx");
+            itemDishes.put(ndx, dish);
+        }
+        return allItemsDishes.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> new ArrayList<>(entry.getValue().values())));
+    }
+
+
+    @Override
+    public void attachDishToMeal(long mealId, long dishId) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("mealId", mealId)
+                .addValue("dishId", dishId);
+        jdbcTemplate.update(INSERT_MEAL_DISH_LINK_SQL, parameters);
+    }
+
+    @Override
+    public void detachDishFromMeal(long mealId, long dishId) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("mealId", mealId)
+                .addValue("dishId", dishId);
+        jdbcTemplate.update(DELETE_MEAL_DISH_LINK_SQL, parameters);
+    }
+
+    @Override
+    public void attachDishToDay(long dayId, long dishId) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("dayId", dayId)
+                .addValue("dishId", dishId);
+        jdbcTemplate.update(INSERT_DAY_DISH_LINK_SQL, parameters);
+    }
+
+    @Override
+    public void detachDishFromDay(long dayId, long dishId) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("dayId", dayId)
+                .addValue("dishId", dishId);
+        jdbcTemplate.update(DELETE_DAY_DISH_LINK_SQL, parameters);
+    }
+
+    @Override
+    public List<Dish> getMealDishes(long mealId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("mealId", mealId);
+        return jdbcTemplate.query(SELECT_MEAL_DISHES_SQL, parameters, this::mapRow);
+    }
+
+    @Override
+    public Map<Long, List<Dish>> getDayDishes(long dayId) {
+        return null;
     }
 }

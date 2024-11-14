@@ -54,7 +54,7 @@ public interface DishApi {
     })
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    DishInfo addDish(@ApiParam(value = "Dish", required = true)
+    DishInfo addTemplateDish(@ApiParam(value = "Dish", required = true)
                        @RequestBody DishInfo dish);
 
     @ApiOperation(value = "Update dish by ID"
@@ -79,6 +79,6 @@ public interface DishApi {
     })
     @DeleteMapping("{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteDish(@ApiParam(value = "ID of the Dish", required = true)
+    void deleteTemplateDish(@ApiParam(value = "ID of the Dish", required = true)
                     @PathVariable("id") long id);
 }

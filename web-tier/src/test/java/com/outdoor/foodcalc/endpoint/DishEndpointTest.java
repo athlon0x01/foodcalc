@@ -174,13 +174,13 @@ public class DishEndpointTest extends ApiUnitTest{
 
           DishInfo expected = createSimpleDish(DISH_2_ID);
 
-          when(service.addDish(dishInfoToAdd)).thenReturn(expected);
+          when(service.addTemplateDish(dishInfoToAdd)).thenReturn(expected);
           MvcResult mvcResult = post("/dishes", dishInfoToAdd).andReturn();
 
           DishInfo actual = mapper.readValue(mvcResult.getResponse().getContentAsString(), DishInfo.class);
           assertEquals(expected, actual);
 
-          verify(service).addDish(dishInfoToAdd);
+          verify(service).addTemplateDish(dishInfoToAdd);
      }
 
      @Test
@@ -188,7 +188,7 @@ public class DishEndpointTest extends ApiUnitTest{
           DishInfo dishInfoToAdd = DishInfo.builder().build();
           post400("/dishes", dishInfoToAdd);
 
-          verify(service, never()).addDish(dishInfoToAdd);
+          verify(service, never()).addTemplateDish(dishInfoToAdd);
      }
 
      @Test
@@ -224,19 +224,19 @@ public class DishEndpointTest extends ApiUnitTest{
 
      @Test
      public void deleteDishTest() throws Exception {
-          doNothing().when(service).deleteDish(DISH_1_ID);
+          doNothing().when(service).deleteTemplateDish(DISH_1_ID);
 
           delete("/dishes/" + DISH_1_ID).andReturn();
 
-          verify(service).deleteDish(DISH_1_ID);
+          verify(service).deleteTemplateDish(DISH_1_ID);
      }
 
      @Test
      public void deleteDishNotFoundTest() throws Exception {
-          doThrow(NotFoundException.class).when(service).deleteDish(DISH_1_ID);
+          doThrow(NotFoundException.class).when(service).deleteTemplateDish(DISH_1_ID);
 
           delete404("/dishes/" + DISH_1_ID).andReturn();
 
-          verify(service).deleteDish(DISH_1_ID);
+          verify(service).deleteTemplateDish(DISH_1_ID);
      }
 }
