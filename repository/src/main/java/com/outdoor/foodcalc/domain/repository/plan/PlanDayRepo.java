@@ -101,16 +101,6 @@ public class PlanDayRepo extends AbstractRepository<PlanDay> implements IPlanDay
     }
 
     @Override
-    public boolean addMealsToDay(PlanDay day) {
-        return false;
-    }
-
-    @Override
-    public long deleteDayMeals(long dayId) {
-        return 0;
-    }
-
-    @Override
     public PlanDay mapRow(ResultSet resultSet, int rowNum) throws SQLException {
         return PlanDay.builder()
                 .dayId(resultSet.getLong("dayId"))

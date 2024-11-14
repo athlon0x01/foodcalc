@@ -36,7 +36,7 @@ public class MealDomainService {
         //load dishes for all days
         var dayMealsDishes = dishService.getDayDishesForAllMeals(dayId);
         //load products for all days and set them
-        var dayMealsProducts = productRefRepo.getDayAllMealsProducts(dayId);
+        var dayMealsProducts = productRefRepo.getMealProductsForAllMealsInDay(dayId);
         meals.forEach(meal -> {
             Optional.ofNullable(dayMealsDishes.get(meal.getMealId()))
                     .ifPresent(meal::setDishes);

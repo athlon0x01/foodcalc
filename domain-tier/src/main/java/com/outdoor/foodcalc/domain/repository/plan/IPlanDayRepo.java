@@ -20,8 +20,4 @@ public interface IPlanDayRepo {
     boolean deletePlanDay(long planId, long id);
 
     boolean existsPlanDay(long id);
-
-    boolean addMealsToDay(PlanDay day);
-
-    long deleteDayMeals(long dayId);
 }

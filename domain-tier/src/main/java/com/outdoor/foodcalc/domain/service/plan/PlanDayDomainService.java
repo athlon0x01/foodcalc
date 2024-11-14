@@ -37,7 +37,7 @@ public class PlanDayDomainService {
     public List<PlanDay> getPlanDays(long planId) {
         List<PlanDay> days = dayRepo.getPlanDays(planId);
         //load products for all days and set them
-        Map<Long, List<ProductRef>> allDaysProducts = productRefRepo.getPlanAllDaysProducts(planId);
+        Map<Long, List<ProductRef>> allDaysProducts = productRefRepo.getDayProductsForAllDaysInPlan(planId);
         days.forEach(day -> {
             //TODO optimization required
             day.setMeals(mealService.getDayMeals(day.getDayId()));
