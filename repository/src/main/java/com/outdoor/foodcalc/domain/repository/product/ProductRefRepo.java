@@ -40,7 +40,27 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
             "left join product_category c on p.category = c.id " +
             "where d.template = true";
 
-    static final String SELECT_DAY_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL = "select p.id as productId, p.name as productName, " +
+    static final String SELECT_DISHES_PRODUCTS_FOR_ALL_DAY_IN_PLAN_SQL = "select p.id as productId, p.name as productName, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
+            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "from dish_product dp " +
+            "left join product p on dp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where dp.dish in (select day_dish.dish from day_dish " +
+            "where day_dish.day in (select id from day_plan where plan = :planId))";
+
+    static final String SELECT_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_PLAN_SQL = "select p.id as productId, p.name as productName, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
+            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "from dish_product dp " +
+            "left join product p on dp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where dp.dish in (select meal_dish.dish from meal_dish " +
+            "where meal_dish.meal in (select day_meal.meal from day_meal where day_meal.day in (select id from day_plan where plan = :planId)))";
+
+    static final String SELECT_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
             "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
@@ -293,8 +313,20 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     }
 
     @Override
-    public Map<Long, List<ProductRef>> getDayDishesProductsForAllMealsInDay(long dayId) {
+    public Map<Long, List<ProductRef>> getDishesProductsForAllMealsInDay(long dayId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
-        return jdbcTemplate.query(SELECT_DAY_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL, parameters, this::extractData);
+        return jdbcTemplate.query(SELECT_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL, parameters, this::extractData);
+    }
+
+    @Override
+    public Map<Long, List<ProductRef>> getDishesProductsForAllMealsInPlan(long planId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
+        return jdbcTemplate.query(SELECT_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_PLAN_SQL, parameters, this::extractData);
+    }
+
+    @Override
+    public Map<Long, List<ProductRef>> getDishesProductsForAllDaysInPlan(long planId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
+        return jdbcTemplate.query(SELECT_DISHES_PRODUCTS_FOR_ALL_DAY_IN_PLAN_SQL, parameters, this::extractData);
     }
 }

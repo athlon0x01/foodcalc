@@ -2,6 +2,8 @@ package com.outdoor.foodcalc.domain.service.plan;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
+import com.outdoor.foodcalc.domain.model.dish.Dish;
+import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
@@ -37,12 +39,17 @@ public class PlanDayDomainService {
     public List<PlanDay> getPlanDays(long planId) {
         List<PlanDay> days = dayRepo.getPlanDays(planId);
         //load products for all days and set them
-        Map<Long, List<ProductRef>> allDaysProducts = productRefRepo.getDayProductsForAllDaysInPlan(planId);
+        Map<Long, List<ProductRef>> daysProducts = productRefRepo.getDayProductsForAllDaysInPlan(planId);
+        //load dishes for all days
+        Map<Long, List<Dish>> daysDishes = dishService.getDayDishesForAllDaysInPlan(planId);
+        //load meals
+        Map<Long, List<Meal>> daysMeals = mealService.getMealsForAllDaysInPlan(planId);
         days.forEach(day -> {
-            //TODO optimization required
-            day.setMeals(mealService.getDayMeals(day.getDayId()));
-            day.setDishes(dishService.getDayDishes(day.getDayId()));
-            Optional.ofNullable(allDaysProducts.get(day.getDayId()))
+            Optional.ofNullable(daysMeals.get(day.getDayId()))
+                    .ifPresent(day::setMeals);
+            Optional.ofNullable(daysDishes.get(day.getDayId()))
+                    .ifPresent(day::setDishes);
+            Optional.ofNullable(daysProducts.get(day.getDayId()))
                 .ifPresent(day::setProducts);
         });
         return days;

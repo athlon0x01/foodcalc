@@ -48,6 +48,18 @@ public class DishRepo extends AbstractRepository<Dish>
             "left join dish_category c on d.category = c.id " +
             "where md.meal in (select day_meal.meal from day_meal where day = :dayId)";
 
+    static final String SELECT_MEAL_DISHES_FOR_ALL_MEALS_IN_PLAN_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
+            "c.id as catId, c.name as catName, d.template as template, md.meal as itemId, md.ndx as ndx " +
+            "from meal_dish md left join dish d on d.id = md.dish " +
+            "left join dish_category c on d.category = c.id " +
+            "where md.meal in (select day_meal.meal from day_meal where day_meal.day in (select id from day_plan where plan = :planId))";
+
+    static final String SELECT_DAY_DISHES_FOR_ALL_DAYS_IN_PLAN_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
+            "c.id as catId, c.name as catName, d.template as template, dd.day as itemId, dd.ndx as ndx " +
+            "from day_dish dd left join dish d on d.id = dd.dish " +
+            "left join dish_category c on d.category = c.id " +
+            "where dd.day in (select id from day_plan where plan = :planId)";
+
     static final String SELECT_DISH_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
             "c.id as catId, c.name as catName, d.template as template from dish d join dish_category c on d.category = c.id where d.id = :dishId";
     static final String INSERT_DISH_SQL = "insert into dish (name, description, category, template) " +
@@ -207,5 +219,17 @@ public class DishRepo extends AbstractRepository<Dish>
     public Map<Long, List<Dish>> getMealDishesForAllMealsInDay(long dayId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
         return jdbcTemplate.query(SELECT_MEAL_DISHES_FOR_ALL_MEALS_IN_DAY_SQL, parameters, this::extractData);
+    }
+
+    @Override
+    public Map<Long, List<Dish>> getMealDishesForAllMealsInPlan(long planId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
+        return jdbcTemplate.query(SELECT_MEAL_DISHES_FOR_ALL_MEALS_IN_PLAN_SQL, parameters, this::extractData);
+    }
+
+    @Override
+    public Map<Long, List<Dish>> getDayDishesForAllDaysInPlan(long planId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
+        return jdbcTemplate.query(SELECT_DAY_DISHES_FOR_ALL_DAYS_IN_PLAN_SQL, parameters, this::extractData);
     }
 }

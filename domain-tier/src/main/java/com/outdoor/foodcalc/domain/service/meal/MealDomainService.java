@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -31,10 +32,27 @@ public class MealDomainService {
         this.dishService = dishService;
     }
 
+    public Map<Long, List<Meal>> getMealsForAllDaysInPlan(long planId) {
+        var meals = mealRepo.getAllMealsInPlan(planId);
+        //load dishes for all meals
+        var planMealsDishes = dishService.getMealDishesForAllDaysInPlan(planId);
+        //load products for all meals and set them
+        var planMealsProducts = productRefRepo.getMealProductsForAllMealsInPlan(planId);
+        meals.values().stream()
+                .flatMap(List::stream)
+                .forEach(meal -> {
+                    Optional.ofNullable(planMealsDishes.get(meal.getMealId()))
+                            .ifPresent(meal::setDishes);
+                    Optional.ofNullable(planMealsProducts.get(meal.getMealId()))
+                            .ifPresent(meal::setProducts);
+                });
+        return meals;
+    }
+
     public List<Meal> getDayMeals(long dayId) {
         var meals = mealRepo.getDayMeals(dayId);
         //load dishes for all days
-        var dayMealsDishes = dishService.getDayDishesForAllMeals(dayId);
+        var dayMealsDishes = dishService.getMealDishesForAllMealsInDay(dayId);
         //load products for all days and set them
         var dayMealsProducts = productRefRepo.getMealProductsForAllMealsInDay(dayId);
         meals.forEach(meal -> {

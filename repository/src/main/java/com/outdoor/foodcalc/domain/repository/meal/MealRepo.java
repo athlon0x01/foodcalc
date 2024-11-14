@@ -3,6 +3,8 @@ package com.outdoor.foodcalc.domain.repository.meal;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 import com.outdoor.foodcalc.domain.model.meal.MealType;
 import com.outdoor.foodcalc.domain.repository.AbstractRepository;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -12,11 +14,22 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 @Repository
-public class MealRepo extends AbstractRepository<Meal> implements IMealRepo, RowMapper<Meal> {
+public class MealRepo extends AbstractRepository<Meal>
+        implements IMealRepo, RowMapper<Meal>, ResultSetExtractor<Map<Long, List<Meal>>> {
+
+    static final String SELECT_ALL_MEALS_FOR_PLAN_SQL = "select m.id as mealId, mt.id as typeId, mt.name as typeName, m.description as description, md.day as dayId, md.ndx as ndx " +
+            "from day_meal md left join meal m on m.id = md.meal " +
+            "left join meal_type mt on m.type = mt.id " +
+            "where md.meal in (select day_meal.meal from day_meal where day_meal.day in (select id from day_plan where plan = :planId))";
 
     static final String SELECT_DAY_MEALS_SQL = "select m.id as mealId, mt.id as typeId, mt.name as typeName, m.description as description " +
             "from day_meal dm left join meal m on m.id = dm.meal left join meal_type mt on mt.id = m.type " +
@@ -47,10 +60,17 @@ public class MealRepo extends AbstractRepository<Meal> implements IMealRepo, Row
     private static final String MEAL_ID = "mealId";
 
     @Override
+    public Map<Long, List<Meal>> getAllMealsInPlan(long planId) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("planId", planId);
+        return jdbcTemplate.query(SELECT_ALL_MEALS_FOR_PLAN_SQL, parameters, this::extractData);
+    }
+
+    @Override
     public List<Meal> getDayMeals(long dayId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("dayId", dayId);
-        return jdbcTemplate.query(SELECT_DAY_MEALS_SQL, parameters, this);
+        return jdbcTemplate.query(SELECT_DAY_MEALS_SQL, parameters, this::mapRow);
     }
 
     @Override
@@ -126,5 +146,22 @@ public class MealRepo extends AbstractRepository<Meal> implements IMealRepo, Row
                 .type(type)
                 .description(resultSet.getString("description"))
                 .build();
+    }
+
+    @Override
+    public Map<Long, List<Meal>> extractData(ResultSet rs) throws SQLException, DataAccessException {
+        final Map<Long, TreeMap<Integer, Meal>> allMeals = new HashMap<>();
+        while (rs.next()) {
+            Long itemId = rs.getLong("dayId");
+            //internal map to store meals in proper order
+            TreeMap<Integer, Meal> dayMeals = allMeals.computeIfAbsent(itemId, k -> new TreeMap<>());
+            Meal meal = mapRow(rs, rs.getRow());
+            //we don't store index in the entities, so we use Map with index as a key to sort dishes properly
+            int ndx = rs.getInt("ndx");
+            dayMeals.put(ndx, meal);
+        }
+        return allMeals.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey,
+                        entry -> new ArrayList<>(entry.getValue().values())));
     }
 }
