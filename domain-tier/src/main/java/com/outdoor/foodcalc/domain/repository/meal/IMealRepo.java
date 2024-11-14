@@ -3,9 +3,12 @@ package com.outdoor.foodcalc.domain.repository.meal;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface IMealRepo {
+
+    Map<Long, List<Meal>> getAllMealsInPlan(long planId);
 
     List<Meal> getDayMeals(long dayId);
 

@@ -70,9 +70,31 @@ public class DishDomainService {
         return dishes;
     }
 
-    public Map<Long, List<Dish>> getDayDishesForAllMeals(long dayId) {
-        var dishesProducts = productRefRepo.getDayDishesProductsForAllMealsInDay(dayId);
+    public Map<Long, List<Dish>> getDayDishesForAllDaysInPlan(long planId) {
+        var dishesProducts = productRefRepo.getDishesProductsForAllDaysInPlan(planId);
+        var dishes = dishRepo.getDayDishesForAllDaysInPlan(planId);
+        dishes.values().stream()
+                .flatMap(List::stream).forEach(
+                        dish -> Optional.ofNullable(dishesProducts.get(dish.getDishId()))
+                                .ifPresent(dish::setProducts)
+                );
+        return dishes;
+    }
+
+    public Map<Long, List<Dish>> getMealDishesForAllMealsInDay(long dayId) {
+        var dishesProducts = productRefRepo.getDishesProductsForAllMealsInDay(dayId);
         var dishes = dishRepo.getMealDishesForAllMealsInDay(dayId);
+        dishes.values().stream()
+                .flatMap(List::stream).forEach(
+                        dish -> Optional.ofNullable(dishesProducts.get(dish.getDishId()))
+                                .ifPresent(dish::setProducts)
+                );
+        return dishes;
+    }
+
+    public Map<Long, List<Dish>> getMealDishesForAllDaysInPlan(long planId) {
+        var dishesProducts = productRefRepo.getDishesProductsForAllMealsInPlan(planId);
+        var dishes = dishRepo.getMealDishesForAllMealsInPlan(planId);
         dishes.values().stream()
                 .flatMap(List::stream).forEach(
                         dish -> Optional.ofNullable(dishesProducts.get(dish.getDishId()))

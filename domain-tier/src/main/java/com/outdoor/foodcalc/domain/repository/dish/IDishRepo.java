@@ -80,4 +80,8 @@ public interface IDishRepo {
     List<Dish> getDayDishes(long dayId);
 
     Map<Long, List<Dish>> getMealDishesForAllMealsInDay(long dayId);
+
+    Map<Long, List<Dish>> getMealDishesForAllMealsInPlan(long planId);
+
+    Map<Long, List<Dish>> getDayDishesForAllDaysInPlan(long planId);
 }

@@ -18,7 +18,7 @@ public interface IProductRefRepo {
      /**
      * Loads all {@link ProductRef}
      *
-     * @return list of {@link ProductRef} and related dishes Id
+     * @return map of {@link ProductRef} and related dishes Id
      */
     Map<Long, List<ProductRef>> getAllTemplateDishesProducts();
 
@@ -67,5 +67,9 @@ public interface IProductRefRepo {
 
     Map<Long, List<ProductRef>> getDayDishesProducts(long dayId);
 
-    Map<Long, List<ProductRef>> getDayDishesProductsForAllMealsInDay(long dayId);
+    Map<Long, List<ProductRef>> getDishesProductsForAllMealsInDay(long dayId);
+
+    Map<Long, List<ProductRef>> getDishesProductsForAllMealsInPlan(long planId);
+
+    Map<Long, List<ProductRef>> getDishesProductsForAllDaysInPlan(long planId);
 }
