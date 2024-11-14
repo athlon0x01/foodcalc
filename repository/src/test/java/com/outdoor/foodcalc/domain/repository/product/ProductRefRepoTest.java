@@ -101,19 +101,19 @@ public class ProductRefRepoTest {
     @Test
     public void getAllDishProductsTest() {
         when(jdbcTemplate
-                .query(eq(ProductRefRepo.SELECT_ALL_DISH_TEMPLATE_PRODUCTS_SQL),
+                .query(eq(ProductRefRepo.SELECT_ALL_TEMPLATE_DISHES_PRODUCTS_SQL),
                 Mockito.<ResultSetExtractor<Map<Long, List<ProductRef>>>>any()
                 ))
                 .thenReturn(allDishesWithProducts);
 
-        Map<Long, List<ProductRef>> actualMap = repo.getAllDishProducts();
+        Map<Long, List<ProductRef>> actualMap = repo.getAllTemplateDishesProducts();
         assertNotNull(actualMap);
         assertTrue(actualMap.containsKey(DISH_ID));
         assertEquals(1, actualMap.size());
         assertEquals(allDishesWithProducts.get(DISH_ID).size(), actualMap.get(DISH_ID).size());
         assertEquals(allDishesWithProducts.get(DISH_ID).get(0), actualMap.get(DISH_ID).get(0));
 
-        verify(jdbcTemplate).query(eq(ProductRefRepo.SELECT_ALL_DISH_TEMPLATE_PRODUCTS_SQL),
+        verify(jdbcTemplate).query(eq(ProductRefRepo.SELECT_ALL_TEMPLATE_DISHES_PRODUCTS_SQL),
                 Mockito.<ResultSetExtractor<Map<Long, List<ProductRef>>>>any());
     }
 

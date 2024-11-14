@@ -31,7 +31,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     private final ProductRepo productRepo;
 
 
-    static final String SELECT_ALL_DISH_TEMPLATE_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+    static final String SELECT_ALL_TEMPLATE_DISHES_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
             "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
@@ -40,7 +40,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
             "left join product_category c on p.category = c.id " +
             "where d.template = true";
 
-    static final String SELECT_DAY_ALL_MEALS_DISHES_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+    static final String SELECT_DAY_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
             "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
@@ -86,7 +86,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
 
     //------------------------------
 
-    static final String SELECT_ALL_PLAN_DAYS_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+    static final String SELECT_DAY_PRODUCTS_FOR_ALL_DAYS_IN_PLAN_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
             "dp.day as itemId, dp.weight as weight, dp.ndx as ndx " +
@@ -113,7 +113,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
 
     //---------------------------
 
-    static final String SELECT_ALL_PLAN_MEALS_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+    static final String SELECT_MEAL_PRODUCTS_FOR_ALL_MEALS_IN_PLAN_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
             "mp.meal as itemId, mp.weight as weight, mp.ndx as ndx " +
@@ -122,7 +122,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
             "left join product_category c on p.category = c.id " +
             "where mp.meal in (select day_meal.meal from day_meal where day in (select id from day_plan where plan = :planId))";
 
-    static final String SELECT_ALL_DAY_MEALS_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+    static final String SELECT_MEAL_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
             "mp.meal as itemId, mp.weight as weight, mp.ndx as ndx " +
@@ -172,8 +172,8 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     }
 
     @Override
-    public Map<Long, List<ProductRef>> getAllDishProducts() {
-        return jdbcTemplate.query(SELECT_ALL_DISH_TEMPLATE_PRODUCTS_SQL, this::extractData);
+    public Map<Long, List<ProductRef>> getAllTemplateDishesProducts() {
+        return jdbcTemplate.query(SELECT_ALL_TEMPLATE_DISHES_PRODUCTS_SQL, this::extractData);
     }
 
     @Override
@@ -217,9 +217,9 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     }
 
     @Override
-    public Map<Long, List<ProductRef>> getPlanAllDaysProducts(long planId) {
+    public Map<Long, List<ProductRef>> getDayProductsForAllDaysInPlan(long planId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
-        return jdbcTemplate.query(SELECT_ALL_PLAN_DAYS_PRODUCTS_SQL, parameters, this::extractData);
+        return jdbcTemplate.query(SELECT_DAY_PRODUCTS_FOR_ALL_DAYS_IN_PLAN_SQL, parameters, this::extractData);
     }
 
     @Override
@@ -246,15 +246,15 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     }
 
     @Override
-    public Map<Long, List<ProductRef>> getPlanAllMealsProducts(long planId) {
+    public Map<Long, List<ProductRef>> getMealProductsForAllMealsInPlan(long planId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
-        return jdbcTemplate.query(SELECT_ALL_PLAN_MEALS_PRODUCTS_SQL, parameters, this::extractData);
+        return jdbcTemplate.query(SELECT_MEAL_PRODUCTS_FOR_ALL_MEALS_IN_PLAN_SQL, parameters, this::extractData);
     }
 
     @Override
-    public Map<Long, List<ProductRef>> getDayAllMealsProducts(long dayId) {
+    public Map<Long, List<ProductRef>> getMealProductsForAllMealsInDay(long dayId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
-        return jdbcTemplate.query(SELECT_ALL_DAY_MEALS_PRODUCTS_SQL, parameters, this::extractData);
+        return jdbcTemplate.query(SELECT_MEAL_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL, parameters, this::extractData);
     }
 
     @Override
@@ -293,8 +293,8 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     }
 
     @Override
-    public Map<Long, List<ProductRef>> getDayAllMealsDishesProducts(long dayId) {
+    public Map<Long, List<ProductRef>> getDayDishesProductsForAllMealsInDay(long dayId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
-        return jdbcTemplate.query(SELECT_DAY_ALL_MEALS_DISHES_PRODUCTS_SQL, parameters, this::extractData);
+        return jdbcTemplate.query(SELECT_DAY_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL, parameters, this::extractData);
     }
 }

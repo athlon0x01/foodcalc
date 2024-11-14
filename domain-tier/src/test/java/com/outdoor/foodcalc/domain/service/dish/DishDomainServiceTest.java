@@ -77,7 +77,7 @@ public class DishDomainServiceTest {
         expectedList.add(someDish);
 
         when(dishRepo.getAllTemplateDishes()).thenReturn(dishList);
-        when(productRefRepo.getAllDishProducts()).thenReturn(allDishesWithProducts);
+        when(productRefRepo.getAllTemplateDishesProducts()).thenReturn(allDishesWithProducts);
 
         List<Dish> actualDishList = service.getAllTemplateDishes();
         assertEquals(dishList.size(), actualDishList.size());
@@ -87,7 +87,7 @@ public class DishDomainServiceTest {
 
 
         verify(dishRepo).getAllTemplateDishes();
-        verify(productRefRepo).getAllDishProducts();
+        verify(productRefRepo).getAllTemplateDishesProducts();
     }
 
     @Test

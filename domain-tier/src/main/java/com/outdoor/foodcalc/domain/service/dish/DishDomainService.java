@@ -42,7 +42,7 @@ public class DishDomainService {
      */
     public List<Dish> getAllTemplateDishes() {
         List<Dish> dishes = dishRepo.getAllTemplateDishes();
-        Map<Long, List<ProductRef>> allDishIdWithProductRefs = productRefRepo.getAllDishProducts();
+        Map<Long, List<ProductRef>> allDishIdWithProductRefs = productRefRepo.getAllTemplateDishesProducts();
 
         dishes.stream()
                 .filter(dish -> allDishIdWithProductRefs.containsKey(dish.getDishId()))
@@ -71,8 +71,8 @@ public class DishDomainService {
     }
 
     public Map<Long, List<Dish>> getDayDishesForAllMeals(long dayId) {
-        var dishesProducts = productRefRepo.getDayAllMealsDishesProducts(dayId);
-        var dishes = dishRepo.getDayMealsDishes(dayId);
+        var dishesProducts = productRefRepo.getDayDishesProductsForAllMealsInDay(dayId);
+        var dishes = dishRepo.getMealDishesForAllMealsInDay(dayId);
         dishes.values().stream()
                 .flatMap(List::stream).forEach(
                         dish -> Optional.ofNullable(dishesProducts.get(dish.getDishId()))
