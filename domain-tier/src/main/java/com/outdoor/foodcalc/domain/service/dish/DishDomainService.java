@@ -11,7 +11,6 @@ import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -61,9 +60,14 @@ public class DishDomainService {
         return dishes;
     }
 
-    //TODO implement me
     public List<Dish> getDayDishes(long dayId) {
-        return Collections.emptyList();
+        var dishesProducts = productRefRepo.getDayDishesProducts(dayId);
+        var dishes = dishRepo.getDayDishes(dayId);
+        dishes.forEach(
+                dish -> Optional.ofNullable(dishesProducts.get(dish.getDishId()))
+                        .ifPresent(dish::setProducts)
+        );
+        return dishes;
     }
 
     /**

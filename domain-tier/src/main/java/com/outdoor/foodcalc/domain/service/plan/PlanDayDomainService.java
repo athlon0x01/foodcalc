@@ -51,15 +51,11 @@ public class PlanDayDomainService {
     public Optional<PlanDay> getDay(long planId, long id) {
         return dayRepo.getPlanDay(planId, id)
                 .map(day -> {
-                    loadDayContent(day);
+                    day.setMeals(mealService.getDayMeals(day.getDayId()));
+                    day.setDishes(dishService.getDayDishes(day.getDayId()));
+                    day.setProducts(productRefRepo.getDayProducts(day.getDayId()));
                     return day;
                 });
-    }
-
-    private void loadDayContent(PlanDay day) {
-        day.setMeals(mealService.getDayMeals(day.getDayId()));
-        day.setDishes(dishService.getDayDishes(day.getDayId()));
-        day.setProducts(productRefRepo.getDayProducts(day.getDayId()));
     }
 
     public void deleteFoodDay(long planId, long id) {

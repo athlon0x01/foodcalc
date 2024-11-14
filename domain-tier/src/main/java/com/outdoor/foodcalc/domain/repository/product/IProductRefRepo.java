@@ -64,4 +64,6 @@ public interface IProductRefRepo {
     long deleteMealProducts(long mealId);
 
     Map<Long, List<ProductRef>> getMealDishesProducts(long mealId);
+
+    Map<Long, List<ProductRef>> getDayDishesProducts(long dayId);
 }
