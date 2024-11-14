@@ -39,7 +39,7 @@ public class MealDomainService {
         Map<Long, List<ProductRef>> allMealsProducts = productRefRepo.getDayAllMealsProducts(dayId);
         meals.forEach(meal -> {
             //TODO optimization required
-            meal.setDishes(dishService.getMealDishes(dayId));
+            meal.setDishes(dishService.getMealDishes(meal.getMealId()));
             Optional.ofNullable(allMealsProducts.get(meal.getMealId()))
                     .ifPresent(meal::setProducts);
         });

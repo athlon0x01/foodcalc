@@ -77,5 +77,7 @@ public interface IDishRepo {
 
     List<Dish> getMealDishes(long mealId);
 
-    Map<Long, List<Dish>> getDayDishes(long dayId);
+    List<Dish> getDayDishes(long dayId);
+
+    Map<Long, List<Dish>> getDayMealsDishes(long dayId);
 }

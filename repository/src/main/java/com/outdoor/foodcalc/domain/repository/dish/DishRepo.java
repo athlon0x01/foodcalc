@@ -36,6 +36,12 @@ public class DishRepo extends AbstractRepository<Dish>
             "left join dish_category c on d.category = c.id " +
             "where md.meal = :mealId order by md.ndx";
 
+    static final String SELECT_DAY_DISHES_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
+            "c.id as catId, c.name as catName, d.template as template " +
+            "from day_dish dd left join dish d on d.id = dd.dish " +
+            "left join dish_category c on d.category = c.id " +
+            "where dd.day = :dayId order by dd.ndx";
+
     static final String SELECT_DISH_SQL = "select d.id as dishId, d.name as dishName, d.description as description, " +
             "c.id as catId, c.name as catName, d.template as template from dish d join dish_category c on d.category = c.id where d.id = :dishId";
     static final String INSERT_DISH_SQL = "insert into dish (name, description, category, template) " +
@@ -186,7 +192,13 @@ public class DishRepo extends AbstractRepository<Dish>
     }
 
     @Override
-    public Map<Long, List<Dish>> getDayDishes(long dayId) {
+    public List<Dish> getDayDishes(long dayId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
+        return jdbcTemplate.query(SELECT_DAY_DISHES_SQL, parameters, this::mapRow);
+    }
+
+    @Override
+    public Map<Long, List<Dish>> getDayMealsDishes(long dayId) {
         return null;
     }
 }
