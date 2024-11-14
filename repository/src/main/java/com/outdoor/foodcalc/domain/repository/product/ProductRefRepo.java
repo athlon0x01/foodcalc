@@ -40,6 +40,16 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
             "left join product_category c on p.category = c.id " +
             "where d.template = true";
 
+    static final String SELECT_DAY_ALL_MEALS_DISHES_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
+            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "from dish_product dp " +
+            "left join product p on dp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where dp.dish in (select meal_dish.dish from meal_dish " +
+            "where meal_dish.meal in (select day_meal.meal from day_meal where day = :dayId))";
+
     static final String SELECT_DAY_DISHES_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
@@ -280,5 +290,11 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     public Map<Long, List<ProductRef>> getDayDishesProducts(long dayId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
         return jdbcTemplate.query(SELECT_DAY_DISHES_PRODUCTS_SQL, parameters, this::extractData);
+    }
+
+    @Override
+    public Map<Long, List<ProductRef>> getDayAllMealsDishesProducts(long dayId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
+        return jdbcTemplate.query(SELECT_DAY_ALL_MEALS_DISHES_PRODUCTS_SQL, parameters, this::extractData);
     }
 }

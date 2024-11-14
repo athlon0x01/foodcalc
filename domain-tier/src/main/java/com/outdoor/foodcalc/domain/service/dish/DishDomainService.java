@@ -70,6 +70,17 @@ public class DishDomainService {
         return dishes;
     }
 
+    public Map<Long, List<Dish>> getDayDishesForAllMeals(long dayId) {
+        var dishesProducts = productRefRepo.getDayAllMealsDishesProducts(dayId);
+        var dishes = dishRepo.getDayMealsDishes(dayId);
+        dishes.values().stream()
+                .flatMap(List::stream).forEach(
+                        dish -> Optional.ofNullable(dishesProducts.get(dish.getDishId()))
+                                .ifPresent(dish::setProducts)
+                );
+        return dishes;
+    }
+
     /**
      * Loads {@link Dish} object.
      *

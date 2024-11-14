@@ -3,7 +3,6 @@ package com.outdoor.foodcalc.domain.service.meal;
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.meal.Meal;
-import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.meal.IMealRepo;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
@@ -12,7 +11,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -34,13 +32,15 @@ public class MealDomainService {
     }
 
     public List<Meal> getDayMeals(long dayId) {
-        List<Meal> meals = mealRepo.getDayMeals(dayId);
+        var meals = mealRepo.getDayMeals(dayId);
+        //load dishes for all days
+        var dayMealsDishes = dishService.getDayDishesForAllMeals(dayId);
         //load products for all days and set them
-        Map<Long, List<ProductRef>> allMealsProducts = productRefRepo.getDayAllMealsProducts(dayId);
+        var dayMealsProducts = productRefRepo.getDayAllMealsProducts(dayId);
         meals.forEach(meal -> {
-            //TODO optimization required
-            meal.setDishes(dishService.getMealDishes(meal.getMealId()));
-            Optional.ofNullable(allMealsProducts.get(meal.getMealId()))
+            Optional.ofNullable(dayMealsDishes.get(meal.getMealId()))
+                    .ifPresent(meal::setDishes);
+            Optional.ofNullable(dayMealsProducts.get(meal.getMealId()))
                     .ifPresent(meal::setProducts);
         });
         return meals;
