@@ -40,6 +40,15 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
             "left join product_category c on p.category = c.id " +
             "where d.template = true";
 
+    static final String SELECT_MEAL_DISHES_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, " +
+            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
+            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "from dish_product dp " +
+            "left join product p on dp.product  = p.id " +
+            "left join product_category c on p.category = c.id " +
+            "where dp.dish in (select meal_dish.dish from meal_dish where meal_dish.meal = :mealId)";
+
     static final String SELECT_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, dp.weight as weight " +
@@ -250,5 +259,11 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("mealId", mealId);
         Long count = jdbcTemplate.queryForObject(DELETE_MEAL_PRODUCTS_SQL_COUNT, parameters, Long.class);
         return Optional.ofNullable(count).orElse(0L);
+    }
+
+    @Override
+    public Map<Long, List<ProductRef>> getMealDishesProducts(long mealId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("mealId", mealId);
+        return jdbcTemplate.query(SELECT_MEAL_DISHES_PRODUCTS_SQL, parameters, this::extractData);
     }
 }

@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.domain.repository.dish;
 import com.outdoor.foodcalc.domain.model.dish.Dish;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -65,4 +66,16 @@ public interface IDishRepo {
      * @return if dish exists
      */
     boolean existsDish(long id);
+
+    void attachDishToMeal(long mealId, long dishId);
+
+    void detachDishFromMeal(long mealId, long dishId);
+
+    void attachDishToDay(long dayId, long dishId);
+
+    void detachDishFromDay(long dayId, long dishId);
+
+    List<Dish> getMealDishes(long mealId);
+
+    Map<Long, List<Dish>> getDayDishes(long dayId);
 }

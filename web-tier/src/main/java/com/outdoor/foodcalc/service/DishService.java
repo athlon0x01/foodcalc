@@ -84,7 +84,7 @@ public class DishService {
      * @return new dish
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public DishInfo addDish(DishInfo dishInfo) {
+    public DishInfo addTemplateDish(DishInfo dishInfo) {
         Dish dishToAdd = Dish.builder()
                 .name(dishInfo.getName())
                 .description(dishInfo.getDescription())
@@ -92,7 +92,7 @@ public class DishService {
                 .template(true)
                 .products(productService.buildMockProducts(dishInfo.getProducts()))
                 .build();
-        dishInfo.setId(dishDomainService.addDish(dishToAdd).getDishId());
+        dishInfo.setId(dishDomainService.addTemplateDish(dishToAdd).getDishId());
         return dishInfo;
     }
 
@@ -129,8 +129,8 @@ public class DishService {
      * @param id dish Id to delete
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void deleteDish(long id) {
-        dishDomainService.deleteDish(id);
+    public void deleteTemplateDish(long id) {
+        dishDomainService.deleteTemplateDish(id);
     }
 
     DishView mapDishView(Dish dish) {

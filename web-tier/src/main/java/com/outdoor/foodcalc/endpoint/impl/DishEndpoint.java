@@ -37,9 +37,9 @@ public class DishEndpoint extends AbstractEndpoint implements DishApi {
         return dishService.getDish(id);
     }
 
-    public DishInfo addDish(@RequestBody @Valid DishInfo dish) {
+    public DishInfo addTemplateDish(@RequestBody @Valid DishInfo dish) {
         LOG.debug("Adding new dish - {}", dish);
-        return dishService.addDish(dish);
+        return dishService.addTemplateDish(dish);
     }
 
     public void updateDish(@PathVariable("id") long id,
@@ -49,8 +49,8 @@ public class DishEndpoint extends AbstractEndpoint implements DishApi {
         dishService.updateDish(dish);
     }
 
-    public void deleteDish(@PathVariable("id") long id) {
+    public void deleteTemplateDish(@PathVariable("id") long id) {
         LOG.debug("Deleting dish id = {}", id);
-        dishService.deleteDish(id);
+        dishService.deleteTemplateDish(id);
     }
 }

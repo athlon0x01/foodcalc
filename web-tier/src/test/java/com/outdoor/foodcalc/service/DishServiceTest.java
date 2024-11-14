@@ -187,13 +187,13 @@ public class DishServiceTest {
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
 
         when(productService.buildMockProducts(dishProductList)).thenReturn(dishProductRefList);
-        when(dishDomainService.addDish(newDish)).thenReturn(domainDish1);
+        when(dishDomainService.addTemplateDish(newDish)).thenReturn(domainDish1);
 
-        DishInfo actualDishInfo = dishService.addDish(dishInfoToAdd);
+        DishInfo actualDishInfo = dishService.addTemplateDish(dishInfoToAdd);
         assertEquals(expectedDishInfo, actualDishInfo);
 
         verify(productService).buildMockProducts(dishProductList);
-        verify(dishDomainService).addDish(any());
+        verify(dishDomainService).addTemplateDish(any());
     }
 
     @Test
@@ -214,8 +214,8 @@ public class DishServiceTest {
 
     @Test
     public void deleteDishTest() {
-        doNothing().when(dishDomainService).deleteDish(DISH_1_ID);
-        dishService.deleteDish(DISH_1_ID);
-        verify(dishDomainService).deleteDish(DISH_1_ID);
+        doNothing().when(dishDomainService).deleteTemplateDish(DISH_1_ID);
+        dishService.deleteTemplateDish(DISH_1_ID);
+        verify(dishDomainService).deleteTemplateDish(DISH_1_ID);
     }
 }

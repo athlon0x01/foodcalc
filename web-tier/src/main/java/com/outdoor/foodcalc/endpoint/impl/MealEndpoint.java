@@ -41,7 +41,7 @@ public class MealEndpoint extends AbstractEndpoint {
                             @PathVariable("dayId") long dayId,
                             @PathVariable("id") long id) {
         LOG.debug("Getting meal = {} day - {}", id, dayId);
-        return mealService.getMeal(planId, dayId, id);
+        return mealService.getMeal(id);
     }
 
     @DeleteMapping("{id}")

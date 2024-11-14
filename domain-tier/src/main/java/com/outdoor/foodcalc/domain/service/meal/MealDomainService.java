@@ -46,16 +46,12 @@ public class MealDomainService {
         return meals;
     }
 
-    public Optional<Meal> getMeal(long dayId, long id) {
+    public Optional<Meal> getMeal(long id) {
         return mealRepo.getMeal(id).map(meal -> {
-            loadMealContent(meal);
+            meal.setDishes(dishService.getMealDishes(id));
+            meal.setProducts(productRefRepo.getMealProducts(id));
             return meal;
         });
-    }
-
-    private void loadMealContent(Meal meal) {
-        meal.setDishes(dishService.getMealDishes(meal.getMealId()));
-        meal.setProducts(productRefRepo.getMealProducts(meal.getMealId()));
     }
 
     public void deleteMeal(long planId, long dayId, long id) {

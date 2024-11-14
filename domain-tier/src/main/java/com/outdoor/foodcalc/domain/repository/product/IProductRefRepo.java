@@ -62,4 +62,6 @@ public interface IProductRefRepo {
     boolean insertMealProducts(Meal meal);
 
     long deleteMealProducts(long mealId);
+
+    Map<Long, List<ProductRef>> getMealDishesProducts(long mealId);
 }
