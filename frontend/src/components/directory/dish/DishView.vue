@@ -46,6 +46,10 @@ export default {
     manageMode: {
       type: Boolean,
       required: false
+    },
+    planId: {
+      type: String,
+      required: false
     }
   },
 
@@ -59,7 +63,8 @@ export default {
         name: 'EditDishPage',
         params: {
           goBackPath: this.goBackPath,
-          oldDish: this.dish
+          oldDish: this.dish,
+          planId: this.planId
         }
       })
     },

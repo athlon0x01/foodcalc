@@ -195,11 +195,11 @@ public class DishEndpointTest extends ApiUnitTest{
      public void updateDishTest() throws Exception {
           DishInfo dishInfo = createSimpleDish(DISH_1_ID);
 
-          doNothing().when(service).updateDish(dishInfo);
+          doNothing().when(service).updateDish(7L, dishInfo);
 
-          put("/dishes/" + DISH_1_ID, dishInfo).andReturn();
+          put("/dishes?planId=7" + DISH_1_ID, dishInfo).andReturn();
 
-          verify(service).updateDish(dishInfo);
+          verify(service).updateDish(7L, dishInfo);
      }
 
      @Test
@@ -209,17 +209,17 @@ public class DishEndpointTest extends ApiUnitTest{
 
           put400("/dishes/55", dishInfoToUpdate).andExpect(jsonPath("$", is(message)));
 
-          verify(service, never()).updateDish(dishInfoToUpdate);
+          verify(service, never()).updateDish(anyLong(), dishInfoToUpdate);
      }
 
      @Test
      public void updateDishNotFoundTest() throws Exception {
           DishInfo dishInfoToUpdate = createSimpleDish(DISH_1_ID);
-          doThrow(NotFoundException.class).when(service).updateDish(dishInfoToUpdate);
+          doThrow(NotFoundException.class).when(service).updateDish(null, dishInfoToUpdate);
 
           put404("/dishes/" + DISH_1_ID, dishInfoToUpdate).andReturn();
 
-          verify(service).updateDish(dishInfoToUpdate);
+          verify(service).updateDish(null, dishInfoToUpdate);
      }
 
      @Test

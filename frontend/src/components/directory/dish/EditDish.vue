@@ -85,6 +85,10 @@ export default {
     goBackPath: {
       type: Object,
       required: false
+    },
+    planId: {
+      type: String,
+      required: false
     }
   },
 
@@ -245,7 +249,7 @@ export default {
     },
 
     updateDish (dish) {
-      axios.put(this.dishesEndpointUrl + dish.id, dish)
+      axios.put(this.dishesEndpointUrl + dish.id, dish, this.getUpdateDishQueryParam())
         .then(() => {
           // on success go back to Dishes \ Meals \ Day page
           this.$router.push(this.getGoBackPath())
@@ -253,6 +257,17 @@ export default {
         .catch(e => {
           this.getErrorMessage(e, 'Failed to update dish ' + JSON.stringify(dish))
         })
+    },
+
+    getUpdateDishQueryParam () {
+      if (this.planId !== undefined) {
+        return {
+          params: {
+            planId: this.planId
+          }
+        }
+      }
+      return {}
     },
 
     goBack () {

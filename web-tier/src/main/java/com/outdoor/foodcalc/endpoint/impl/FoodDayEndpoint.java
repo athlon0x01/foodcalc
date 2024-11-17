@@ -73,4 +73,13 @@ public class FoodDayEndpoint extends AbstractEndpoint {
         LOG.debug("Adding new dish to day - {}", dayId);
         return dishService.addDayDish(planId, dayId, id);
     }
+
+    @DeleteMapping("{dayId}/dishes/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteDayDish(@PathVariable("planId") long planId,
+                               @PathVariable("dayId") long dayId,
+                               @PathVariable("id") long id) {
+        LOG.debug("Removing dish - {} from day - {}", id, dayId);
+        dishService.deleteDayDish(planId, dayId, id);
+    }
 }

@@ -151,7 +151,7 @@ public class DishDomainService {
         return addedDish;
     }
 
-    public Dish addMealDish(long planId, long dayId, long mealId, long templateId) {
+    public Dish addMealDish(long planId, long mealId, long templateId) {
         //building new dish as a copy of template dish
         Optional<Dish> mealDish = buildNonTemplateDish(templateId);
         if (mealDish.isPresent()) {
@@ -177,6 +177,24 @@ public class DishDomainService {
         }
     }
 
+    public void deleteMealDish(long planId, long mealId, long dishId) {
+        if (dishRepo.detachDishFromMeal(mealId, dishId)) {
+            deleteTemplateDish(dishId);
+            planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+        } else {
+            throw new FoodcalcDomainException("Fail to detach dish with id=" + dishId + " from meal id=" + mealId);
+        }
+    }
+
+    public void deleteDayDish(long planId, long dayId, long dishId) {
+        if (dishRepo.detachDishFromDay(dayId, dishId)) {
+            deleteTemplateDish(dishId);
+            planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+        } else {
+            throw new FoodcalcDomainException("Fail to detach dish with id=" + dishId + " from day id=" + dayId);
+        }
+    }
+
     /**
      * Update {@link Dish} object.
      *
@@ -186,7 +204,7 @@ public class DishDomainService {
      * @throws FoodcalcDomainException If dish products weren't added
      * @throws FoodcalcDomainException If dish wasn't updated
      */
-    public void updateDish(Dish dish) {
+    public void updateDish(Long planId, Dish dish) {
         if (!dishRepo.existsDish(dish.getDishId())) {
             throw new NotFoundException("Dish with id=" + dish.getDishId() + " doesn't exist");
         }
@@ -201,7 +219,9 @@ public class DishDomainService {
         if (!dishRepo.updateDish(dish)) {
             throw new FoodcalcDomainException("Failed to update dish with id=" + dish.getDishId());
         }
-        //TODO do planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+        if (planId != null) {
+            planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+        }
     }
 
     //TODO implement me

@@ -189,7 +189,7 @@ public class DishDomainServiceTest {
         when(productRefRepo.insertDishProducts(dishToUpdate)).thenReturn(true);
         when(dishRepo.updateDish(dishToUpdate)).thenReturn(true);
 
-        service.updateDish(dishToUpdate);
+        service.updateDish(7L, dishToUpdate);
 
         verify(dishRepo).existsDish(dishToUpdate.getDishId());
         verify(dishCategoryService).getCategory(CATEGORY_ID);
@@ -206,7 +206,7 @@ public class DishDomainServiceTest {
         when(productRefRepo.insertDishProducts(dummyDish)).thenReturn(true);
         when(dishRepo.updateDish(dummyDish)).thenReturn(true);
 
-        service.updateDish(dummyDish);
+        service.updateDish(7L, dummyDish);
 
         verify(dishRepo).existsDish(dummyDish.getDishId());
         verify(dishCategoryService).getCategory(CATEGORY_ID);
@@ -221,7 +221,7 @@ public class DishDomainServiceTest {
         when(dishRepo.existsDish(dishToUpdate.getDishId())).thenReturn(false);
 
         Assertions.assertThrows(NotFoundException.class, () -> {
-            service.updateDish(dishToUpdate);
+            service.updateDish(7L, dishToUpdate);
         });
     }
 
@@ -234,7 +234,7 @@ public class DishDomainServiceTest {
         when(productRefRepo.insertDishProducts(dishToUpdate)).thenReturn(false);
 
         Assertions.assertThrows(FoodcalcDomainException.class, () -> {
-            service.updateDish(dishToUpdate);
+            service.updateDish(7L, dishToUpdate);
         });
     }
 
@@ -248,7 +248,7 @@ public class DishDomainServiceTest {
         when(dishRepo.updateDish(dishToUpdate)).thenReturn(false);
 
         Assertions.assertThrows(FoodcalcDomainException.class, () -> {
-            service.updateDish(dishToUpdate);
+            service.updateDish(7L, dishToUpdate);
         });
     }
 

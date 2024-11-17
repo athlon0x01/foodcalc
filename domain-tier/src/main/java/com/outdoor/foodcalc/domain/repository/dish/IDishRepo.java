@@ -69,11 +69,11 @@ public interface IDishRepo {
 
     void attachDishToMeal(long mealId, long dishId);
 
-    void detachDishFromMeal(long mealId, long dishId);
+    boolean detachDishFromMeal(long mealId, long dishId);
 
     void attachDishToDay(long dayId, long dishId);
 
-    void detachDishFromDay(long dayId, long dishId);
+    boolean detachDishFromDay(long dayId, long dishId);
 
     List<Dish> getMealDishes(long mealId);
 

@@ -67,9 +67,11 @@ public interface DishApi {
     @PutMapping(path = "{id}", consumes = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void updateDish(@ApiParam(value = "ID of the Dish", required = true)
-                          @PathVariable("id") long id,
-                          @ApiParam(value = "Dish", required = true)
-                          @RequestBody DishInfo dish);
+                    @PathVariable("id") long id,
+                    @ApiParam(value = "planId is absent if we do update for template dish, otherwise it's used to set plan last update time")
+                    @RequestParam(required = false) Long planId,
+                    @ApiParam(value = "Dish", required = true)
+                    @RequestBody DishInfo dish);
 
     @ApiOperation(value = "Delete dish by ID"
     )

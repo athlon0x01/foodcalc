@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
@@ -43,10 +44,11 @@ public class DishEndpoint extends AbstractEndpoint implements DishApi {
     }
 
     public void updateDish(@PathVariable("id") long id,
+                           @RequestParam(required = false) Long planId,
                            @RequestBody @Valid DishInfo dish) {
         verifyEntityId(id, dish);
-        LOG.debug("Updating dish {}", dish);
-        dishService.updateDish(dish);
+        LOG.debug("Updating dish {} for plan - {}", dish, planId);
+        dishService.updateDish(planId, dish);
     }
 
     public void deleteTemplateDish(@PathVariable("id") long id) {
