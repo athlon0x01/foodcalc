@@ -180,11 +180,11 @@ public class DishRepo extends AbstractRepository<Dish>
     }
 
     @Override
-    public void detachDishFromMeal(long mealId, long dishId) {
+    public boolean detachDishFromMeal(long mealId, long dishId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("mealId", mealId)
                 .addValue("dishId", dishId);
-        jdbcTemplate.update(DELETE_MEAL_DISH_LINK_SQL, parameters);
+        return jdbcTemplate.update(DELETE_MEAL_DISH_LINK_SQL, parameters) > 0;
     }
 
     @Override
@@ -196,11 +196,11 @@ public class DishRepo extends AbstractRepository<Dish>
     }
 
     @Override
-    public void detachDishFromDay(long dayId, long dishId) {
+    public boolean detachDishFromDay(long dayId, long dishId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("dayId", dayId)
                 .addValue("dishId", dishId);
-        jdbcTemplate.update(DELETE_DAY_DISH_LINK_SQL, parameters);
+        return jdbcTemplate.update(DELETE_DAY_DISH_LINK_SQL, parameters) > 0;
     }
 
     @Override

@@ -97,13 +97,23 @@ public class DishService {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public DishView addMealDish(long planId, long dayId, long mealId, long id) {
-        return mapDishView(dishDomainService.addMealDish(planId, dayId, mealId, id));
+    public DishView addMealDish(long planId, long mealId, long id) {
+        return mapDishView(dishDomainService.addMealDish(planId, mealId, id));
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
     public DishView addDayDish(long planId, long dayId, long id) {
         return mapDishView(dishDomainService.addDayDish(planId, dayId, id));
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public void deleteMealDish(long planId, long mealId, long id) {
+        dishDomainService.deleteMealDish(planId, mealId, id);
+    }
+
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
+    public void deleteDayDish(long planId, long dayId, long id) {
+        dishDomainService.deleteDayDish(planId, dayId, id);
     }
 
     /**
@@ -112,7 +122,7 @@ public class DishService {
      * @param dishInfo updated
      */
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void updateDish(DishInfo dishInfo) {
+    public void updateDish(Long planId, DishInfo dishInfo) {
         Dish updatedDish = Dish.builder()
                 .dishId(dishInfo.getId())
                 .description(dishInfo.getDescription())
@@ -120,7 +130,7 @@ public class DishService {
                 .category(new DishCategory(dishInfo.getCategoryId(), ""))
                 .products(productService.buildMockProducts(dishInfo.getProducts()))
                 .build();
-        dishDomainService.updateDish(updatedDish);
+        dishDomainService.updateDish(planId, updatedDish);
     }
 
     /**

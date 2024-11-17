@@ -205,11 +205,11 @@ public class DishServiceTest {
                 .categoryId(domainDish1.getCategory().getCategoryId()).products(dishProductList).build();
 
         when(productService.buildMockProducts(dishProductList)).thenReturn(dishProductRefList);
-        doNothing().when(dishDomainService).updateDish(dishToUpdate);
+        doNothing().when(dishDomainService).updateDish(7L, dishToUpdate);
 
-        dishService.updateDish(dishInfoToUpdate);
+        dishService.updateDish(7L, dishInfoToUpdate);
         verify(productService).buildMockProducts(dishProductList);
-        verify(dishDomainService).updateDish(any());
+        verify(dishDomainService).updateDish(eq(7L), any());
     }
 
     @Test

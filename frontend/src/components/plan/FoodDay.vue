@@ -40,6 +40,7 @@
           <dish-view v-bind:dish="dish"
                      v-bind:go-back-path="goBackPath"
                      v-bind:manage-mode="true"
+                     v-bind:plan-id="planId"
                      v-on:remove="removeDish"/>
         </div>
       </template>
@@ -142,6 +143,7 @@ export default {
     return {
       planDayEndpointUrl: '/api/plans/',
       mealTypesEndpointUrl: '/api/meal-types/',
+      planId: null,
       goBackPath: null,
       mealTypes: [],
       planTitle: null,
@@ -200,8 +202,14 @@ export default {
     },
 
     removeDish (dishId) {
-      this.dayDishes = this.dayDishes.filter(d => d.id !== dishId)
-      // this.updateProductsTotal()
+      axios.delete(this.planDayEndpointUrl + this.$route.params.dayId + '/dishes/' + dishId)
+        .then(() => {
+          this.dayDishes = this.dayDishes.filter(d => d.id !== dishId)
+          // this.updateProductsTotal()
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to delete dish id - ' + dishId)
+        })
     },
 
     addProductsModeChange () {
@@ -400,6 +408,7 @@ export default {
         planTitle: this.$route.query.planTitle
       }
     }
+    this.planId = this.$route.params.planId
   }
 }
 </script>

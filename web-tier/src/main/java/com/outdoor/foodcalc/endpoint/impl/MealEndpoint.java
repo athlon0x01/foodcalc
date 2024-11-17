@@ -18,7 +18,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RestController
 @RequestMapping("${spring.data.rest.basePath}/plans/{planId}/days/{dayId}/meals")
 public class MealEndpoint extends AbstractEndpoint {
-    //TODO add to Dish table `template` column to differentiate template dishes from meal dishes
 
     private static final Logger LOG = LoggerFactory.getLogger(MealEndpoint.class);
     private final MealService mealService;
@@ -40,7 +39,7 @@ public class MealEndpoint extends AbstractEndpoint {
     public MealView getMeal(@PathVariable("planId") long planId,
                             @PathVariable("dayId") long dayId,
                             @PathVariable("id") long id) {
-        LOG.debug("Getting meal = {} day - {}", id, dayId);
+        LOG.debug("Getting meal = {} day - {}, plan - {}", id, dayId, planId);
         return mealService.getMeal(id);
     }
 
@@ -77,7 +76,17 @@ public class MealEndpoint extends AbstractEndpoint {
                                 @PathVariable("dayId") long dayId,
                                 @PathVariable("mealId") long mealId,
                                 @PathVariable("id") long id) {
-        LOG.debug("Adding new dish to meal - {}, day - {}", mealId, dayId);
-        return dishService.addMealDish(planId, dayId, mealId, id);
+        LOG.debug("Adding new dish {} to plan - {}, day - {}, meal - {}", id, planId, dayId, mealId);
+        return dishService.addMealDish(planId, mealId, id);
+    }
+
+    @DeleteMapping("{mealId}/dishes/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteMealDish(@PathVariable("planId") long planId,
+                                @PathVariable("dayId") long dayId,
+                                @PathVariable("mealId") long mealId,
+                                @PathVariable("id") long id) {
+        LOG.debug("Removing dish - {} from plan - {}, day - {}, meal - {}", id, planId, dayId, mealId);
+        dishService.deleteMealDish(planId, mealId, id);
     }
 }
