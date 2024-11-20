@@ -58,7 +58,7 @@
       </div>
       <template v-if="foodPlan.days.length > 0">
         <!--Food plan days-->
-        <div v-for="foodDay in foodPlan.days" :key="foodDay.id">
+        <div v-for="foodDay in foodPlan.days" :key="'day-' + foodDay.id">
           <food-day-view v-bind:food-day="foodDay"
                          v-bind:plan-title="foodPlan.name"
                          v-on:remove="removeFoodDay"/>

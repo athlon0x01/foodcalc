@@ -16,7 +16,7 @@
       </div>
       <!--day meals-->
       <template v-if="foodDay.meals.length > 0">
-        <div v-for="meal in foodDay.meals" :key="meal.id">
+        <div v-for="meal in foodDay.meals" :key="'dayMeal-' + meal.id">
           <meal-view v-bind:meal="meal"/>
         </div>
         <div style="padding-bottom: 5px"/>
@@ -34,7 +34,7 @@
             <div class="col-md-1 border"><strong>Carbs</strong></div>
             <div class="col-md-1 border"><strong>Weight</strong></div>
           </div>
-          <div v-for="dish in foodDay.dishes" :key="dish.id">
+          <div v-for="dish in foodDay.dishes" :key="'dayDish-' + dish.id">
             <dish-view v-bind:dish="dish"/>
           </div>
         </div>
@@ -52,7 +52,7 @@
           <div class="col-md-1 border"><strong>Weight</strong></div>
         </div>
         <!--Content-->
-        <div v-for="product in foodDay.products" :key="product.id">
+        <div v-for="product in foodDay.products" :key="'dayProduct-' + product.id">
           <product-view v-bind:product="product"
                         v-bind:select-mode="false"
                         v-bind:manage-mode="false"/>
