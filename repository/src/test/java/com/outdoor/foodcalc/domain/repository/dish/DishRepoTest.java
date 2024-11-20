@@ -60,12 +60,12 @@ public class DishRepoTest {
     @Test
     public void getAllDishesTest() {
         List<Dish> expected = Collections.singletonList(dummyDish);
-        when(jdbcTemplate.query(DishRepo.SELECT_ALL_TEMPLATE_DISHES_SQL, repo::mapRow)).thenReturn(expected);
+        when(jdbcTemplate.query(eq(DishRepo.SELECT_ALL_TEMPLATE_DISHES_SQL), Mockito.<RowMapper<Dish>>any())).thenReturn(expected);
 
         List<Dish> actual = repo.getAllTemplateDishes();
         assertEquals(expected, actual);
 
-        verify(jdbcTemplate).query(DishRepo.SELECT_ALL_TEMPLATE_DISHES_SQL, repo::mapRow);
+        verify(jdbcTemplate).query(eq(DishRepo.SELECT_ALL_TEMPLATE_DISHES_SQL), Mockito.<RowMapper<Dish>>any());
     }
 
     @Test
