@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-bind:key="dish.id" class="row">
+    <div v-bind:key="'dishView-' + dish.id" class="row">
       <div class="col-md-10 border" style="text-align: left;margin-top: 3px">&emsp;<em>{{dish.name}}</em></div>
       <template v-if="selectMode">
         <div class="col-md-1">
@@ -17,7 +17,7 @@
       </template>
     </div>
     <template v-if="dish.products.length > 0">
-      <div v-for="product in dish.products" :key="dish.id + '-' + product.id">
+      <div v-for="product in dish.products" :key="'dish-' + dish.id + '-' + product.id">
         <product-view v-bind:product="product"/>
       </div>
     </template>

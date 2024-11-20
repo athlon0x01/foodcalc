@@ -28,7 +28,7 @@
           <div class="col-md-1 border"><strong>Carbs</strong></div>
           <div class="col-md-1 border"><strong>Weight</strong></div>
         </div>
-        <div v-for="dish in meal.dishes" :key="dish.id">
+        <div v-for="dish in meal.dishes" :key="'mealDish-' + dish.id">
           <dish-view v-bind:dish="dish"/>
         </div>
       </template>
@@ -45,7 +45,7 @@
           <div class="col-md-1 border"><strong>Weight</strong></div>
         </div>
         <!--Content-->
-        <div v-for="product in meal.products" :key="product.id">
+        <div v-for="product in meal.products" :key="'mealProduct-' + product.id">
           <product-view v-bind:product="product"/>
         </div>
         <div style="padding-bottom: 10px"/>
