@@ -197,7 +197,7 @@ public class DishEndpointTest extends ApiUnitTest{
 
           doNothing().when(service).updateDish(7L, dishInfo);
 
-          put("/dishes?planId=7" + DISH_1_ID, dishInfo).andReturn();
+          put("/dishes/" + DISH_1_ID + "?planId=7", dishInfo).andReturn();
 
           verify(service).updateDish(7L, dishInfo);
      }
@@ -209,7 +209,7 @@ public class DishEndpointTest extends ApiUnitTest{
 
           put400("/dishes/55", dishInfoToUpdate).andExpect(jsonPath("$", is(message)));
 
-          verify(service, never()).updateDish(anyLong(), dishInfoToUpdate);
+          verify(service, never()).updateDish(anyLong(), eq(dishInfoToUpdate));
      }
 
      @Test

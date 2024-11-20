@@ -8,6 +8,7 @@ import com.outdoor.foodcalc.domain.model.product.Product;
 import com.outdoor.foodcalc.domain.model.product.ProductCategory;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import com.outdoor.foodcalc.domain.repository.dish.IDishRepo;
+import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
 import com.outdoor.foodcalc.domain.repository.product.IProductRefRepo;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -60,6 +61,8 @@ public class DishDomainServiceTest {
     private IDishRepo dishRepo;
     @Mock
     private IProductRefRepo productRefRepo;
+    @Mock
+    private IFoodPlanRepo foodPlanRepo;
     @Mock
     private DishCategoryDomainService dishCategoryService;
 
@@ -122,15 +125,15 @@ public class DishDomainServiceTest {
         Dish dishToAdd = Dish.builder().dishId(-1).name("borsch").category(dummyDishCategory).template(true).build();
         Dish expectedDish = Dish.builder().dishId(DISH_ID).name("borsch").category(dummyDishCategory).template(true).build();
         when(dishCategoryService.getCategory(CATEGORY_ID)).thenReturn(Optional.of(dummyDishCategory));
-        when(productRefRepo.insertDishProducts(dishToAdd)).thenReturn(true);
         when(dishRepo.addDish(dishToAdd)).thenReturn(DISH_ID);
+        when(productRefRepo.insertDishProducts(expectedDish)).thenReturn(true);
 
         Dish actualDish = service.addTemplateDish(dishToAdd);
         assertEquals(expectedDish, actualDish);
 
         verify(dishCategoryService).getCategory(CATEGORY_ID);
         verify(dishRepo).addDish(dishToAdd);
-        verify(productRefRepo).insertDishProducts(dishToAdd);
+        verify(productRefRepo).insertDishProducts(expectedDish);
     }
 
     @Test
