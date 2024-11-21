@@ -83,8 +83,13 @@ public class DishRepo extends AbstractRepository<Dish>
 
     static final String DELETE_ALL_DISHES_LINKS_FOR_MEAL_SQL = "delete from meal_dish where meal = :mealId";
 
+    static final String DELETE_ALL_DISHES_LINKS_FOR_DAY_SQL = "delete from day_dish where day = :dayId";
+
     static final String DELETE_ALL_DISHES_FOR_MEAL_SQL = "delete from dish " +
             "where id in (select md.dish from meal_dish md where md.meal = :mealId)";
+
+    static final String DELETE_ALL_DISHES_FOR_DAY_SQL = "delete from dish " +
+            "where id in (select dd.dish from day_dish dd where dd.day = :dayId)";
 
     @Override
     public List<Dish> getAllTemplateDishes() {
@@ -249,5 +254,18 @@ public class DishRepo extends AbstractRepository<Dish>
         SqlParameterSource parameters = new MapSqlParameterSource()
                 .addValue("mealId", mealId);
         jdbcTemplate.update(DELETE_ALL_DISHES_LINKS_FOR_MEAL_SQL, parameters);
+    }
+
+    @Override
+    public void deleteAllDishesForDay(long dayId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
+        jdbcTemplate.update(DELETE_ALL_DISHES_FOR_DAY_SQL, parameters);
+    }
+
+    @Override
+    public void detachAllDishesFromDay(long dayId) {
+        SqlParameterSource parameters = new MapSqlParameterSource()
+                .addValue("dayId", dayId);
+        jdbcTemplate.update(DELETE_ALL_DISHES_LINKS_FOR_DAY_SQL, parameters);
     }
 }

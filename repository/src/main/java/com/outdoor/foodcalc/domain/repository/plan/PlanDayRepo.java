@@ -40,6 +40,8 @@ public class PlanDayRepo extends AbstractRepository<PlanDay> implements IPlanDay
 
     static final String SELECT_FOOD_PLAN_DAY_EXIST_SQL = "select count(*) from day_plan where id = :dayId";
 
+    static final String SELECT_MEAL_COUNTS_FOR_DAY_SQL = "select count(*) from day_meal where day = :dayId";
+
     @Override
     public List<PlanDay> getPlanDays(long planId) {
         SqlParameterSource parameters = new MapSqlParameterSource()
@@ -98,6 +100,13 @@ public class PlanDayRepo extends AbstractRepository<PlanDay> implements IPlanDay
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", id);
         Long count = jdbcTemplate.queryForObject(SELECT_FOOD_PLAN_DAY_EXIST_SQL, parameters, Long.class);
         return count != null && count > 0;
+    }
+
+    @Override
+    public int getMealsCountForDay(long dayId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", dayId);
+        Integer count = jdbcTemplate.queryForObject(SELECT_MEAL_COUNTS_FOR_DAY_SQL, parameters, Integer.class);
+        return count != null ? count : 0;
     }
 
     @Override

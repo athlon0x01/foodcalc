@@ -224,11 +224,6 @@ public class DishDomainService {
         }
     }
 
-    //TODO implement me
-    public void updateDayDishes(long dayId, List<Dish> ids) {
-        //reorderDishes(mealsDishes, mealId, ids);
-    }
-
     /**
      * Delete {@link Dish} object with all related {@link ProductRef}.
      *
@@ -247,15 +242,16 @@ public class DishDomainService {
         }
     }
 
-    public void deleteMealDishes(long mealId) {
+    public void deleteAllDishesForMeal(long mealId) {
         productRefRepo.deleteAllDishProductsForMeal(mealId);
         dishRepo.detachAllDishesFromMeal(mealId);
         dishRepo.deleteAllDishesForMeal(mealId);
     }
 
-    //TODO implement me
-    public void deleteDayDishes(long dayId) {
-
+    public void deleteAllDishesForDay(long dayId) {
+        productRefRepo.deleteAllDishProductsForDay(dayId);
+        dishRepo.detachAllDishesFromDay(dayId);
+        dishRepo.deleteAllDishesForDay(dayId);
     }
 
     private Optional<Dish> buildNonTemplateDish(long id) {

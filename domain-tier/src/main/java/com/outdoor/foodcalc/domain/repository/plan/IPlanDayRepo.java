@@ -20,4 +20,6 @@ public interface IPlanDayRepo {
     boolean deletePlanDay(long planId, long id);
 
     boolean existsPlanDay(long id);
+
+    int getMealsCountForDay(long dayId);
 }
