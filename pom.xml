@@ -6,7 +6,7 @@
 
     <groupId>com.outdoor.foodcalc</groupId>
     <artifactId>foodcalc</artifactId>
-    <version>0.3-SNAPSHOT</version>
+    <version>0.4</version>
 
     <packaging>pom</packaging>
 
@@ -18,7 +18,7 @@
     </modules>
 
     <properties>
-        <foodcalc.version>0.3-SNAPSHOT</foodcalc.version>
+        <foodcalc.version>0.4</foodcalc.version>
         <spring.version>5.3.20</spring.version>
         <jackson.version>2.13.3</jackson.version>
         <common-io.version>2.11.0</common-io.version>
