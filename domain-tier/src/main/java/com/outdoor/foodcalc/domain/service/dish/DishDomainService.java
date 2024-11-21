@@ -225,11 +225,6 @@ public class DishDomainService {
     }
 
     //TODO implement me
-    public void updateMealDishes(long mealId, List<Dish> ids) {
-        //reorderDishes(mealsDishes, mealId, ids);
-    }
-
-    //TODO implement me
     public void updateDayDishes(long dayId, List<Dish> ids) {
         //reorderDishes(mealsDishes, mealId, ids);
     }
@@ -252,9 +247,10 @@ public class DishDomainService {
         }
     }
 
-    //TODO implement me
     public void deleteMealDishes(long mealId) {
-
+        productRefRepo.deleteAllDishProductsForMeal(mealId);
+        dishRepo.detachAllDishesFromMeal(mealId);
+        dishRepo.deleteAllDishesForMeal(mealId);
     }
 
     //TODO implement me

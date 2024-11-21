@@ -73,6 +73,9 @@ public class MealDomainService {
     }
 
     public void deleteMeal(long planId, long dayId, long id) {
+        if(!mealRepo.existsMeal(id)) {
+            throw new NotFoundException("Meal with id=" + id + " doesn't exist");
+        }
         productRefRepo.deleteMealProducts(id);
         dishService.deleteMealDishes(id);
         mealRepo.detachMeal(id);
@@ -104,24 +107,24 @@ public class MealDomainService {
         return newMeal;
     }
 
-    public void updateMeal(long planId, long dayId, Meal meal) {
-        var mealType = mealTypeDomainService.getMealType(meal.getType().getTypeId())
-                .orElseThrow(() -> new NotFoundException("Failed to get Meal Type, id = " + meal.getType().getTypeId()));
+    public void updateMeal(long planId, Meal meal) {
         long mealId = meal.getMealId();
         if(!mealRepo.existsMeal(mealId)) {
             throw new NotFoundException("Meal with id=" + mealId + " doesn't exist");
         }
+        var mealType = mealTypeDomainService.getMealType(meal.getType().getTypeId())
+                .orElseThrow(() -> new NotFoundException("Failed to get Meal Type, id = " + meal.getType().getTypeId()));
+        meal.setType(mealType);
         //updating products of the day
         productRefRepo.deleteMealProducts(mealId);
         if (!productRefRepo.insertMealProducts(meal)) {
             throw new FoodcalcDomainException("Failed to add products for meal with id=" + mealId);
         }
-
-        dishService.updateMealDishes(mealId, meal.getDishes());
+        //TODO update dishes order
+        //dishService.updateMealDishes(mealId, meal.getDishes());
         if(!mealRepo.updateMeal(meal)) {
             throw new FoodcalcDomainException("Failed to update meal with id=" + mealId);
         }
-        meal.setType(mealType);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
     }
 }
