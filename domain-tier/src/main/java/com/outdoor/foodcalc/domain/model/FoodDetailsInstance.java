@@ -41,4 +41,12 @@ public class FoodDetailsInstance {
         this.carbs = theCarbs;
         this.weight = theWeight;
     }
+
+    public FoodDetailsInstance(FoodDetailsInstance foodDetails, int members) {
+        this.calorific = foodDetails.calorific * members;
+        this.proteins = foodDetails.proteins * members;
+        this.fats = foodDetails.fats * members;
+        this.carbs = foodDetails.carbs * members;
+        this.weight = foodDetails.weight * members;
+    }
 }

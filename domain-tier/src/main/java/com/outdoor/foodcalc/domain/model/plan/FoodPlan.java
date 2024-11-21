@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.domain.model.plan;
 
 import com.outdoor.foodcalc.domain.model.ComplexFoodEntity;
+import com.outdoor.foodcalc.domain.model.FoodDetailsInstance;
 import com.outdoor.foodcalc.domain.model.IDomainEntity;
 import com.outdoor.foodcalc.domain.model.product.ProductRef;
 import lombok.AllArgsConstructor;
@@ -54,5 +55,11 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity {
             return sameCollectionAs(days, that.days);
         }
         return false;
+    }
+
+    @Override
+    public FoodDetailsInstance getFoodDetails() {
+        FoodDetailsInstance foodDetails = super.getFoodDetails();
+        return new FoodDetailsInstance(foodDetails, members);
     }
 }
