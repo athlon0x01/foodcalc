@@ -29,10 +29,10 @@ public class MealEndpoint extends AbstractEndpoint {
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
-    public List<MealView> getAllMeals(@PathVariable("planId") long planId,
+    public List<MealView> getAllMealsForDay(@PathVariable("planId") long planId,
                                       @PathVariable("dayId") long dayId) {
-        LOG.debug("Getting food day id = {} meals", dayId);
-        return mealService.getDayMeals(planId, dayId);
+        LOG.debug("Getting meals for day id = {}, plan id = {}", dayId, planId);
+        return mealService.getDayMeals(dayId);
     }
 
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
@@ -68,7 +68,7 @@ public class MealEndpoint extends AbstractEndpoint {
                            @RequestBody @Valid MealInfo newMeal) {
         verifyEntityId(id, newMeal);
         LOG.debug("Updating meal id = {}, day - {}", id, dayId);
-        mealService.updateMeal(planId, dayId, newMeal);
+        mealService.updateMeal(planId, newMeal);
     }
 
     @PostMapping(path = "{mealId}/dishes/{id}", produces = APPLICATION_JSON_VALUE)

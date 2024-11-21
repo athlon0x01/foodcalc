@@ -72,4 +72,6 @@ public interface IProductRefRepo {
     Map<Long, List<ProductRef>> getDishesProductsForAllMealsInPlan(long planId);
 
     Map<Long, List<ProductRef>> getDishesProductsForAllDaysInPlan(long planId);
+
+    void deleteAllDishProductsForMeal(long mealId);
 }

@@ -84,4 +84,8 @@ public interface IDishRepo {
     Map<Long, List<Dish>> getMealDishesForAllMealsInPlan(long planId);
 
     Map<Long, List<Dish>> getDayDishesForAllDaysInPlan(long planId);
+
+    void deleteAllDishesForMeal(long mealId);
+
+    void detachAllDishesFromMeal(long mealId);
 }

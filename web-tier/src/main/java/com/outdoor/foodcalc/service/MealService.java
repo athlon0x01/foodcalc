@@ -29,7 +29,7 @@ public class MealService {
         this.productService = productService;
     }
 
-    public List<MealView> getDayMeals(long planId, long dayId) {
+    public List<MealView> getDayMeals(long dayId) {
         return mealDomainService.getDayMeals(dayId).stream()
                 .map(this::mapView)
                 .collect(Collectors.toList());
@@ -55,7 +55,7 @@ public class MealService {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void updateMeal(long planId, long dayId, MealInfo meal) {
+    public void updateMeal(long planId, MealInfo meal) {
         Meal domainMeal = Meal.builder()
                 .mealId(meal.getId())
                 .type(new MealType(meal.getTypeId(), ""))
@@ -63,7 +63,7 @@ public class MealService {
                 .dishes(dishService.buildMockDishes(meal.getDishes()))
                 .products(productService.buildMockProducts(meal.getProducts()))
                 .build();
-        mealDomainService.updateMeal(planId, dayId, domainMeal);
+        mealDomainService.updateMeal(planId, domainMeal);
     }
 
     MealInfo mapInfo(Meal meal) {

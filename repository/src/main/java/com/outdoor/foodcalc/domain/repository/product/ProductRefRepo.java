@@ -167,6 +167,9 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
             "(delete from meal_product where meal = :mealId returning *) " +
             "select count(*) from deleted";
 
+    static final String DELETE_ALL_DISH_PRODUCTS_FOR_MEAL_SQL = "delete from dish_product " +
+            "where dish in (select md.dish from meal_dish md where md.meal = :mealId)";
+
 
     @Autowired
     public ProductRefRepo(ProductRepo productRepo) {
@@ -328,5 +331,11 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     public Map<Long, List<ProductRef>> getDishesProductsForAllDaysInPlan(long planId) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
         return jdbcTemplate.query(SELECT_DISHES_PRODUCTS_FOR_ALL_DAY_IN_PLAN_SQL, parameters, this::extractData);
+    }
+
+    @Override
+    public void deleteAllDishProductsForMeal(long mealId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("mealId", mealId);
+        jdbcTemplate.update(DELETE_ALL_DISH_PRODUCTS_FOR_MEAL_SQL, parameters);
     }
 }
