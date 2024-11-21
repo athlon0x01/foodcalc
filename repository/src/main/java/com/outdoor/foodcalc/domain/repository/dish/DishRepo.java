@@ -72,12 +72,12 @@ public class DishRepo extends AbstractRepository<Dish>
     static final String SELECT_DISH_EXIST_SQL = "select count(*) from dish where id = :dishId";
 
     static final String INSERT_DAY_DISH_LINK_SQL = "insert into day_dish (day, dish, ndx) " +
-            "values (:dayId, :dishId, (select count(*) from day_dish where day = :dayId))";
+            "values (:dayId, :dishId, (select coalesce(max(ndx) + 1, 0) from day_dish where day = :dayId))";
 
     static final String DELETE_DAY_DISH_LINK_SQL = "delete from day_dish where day = :dayId and dish = :dishId";
 
     static final String INSERT_MEAL_DISH_LINK_SQL = "insert into meal_dish (meal, dish, ndx) " +
-            "values (:mealId, :dishId, (select count(*) from meal_dish where meal = :mealId))";
+            "values (:mealId, :dishId, (select coalesce(max(ndx) + 1, 0) from meal_dish where meal = :mealId))";
 
     static final String DELETE_MEAL_DISH_LINK_SQL = "delete from meal_dish where meal = :mealId and dish = :dishId";
 

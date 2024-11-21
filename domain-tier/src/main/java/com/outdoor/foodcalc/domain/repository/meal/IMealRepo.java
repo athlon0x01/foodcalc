@@ -20,8 +20,6 @@ public interface IMealRepo {
 
     boolean updateMeal(Meal meal);
 
-    void updateDayMealIndex(long dayId, long mealId, int index);
-
     boolean deleteMeal(long mealId);
 
     void detachMeal(long mealId);

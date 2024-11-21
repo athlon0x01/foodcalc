@@ -28,12 +28,9 @@ public class PlanDayRepo extends AbstractRepository<PlanDay> implements IPlanDay
             "where dp.plan = :planId and dp.id = :dayId";
 
     static final String INSERT_FOOD_PLAN_DAY_SQL = "insert into day_plan (day, ndx, description, plan) " +
-            "values (:day, (select count(*) from day_plan where plan = :planId), :description, :planId)";
+            "values (:day, (select coalesce(max(ndx) + 1, 0) from day_plan where plan = :planId), :description, :planId)";
 
     static final String UPDATE_FOOD_PLAN_DAY_SQL = "update day_plan set day = :day, description = :description " +
-            "where id = :dayId";
-
-    static final String UPDATE_FOOD_PLAN_DAY_INDEX_SQL = "update day_plan set ndx = :ndx " +
             "where id = :dayId";
 
     static final String DELETE_FOOD_PLAN_DAY_SQL = "delete from day_plan where id = :dayId";
@@ -79,14 +76,6 @@ public class PlanDayRepo extends AbstractRepository<PlanDay> implements IPlanDay
         MapSqlParameterSource parameters = getSqlParameterSource(day)
                 .addValue("dayId", day.getDayId());
         return jdbcTemplate.update(UPDATE_FOOD_PLAN_DAY_SQL, parameters) > 0;
-    }
-
-    @Override
-    public void updatePlanDayIndex(long dayId, int index) {
-        SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("dayId", dayId)
-                .addValue("ndx", index);
-        jdbcTemplate.update(UPDATE_FOOD_PLAN_DAY_INDEX_SQL, parameters);
     }
 
     @Override

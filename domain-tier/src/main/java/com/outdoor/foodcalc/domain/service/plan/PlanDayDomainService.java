@@ -17,7 +17,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class PlanDayDomainService {
@@ -75,19 +74,7 @@ public class PlanDayDomainService {
         productRefRepo.deleteDayProducts(id);
         dishService.deleteAllDishesForDay(id);
         dayRepo.deletePlanDay(planId, id);
-        //TODO simplify it
-        //update days indexes, to have proper index number for new days
-        List<PlanDay> planDays = dayRepo.getPlanDays(planId).stream()
-                .filter(day -> day.getDayId() != id)
-                .collect(Collectors.toList());
-        updateDaysOrder(planDays);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
-    }
-
-    private void updateDaysOrder(List<PlanDay> planDays) {
-        for (int i = 0; i < planDays.size(); i++) {
-            dayRepo.updatePlanDayIndex(planDays.get(i).getDayId(), i);
-        }
     }
 
 

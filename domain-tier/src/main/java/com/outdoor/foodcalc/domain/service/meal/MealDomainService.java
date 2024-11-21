@@ -13,7 +13,6 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class MealDomainService {
@@ -72,7 +71,7 @@ public class MealDomainService {
         });
     }
 
-    public void deleteMeal(long planId, long dayId, long id) {
+    public void deleteMeal(long planId, long id) {
         if(!mealRepo.existsMeal(id)) {
             throw new NotFoundException("Meal with id=" + id + " doesn't exist");
         }
@@ -80,18 +79,7 @@ public class MealDomainService {
         dishService.deleteAllDishesForMeal(id);
         mealRepo.detachMeal(id);
         mealRepo.deleteMeal(id);
-        //update meals indexes, to have proper index number for new meals
-        List<Meal> meals = mealRepo.getDayMeals(dayId).stream()
-                .filter(meal -> meal.getMealId() != id)
-                .collect(Collectors.toList());
-        updateMealsOrder(dayId, meals);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
-    }
-
-    private void updateMealsOrder(long dayId, List<Meal> meals) {
-        for (int i = 0; i < meals.size(); i++) {
-            mealRepo.updateDayMealIndex(dayId, meals.get(i).getMealId(), i);
-        }
     }
 
     public Meal addMeal(long planId, long dayId, Meal meal) {

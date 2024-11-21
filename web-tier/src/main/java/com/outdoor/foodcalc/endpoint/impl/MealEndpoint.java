@@ -49,7 +49,7 @@ public class MealEndpoint extends AbstractEndpoint {
                            @PathVariable("dayId") long dayId,
                            @PathVariable("id") long id) {
         LOG.debug("Removing meal id = {}, day - {}", id, dayId);
-        mealService.deleteMeal(planId, dayId, id);
+        mealService.deleteMeal(planId, id);
     }
 
     @PostMapping(consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
