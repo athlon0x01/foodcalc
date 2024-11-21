@@ -52,6 +52,9 @@ public class FoodPlanDomainService {
         if(!planRepo.existsFoodPlan(id)) {
             throw new NotFoundException("Food plan with id=" + id + " doesn't exist");
         }
+        if(planRepo.getDaysCountForPlan(id) > 0) {
+            throw new NotFoundException("Couldn't delete plan with id=" + id + ", with attached days");
+        }
         if (!planRepo.deleteFoodPlan(id)) {
             throw new FoodcalcDomainException("Failed to delete Food plan with id=" + id);
         }

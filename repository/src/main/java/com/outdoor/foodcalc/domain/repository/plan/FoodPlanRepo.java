@@ -31,7 +31,7 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
     static final String SELECT_ALL_FOOD_PLANS_SQL = "select fp.id as id, fp.name as name, fp.members as members, " +
             "fp.createdon as createdOn, fp.lastupdated as lastUpdated, fp.description as description, " +
             "(select count(*) from day_plan where plan = fp.id) as duration " +
-            "from food_plan fp";
+            "from food_plan fp order by fp.lastupdated desc";
 
     static final String SELECT_FOOD_PLAN_SQL = "select fp.id as id, fp.name as name, fp.members as members, " +
             "fp.createdon as createdOn, fp.lastupdated as lastUpdated, fp.description as description, 0 as duration " +
@@ -47,6 +47,8 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
     static final String DELETE_FOOD_PLAN_SQL = "delete from food_plan where id = :id";
 
     static final String SELECT_FOOD_PLAN_EXIST_SQL = "select count(*) from food_plan where id = :id";
+
+    static final String SELECT_DAY_COUNTS_FOR_PLAN_SQL = "select count(*) from day_plan where plan = :planId";
 
     static final String UPDATE_FOOD_PLAN_LAST_UPDATED_SQL = "update food_plan set lastupdated = :lastUpdated " +
             "where id = :id";
@@ -109,15 +111,10 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
     }
 
     @Override
-    //TODO implement me
-    public void saveLastUpdatedByDayId(long dayId, ZonedDateTime lastUpdated) {
-
-    }
-
-    @Override
-    //TODO implement me
-    public void saveLastUpdatedByMealId(long mealId, ZonedDateTime lastUpdated) {
-
+    public int getDaysCountForPlan(long planId) {
+        SqlParameterSource parameters = new MapSqlParameterSource().addValue("planId", planId);
+        Integer count = jdbcTemplate.queryForObject(SELECT_DAY_COUNTS_FOR_PLAN_SQL, parameters, Integer.class);
+        return count != null ? count : 0;
     }
 
     @Override

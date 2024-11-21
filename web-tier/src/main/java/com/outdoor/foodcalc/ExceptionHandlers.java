@@ -30,19 +30,19 @@ public class ExceptionHandlers {
 
     @ExceptionHandler(value = {IllegalArgumentException.class, ValidationException.class})
     public ResponseEntity<String> validationException(final RuntimeException e) {
-        LOG.error("Validation error", e);
+        LOG.error("Validation error - {}", e.getMessage());
         return new ResponseEntity<>(getErrorMessage(e), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(NotFoundException.class)
     public ResponseEntity<String> notFoundException(final NotFoundException e) {
-        LOG.error("Item was not found", e);
+        LOG.error("Item was not found -  {}", e.getMessage());
         return new ResponseEntity<>(getErrorMessage(e), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(FoodcalcDomainException.class)
     public ResponseEntity<String> foodcalcDomainException(final FoodcalcDomainException e) {
-        LOG.error("Some domain error occurred", e);
+        LOG.error("Some domain error occurred - {}", e.getMessage());
         return new ResponseEntity<>(getErrorMessage(e), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
