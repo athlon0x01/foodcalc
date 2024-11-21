@@ -77,7 +77,7 @@ public class MealDomainService {
             throw new NotFoundException("Meal with id=" + id + " doesn't exist");
         }
         productRefRepo.deleteMealProducts(id);
-        dishService.deleteMealDishes(id);
+        dishService.deleteAllDishesForMeal(id);
         mealRepo.detachMeal(id);
         mealRepo.deleteMeal(id);
         //update meals indexes, to have proper index number for new meals

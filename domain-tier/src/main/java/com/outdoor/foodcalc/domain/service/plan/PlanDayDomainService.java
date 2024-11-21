@@ -66,9 +66,16 @@ public class PlanDayDomainService {
     }
 
     public void deleteFoodDay(long planId, long id) {
+        if(!dayRepo.existsPlanDay(id)) {
+            throw new NotFoundException("Plan day with id=" + id + " doesn't exist");
+        }
+        if(dayRepo.getMealsCountForDay(id) > 0) {
+            throw new NotFoundException("Couldn't delete plan day with id=" + id + ", with attached meals");
+        }
         productRefRepo.deleteDayProducts(id);
-        dishService.deleteDayDishes(id);
+        dishService.deleteAllDishesForDay(id);
         dayRepo.deletePlanDay(planId, id);
+        //TODO simplify it
         //update days indexes, to have proper index number for new days
         List<PlanDay> planDays = dayRepo.getPlanDays(planId).stream()
                 .filter(day -> day.getDayId() != id)
@@ -99,17 +106,13 @@ public class PlanDayDomainService {
         if(!dayRepo.existsPlanDay(dayId)) {
             throw new NotFoundException("Plan day with id=" + dayId + " doesn't exist");
         }
-        dishService.updateDayDishes(dayId, foodDay.getDishes());
         //updating products of the day
         productRefRepo.deleteDayProducts(dayId);
         if (!productRefRepo.insertDayProducts(foodDay)) {
             throw new FoodcalcDomainException("Failed to add products for day with id=" + dayId);
         }
-        //TODO verify if we need it
-//        dayRepo.deleteDayMeals(dayId);
-//        if (!foodDay.getMeals().isEmpty() && !dayRepo.addMealsToDay(foodDay)) {
-//            throw new FoodcalcDomainException("Failed to add meals for day with id=" + dayId);
-//        }
+        //TODO update dishes & meals order
+        //dishService.updateDayDishes(dayId, foodDay.getDishes());
         if(!dayRepo.updatePlanDay(foodDay)) {
             throw new FoodcalcDomainException("Failed to plan day with id=" + dayId);
         }

@@ -88,4 +88,8 @@ public interface IDishRepo {
     void deleteAllDishesForMeal(long mealId);
 
     void detachAllDishesFromMeal(long mealId);
+
+    void deleteAllDishesForDay(long dayId);
+
+    void detachAllDishesFromDay(long dayId);
 }
