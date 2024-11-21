@@ -42,8 +42,8 @@ public class MealService {
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
-    public void deleteMeal(long planId, long dayId, long id) {
-        mealDomainService.deleteMeal(planId, dayId, id);
+    public void deleteMeal(long planId, long id) {
+        mealDomainService.deleteMeal(planId, id);
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)

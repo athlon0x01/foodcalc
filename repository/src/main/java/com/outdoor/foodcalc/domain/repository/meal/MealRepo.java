@@ -43,13 +43,10 @@ public class MealRepo extends AbstractRepository<Meal>
     static final String INSERT_MEAL_SQL = "insert into meal (type, description) values (:type, :description)";
 
     static final String INSERT_DAY_MEAL_LINK_SQL = "insert into day_meal (day, meal, ndx) " +
-            "values (:dayId, :mealId, (select count(*) from day_meal where day = :dayId))";
+            "values (:dayId, :mealId, (select coalesce(max(ndx) + 1, 0) from day_meal where day = :dayId))";
 
     static final String UPDATE_MEAL_SQL = "update meal set type = :type, description = :description " +
             "where id = :mealId";
-
-    static final String UPDATE_DAY_MEAL_INDEX_SQL = "update day_meal set ndx = :ndx " +
-            "where day = :dayId and meal = :mealId";
 
     static final String DELETE_MEAL_SQL = "delete from meal where id = :mealId";
 
@@ -108,15 +105,6 @@ public class MealRepo extends AbstractRepository<Meal>
         MapSqlParameterSource parameters = buildSqlParameterSource(meal)
                 .addValue(MEAL_ID, meal.getMealId());
         return jdbcTemplate.update(UPDATE_MEAL_SQL, parameters) > 0;
-    }
-
-    @Override
-    public void updateDayMealIndex(long dayId, long mealId, int index) {
-        SqlParameterSource parameters = new MapSqlParameterSource()
-                .addValue("dayId", dayId)
-                .addValue(MEAL_ID, mealId)
-                .addValue("ndx", index);
-        jdbcTemplate.update(UPDATE_DAY_MEAL_INDEX_SQL, parameters);
     }
 
     @Override
