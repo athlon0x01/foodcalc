@@ -30,6 +30,9 @@
         <div class="row">
           <div class="col-md-2 border bg-light"><strong>Duration</strong></div>
           <div class="col-md-9 border">{{foodPlan.days.length}}</div>
+          <div class="col-md-1">
+            <b-button variant="outline-primary" size="sm" v-on:click="exportPlan">Export</b-button>
+          </div>
         </div>
         <div class="row">
           <div class="col-md-2 border bg-light"><strong>Created On</strong></div>
@@ -92,6 +95,7 @@
 
 <script>
 import axios from 'axios'
+import saveAs from 'file-saver'
 import FoodDayView from 'src/components/plan/FoodDayView'
 
 export default {
@@ -120,6 +124,23 @@ export default {
 
     mapDays () {
       return this.foodPlan.days.map(d => d.id)
+    },
+
+    exportPlan () {
+      axios.get(this.foodPlansEndpointUrl + this.$route.params.planId + '/export',
+        {responseType: 'blob'})
+        .then((response) => {
+          // extracting filename from the headers
+          let contentDisposition = response.headers['content-disposition']
+          let startFileNameIndex = contentDisposition.indexOf('"') + 1
+          let endFileNameIndex = contentDisposition.lastIndexOf('"')
+          let filename = contentDisposition.substring(startFileNameIndex, endFileNameIndex)
+          saveAs(new Blob([response.data], {type: 'application/octet-stream'}), filename, {autoBOM: false})
+          this.errorMessage = null
+        })
+        .catch(e => {
+          this.getErrorMessage(e, 'Failed to export food plan ' + JSON.stringify(this.foodPlan))
+        })
     },
 
     updatePlanInfo () {

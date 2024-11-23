@@ -29,7 +29,7 @@ public class ExportEndpoint {
         this.excelExportService = excelExportService;
     }
 
-    @GetMapping(path = "/{planId}/download" )
+    @GetMapping(path = "/{planId}/export" )
     public ResponseEntity<byte[]> exportFoodPlan(@PathVariable("planId") long planId) throws IOException {
         LOG.debug("Exporting food plan id = {}", planId);
         try (XSSFWorkbook workbook = excelExportService.exportFoodPlan(planId)) {
