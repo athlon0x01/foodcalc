@@ -29,11 +29,12 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity {
     private final long id;
     private String name;
     private String description;
-    private int members;
     private ZonedDateTime createdOn;
     private ZonedDateTime lastUpdated;
     @Builder.Default
     private List<PlanDay> days = new ArrayList<>();
+    @Builder.Default
+    private List<Hiker> members = new ArrayList<>();
 
     @Override
     public Collection<ProductRef> getAllProducts() {
@@ -47,11 +48,11 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity {
         if (this.equals(other)) {
             FoodPlan that = (FoodPlan) other;
 
-            if (members != that.members) return false;
             if (!Objects.equals(name, that.name)) return false;
             if (!Objects.equals(description, that.description)) return false;
             if (!Objects.equals(createdOn, that.createdOn)) return false;
             if (!Objects.equals(lastUpdated, that.lastUpdated)) return false;
+            if (!sameCollectionAs(members, that.members)) return false;
             return sameCollectionAs(days, that.days);
         }
         return false;
@@ -60,6 +61,6 @@ public class FoodPlan extends ComplexFoodEntity implements IDomainEntity {
     @Override
     public FoodDetailsInstance getFoodDetails() {
         FoodDetailsInstance foodDetails = super.getFoodDetails();
-        return new FoodDetailsInstance(foodDetails, members);
+        return new FoodDetailsInstance(foodDetails, members.size());
     }
 }

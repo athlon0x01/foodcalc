@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.domain.repository.plan;
 
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
+import com.outdoor.foodcalc.domain.model.plan.Hiker;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.repository.AbstractRepository;
 import org.springframework.jdbc.core.RowMapper;
@@ -28,12 +29,13 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
     private static final String LAST_UPDATED = "lastUpdated";
     private static final String DESCRIPTION = "description";
 
-    static final String SELECT_ALL_FOOD_PLANS_SQL = "select fp.id as id, fp.name as name, fp.members as members, " +
+    static final String SELECT_ALL_FOOD_PLANS_SQL = "select fp.id as id, fp.name as name, " +
             "fp.createdon as createdOn, fp.lastupdated as lastUpdated, fp.description as description, " +
-            "(select count(*) from day_plan where plan = fp.id) as duration " +
+            "(select count(*) from day_plan where plan = fp.id) as duration, " +
+            "(select count(*) from hiker where plan = fp.id) as members " +
             "from food_plan fp order by fp.lastupdated desc";
 
-    static final String SELECT_FOOD_PLAN_SQL = "select fp.id as id, fp.name as name, fp.members as members, " +
+    static final String SELECT_FOOD_PLAN_SQL = "select fp.id as id, fp.name as name, 0 as members, " +
             "fp.createdon as createdOn, fp.lastupdated as lastUpdated, fp.description as description, 0 as duration " +
             "from food_plan fp " +
             "where id = :id";
@@ -131,10 +133,15 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
         for (int i = 0; i < duration; i++) {
             days.add(PlanDay.builder().build());
         }
+        List<Hiker> hikers = new ArrayList<>();
+        int members = resultSet.getInt(MEMBERS);
+        for (int i = 0; i < members; i++) {
+            hikers.add(Hiker.builder().build());
+        }
         return FoodPlan.builder()
                 .id(resultSet.getLong(ID))
                 .name(resultSet.getString(NAME))
-                .members(resultSet.getInt(MEMBERS))
+                .members(hikers)
                 .description(resultSet.getString(DESCRIPTION))
                 .createdOn(createdOn)
                 .lastUpdated(lastUpdated)

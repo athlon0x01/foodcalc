@@ -79,7 +79,7 @@ public class PlanDayRepo extends AbstractRepository<PlanDay> implements IPlanDay
     }
 
     @Override
-    public boolean deletePlanDay(long planId, long id) {
+    public boolean deletePlanDay(long id) {
         SqlParameterSource parameters = new MapSqlParameterSource().addValue("dayId", id);
         return jdbcTemplate.update(DELETE_FOOD_PLAN_DAY_SQL, parameters) > 0;
     }

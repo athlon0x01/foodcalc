@@ -29,7 +29,7 @@ public class ExcelExportService {
         aRow.createCell(1).setCellValue(plan.getName());
         aRow = sheet.createRow(1);
         aRow.createCell(0).setCellValue("Members");
-        aRow.createCell(1).setCellValue(plan.getMembers());
+        aRow.createCell(1).setCellValue(plan.getMembers().size());
         aRow = sheet.createRow(2);
         aRow.createCell(0).setCellValue("Description");
         aRow.createCell(1).setCellValue(plan.getDescription());

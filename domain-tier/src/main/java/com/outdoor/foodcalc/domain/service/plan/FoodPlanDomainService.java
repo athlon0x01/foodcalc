@@ -14,10 +14,12 @@ public class FoodPlanDomainService {
 
     private final IFoodPlanRepo planRepo;
     private final PlanDayDomainService dayService;
+    private final HikerDomainService hikerService;
 
-    public FoodPlanDomainService(IFoodPlanRepo planRepo, PlanDayDomainService dayService) {
+    public FoodPlanDomainService(IFoodPlanRepo planRepo, PlanDayDomainService dayService, HikerDomainService hikerService) {
         this.planRepo = planRepo;
         this.dayService = dayService;
+        this.hikerService = hikerService;
     }
 
     public List<FoodPlan> getAllFoodPlansNoDays() {
@@ -28,6 +30,7 @@ public class FoodPlanDomainService {
         return planRepo.getFoodPlan(id)
                 .map(plan -> {
                     plan.setDays(dayService.getPlanDays(plan.getId()));
+                    plan.setMembers(hikerService.getPlanHikers(plan.getId()));
                     return plan;
                 });
     }

@@ -124,3 +124,12 @@ CREATE TABLE day_product
 --product weight in 0.1 grams
     weight  integer  NOT NULL
 );
+
+CREATE TABLE hiker
+(
+    id          bigserial PRIMARY KEY,
+    name        varchar(128),
+    description varchar(1024),
+    weight_coef real    DEFAULT 1.0,
+    plan        bigint REFERENCES food_plan
+);

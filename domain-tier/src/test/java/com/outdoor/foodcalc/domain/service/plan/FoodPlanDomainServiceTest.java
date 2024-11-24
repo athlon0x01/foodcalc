@@ -23,13 +23,15 @@ class FoodPlanDomainServiceTest {
     private IFoodPlanRepo planRepo;
     @Mock
     private PlanDayDomainService dayService;
+    @Mock
+    private HikerDomainService hikerService;
 
     @InjectMocks
     private FoodPlanDomainService service;
 
     @Test
     void getFoodPlan() {
-        FoodPlan plan = FoodPlan.builder().id(123L).description("Dummy Plan").members(3).build();
+        FoodPlan plan = FoodPlan.builder().id(123L).description("Dummy Plan").build();
         PlanDay day = PlanDay.builder().dayId(54321L).date(LocalDate.of(2024, 8, 21)).build();
 
         when(planRepo.getFoodPlan(123L)).thenReturn(Optional.of(plan));

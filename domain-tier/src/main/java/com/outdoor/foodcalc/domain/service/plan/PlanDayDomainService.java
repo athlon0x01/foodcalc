@@ -73,7 +73,7 @@ public class PlanDayDomainService {
         }
         productRefRepo.deleteDayProducts(id);
         dishService.deleteAllDishesForDay(id);
-        dayRepo.deletePlanDay(planId, id);
+        dayRepo.deletePlanDay(id);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
     }
 
