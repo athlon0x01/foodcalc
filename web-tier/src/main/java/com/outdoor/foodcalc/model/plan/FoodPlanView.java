@@ -18,7 +18,7 @@ import java.util.List;
 @SuperBuilder
 public class FoodPlanView extends FoodView {
     private String name;
-    private int members;
+    private List<HikerInfo> members;
     private String description;
     @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss")
     private ZonedDateTime createdOn;

@@ -24,7 +24,6 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
 
     private static final String ID = "id";
     private static final String NAME = "name";
-    private static final String MEMBERS = "members";
     private static final String CREATED_ON = "createdOn";
     private static final String LAST_UPDATED = "lastUpdated";
     private static final String DESCRIPTION = "description";
@@ -40,10 +39,10 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
             "from food_plan fp " +
             "where id = :id";
 
-    static final String INSERT_FOOD_PLAN_SQL = "insert into food_plan (name, members, createdon, lastupdated, description) " +
-            "values (:name, :members, :createdOn, :lastUpdated, :description)";
+    static final String INSERT_FOOD_PLAN_SQL = "insert into food_plan (name, createdon, lastupdated, description) " +
+            "values (:name, :createdOn, :lastUpdated, :description)";
 
-    static final String UPDATE_FOOD_PLAN_SQL = "update food_plan set name = :name, members = :members, " +
+    static final String UPDATE_FOOD_PLAN_SQL = "update food_plan set name = :name, " +
             "lastupdated = :lastUpdated, description = :description where id = :id";
 
     static final String DELETE_FOOD_PLAN_SQL = "delete from food_plan where id = :id";
@@ -80,7 +79,6 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
         return new MapSqlParameterSource()
                 .addValue(ID, plan.getId())
                 .addValue(NAME, plan.getName())
-                .addValue(MEMBERS, plan.getMembers())
                 .addValue(DESCRIPTION, plan.getDescription())
                 .addValue(LAST_UPDATED, plan.getLastUpdated().toOffsetDateTime());
     }
@@ -134,7 +132,7 @@ public class FoodPlanRepo extends AbstractRepository<FoodPlan> implements IFoodP
             days.add(PlanDay.builder().build());
         }
         List<Hiker> hikers = new ArrayList<>();
-        int members = resultSet.getInt(MEMBERS);
+        int members = resultSet.getInt("members");
         for (int i = 0; i < members; i++) {
             hikers.add(Hiker.builder().build());
         }

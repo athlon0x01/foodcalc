@@ -45,11 +45,6 @@
           <p v-if="errors.has('planName') > 0" class="alert">{{errors.first('planName')}}</p>
         </div>
       </div>
-      <div class="row">
-        <div class="col-md-4"/>
-        <div class="col-md-2 border bg-light"><strong>Members</strong></div>
-        <input type="number" min="0" step="1" v-model="planMembers" name="planMembers"/>
-      </div>
       <div class="row" style="padding-top:10px;">
         <div class="col-md-5"/>
         <div class="col-md-1">
@@ -75,7 +70,6 @@ export default {
       foodPlans: [],
       addMode: false,
       planName: '',
-      planMembers: 2,
       errorMessage: null
     }
   },
@@ -105,15 +99,13 @@ export default {
       this.$validator.validateAll().then((result) => {
         if (result) {
           let foodPlan = {
-            name: this.planName,
-            members: this.planMembers
+            name: this.planName
           }
           axios.post(this.foodPlansEndpointUrl, foodPlan)
             .then(() => {
               this.addMode = false
               this.errorMessage = null
               this.planName = ''
-              this.planMembers = 2
               this.getAllFoodPlans()
             })
             .catch(e => {

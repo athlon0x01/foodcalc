@@ -84,7 +84,6 @@ CREATE TABLE food_plan
 (
     id          bigserial PRIMARY KEY,
     name        varchar(64)              NOT NULL,
-    members     smallint                 NOT NULL,
     createdOn   TIMESTAMP WITH TIME ZONE NOT NULL,
     lastUpdated TIMESTAMP WITH TIME ZONE NOT NULL,
     description varchar(2048)

@@ -9,7 +9,6 @@ import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 import lombok.extern.jackson.Jacksonized;
 
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -23,7 +22,6 @@ import java.util.List;
 public class FoodPlanInfo extends EntityView {
     @NotEmpty
     private String name;
-    @Min(1)
     private int members;
     private int duration;
     private String description;

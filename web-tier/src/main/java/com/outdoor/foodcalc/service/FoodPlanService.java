@@ -22,10 +22,12 @@ public class FoodPlanService {
 
     private final FoodPlanDomainService planDomainService;
     private final FoodDayService dayService;
+    private final HikerService hikerService;
 
-    public FoodPlanService(FoodPlanDomainService planDomainService, FoodDayService foodDayService) {
+    public FoodPlanService(FoodPlanDomainService planDomainService, FoodDayService dayService, HikerService hikerService) {
         this.planDomainService = planDomainService;
-        this.dayService = foodDayService;
+        this.dayService = dayService;
+        this.hikerService = hikerService;
     }
 
     public List<FoodPlanInfo> getAllFoodPlans() {
@@ -50,7 +52,6 @@ public class FoodPlanService {
         var now = ZonedDateTime.now();
         FoodPlan plan = FoodPlan.builder()
                 .name(foodPlan.getName())
-                //.members(foodPlan.getMembers())
                 .createdOn(now)
                 .lastUpdated(now)
                 .build();
@@ -65,7 +66,6 @@ public class FoodPlanService {
         FoodPlan plan = FoodPlan.builder()
                 .id(foodPlan.getId())
                 .name(foodPlan.getName())
-                //.members(foodPlan.getMembers())
                 .description(foodPlan.getDescription())
                 .lastUpdated(ZonedDateTime.now())
                 .days(days)
@@ -91,7 +91,9 @@ public class FoodPlanService {
                 .id(plan.getId())
                 .name(plan.getName())
                 .description(plan.getDescription())
-                .members(plan.getMembers().size())
+                .members(plan.getMembers().stream()
+                        .map(hikerService::mapInfo)
+                        .collect(Collectors.toList()))
                 .createdOn(plan.getCreatedOn())
                 .lastUpdated(plan.getLastUpdated())
                 .days(plan.getDays().stream()

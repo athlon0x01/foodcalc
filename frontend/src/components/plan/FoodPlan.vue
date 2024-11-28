@@ -22,25 +22,22 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-md-2 border bg-light"><strong>Members</strong></div>
-          <div class="col-md-9 border">
-            <input type="number" min="0" step="1" v-model="foodPlan.members" name="planMembers"/>
-          </div>
-        </div>
-        <div class="row">
           <div class="col-md-2 border bg-light"><strong>Duration</strong></div>
           <div class="col-md-9 border">{{foodPlan.days.length}}</div>
+        </div>
+        <div class="row">
+          <div class="col-md-2 border bg-light"><strong>Created On</strong></div>
+          <div class="col-md-9 border">{{foodPlan.createdOn}}</div>
           <div class="col-md-1">
             <b-button variant="outline-primary" size="sm" v-on:click="exportPlan">Export</b-button>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-2 border bg-light"><strong>Created On</strong></div>
-          <div class="col-md-9 border">{{foodPlan.createdOn}}</div>
-        </div>
-        <div class="row">
           <div class="col-md-2 border bg-light"><strong>Last Updated</strong></div>
           <div class="col-md-9 border">{{foodPlan.lastUpdated}}</div>
+        </div>
+        <div>
+          <hikers-view v-bind:hikers="foodPlan.members" />
         </div>
         <div class="row headerRow bg-light">
           <div class="col-md-2"/>
@@ -97,10 +94,11 @@
 import axios from 'axios'
 import saveAs from 'file-saver'
 import FoodDayView from 'src/components/plan/FoodDayView'
+import HikersView from 'src/components/plan/HikersView.vue'
 
 export default {
   name: 'FoodPlan',
-  components: {FoodDayView},
+  components: {FoodDayView, HikersView},
   data () {
     return {
       foodPlansEndpointUrl: '/api/plans/',
@@ -151,7 +149,6 @@ export default {
             name: this.foodPlan.name,
             description: this.foodPlan.description,
             duration: this.foodPlan.duration,
-            members: this.foodPlan.members,
             days: this.mapDays()
           }
           axios.put(this.foodPlansEndpointUrl + this.$route.params.planId, newPlan)
