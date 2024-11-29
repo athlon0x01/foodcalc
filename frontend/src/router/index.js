@@ -12,6 +12,7 @@ import MealTypes from 'src/components/directory/MealTypes'
 import FoodPlan from 'src/components/plan/FoodPlan'
 import FoodDay from 'src/components/plan/FoodDay'
 import EditMeal from 'src/components/meal/EditMeal'
+import FoodPackage from 'src/components/plan/pack/FoodPackageView'
 
 Vue.use(Router)
 
@@ -72,6 +73,11 @@ export default new Router({
       path: '/plan/:planId',
       name: 'FoodPlanPage',
       component: FoodPlan
+    },
+    {
+      path: '/plan/:planId/packages',
+      name: 'FoodPackagesPage',
+      component: FoodPackage
     },
     {
       path: '/plan/:planId/day/:dayId',
