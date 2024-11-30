@@ -14,8 +14,8 @@
       </div>
       <div v-for="foodPackage in packages" :key="foodPackage.id">
         <food-package-item v-bind:food-package="foodPackage"
-                           v-on:update="updatePackage"
-                           v-on:remove="removePackage"/>
+                           v-on:update="updateFoodPackage"
+                           v-on:remove="removeFoodPackage"/>
       </div>
     </div>
     <!--Errors output-->
@@ -66,7 +66,6 @@
 <script>
 import axios from 'axios'
 import FoodPackageItem from 'src/components/plan/pack/FoodPackageItem'
-import {remove} from "karma/lib/temp_dir";
 
 export default {
   name: 'FoodPackageView',
@@ -84,7 +83,6 @@ export default {
   },
 
   methods: {
-    remove,
     getErrorMessage (error, defaultMessage) {
       if (error.response !== undefined && error.response.data !== undefined &&
         (typeof error.response.data === 'string' || error.response.data instanceof String)) {
@@ -100,7 +98,7 @@ export default {
       this.$router.push({path: '/plan/' + this.$route.params.planId})
     },
 
-    updatePackage (foodPackage) {
+    updateFoodPackage (foodPackage) {
       axios.put(this.foodPackagesEndpointUrl + foodPackage.id, foodPackage)
         .then(() => {
           this.errorMessage = null
@@ -110,7 +108,7 @@ export default {
         })
     },
 
-    removePackage (packageId) {
+    removeFoodPackage (packageId) {
       axios.delete(this.foodPackagesEndpointUrl + packageId)
         .then(() => {
           this.packages = this.packages.filter(foodPack => foodPack.id !== packageId)
