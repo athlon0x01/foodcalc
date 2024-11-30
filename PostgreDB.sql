@@ -127,8 +127,18 @@ CREATE TABLE day_product
 CREATE TABLE hiker
 (
     id          bigserial PRIMARY KEY,
-    name        varchar(128),
+    name        varchar(128) NOT NULL,
     description varchar(1024),
     weight_coef real    DEFAULT 1.0,
     plan        bigint REFERENCES food_plan
+);
+
+CREATE TABLE food_package
+(
+    id                  bigserial PRIMARY KEY,
+    name                varchar(128) NOT NULL,
+    description         varchar(1024),
+    volume_coef         real    DEFAULT 1.0,
+    additional_weight   integer NOT NULL,
+    plan                bigint REFERENCES food_plan
 );

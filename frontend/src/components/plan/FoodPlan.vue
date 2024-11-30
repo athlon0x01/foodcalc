@@ -24,17 +24,20 @@
         <div class="row">
           <div class="col-md-2 border bg-light"><strong>Duration</strong></div>
           <div class="col-md-9 border">{{foodPlan.days.length}}</div>
+          <div class="col-md-1">
+            <b-button variant="outline-primary" size="sm" v-on:click="goToPackages">Packages</b-button>
+          </div>
         </div>
         <div class="row">
           <div class="col-md-2 border bg-light"><strong>Created On</strong></div>
           <div class="col-md-9 border">{{foodPlan.createdOn}}</div>
-          <div class="col-md-1">
-            <b-button variant="outline-primary" size="sm" v-on:click="exportPlan">Export</b-button>
-          </div>
         </div>
         <div class="row">
           <div class="col-md-2 border bg-light"><strong>Last Updated</strong></div>
           <div class="col-md-9 border">{{foodPlan.lastUpdated}}</div>
+          <div class="col-md-1">
+            <b-button variant="outline-primary" size="sm" v-on:click="exportPlan">Export</b-button>
+          </div>
         </div>
         <div>
           <hikers-view v-bind:hikers="foodPlan.members" />
@@ -122,6 +125,10 @@ export default {
 
     mapDays () {
       return this.foodPlan.days.map(d => d.id)
+    },
+
+    goToPackages () {
+      this.$router.push({path: '/plan/' + this.$route.params.planId + '/packages'})
     },
 
     exportPlan () {
