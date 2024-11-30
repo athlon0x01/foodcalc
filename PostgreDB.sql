@@ -37,16 +37,6 @@ CREATE TABLE dish
     template    boolean NOT NULL
 );
 
-CREATE TABLE dish_product
-(
-    id      bigserial PRIMARY KEY,
-    dish    bigint REFERENCES dish,
-    product bigint REFERENCES product,
-    ndx     smallint NOT NULL,
---product weight in 0.1 grams
-    weight  integer  NOT NULL
-);
-
 --meal related tables
 CREATE TABLE meal_type
 (
@@ -59,16 +49,6 @@ CREATE TABLE meal
     id          bigserial PRIMARY KEY,
     description varchar(265),
     type        bigserial REFERENCES meal_type
-);
-
-CREATE TABLE meal_product
-(
-    id      bigserial PRIMARY KEY,
-    meal    bigint REFERENCES meal,
-    product bigint REFERENCES product,
-    ndx     smallint NOT NULL,
---product weight in 0.1 grams
-    weight  integer  NOT NULL
 );
 
 CREATE TABLE meal_dish
@@ -87,6 +67,25 @@ CREATE TABLE food_plan
     createdOn   TIMESTAMP WITH TIME ZONE NOT NULL,
     lastUpdated TIMESTAMP WITH TIME ZONE NOT NULL,
     description varchar(2048)
+);
+
+CREATE TABLE hiker
+(
+    id          bigserial PRIMARY KEY,
+    name        varchar(128) NOT NULL,
+    description varchar(1024),
+    weight_coef real    DEFAULT 1.0,
+    plan        bigint REFERENCES food_plan
+);
+
+CREATE TABLE food_package
+(
+    id                  bigserial PRIMARY KEY,
+    name                varchar(128) NOT NULL,
+    description         varchar(1024),
+    volume_coef         real    DEFAULT 1.0,
+    additional_weight   integer NOT NULL,
+    plan                bigint REFERENCES food_plan
 );
 
 CREATE TABLE day_plan
@@ -121,24 +120,28 @@ CREATE TABLE day_product
     product bigint REFERENCES product,
     ndx     smallint NOT NULL,
 --product weight in 0.1 grams
-    weight  integer  NOT NULL
+    weight  integer  NOT NULL,
+    package bigint REFERENCES food_package
 );
 
-CREATE TABLE hiker
+CREATE TABLE meal_product
 (
-    id          bigserial PRIMARY KEY,
-    name        varchar(128) NOT NULL,
-    description varchar(1024),
-    weight_coef real    DEFAULT 1.0,
-    plan        bigint REFERENCES food_plan
+    id      bigserial PRIMARY KEY,
+    meal    bigint REFERENCES meal,
+    product bigint REFERENCES product,
+    ndx     smallint NOT NULL,
+--product weight in 0.1 grams
+    weight  integer  NOT NULL,
+    package bigint REFERENCES food_package
 );
 
-CREATE TABLE food_package
+CREATE TABLE dish_product
 (
-    id                  bigserial PRIMARY KEY,
-    name                varchar(128) NOT NULL,
-    description         varchar(1024),
-    volume_coef         real    DEFAULT 1.0,
-    additional_weight   integer NOT NULL,
-    plan                bigint REFERENCES food_plan
+    id      bigserial PRIMARY KEY,
+    dish    bigint REFERENCES dish,
+    product bigint REFERENCES product,
+    ndx     smallint NOT NULL,
+--product weight in 0.1 grams
+    weight  integer  NOT NULL,
+    package bigint REFERENCES food_package
 );

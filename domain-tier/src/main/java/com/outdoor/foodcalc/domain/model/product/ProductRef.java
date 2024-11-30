@@ -13,6 +13,7 @@ public class ProductRef implements IDomainEntity {
     private final Product product;
     //product item weight in 0.1 grams
     private final int weight;
+    private final Long packageId;
 
     /**
      * Product item constructor
@@ -20,18 +21,38 @@ public class ProductRef implements IDomainEntity {
      * @param weight item weight in 0.1 grams
      */
     public ProductRef(Product product, int weight) {
+        this(product, weight, null);
+    }
+
+    /**
+     * Product item constructor
+     * @param product product entity
+     * @param weight item weight in 0.1 grams
+     * @param packageId food package linked to product or null
+     */
+    public ProductRef(Product product, int weight, Long packageId) {
         if (product == null)
             throw new IllegalArgumentException("Null Product is not allowed!");
         this.product = product;
         this.weight = weight;
+        if (packageId == null || packageId == 0) {
+            this.packageId = null;
+        }
+        else {
+            this.packageId = packageId;
+        }
     }
 
     public ProductRef(Product product, float weight) {
         this(product, Math.round(weight * 10));
     }
 
+    public ProductRef(Product product, float weight, Long packageId) {
+        this(product, Math.round(weight * 10), packageId);
+    }
+
     public ProductRef buildNewRef(int newWeight) {
-        return new ProductRef(product, newWeight);
+        return new ProductRef(product, newWeight, packageId);
     }
 
     /**
@@ -43,6 +64,10 @@ public class ProductRef implements IDomainEntity {
 
     public int getInternalWeight() {
         return weight;
+    }
+
+    public Long getPackageId() {
+        return packageId;
     }
 
     public long getProductId() {
@@ -96,6 +121,6 @@ public class ProductRef implements IDomainEntity {
 
     @Override
     public String toString() {
-        return "[id=" + getProductId() + ", Name='" + getName() + "', weight=" + getInternalWeight() + "]";
+        return "[id=" + getProductId() + ", Name='" + getName() + "', weight=" + getInternalWeight() + ", packageId=" + getPackageId() + "]";
     }
 }

@@ -34,7 +34,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_ALL_TEMPLATE_DISHES_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "dp.dish as itemId, dp.weight as weight, dp.package as packageId, dp.ndx as ndx " +
             "from dish_product dp  left join  dish d on dp.dish = d.id " +
             "left join product p on dp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
@@ -43,7 +43,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_DISHES_PRODUCTS_FOR_ALL_DAY_IN_PLAN_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "dp.dish as itemId, dp.weight as weight, dp.package as packageId, dp.ndx as ndx " +
             "from dish_product dp " +
             "left join product p on dp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
@@ -53,7 +53,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_PLAN_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "dp.dish as itemId, dp.weight as weight, dp.package as packageId, dp.ndx as ndx " +
             "from dish_product dp " +
             "left join product p on dp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
@@ -63,7 +63,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_DISHES_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "dp.dish as itemId, dp.weight as weight, dp.package as packageId, dp.ndx as ndx " +
             "from dish_product dp " +
             "left join product p on dp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
@@ -73,7 +73,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_DAY_DISHES_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "dp.dish as itemId, dp.weight as weight, dp.package as packageId, dp.ndx as ndx " +
             "from dish_product dp " +
             "left join product p on dp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
@@ -82,23 +82,23 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_MEAL_DISHES_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "dp.dish as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "dp.dish as itemId, dp.weight as weight, dp.package as packageId, dp.ndx as ndx " +
             "from dish_product dp " +
             "left join product p on dp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
             "where dp.dish in (select meal_dish.dish from meal_dish where meal_dish.meal = :mealId)";
 
     static final String SELECT_DISH_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
-            "c.id as catId, c.name as catName, p.calorific as calorific, " +
-            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, dp.weight as weight " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, p.proteins as proteins, p.fats as fats, " +
+            "p.carbs as carbs, p.defWeight as defWeight, dp.weight as weight, dp.package as packageId " +
             "from dish_product dp " +
             "left join product p on dp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
             "where dp.dish = :dishId " +
             "order by dp.ndx";
 
-    static final String INSERT_DISH_PRODUCTS_SQL = "insert into dish_product (dish, product, ndx, weight) " +
-            "values (:dishId, :product, :ndx, :weight)";
+    static final String INSERT_DISH_PRODUCTS_SQL = "insert into dish_product (dish, product, ndx, weight, package) " +
+            "values (:dishId, :product, :ndx, :weight, :packageId)";
 
     static final String DELETE_DISH_PRODUCTS_SQL_COUNT = "with deleted as " +
             "(delete from dish_product where dish = :dishId returning *) " +
@@ -109,23 +109,23 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_DAY_PRODUCTS_FOR_ALL_DAYS_IN_PLAN_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "dp.day as itemId, dp.weight as weight, dp.ndx as ndx " +
+            "dp.day as itemId, dp.weight as weight, dp.package as packageId, dp.ndx as ndx " +
             "from day_product dp " +
             "left join product p on dp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
             "where dp.day in (select id from day_plan where plan = :planId)";
 
     static final String SELECT_DAY_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
-            "c.id as catId, c.name as catName, p.calorific as calorific, " +
-            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, dp.weight as weight " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, p.proteins as proteins, p.fats as fats, " +
+            "p.carbs as carbs, p.defWeight as defWeight, dp.weight as weight, dp.package as packageId " +
             "from day_product dp " +
             "left join product p on dp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
             "where dp.day = :dayId " +
             "order by dp.ndx";
 
-    static final String INSERT_DAY_PRODUCTS_SQL = "insert into day_product (day, product, ndx, weight) " +
-            "values (:dayId, :product, :ndx, :weight)";
+    static final String INSERT_DAY_PRODUCTS_SQL = "insert into day_product (day, product, ndx, weight, package) " +
+            "values (:dayId, :product, :ndx, :weight, :packageId)";
 
     static final String DELETE_DAY_PRODUCTS_SQL_COUNT = "with deleted as " +
             "(delete from day_product where day = :dayId returning *) " +
@@ -136,7 +136,7 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_MEAL_PRODUCTS_FOR_ALL_MEALS_IN_PLAN_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "mp.meal as itemId, mp.weight as weight, mp.ndx as ndx " +
+            "mp.meal as itemId, mp.weight as weight, mp.package as packageId, mp.ndx as ndx " +
             "from meal_product mp " +
             "left join product p on mp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
@@ -145,23 +145,23 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     static final String SELECT_MEAL_PRODUCTS_FOR_ALL_MEALS_IN_DAY_SQL = "select p.id as productId, p.name as productName, " +
             "c.id as catId, c.name as catName, p.calorific as calorific, " +
             "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, " +
-            "mp.meal as itemId, mp.weight as weight, mp.ndx as ndx " +
+            "mp.meal as itemId, mp.weight as weight, mp.package as packageId, mp.ndx as ndx " +
             "from meal_product mp " +
             "left join product p on mp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
             "where mp.meal in (select day_meal.meal from day_meal where day = :dayId)";
 
     static final String SELECT_MEAL_PRODUCTS_SQL = "select p.id as productId, p.name as productName, " +
-            "c.id as catId, c.name as catName, p.calorific as calorific, " +
-            "p.proteins as proteins, p.fats as fats, p.carbs as carbs, p.defWeight as defWeight, mp.weight as weight " +
+            "c.id as catId, c.name as catName, p.calorific as calorific, p.proteins as proteins, p.fats as fats, " +
+            "p.carbs as carbs, p.defWeight as defWeight, mp.weight as weight, mp.package as packageId " +
             "from meal_product mp " +
             "left join product p on mp.product  = p.id " +
             "left join product_category c on p.category = c.id " +
             "where mp.meal = :mealId " +
             "order by mp.ndx";
 
-    static final String INSERT_MEAL_PRODUCTS_SQL = "insert into meal_product (meal, product, ndx, weight) " +
-            "values (:mealId, :product, :ndx, :weight)";
+    static final String INSERT_MEAL_PRODUCTS_SQL = "insert into meal_product (meal, product, ndx, weight, package) " +
+            "values (:mealId, :product, :ndx, :weight, :packageId)";
 
     static final String DELETE_MEAL_PRODUCTS_SQL_COUNT = "with deleted as " +
             "(delete from meal_product where meal = :mealId returning *) " +
@@ -182,7 +182,9 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
     @Override
     public ProductRef mapRow(ResultSet rs, int rowNum) throws SQLException {
         Product product = productRepo.mapRow(rs, rowNum);
-        return new ProductRef(product, rs.getInt("weight"));
+        return new ProductRef(product,
+                rs.getInt("weight"),
+                rs.getLong("packageId"));
     }
 
     MapSqlParameterSource[] buildProductsInsertSqlParameterSource(String item, long itemId, List<ProductRef> products) {
@@ -192,7 +194,8 @@ public class ProductRefRepo extends AbstractRepository<ProductRef>
                     .addValue(item, itemId)
                     .addValue("product", products.get(i).getProductId())
                     .addValue("ndx", i)
-                    .addValue("weight", products.get(i).getInternalWeight());
+                    .addValue("weight", products.get(i).getInternalWeight())
+                    .addValue("packageId", products.get(i).getPackageId());
         }
         return mappedArray;
     }
