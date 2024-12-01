@@ -55,7 +55,7 @@
         <!--Content-->
         <div v-for="product in foodDay.products" :key="'dayProduct-' + product.id">
           <product-with-package-view v-bind:product="product"
-                        v-bind:manage-mode="false"/>
+                                     v-bind:manage-mode="false"/>
         </div>
         <div style="padding-bottom: 10px"/>
       </template>

@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,24 +21,28 @@ import java.util.stream.Collectors;
 public class MealService {
 
     private final MealDomainService mealDomainService;
+    private final FoodPackageService foodPackageService;
     private final DishService dishService;
     private final ProductService productService;
 
-    public MealService(MealDomainService mealDomainService, DishService dishService, ProductService productService) {
+    public MealService(MealDomainService mealDomainService, FoodPackageService foodPackageService, DishService dishService, ProductService productService) {
         this.mealDomainService = mealDomainService;
+        this.foodPackageService = foodPackageService;
         this.dishService = dishService;
         this.productService = productService;
     }
 
-    public List<MealView> getDayMeals(long dayId) {
+    public List<MealView> getDayMeals(long planId, long dayId) {
+        var packagesNames = foodPackageService.getPlanPackagesNames(planId);
         return mealDomainService.getDayMeals(dayId).stream()
-                .map(this::mapView)
+                .map(meal -> mapView(packagesNames, meal))
                 .collect(Collectors.toList());
     }
 
-    public MealView getMeal(long id) {
+    public MealView getMeal(long planId, long id) {
+        var packagesNames = foodPackageService.getPlanPackagesNames(planId);
         return mealDomainService.getMeal(id)
-                .map(this::mapView)
+                .map(meal -> mapView(packagesNames, meal))
                 .orElseThrow(() -> new NotFoundException("Meal with id = " + id + " wasn't found"));
     }
 
@@ -74,7 +79,7 @@ public class MealService {
                 .build();
     }
 
-    MealView mapView(Meal meal) {
+    MealView mapView(Map<Long, String> packagesName, Meal meal) {
         FoodDetailsInstance mealDetails = meal.getFoodDetails();
         return MealView.builder()
                 .id(meal.getMealId())
@@ -84,7 +89,7 @@ public class MealService {
                         .name(meal.getType().getName())
                         .build())
                 .products(meal.getProducts().stream()
-                        .map(productService::mapProductRef)
+                        .map(productRef -> productService.mapProductRefWithPackageName(packagesName, productRef))
                         .collect(Collectors.toList()))
                 .dishes(meal.getDishes().stream()
                         .map(dishService::mapDishView)

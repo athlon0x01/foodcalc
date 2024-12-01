@@ -32,7 +32,7 @@ public class MealEndpoint extends AbstractEndpoint {
     public List<MealView> getAllMealsForDay(@PathVariable("planId") long planId,
                                       @PathVariable("dayId") long dayId) {
         LOG.debug("Getting meals for day id = {}, plan id = {}", dayId, planId);
-        return mealService.getDayMeals(dayId);
+        return mealService.getDayMeals(planId, dayId);
     }
 
     @GetMapping(path = "{id}", produces = APPLICATION_JSON_VALUE)
@@ -40,7 +40,7 @@ public class MealEndpoint extends AbstractEndpoint {
                             @PathVariable("dayId") long dayId,
                             @PathVariable("id") long id) {
         LOG.debug("Getting meal = {} day - {}, plan - {}", id, dayId, planId);
-        return mealService.getMeal(id);
+        return mealService.getMeal(planId, id);
     }
 
     @DeleteMapping("{id}")

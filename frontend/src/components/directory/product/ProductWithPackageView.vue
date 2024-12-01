@@ -85,7 +85,6 @@ export default {
     },
 
     updatePackageId () {
-      console.log('Package selected - ' + this.foodPackageId)
       this.$emit('packageIdUpdated', this.product.id, this.foodPackageId)
     }
   }

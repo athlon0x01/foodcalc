@@ -55,15 +55,16 @@
         <!--Header-->
         <h5 style="padding-top:10px">Products</h5>
         <div class="row headerRow bg-light">
-          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-3 border"><strong>Name</strong></div>
           <div class="col-md-1 border"><strong>Calorific</strong></div>
           <div class="col-md-1 border"><strong>Proteins</strong></div>
           <div class="col-md-1 border"><strong>Fats</strong></div>
           <div class="col-md-1 border"><strong>Carbs</strong></div>
           <div class="col-md-1 border"><strong>Weight</strong></div>
+          <div class="col-md-2 border"><strong>Package</strong></div>
         </div>
         <div class="row headerRow bg-light">
-          <div class="col-md-5 border"><em>Total</em></div>
+          <div class="col-md-3 border"><em>Total</em></div>
           <div class="col-md-1 border"><em>{{ productCalorific }}</em></div>
           <div class="col-md-1 border"><em>{{ productProteins }}</em></div>
           <div class="col-md-1 border"><em>{{ productFats }}</em></div>
@@ -72,13 +73,14 @@
         </div>
         <!--Content-->
         <div v-for="product in mealProducts" :key="'mealProduct-' + product.id">
-          <product-view v-bind:product="product"
-                        v-bind:select-mode="false"
-                        v-bind:manage-mode="true"
-                        v-on:productUp="moveProductUp"
-                        v-on:productDown="moveProductDown"
-                        v-on:weightUpdated="updateProductWeight"
-                        v-on:productRemoved="removeProduct"/>
+          <product-with-package-view v-bind:product="product"
+                                     v-bind:food-packages="foodPackages"
+                                     v-bind:manage-mode="true"
+                                     v-on:productUp="moveProductUp"
+                                     v-on:productDown="moveProductDown"
+                                     v-on:weightUpdated="updateProductWeight"
+                                     v-on:packageIdUpdated="updateProductPackageId"
+                                     v-on:productRemoved="removeProduct"/>
         </div>
       </template>
     </div>
@@ -102,13 +104,13 @@
 <script>
 import axios from 'axios'
 import SelectProductView from 'src/components/directory/product/SelectProductView'
-import ProductView from 'src/components/directory/product/ProductView'
+import ProductWithPackageView from 'src/components/directory/product/ProductWithPackageView'
 import DishView from 'src/components/directory/dish/DishView'
 import SelectDishView from 'src/components/dish/SelectDishView.vue'
 
 export default {
   name: 'EditMeal',
-  components: {SelectDishView, SelectProductView, ProductView, DishView},
+  components: {SelectDishView, SelectProductView, ProductWithPackageView, DishView},
   data () {
     return {
       mealsEndpointUrl: '/api/plans/',
@@ -119,6 +121,7 @@ export default {
       productsTitle: 'Show Products to add',
       addDishesMode: false,
       dishesTitle: 'Show Dishes to add',
+      foodPackages: [],
       mealTypes: [],
       mealTitle: null,
       mealTypeId: null,
@@ -222,6 +225,13 @@ export default {
       }
     },
 
+    updateProductPackageId (productId, packageId) {
+      let product = this.mealProducts.find(p => p.id === productId)
+      if (product !== undefined) {
+        product.packageId = packageId
+      }
+    },
+
     updateProductWeight (productId, weight) {
       let product = this.mealProducts.find(p => p.id === productId)
       if (product !== undefined) {
@@ -247,7 +257,8 @@ export default {
       return this.mealProducts.map(p => {
         return {
           productId: p.id,
-          weight: p.weight
+          weight: p.weight,
+          packageId: p.packageId
         }
       })
     },
@@ -313,6 +324,13 @@ export default {
     this.mealsEndpointUrl = '/api/plans/' + this.$route.params.planId + '/days/' + this.$route.params.dayId + '/meals/'
     // load Meal full preview on page init
     this.getMeal()
+    axios.get('/api/plans/' + this.$route.params.planId + '/packages')
+      .then(response => {
+        this.foodPackages = response.data
+      })
+      .catch(e => {
+        this.getErrorMessage(e, 'Failed to load Food plan packages...')
+      })
     // load meal types for adding new meals
     axios.get(this.mealTypesEndpointUrl)
       .then(response => {

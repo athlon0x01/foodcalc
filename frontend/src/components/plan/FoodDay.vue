@@ -68,13 +68,13 @@
         <!--Content-->
         <div v-for="product in dayProducts" :key="'dayProduct-' + product.id">
           <product-with-package-view v-bind:product="product"
-                        v-bind:food-packages="foodPackages"
-                        v-bind:manage-mode="true"
-                        v-on:productUp="moveProductUp"
-                        v-on:productDown="moveProductDown"
-                        v-on:weightUpdated="updateProductWeight"
-                        v-on:packageIdUpdated="updateProductPackageId"
-                        v-on:productRemoved="removeProduct"/>
+                                     v-bind:food-packages="foodPackages"
+                                     v-bind:manage-mode="true"
+                                     v-on:productUp="moveProductUp"
+                                     v-on:productDown="moveProductDown"
+                                     v-on:weightUpdated="updateProductWeight"
+                                     v-on:packageIdUpdated="updateProductPackageId"
+                                     v-on:productRemoved="removeProduct"/>
         </div>
       </template>
     </div>
@@ -260,7 +260,6 @@ export default {
     },
 
     updateProductPackageId (productId, packageId) {
-      console.log('In Day Package selected - ' + packageId)
       let product = this.dayProducts.find(p => p.id === productId)
       if (product !== undefined) {
         product.packageId = packageId

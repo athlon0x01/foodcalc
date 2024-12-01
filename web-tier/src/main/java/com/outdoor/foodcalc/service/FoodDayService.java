@@ -91,7 +91,7 @@ public class FoodDayService {
                 .date(day.getDate())
                 .description(day.getDescription())
                 .meals(day.getMeals().stream()
-                        .map(mealService::mapView)
+                        .map(meal -> mealService.mapView(packagesName, meal))
                         .collect(Collectors.toList()))
                 .products(day.getProducts().stream()
                         .map(productRef -> productService.mapProductRefWithPackageName(packagesName, productRef))
