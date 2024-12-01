@@ -49,15 +49,16 @@
         <!--Header-->
         <h5 style="padding-top:10px">Products</h5>
         <div class="row headerRow bg-light">
-          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-3 border"><strong>Name</strong></div>
           <div class="col-md-1 border"><strong>Calorific</strong></div>
           <div class="col-md-1 border"><strong>Proteins</strong></div>
           <div class="col-md-1 border"><strong>Fats</strong></div>
           <div class="col-md-1 border"><strong>Carbs</strong></div>
           <div class="col-md-1 border"><strong>Weight</strong></div>
+          <div class="col-md-2 border"><strong>Package</strong></div>
         </div>
         <div class="row headerRow bg-light">
-          <div class="col-md-5 border"><em>Total</em></div>
+          <div class="col-md-3 border"><em>Total</em></div>
           <div class="col-md-1 border"><em>{{ productCalorific }}</em></div>
           <div class="col-md-1 border"><em>{{ productProteins }}</em></div>
           <div class="col-md-1 border"><em>{{ productFats }}</em></div>
@@ -66,12 +67,13 @@
         </div>
         <!--Content-->
         <div v-for="product in dayProducts" :key="'dayProduct-' + product.id">
-          <product-view v-bind:product="product"
-                        v-bind:select-mode="false"
+          <product-with-package-view v-bind:product="product"
+                        v-bind:food-packages="foodPackages"
                         v-bind:manage-mode="true"
                         v-on:productUp="moveProductUp"
                         v-on:productDown="moveProductDown"
                         v-on:weightUpdated="updateProductWeight"
+                        v-on:packageIdUpdated="updateProductPackageId"
                         v-on:productRemoved="removeProduct"/>
         </div>
       </template>
@@ -132,19 +134,20 @@
 import axios from 'axios'
 import MealView from 'src/components/meal/MealView'
 import SelectProductView from 'src/components/directory/product/SelectProductView'
-import ProductView from 'src/components/directory/product/ProductView'
+import ProductWithPackageView from 'src/components/directory/product/ProductWithPackageView'
 import DishView from 'src/components/directory/dish/DishView'
 import SelectDishView from 'src/components/dish/SelectDishView.vue'
 
 export default {
   name: 'FoodDay',
-  components: {SelectProductView, ProductView, MealView, DishView, SelectDishView},
+  components: {ProductWithPackageView, SelectProductView, MealView, DishView, SelectDishView},
   data () {
     return {
       planDayEndpointUrl: '/api/plans/',
       mealTypesEndpointUrl: '/api/meal-types/',
       planId: null,
       goBackPath: null,
+      foodPackages: [],
       mealTypes: [],
       planTitle: null,
       dateTitle: null,
@@ -256,6 +259,14 @@ export default {
       }
     },
 
+    updateProductPackageId (productId, packageId) {
+      console.log('In Day Package selected - ' + packageId)
+      let product = this.dayProducts.find(p => p.id === productId)
+      if (product !== undefined) {
+        product.packageId = packageId
+      }
+    },
+
     updateProductWeight (productId, weight) {
       let product = this.dayProducts.find(p => p.id === productId)
       if (product !== undefined) {
@@ -281,7 +292,8 @@ export default {
       return this.dayProducts.map(p => {
         return {
           productId: p.id,
-          weight: p.weight
+          weight: p.weight,
+          packageId: p.packageId
         }
       })
     },
@@ -394,6 +406,13 @@ export default {
     this.planDayEndpointUrl = '/api/plans/' + this.$route.params.planId + '/days/'
     // load food plan day full preview on page init
     this.getFoodDay()
+    axios.get('/api/plans/' + this.$route.params.planId + '/packages')
+      .then(response => {
+        this.foodPackages = response.data
+      })
+      .catch(e => {
+        this.getErrorMessage(e, 'Failed to load Food plan packages...')
+      })
     // load meal types for adding new meals
     axios.get(this.mealTypesEndpointUrl)
       .then(response => {

@@ -17,10 +17,12 @@ import javax.validation.constraints.NotEmpty;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Jacksonized
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class ProductView extends FoodView {
     @NotEmpty
     private String name;
     @Min(1)
     private long categoryId;
+    private Long packageId;
+    private String packageName;
 }

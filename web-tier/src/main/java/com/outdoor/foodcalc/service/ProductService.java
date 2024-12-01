@@ -74,7 +74,8 @@ public class ProductService {
         return new ProductRef(Product.builder()
                 .productId(product.getProductId())
                 .build(),
-                product.getWeight());
+                product.getWeight(),
+                product.getPackageId());
     }
 
     List<ProductRef> buildMockProducts(List<ProductItem> products) {
@@ -170,6 +171,14 @@ public class ProductService {
                 .fats(product.getFats())
                 .carbs(product.getCarbs())
                 .weight(product.getWeight())
+                .packageId(product.getPackageId())
+                .build();
+    }
+
+    ProductView mapProductRefWithPackageName(Map<Long, String> packagesName, ProductRef product) {
+        ProductView productView = mapProductRef(product);
+        return productView.toBuilder()
+                .packageName(packagesName.get(product.getPackageId()))
                 .build();
     }
 }

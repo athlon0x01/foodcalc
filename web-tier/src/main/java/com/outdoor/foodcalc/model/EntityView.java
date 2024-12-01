@@ -7,7 +7,7 @@ import lombok.extern.jackson.Jacksonized;
 @Data
 @RequiredArgsConstructor
 @Jacksonized
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class EntityView {
     private long id;
 }

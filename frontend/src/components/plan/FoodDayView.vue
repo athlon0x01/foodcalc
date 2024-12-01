@@ -50,11 +50,11 @@
           <div class="col-md-1 border"><strong>Fats</strong></div>
           <div class="col-md-1 border"><strong>Carbs</strong></div>
           <div class="col-md-1 border"><strong>Weight</strong></div>
+          <div class="col-md-2 border"><strong>Package</strong></div>
         </div>
         <!--Content-->
         <div v-for="product in foodDay.products" :key="'dayProduct-' + product.id">
-          <product-view v-bind:product="product"
-                        v-bind:select-mode="false"
+          <product-with-package-view v-bind:product="product"
                         v-bind:manage-mode="false"/>
         </div>
         <div style="padding-bottom: 10px"/>
@@ -81,12 +81,12 @@
 
 <script>
 import MealView from 'src/components/meal/MealView'
-import ProductView from 'src/components/directory/product/ProductView'
+import ProductWithPackageView from 'src/components/directory/product/ProductWithPackageView'
 import DishView from 'src/components/directory/dish/DishView'
 
 export default {
   name: 'FoodDayView',
-  components: {MealView, ProductView, DishView},
+  components: {MealView, ProductWithPackageView, DishView},
   props: {
     foodDay: {
       type: Object,

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -23,11 +24,13 @@ public class FoodPlanService {
     private final FoodPlanDomainService planDomainService;
     private final FoodDayService dayService;
     private final HikerService hikerService;
+    private final FoodPackageService foodPackageService;
 
-    public FoodPlanService(FoodPlanDomainService planDomainService, FoodDayService dayService, HikerService hikerService) {
+    public FoodPlanService(FoodPlanDomainService planDomainService, FoodDayService dayService, HikerService hikerService, FoodPackageService foodPackageService) {
         this.planDomainService = planDomainService;
         this.dayService = dayService;
         this.hikerService = hikerService;
+        this.foodPackageService = foodPackageService;
     }
 
     public List<FoodPlanInfo> getAllFoodPlans() {
@@ -37,8 +40,9 @@ public class FoodPlanService {
     }
 
     public FoodPlanView getFoodPlan(long id) {
+        var packagesNames = foodPackageService.getPlanPackagesNames(id);
         return planDomainService.getFoodPlan(id)
-                .map(this::mapPlanView)
+                .map(plan -> mapPlanView(packagesNames, plan))
                 .orElseThrow(() -> new NotFoundException("Food plan with id = " + id + " wasn't found"));
     }
 
@@ -85,7 +89,7 @@ public class FoodPlanService {
                 .build();
     }
 
-    private FoodPlanView mapPlanView(FoodPlan plan) {
+    private FoodPlanView mapPlanView(Map<Long, String> packagesName, FoodPlan plan) {
         FoodDetailsInstance planDetails = plan.getFoodDetails();
         return FoodPlanView.builder()
                 .id(plan.getId())
@@ -97,7 +101,7 @@ public class FoodPlanService {
                 .createdOn(plan.getCreatedOn())
                 .lastUpdated(plan.getLastUpdated())
                 .days(plan.getDays().stream()
-                        .map(dayService::mapView)
+                        .map(day -> dayService.mapView(packagesName, day))
                         .collect(Collectors.toList()))
                 .calorific(planDetails.getCalorific())
                 .carbs(planDetails.getCarbs())

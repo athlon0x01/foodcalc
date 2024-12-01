@@ -9,7 +9,7 @@ import lombok.extern.jackson.Jacksonized;
 @ToString(callSuper = true)
 @RequiredArgsConstructor
 @Jacksonized
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class FoodView extends EntityView {
     private float calorific;
     private float proteins;

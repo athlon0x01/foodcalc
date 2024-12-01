@@ -15,4 +15,5 @@ public class ProductItem {
     private long productId;
     @PositiveOrZero
     private float weight;
+    private Long packageId;
 }

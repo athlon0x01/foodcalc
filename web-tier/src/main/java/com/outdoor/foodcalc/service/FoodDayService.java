@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,26 +20,30 @@ import java.util.stream.Collectors;
 public class FoodDayService {
 
     private final PlanDayDomainService dayDomainService;
+    private final FoodPackageService foodPackageService;
     private final MealService mealService;
     private final DishService dishService;
     private final ProductService productService;
 
-    public FoodDayService(PlanDayDomainService dayDomainService, MealService mealService, DishService dishService, ProductService productService) {
+    public FoodDayService(PlanDayDomainService dayDomainService, FoodPackageService foodPackageService, MealService mealService, DishService dishService, ProductService productService) {
         this.dayDomainService = dayDomainService;
+        this.foodPackageService = foodPackageService;
         this.mealService = mealService;
         this.dishService = dishService;
         this.productService = productService;
     }
 
     public List<FoodDayView> getPlanDays(long planId) {
+        var packagesNames = foodPackageService.getPlanPackagesNames(planId);
         return dayDomainService.getPlanDays(planId).stream()
-                .map(this::mapView)
+                .map(day-> mapView(packagesNames, day))
                 .collect(Collectors.toList());
     }
 
     public FoodDayView getDay(long planId, long id) {
+        var packagesNames = foodPackageService.getPlanPackagesNames(planId);
         return dayDomainService.getDay(planId, id)
-                .map(this::mapView)
+                .map(day-> mapView(packagesNames, day))
                 .orElseThrow(() -> new NotFoundException("Food day with id = " + id + " wasn't found"));
     }
 
@@ -79,7 +84,7 @@ public class FoodDayService {
                 .build();
     }
 
-    FoodDayView mapView(PlanDay day) {
+    FoodDayView mapView(Map<Long, String> packagesName, PlanDay day) {
         FoodDetailsInstance dayDetails = day.getFoodDetails();
         return FoodDayView.builder()
                 .id(day.getDayId())
@@ -89,7 +94,7 @@ public class FoodDayService {
                         .map(mealService::mapView)
                         .collect(Collectors.toList()))
                 .products(day.getProducts().stream()
-                        .map(productService::mapProductRef)
+                        .map(productRef -> productService.mapProductRefWithPackageName(packagesName, productRef))
                         .collect(Collectors.toList()))
                 .dishes(day.getDishes().stream()
                         .map(dishService::mapDishView)

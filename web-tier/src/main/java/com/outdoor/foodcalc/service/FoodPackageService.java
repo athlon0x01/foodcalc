@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,6 +25,11 @@ public class FoodPackageService {
         return foodPackageDomainService.getPlanPackages(planId).stream()
                 .map(this::mapInfo)
                 .collect(Collectors.toList());
+    }
+
+    public Map<Long, String> getPlanPackagesNames(long planId) {
+        return foodPackageDomainService.getPlanPackages(planId).stream()
+                .collect(Collectors.toMap(FoodPackage::getId, FoodPackage::getName));
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRES_NEW)
