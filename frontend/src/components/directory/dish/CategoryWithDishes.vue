@@ -5,23 +5,22 @@
     </div>
     <template v-if="category.dishes.length > 0">
       <div v-for="dish in category.dishes" :key="category.id + '-' + dish.id">
-        <dish-view v-bind:dish="dish"
-                   v-bind:go-back-path="goBackPath"
-                   v-bind:select-mode="selectMode"
-                   v-bind:manage-mode="manageMode"
-                   v-on:remove="removeDish"
-                   v-on:dishSelected="selectDish"/>
+        <template-dish-view v-bind:dish="dish"
+                            v-bind:select-mode="selectMode"
+                            v-bind:manage-mode="manageMode"
+                            v-on:remove="removeDish"
+                            v-on:dishSelected="selectDish"/>
       </div>
     </template>
   </div>
 </template>
 
 <script>
-import DishView from 'src/components/directory/dish/DishView'
+import TemplateDishView from 'src/components/directory/dish/TemplateDishView'
 
 export default {
   name: 'CategoryWithDishes',
-  components: {DishView},
+  components: {TemplateDishView},
   props: {
     category: {
       type: Object,

@@ -7,7 +7,7 @@
           <input v-validate="'required'" v-model="name" name="name"
                  v-bind:class="{ validationError: errors.has('name')}"
                  placeholder='Enter dish name here..' style="width: 100%"/>
-          <p v-if="errors.has('name') > 0" class="alert">{{errors.first('name')}}</p>
+          <p v-if="errors.has('name') > 0" class="alert">{{ errors.first('name') }}</p>
         </div>
         <div class="col-md-3" style="margin-top: 3px">
           <select v-validate="'min_value:1'" v-model="categoryId" name="categoryId" style="width: 100%"
@@ -16,7 +16,7 @@
               {{ category.name }}
             </option>
           </select>
-          <p v-if="errors.has('categoryId') > 0" class="alert">{{errors.first('categoryId')}}</p>
+          <p v-if="errors.has('categoryId') > 0" class="alert">{{ errors.first('categoryId') }}</p>
         </div>
       </div>
       <div class="row" style="margin-top: 3px">
@@ -28,19 +28,17 @@
       <!--Products section-->
       <template v-if="products.length > 0" class="row">
         <h4 style="padding-top:10px">Products</h4>
-        <!-- Dish linked to some food plan -->
         <div class="row headerRow bg-light">
           <!--Header-->
-          <div class="col-md-3 border"><strong>Name</strong></div>
+          <div class="col-md-5 border"><strong>Name</strong></div>
           <div class="col-md-1 border"><strong>Calorific</strong></div>
           <div class="col-md-1 border"><strong>Proteins</strong></div>
           <div class="col-md-1 border"><strong>Fats</strong></div>
           <div class="col-md-1 border"><strong>Carbs</strong></div>
           <div class="col-md-1 border"><strong>Weight</strong></div>
-          <div class="col-md-2 border"><strong>Package</strong></div>
         </div>
         <div class="row headerRow bg-light">
-          <div class="col-md-3 border"><em>Total</em></div>
+          <div class="col-md-5 border"><em>Total</em></div>
           <div class="col-md-1 border"><em>{{ totalCalorific }}</em></div>
           <div class="col-md-1 border"><em>{{ totalProteins }}</em></div>
           <div class="col-md-1 border"><em>{{ totalFats }}</em></div>
@@ -49,14 +47,13 @@
         </div>
         <!--Content-->
         <div v-for="product in products" :key="product.id">
-          <product-with-package-view v-bind:product="product"
-                                     v-bind:food-packages="foodPackages"
-                                     v-bind:manage-mode="true"
-                                     v-on:productUp="moveProductUp"
-                                     v-on:productDown="moveProductDown"
-                                     v-on:weightUpdated="updateProductWeight"
-                                     v-on:packageIdUpdated="updateProductPackageId"
-                                     v-on:productRemoved="removeProduct"/>
+          <product-view v-bind:product="product"
+                        v-bind:select-mode="false"
+                        v-bind:manage-mode="true"
+                        v-on:productUp="moveProductUp"
+                        v-on:productDown="moveProductDown"
+                        v-on:weightUpdated="updateProductWeight"
+                        v-on:productRemoved="removeProduct"/>
         </div>
       </template>
       <b-button variant="link" size="sm" v-on:click="addProductsModeChange">{{ productsTitle }}</b-button>
@@ -66,7 +63,7 @@
       </div>
       <div style="margin-top: 15px">
         <b-button variant="outline-success" size="sm" v-on:click="addNewDish">{{ addButtonTitle }}</b-button>
-        <b-button variant="outline-danger" size="sm" v-on:click="goBack" >Cancel</b-button>
+        <router-link :to="{ name : 'DishesPage' }"><b-button variant="outline-danger" size="sm" >Cancel</b-button></router-link>
       </div>
     </div>
   </div>
@@ -84,14 +81,6 @@ export default {
   props: {
     oldDish: {
       type: Object,
-      required: false
-    },
-    goBackPath: {
-      type: Object,
-      required: false
-    },
-    planId: {
-      type: String,
       required: false
     }
   },
@@ -124,14 +113,6 @@ export default {
   methods: {
     editMode () {
       return this.oldDish !== undefined
-    },
-
-    getGoBackPath () {
-      if (this.goBackPath !== undefined) {
-        return this.goBackPath
-      } else {
-        return {name: 'DishesPage'}
-      }
     },
 
     addProductsModeChange () {
@@ -186,13 +167,6 @@ export default {
       }
     },
 
-    updateProductPackageId (productId, packageId) {
-      let product = this.products.find(p => p.id === productId)
-      if (product !== undefined) {
-        product.packageId = packageId
-      }
-    },
-
     getErrorMessage (error, defaultMessage) {
       if (error.response !== undefined && error.response.data !== undefined &&
         (typeof error.response.data === 'string' || error.response.data instanceof String)) {
@@ -244,8 +218,7 @@ export default {
       return this.products.map(p => {
         return {
           productId: p.id,
-          weight: p.weight,
-          packageId: p.packageId
+          weight: p.weight
         }
       })
     },
@@ -262,29 +235,14 @@ export default {
     },
 
     updateDish (dish) {
-      axios.put(this.dishesEndpointUrl + dish.id, dish, this.getUpdateDishQueryParam())
+      axios.put(this.dishesEndpointUrl + dish.id, dish)
         .then(() => {
-          // on success go back to Dishes \ Meals \ Day page
-          this.$router.push(this.getGoBackPath())
+          // on success go to Dishes Page
+          this.$router.push({name: 'DishesPage'})
         })
         .catch(e => {
           this.getErrorMessage(e, 'Failed to update dish ' + JSON.stringify(dish))
         })
-    },
-
-    getUpdateDishQueryParam () {
-      if (this.planId !== undefined) {
-        return {
-          params: {
-            planId: this.planId
-          }
-        }
-      }
-      return {}
-    },
-
-    goBack () {
-      this.$router.push(this.getGoBackPath())
     },
 
     calculateProductsTotal (products, propertyGetter) {
@@ -304,13 +262,6 @@ export default {
   mounted () {
     // load dish categories on page init
     this.getDishCategories()
-    axios.get('/api/plans/' + this.$route.params.planId + '/packages')
-      .then(response => {
-        this.foodPackages = response.data
-      })
-      .catch(e => {
-        this.getErrorMessage(e, 'Failed to load Food plan packages...')
-      })
   }
 }
 </script>

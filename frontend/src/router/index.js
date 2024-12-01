@@ -6,6 +6,7 @@ import DirectoryPage from 'src/components/directory/DirectoryPage'
 import Products from 'src/components/directory/Products'
 import Dishes from 'src/components/directory/Dishes'
 import EditDish from 'src/components/directory/dish/EditDish'
+import EditTemplateDish from 'src/components/directory/dish/EditTemplateDish.vue'
 import ProductCategories from 'src/components/directory/ProductCategories'
 import DishCategories from 'src/components/directory/DishCategories'
 import MealTypes from 'src/components/directory/MealTypes'
@@ -49,6 +50,12 @@ export default new Router({
           path: 'dish-edit',
           name: 'EditDishPage',
           component: EditDish,
+          props: true
+        },
+        {
+          path: 'dish-template-edit',
+          name: 'EditTemplateDishPage',
+          component: EditTemplateDish,
           props: true
         },
         {
