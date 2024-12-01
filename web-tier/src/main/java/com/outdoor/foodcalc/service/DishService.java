@@ -143,21 +143,36 @@ public class DishService {
         dishDomainService.deleteTemplateDish(id);
     }
 
-    DishView mapDishView(Dish dish) {
+    DishView mapDishNoProducts(Dish dish) {
         FoodDetailsInstance dishDetails = dish.getFoodDetails();
         return DishView.builder()
                 .id(dish.getDishId())
                 .name(dish.getName())
                 .description(dish.getDescription())
                 .categoryId(dish.getCategory().getCategoryId())
-                .products(dish.getProducts().stream()
-                        .map(productService::mapProductRef)
-                        .collect(Collectors.toList()))
                 .calorific(dishDetails.getCalorific())
                 .proteins(dishDetails.getCalorific())
                 .fats(dishDetails.getFats())
                 .carbs(dishDetails.getCarbs())
                 .weight(dishDetails.getWeight())
+                .build();
+    }
+
+    DishView mapDishView(Dish dish) {
+        DishView view = mapDishNoProducts(dish);
+        return view.toBuilder()
+                .products(dish.getProducts().stream()
+                        .map(productService::mapProductRef)
+                        .collect(Collectors.toList()))
+                .build();
+    }
+
+    DishView mapDishWithPackages(Map<Long, String> packagesName, Dish dish) {
+        DishView view = mapDishNoProducts(dish);
+        return view.toBuilder()
+                .products(dish.getProducts().stream()
+                        .map(productRef -> productService.mapProductRefWithPackageName(packagesName, productRef))
+                        .collect(Collectors.toList()))
                 .build();
     }
 

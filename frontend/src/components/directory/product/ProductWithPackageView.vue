@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div :class="[nameWidthClass, nameTextClass]">&emsp;&emsp;{{name}}</div>
+    <div class="col-md-3 text-left border">&emsp;&emsp;{{name}}</div>
     <div class="col-md-1 border">{{calorific}}</div>
     <div class="col-md-1 border">{{proteins}}</div>
     <div class="col-md-1 border">{{fats}}</div>
@@ -61,9 +61,7 @@ export default {
       carbs: this.product.carbs,
       weight: this.product.weight,
       foodPackageId: this.product.packageId,
-      foodPackageName: this.product.packageName,
-      nameWidthClass: this.manageMode ? 'col-md-3' : 'col-md-5',
-      nameTextClass: 'text-left border'
+      foodPackageName: this.product.packageName
     }
   },
 

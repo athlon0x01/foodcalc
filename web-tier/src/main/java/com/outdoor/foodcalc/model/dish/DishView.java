@@ -14,7 +14,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 @Jacksonized
-@SuperBuilder
+@SuperBuilder(toBuilder = true)
 public class DishView  extends FoodView {
     @NotEmpty
     private String name;

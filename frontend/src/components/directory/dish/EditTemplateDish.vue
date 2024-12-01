@@ -76,7 +76,7 @@ import ProductView from 'src/components/directory/product/ProductView'
 import ProductWithPackageView from 'src/components/directory/product/ProductWithPackageView'
 
 export default {
-  name: 'EditDish',
+  name: 'EditTemplateDish',
   components: {SelectProductView, ProductView, ProductWithPackageView},
   props: {
     oldDish: {

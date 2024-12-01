@@ -92,7 +92,7 @@ public class MealService {
                         .map(productRef -> productService.mapProductRefWithPackageName(packagesName, productRef))
                         .collect(Collectors.toList()))
                 .dishes(meal.getDishes().stream()
-                        .map(dishService::mapDishView)
+                        .map(dish -> dishService.mapDishWithPackages(packagesName, dish))
                         .collect(Collectors.toList()))
                 .calorific(mealDetails.getCalorific())
                 .carbs(mealDetails.getCarbs())

@@ -94,7 +94,6 @@ export default {
     },
 
     goBack () {
-      console.log('Going to plan ' + this.$route.params.planId)
       this.$router.push({path: '/plan/' + this.$route.params.planId})
     },
 

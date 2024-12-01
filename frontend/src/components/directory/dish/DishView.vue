@@ -18,18 +18,19 @@
     </div>
     <template v-if="dish.products.length > 0">
       <div v-for="product in dish.products" :key="'dish-' + dish.id + '-' + product.id">
-        <product-view v-bind:product="product"/>
+        <product-with-package-view v-bind:product="product"
+                                   v-bind:manage-mode="false"/>
       </div>
     </template>
   </div>
 </template>
 
 <script>
-import ProductView from 'src/components/directory/product/ProductView'
+import ProductWithPackageView from 'src/components/directory/product/ProductWithPackageView'
 
 export default {
   name: 'DishView',
-  components: {ProductView},
+  components: {ProductWithPackageView},
   props: {
     dish: {
       type: Object,

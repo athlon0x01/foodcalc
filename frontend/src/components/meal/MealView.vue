@@ -21,12 +21,13 @@
         <!--Header-->
         <h5 style="padding-top:10px">Dishes</h5>
         <div class="row headerRow bg-light">
-          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-3 border"><strong>Name</strong></div>
           <div class="col-md-1 border"><strong>Calorific</strong></div>
           <div class="col-md-1 border"><strong>Proteins</strong></div>
           <div class="col-md-1 border"><strong>Fats</strong></div>
           <div class="col-md-1 border"><strong>Carbs</strong></div>
           <div class="col-md-1 border"><strong>Weight</strong></div>
+          <div class="col-md-2 border"><strong>Package</strong></div>
         </div>
         <div v-for="dish in meal.dishes" :key="'mealDish-' + dish.id">
           <dish-view v-bind:dish="dish"/>
@@ -37,7 +38,7 @@
         <!--Header-->
         <h5 style="padding-top:10px">Products</h5>
         <div class="row headerRow bg-light">
-          <div class="col-md-5 border"><strong>Name</strong></div>
+          <div class="col-md-3 border"><strong>Name</strong></div>
           <div class="col-md-1 border"><strong>Calorific</strong></div>
           <div class="col-md-1 border"><strong>Proteins</strong></div>
           <div class="col-md-1 border"><strong>Fats</strong></div>

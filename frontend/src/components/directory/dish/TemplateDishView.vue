@@ -28,7 +28,7 @@
 import ProductView from 'src/components/directory/product/ProductView'
 
 export default {
-  name: 'DishView',
+  name: 'TemplateDishView',
   components: {ProductView},
   props: {
     dish: {
