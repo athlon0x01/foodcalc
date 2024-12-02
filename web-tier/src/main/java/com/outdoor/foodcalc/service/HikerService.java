@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @Transactional(readOnly = true)
 public class HikerService {
@@ -16,6 +19,12 @@ public class HikerService {
 
     public HikerService(HikerDomainService hikerDomainService) {
         this.hikerDomainService = hikerDomainService;
+    }
+
+    public List<HikerInfo> getPlanHikers(long planId) {
+        return hikerDomainService.getPlanHikers(planId).stream()
+                .map(this::mapInfo)
+                .collect(Collectors.toList());
     }
 
     public HikerInfo getHiker(long id) {

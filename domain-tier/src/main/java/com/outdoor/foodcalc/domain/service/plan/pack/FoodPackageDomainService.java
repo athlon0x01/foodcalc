@@ -3,22 +3,28 @@ package com.outdoor.foodcalc.domain.service.plan.pack;
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;
 import com.outdoor.foodcalc.domain.model.plan.pack.FoodPackage;
+import com.outdoor.foodcalc.domain.model.plan.pack.PackageWithProducts;
 import com.outdoor.foodcalc.domain.repository.plan.IFoodPlanRepo;
+import com.outdoor.foodcalc.domain.repository.plan.pack.IFoodPackageProductsRepo;
 import com.outdoor.foodcalc.domain.repository.plan.pack.IFoodPackageRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class FoodPackageDomainService {
 
     private final IFoodPlanRepo planRepo;
     private final IFoodPackageRepo foodPackageRepo;
+    private final IFoodPackageProductsRepo foodPackageProductsRepo;
 
-    public FoodPackageDomainService(IFoodPlanRepo planRepo, IFoodPackageRepo foodPackageRepo) {
+    public FoodPackageDomainService(IFoodPlanRepo planRepo, IFoodPackageRepo foodPackageRepo, IFoodPackageProductsRepo foodPackageProductsRepo) {
         this.planRepo = planRepo;
         this.foodPackageRepo = foodPackageRepo;
+        this.foodPackageProductsRepo = foodPackageProductsRepo;
     }
 
     public List<FoodPackage> getPlanPackages(long planId) {
@@ -49,5 +55,15 @@ public class FoodPackageDomainService {
         }
         foodPackageRepo.deletePackage(id);
         planRepo.saveLastUpdated(planId, ZonedDateTime.now());
+    }
+
+    public Map<Long, PackageWithProducts> getPackagesWithProductsForPlan(long planId) {
+        List<FoodPackage> packages = foodPackageRepo.getPlanPackages(planId);
+        var packagesProducts = foodPackageProductsRepo.getPackageProductsForPlan(planId);
+        return packages.stream().collect(Collectors.toMap(FoodPackage::getId,
+                pack -> PackageWithProducts.builder()
+                        .foodPackage(pack)
+                        .dayProducts(packagesProducts.get(pack.getId()))
+                        .build()));
     }
 }

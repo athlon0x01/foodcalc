@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
 import com.outdoor.foodcalc.model.plan.pack.FoodPackageInfo;
+import com.outdoor.foodcalc.model.plan.pack.PlanWithPackagesView;
 import com.outdoor.foodcalc.service.FoodPackageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,5 +62,11 @@ public class FoodPackageEndpoint extends AbstractEndpoint {
         verifyEntityId(id, packageInfo);
         LOG.debug("Updating package for plan id = {} id = {}", planId, id);
         packageService.updatePackage(planId, packageInfo);
+    }
+
+    @GetMapping(path = "/products", produces = APPLICATION_JSON_VALUE)
+    public PlanWithPackagesView getPlanProducts(@PathVariable("planId") long planId) {
+        LOG.debug("Getting packages with products for plan id = {}", planId);
+        return packageService.getPlanPackagesMembers(planId);
     }
 }
