@@ -10,8 +10,10 @@ import com.outdoor.foodcalc.domain.repository.plan.pack.IFoodPackageRepo;
 import org.springframework.stereotype.Service;
 
 import java.time.ZonedDateTime;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -63,7 +65,8 @@ public class FoodPackageDomainService {
         return packages.stream().collect(Collectors.toMap(FoodPackage::getId,
                 pack -> PackageWithProducts.builder()
                         .foodPackage(pack)
-                        .dayProducts(packagesProducts.get(pack.getId()))
+                        .dayProducts(Optional.ofNullable(packagesProducts.get(pack.getId()))
+                                .orElse(new HashMap<>()))
                         .build()));
     }
 }

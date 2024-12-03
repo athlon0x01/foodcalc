@@ -19,8 +19,7 @@ public class PackageWithProducts {
 
     @EqualsAndHashCode.Include
     private final FoodPackage foodPackage;
-    @Builder.Default
-    private final Map<Long, PackageDayProducts> dayProducts = new HashMap<>();
+    private final Map<Long, PackageDayProducts> dayProducts;
 
     public Collection<PackageDayProducts> getPackageDays() {
         return Optional.ofNullable(dayProducts)

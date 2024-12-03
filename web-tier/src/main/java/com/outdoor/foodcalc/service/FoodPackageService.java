@@ -23,11 +23,13 @@ import java.util.stream.Collectors;
 public class FoodPackageService {
 
     private final FoodPackageDomainService foodPackageDomainService;
+    private final FoodDistributionEngine distributionEngine;
     private final HikerService hikerService;
     private final ProductService productService;
 
-    public FoodPackageService(FoodPackageDomainService foodPackageDomainService, HikerService hikerService, ProductService productService) {
+    public FoodPackageService(FoodPackageDomainService foodPackageDomainService, FoodDistributionEngine distributionEngine, HikerService hikerService, ProductService productService) {
         this.foodPackageDomainService = foodPackageDomainService;
+        this.distributionEngine = distributionEngine;
         this.hikerService = hikerService;
         this.productService = productService;
     }
@@ -104,10 +106,7 @@ public class FoodPackageService {
 
     public PlanWithPackagesView getPlanPackagesMembers(long planId) {
         List<HikerInfo> hikers = hikerService.getPlanHikers(planId);
-        var packages = foodPackageDomainService.getPackagesWithProductsForPlan(planId);
-        List<PackageWithProducts> sortedPackages = packages.values().stream()
-                .sorted(Comparator.comparingDouble(pack -> pack.getEstimatedWeight(hikers.size())))
-                .collect(Collectors.toList());
+        List<PackageWithProducts> sortedPackages = distributionEngine.getPackagesWithProductsForPlan(planId, hikers.size());
         return PlanWithPackagesView.builder()
                 .members(hikers)
                 .packages(sortedPackages.stream()

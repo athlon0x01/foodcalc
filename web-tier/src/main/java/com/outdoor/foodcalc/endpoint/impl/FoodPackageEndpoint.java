@@ -1,7 +1,9 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
+import com.outdoor.foodcalc.domain.model.plan.pack.FoodDistribution;
 import com.outdoor.foodcalc.model.plan.pack.FoodPackageInfo;
 import com.outdoor.foodcalc.model.plan.pack.PlanWithPackagesView;
+import com.outdoor.foodcalc.service.FoodDistributionEngine;
 import com.outdoor.foodcalc.service.FoodPackageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +30,11 @@ public class FoodPackageEndpoint extends AbstractEndpoint {
     private static final Logger LOG = LoggerFactory.getLogger(FoodPackageEndpoint.class);
 
     private final FoodPackageService packageService;
+    private final FoodDistributionEngine engine;
 
-    public FoodPackageEndpoint(FoodPackageService packageService) {
+    public FoodPackageEndpoint(FoodPackageService packageService, FoodDistributionEngine engine) {
         this.packageService = packageService;
+        this.engine = engine;
     }
 
     @GetMapping(produces = APPLICATION_JSON_VALUE)
@@ -68,5 +72,12 @@ public class FoodPackageEndpoint extends AbstractEndpoint {
     public PlanWithPackagesView getPlanProducts(@PathVariable("planId") long planId) {
         LOG.debug("Getting packages with products for plan id = {}", planId);
         return packageService.getPlanPackagesMembers(planId);
+    }
+
+    @GetMapping(path = "/best", produces = APPLICATION_JSON_VALUE)
+    public FoodPackageInfo getPlanProductsDistribution(@PathVariable("planId") long planId) {
+        LOG.debug("Getting packages distribution for plan id = {}", planId);
+        FoodDistribution bestDistribution = engine.findBestDistribution(planId);
+        return packageService.mapInfo(bestDistribution.getHikerPackages().iterator().next().getPackages().iterator().next().getFoodPackage());
     }
 }

@@ -36,7 +36,7 @@ public class PlanDayDomainService {
     }
 
     public List<PlanDay> getPlanDays(long planId) {
-        List<PlanDay> days = dayRepo.getPlanDays(planId);
+        List<PlanDay> days = getPlanDaysNoProducts(planId);
         //load products for all days and set them
         Map<Long, List<ProductRef>> daysProducts = productRefRepo.getDayProductsForAllDaysInPlan(planId);
         //load dishes for all days
@@ -52,6 +52,10 @@ public class PlanDayDomainService {
                 .ifPresent(day::setProducts);
         });
         return days;
+    }
+
+    public List<PlanDay> getPlanDaysNoProducts(long planId) {
+        return dayRepo.getPlanDays(planId);
     }
 
     public Optional<PlanDay> getDay(long planId, long id) {
