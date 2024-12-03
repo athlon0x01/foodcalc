@@ -39,6 +39,15 @@ public class PackageWithProducts {
                 .sum();
     }
 
+    public double getEstimatedWeight(Set<Long> days, int members) {
+        double weight = getPackageDays().stream()
+                .filter(dayPackages -> days.contains(dayPackages.getDayId()))
+                .flatMap(value -> value.getProducts().stream())
+                .mapToDouble(ProductRef::getWeight)
+                .sum();
+        return weight * members * foodPackage.getVolumeCoefficient() + foodPackage.getAdditionalWeight();
+    }
+
     public double getEstimatedWeight(int members) {
         double weight = getProductsWeight() * members * foodPackage.getVolumeCoefficient();
         return weight + foodPackage.getAdditionalWeight();

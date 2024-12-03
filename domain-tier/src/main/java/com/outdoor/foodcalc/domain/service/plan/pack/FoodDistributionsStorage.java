@@ -20,20 +20,36 @@ public class FoodDistributionsStorage {
         this.allDistributions = new ArrayList<>(allDays.size());
         this.packagesByDay = new HashMap<>(allDays.size());
         //initialize packages and distributions per day storages
-        allDays.forEach(theDay -> {
+        Set<Long> days = new HashSet<>();
+        for (PlanDay theDay : this.allDays) {
+            days.add(theDay.getDayId());
+            double weight = calculatePackagesEstimatedWeightForDays(days);
             allDistributions.add(SameDayFoodDistributions.builder()
-                    .day(theDay)
+                    .currentDay(theDay)
+                    .allDays(days)
                     .dayDistributions(new HashSet<>())
+                    .currentWeight(weight)
+                    .minDeviation(weight)
                     .build());
             packagesByDay.put(theDay.getDayId(), new ArrayList<>(allPackages.size()));
-        });
+        }
         //put packages into days \ packages map
-        allPackages.forEach(pack -> pack.getDayProducts().keySet()
+        this.allPackages.forEach(pack -> pack.getDayProducts().keySet()
                 .forEach(k -> packagesByDay.get(k).add(pack)));
     }
 
+    private double calculatePackagesEstimatedWeightForDays(Set<Long> days) {
+        return allPackages.stream()
+                .mapToDouble(pack -> pack.getEstimatedWeight(days, allHikers.size()))
+                .sum();
+    }
+
+    private boolean isFirstDay(long dayId) {
+        return allDays.get(allDays.size() - 1).getDayId() == dayId;
+    }
+
     public FoodDistribution getBest() {
-        return FoodDistribution.builder()
+        var def = FoodDistribution.builder()
                 .hikerPackages(Collections.singleton(HikerWithPackages.builder()
                         .packages(Collections.singleton(PackageWithProducts.builder()
                                 .foodPackage(FoodPackage.builder()
@@ -41,5 +57,7 @@ public class FoodDistributionsStorage {
                                 .build()))
                         .build()))
                 .build();
+        return Optional.ofNullable(allDistributions.get(allDistributions.size() - 1).getBest())
+                .orElse(def);
     }
 }

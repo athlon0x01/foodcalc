@@ -11,6 +11,10 @@ import java.util.Set;
 @Jacksonized
 @Builder
 public class SameDayFoodDistributions {
-    private final PlanDay day;
+    private final PlanDay currentDay;
+    private final Set<Long> allDays;
+    private final double currentWeight;
+    private double minDeviation;
     private Set<FoodDistribution> dayDistributions;
+    private FoodDistribution best;
 }

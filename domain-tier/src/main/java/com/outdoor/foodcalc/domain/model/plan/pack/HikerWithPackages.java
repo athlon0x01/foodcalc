@@ -20,6 +20,10 @@ public class HikerWithPackages {
     @EqualsAndHashCode.Include
     @Builder.Default
     private Set<PackageWithProducts> packages = new TreeSet<>(Comparator.comparingDouble(PackageWithProducts::getProductsWeight));
-    @Builder.Default
-    private boolean processed = false;
+
+    public double calculateEstimatedWeight(Set<Long> days, int members) {
+        return packages.stream()
+                .mapToDouble(pack -> pack.getEstimatedWeight(days, members))
+                .sum();
+    }
 }

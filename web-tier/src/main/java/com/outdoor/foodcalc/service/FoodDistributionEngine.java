@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.service;
 
+import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.domain.model.plan.Hiker;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.plan.pack.FoodDistribution;
@@ -41,8 +42,12 @@ public class FoodDistributionEngine {
         List<PlanDay> planDays = dayDomainService.getPlanDaysNoProducts(planId).stream()
                 .sorted(Comparator.comparing(PlanDay::getDate))
                 .collect(Collectors.toList());
+        List<PackageWithProducts> packagesWithProductsForPlan = getPackagesWithProductsForPlan(planId, hikers.size());
+        if (packagesWithProductsForPlan.isEmpty()) {
+            throw new FoodcalcException("Couldn't do food distribution without packages");
+        }
         FoodDistributionsStorage storage = new FoodDistributionsStorage(
-                hikers, planDays, getPackagesWithProductsForPlan(planId, hikers.size()));
+                hikers, planDays, packagesWithProductsForPlan);
         return storage.getBest();
     }
 }
