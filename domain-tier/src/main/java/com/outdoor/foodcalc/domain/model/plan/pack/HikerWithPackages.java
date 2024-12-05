@@ -6,9 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.Comparator;
 import java.util.Set;
-import java.util.TreeSet;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -18,8 +16,7 @@ public class HikerWithPackages {
     @EqualsAndHashCode.Include
     private final Hiker hiker;
     @EqualsAndHashCode.Include
-    @Builder.Default
-    private Set<PackageWithProducts> packages = new TreeSet<>(Comparator.comparingDouble(PackageWithProducts::getProductsWeight));
+    private Set<PackageWithProducts> packages;
 
     public double calculateEstimatedWeight(Set<Long> days, int members) {
         return packages.stream()

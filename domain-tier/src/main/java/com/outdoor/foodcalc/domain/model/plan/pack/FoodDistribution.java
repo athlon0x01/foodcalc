@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -18,7 +19,7 @@ public class FoodDistribution {
     private final Set<Long> allDays;
     //each distribution must include all food plan members
     @EqualsAndHashCode.Include
-    private Set<HikerWithPackages> hikerPackages;
+    private List<HikerWithPackages> hikerPackages;
     private boolean processed;
 
     public double deviation() {
