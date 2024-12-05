@@ -3,7 +3,7 @@ package com.outdoor.foodcalc.endpoint.impl;
 import com.outdoor.foodcalc.domain.model.plan.pack.FoodDistribution;
 import com.outdoor.foodcalc.model.plan.pack.FoodPackageInfo;
 import com.outdoor.foodcalc.model.plan.pack.PlanWithPackagesView;
-import com.outdoor.foodcalc.service.FoodDistributionEngine;
+import com.outdoor.foodcalc.service.distribution.FoodDistributionEngine;
 import com.outdoor.foodcalc.service.FoodPackageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

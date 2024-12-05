@@ -1,4 +1,4 @@
-package com.outdoor.foodcalc.domain.service.plan.pack;
+package com.outdoor.foodcalc.domain.service.plan;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.exception.NotFoundException;

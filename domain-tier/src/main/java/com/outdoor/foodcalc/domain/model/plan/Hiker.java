@@ -33,4 +33,10 @@ public class Hiker implements IDomainEntity {
         }
         return false;
     }
+
+    @Override
+    //TODO remove
+    public String toString() {
+        return "[id=" + id + ", Name='" + getName() + "', coef=" + weightCoefficient + "]";
+    }
 }

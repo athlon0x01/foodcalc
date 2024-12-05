@@ -52,4 +52,10 @@ public class PackageWithProducts {
         double weight = getProductsWeight() * members * foodPackage.getVolumeCoefficient();
         return weight + foodPackage.getAdditionalWeight();
     }
+
+    @Override
+    //TODO remove
+    public String toString() {
+        return "[id=" + foodPackage.getId() + ", Name='" + foodPackage.getName() + "', volume=" + foodPackage.getVolumeCoefficient() + ", weight=" + getProductsWeight() +"]";
+    }
 }
