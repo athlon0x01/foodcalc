@@ -41,7 +41,7 @@ public class FoodDistributionsStorage {
                     .allDays(days)
                     .dayDistributions(new HashSet<>())
                     .currentWeight(weight)
-                    .minDeviation(weight)       //TODO optimize
+                    .minDeviation(weight / 4) //threshold for obviously NOT effective distributions
                     .build());
             packagesByDay.put(theDay.getDayId(), new ArrayList<>());
         }
@@ -67,13 +67,15 @@ public class FoodDistributionsStorage {
     }
 
     public List<PackageWithProducts> getNewPackagesForDays(Set<Long> days, long newDay) {
-        var packageIds = days.stream()
+        Set<Long> previousDays = new HashSet<>(days);
+        previousDays.remove(newDay);
+        var previousPackageIds = previousDays.stream()
                 .map(packagesByDay::get)
                 .flatMap(List::stream)
                 .map(pack -> pack.getFoodPackage().getId())
                 .collect(Collectors.toSet());
         return packagesByDay.get(newDay).stream()
-                .filter(pack -> !packageIds.contains(pack.getFoodPackage().getId()))
+                .filter(pack -> !previousPackageIds.contains(pack.getFoodPackage().getId()))
                 .collect(Collectors.toList());
     }
 
@@ -145,7 +147,7 @@ public class FoodDistributionsStorage {
         SameDayFoodDistributions lastDayDistributionsContainer = allDistributions.get(0);
         lastDayDistributionsContainer.getDayDistributions()
                 .addAll(lastDayDistributions.stream()
-                        .filter(dist -> dist.deviation() < lastDayDistributionsContainer.getCurrentWeight())
+                        .filter(dist -> dist.deviation() < lastDayDistributionsContainer.getMinDeviation())
                         .collect(Collectors.toSet()));
     }
 
@@ -169,7 +171,7 @@ public class FoodDistributionsStorage {
                 if (!newPackages.isEmpty()) {
                     Set<FoodDistribution> nextDayDistributions = generateDistributionsAddingPackage(nextDayDistribution, newPackages);
                     filteredDistributions = nextDayDistributions.stream()
-                            .filter(dist -> dist.deviation() < nextDayContainer.getCurrentWeight())
+                            .filter(dist -> dist.deviation() < nextDayContainer.getMinDeviation())
                             .collect(Collectors.toSet());
                 }
                 //and continue recursion
