@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.service.distribution;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcException;
+import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.domain.model.plan.Hiker;
 import com.outdoor.foodcalc.domain.model.plan.PlanDay;
 import com.outdoor.foodcalc.domain.model.plan.pack.FoodDistribution;
@@ -46,6 +47,29 @@ public class FoodDistributionEngine {
                 .sorted(Comparator.comparing(PlanDay::getDate))
                 .collect(Collectors.toList());
         List<PackageWithProducts> packagesWithProductsForPlan = getPackagesWithProductsForPlan(planId, hikers.size());
+        return findBestDistribution(hikers, planDays, packagesWithProductsForPlan);
+    }
+
+    public FoodDistribution findBestDistribution(FoodPlan plan, List<PackageWithProducts> packagesWithProductsForPlan) {
+        List<Hiker> hikers = plan.getMembers().stream()
+                .sorted(Comparator.comparingDouble(Hiker::getWeightCoefficient).reversed())
+                .collect(Collectors.toList());
+        List<PlanDay> planDays = plan.getDays().stream()
+                .map(this::copyDayNoProducts)
+                .sorted(Comparator.comparing(PlanDay::getDate))
+                .collect(Collectors.toList());
+        return findBestDistribution(hikers, planDays, packagesWithProductsForPlan);
+    }
+
+    private PlanDay copyDayNoProducts(PlanDay day) {
+        return PlanDay.builder()
+                .dayId(day.getDayId())
+                .date(day.getDate())
+                .build();
+    }
+
+    public FoodDistribution findBestDistribution(List<Hiker> hikers, List<PlanDay> planDays, List<PackageWithProducts> packagesWithProductsForPlan) {
+
         if (packagesWithProductsForPlan.isEmpty()) {
             throw new FoodcalcException("Couldn't do food distribution without packages");
         }
