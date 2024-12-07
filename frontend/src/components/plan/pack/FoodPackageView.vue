@@ -1,16 +1,16 @@
 <template>
   <div>
     <div class="container" style="text-align: left">
-      <b-button variant="link" v-on:click="goBack">Back to plan</b-button>
+      <b-button variant="link" v-on:click="goBack">Назад до розкладки</b-button>
     </div>
-    <h3 class="food-plan-header">Food packages</h3>
+    <h3 class="food-plan-header">Пакунки продуктів</h3>
     <div v-if="packages.length > 0" class="container">
       <!--Header-->
       <div class="row headerRow bg-light">
-        <div class="col-md-3 border"><strong>Name</strong></div>
-        <div class="col-md-5 border"><strong>Description</strong></div>
-        <div class="col-md-1 border"><strong>Volume</strong></div>
-        <div class="col-md-1 border"><strong>Weight</strong></div>
+        <div class="col-md-3 border"><strong>Назва</strong></div>
+        <div class="col-md-5 border"><strong>Опис</strong></div>
+        <div class="col-md-1 border"><strong>Об'єм</strong></div>
+        <div class="col-md-1 border"><strong>Вага</strong></div>
       </div>
       <div v-for="foodPackage in packages" :key="foodPackage.id">
         <food-package-item v-bind:food-package="foodPackage"
@@ -24,28 +24,28 @@
     </div>
 
     <!--Add new food package section-->
-    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Add new</b-button>
+    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Додати пакунок</b-button>
     <div v-if="addMode !== undefined && addMode" class="container">
       <div class="row">
         <div class="col-md-4"/>
-        <div class="col-md-2 border bg-light"><strong>Name</strong></div>
+        <div class="col-md-2 border bg-light"><strong>Назва</strong></div>
         <div>
           <input v-validate="'required'" v-model="newPackageName" name="newPackage"
                  v-bind:class="{ validationError: errors.has('newPackage')}"
-                 placeholder='Enter member name here..' style="width: 100%"/>
+                 placeholder='Введіть назву тут..' style="width: 100%"/>
           <p v-if="errors.has('newPackage') > 0" class="alert">{{errors.first('newPackage')}}</p>
         </div>
       </div>
       <div class="row">
         <div class="col-md-4"/>
-        <div class="col-md-2 border bg-light"><strong>Volume Coefficient</strong></div>
+        <div class="col-md-2 border bg-light"><strong>Коефіцієнт об'єму</strong></div>
         <div>
           <input type="number" min="0" step="0.1" v-model="newPackageVolume" name="packageVolume" style="width: 100%"/>
         </div>
       </div>
       <div class="row">
         <div class="col-md-4"/>
-        <div class="col-md-2 border bg-light"><strong>Additional Weight</strong></div>
+        <div class="col-md-2 border bg-light"><strong>Додаткова вага</strong></div>
         <div>
           <input type="number" min="0" step="0.1" v-model="newPackageWeight" name="packageWeight" style="width: 100%"/>
         </div>
@@ -53,10 +53,10 @@
       <div class="row" style="padding-top:10px;padding-bottom:15px">
         <div class="col-md-5"/>
         <div class="col-md-1">
-          <b-button variant="outline-success" size="sm" v-on:click="addNewPackage">Add</b-button>
+          <b-button variant="outline-success" size="sm" v-on:click="addNewPackage">Додати</b-button>
         </div>
         <div class="col-md-1">
-          <b-button variant="outline-danger" size="sm" v-on:click="addMode = false">Cancel</b-button>
+          <b-button variant="outline-danger" size="sm" v-on:click="addMode = false">Назад</b-button>
         </div>
       </div>
     </div>

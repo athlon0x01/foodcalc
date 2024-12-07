@@ -4,15 +4,15 @@
       <div class="col-md-10 border" style="text-align: left;margin-top: 3px">&emsp;<em>{{dish.name}}</em></div>
       <template v-if="selectMode">
         <div class="col-md-1">
-          <b-button variant="outline-info" size="sm" v-on:click="selectDish" >Select</b-button>
+          <b-button variant="outline-info" size="sm" v-on:click="selectDish" >Обрати</b-button>
         </div>
       </template>
       <template v-if="manageMode">
         <div class="col-md-1">
-          <b-button variant="outline-success" size="sm" v-on:click="editDish">Edit</b-button>
+          <b-button variant="outline-success" size="sm" v-on:click="editDish">Змін.</b-button>
         </div>
         <div class="col-md-1">
-          <b-button variant="outline-danger" size="sm" v-on:click="removeDish">Delete</b-button>
+          <b-button variant="outline-danger" size="sm" v-on:click="removeDish">Видал.</b-button>
         </div>
       </template>
     </div>

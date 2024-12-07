@@ -4,13 +4,13 @@
       <div class="col-sm-10">
         <input v-validate="'required'" v-model="newItem" name="newItem"
                v-bind:class="{ validationError: errors.has('newItem')}"
-               v-on:keyup.13="addNewItem()" placeholder='Enter here..' style="width: 100%"/>
+               v-on:keyup.13="addNewItem()" placeholder='Введіть тут..' style="width: 100%"/>
       </div>
       <div class="col-sm-1">
-        <b-button variant="outline-success" size="sm" v-on:click="addNewItem">Add</b-button>
+        <b-button variant="outline-success" size="sm" v-on:click="addNewItem">Додати</b-button>
       </div>
       <div class="col-sm-1">
-        <b-button variant="outline-danger" size="sm" v-on:click="cancelAdd">Cancel</b-button>
+        <b-button variant="outline-danger" size="sm" v-on:click="cancelAdd">Назад</b-button>
       </div>
     </div>
     <div v-show="errors.has('newItem')" class="row alert" style="margin-top: 5px">

@@ -1,42 +1,42 @@
 <template>
   <div>
-    <h2 class="food-plan-header">Food plan</h2>
+    <h2 class="food-plan-header">Розкладка</h2>
     <template v-if="foodPlan !== null">
       <div class="container">
         <div class="row">
-          <div class="col-md-2 border bg-light"><strong>Name</strong></div>
+          <div class="col-md-2 border bg-light"><strong>Назва</strong></div>
           <div class="col-md-9 border">
             <input v-validate="'required'" v-model="foodPlan.name" name="planName"
                    v-bind:class="{ validationError: errors.has('planName')}"
-                   placeholder='Enter food plan name here..' style="width: 100%"/>
+                   placeholder='Введіть назву тут..' style="width: 100%"/>
             <p v-if="errors.has('planName') > 0" class="alert">{{errors.first('planName')}}</p>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-2 border bg-light"><strong>Description</strong></div>
+          <div class="col-md-2 border bg-light"><strong>Опис</strong></div>
           <div class="col-md-9 border">
             <textarea v-model="foodPlan.description" name="planDescription" style="width: 100%"/>
           </div>
           <div class="col-md-1">
-            <b-button variant="outline-success" size="sm" v-on:click="updatePlanInfo">Update Plan</b-button>
+            <b-button variant="outline-success" size="sm" v-on:click="updatePlanInfo">Оновити план</b-button>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-2 border bg-light"><strong>Duration</strong></div>
+          <div class="col-md-2 border bg-light"><strong>Тривалість</strong></div>
           <div class="col-md-9 border">{{foodPlan.days.length}}</div>
           <div class="col-md-1">
-            <b-button variant="outline-primary" size="sm" v-on:click="goToPackages">Packages</b-button>
+            <b-button variant="outline-primary" size="sm" v-on:click="goToPackages">Пакунки</b-button>
           </div>
         </div>
         <div class="row">
-          <div class="col-md-2 border bg-light"><strong>Created On</strong></div>
+          <div class="col-md-2 border bg-light"><strong>Створено</strong></div>
           <div class="col-md-9 border">{{foodPlan.createdOn}}</div>
         </div>
         <div class="row">
-          <div class="col-md-2 border bg-light"><strong>Last Updated</strong></div>
+          <div class="col-md-2 border bg-light"><strong>Оновлено</strong></div>
           <div class="col-md-9 border">{{foodPlan.lastUpdated}}</div>
           <div class="col-md-1">
-            <b-button variant="outline-primary" size="sm" v-on:click="exportPlan">Export</b-button>
+            <b-button variant="outline-primary" size="sm" v-on:click="exportPlan">Експорт</b-button>
           </div>
         </div>
         <div>
@@ -44,14 +44,14 @@
         </div>
         <div class="row headerRow bg-light">
           <div class="col-md-2"/>
-          <div class="col-md-2 border"><em>Calorific</em></div>
-          <div class="col-md-2 border"><em>Proteins</em></div>
-          <div class="col-md-2 border"><em>Fats</em></div>
-          <div class="col-md-2 border"><em>Carbs</em></div>
-          <div class="col-md-2 border"><em>Weight</em></div>
+          <div class="col-md-2 border"><em>Калорії</em></div>
+          <div class="col-md-2 border"><em>Протеіни</em></div>
+          <div class="col-md-2 border"><em>Жири</em></div>
+          <div class="col-md-2 border"><em>Вуглвд.</em></div>
+          <div class="col-md-2 border"><em>Вага</em></div>
         </div>
         <div class="row">
-          <div class="col-md-2 border"><em><strong>Total</strong></em></div>
+          <div class="col-md-2 border"><em><strong>Загалом</strong></em></div>
           <div class="col-md-2 border"><em><strong>{{foodPlan.calorific}}</strong></em></div>
           <div class="col-md-2 border"><em><strong>{{foodPlan.proteins}}</strong></em></div>
           <div class="col-md-2 border"><em><strong>{{foodPlan.fats}}</strong></em></div>
@@ -68,20 +68,20 @@
         </div>
       </template>
       <!--Add new food plan day section-->
-      <b-button variant="link" size="sm" v-on:click="addMode = true">Add new day</b-button>
+      <b-button variant="link" size="sm" v-on:click="addMode = true">Додати день</b-button>
       <div v-if="addMode" class="container">
         <div class="row">
           <div class="col-md-4"/>
-          <div class="col-md-2 border bg-light"><em>Date</em></div>
+          <div class="col-md-2 border bg-light"><em>Дата</em></div>
           <div><input type="date" v-model="newDayDate" name="newDayDate"/></div>
         </div>
         <div class="row" style="padding-top:10px;">
           <div class="col-md-5"/>
           <div class="col-md-1">
-            <b-button variant="outline-success" size="sm" v-on:click="addNewDay">Add</b-button>
+            <b-button variant="outline-success" size="sm" v-on:click="addNewDay">Додати</b-button>
           </div>
           <div class="col-md-1">
-            <b-button variant="outline-danger" size="sm" v-on:click="cancelAddMode">Cancel</b-button>
+            <b-button variant="outline-danger" size="sm" v-on:click="cancelAddMode">Назад</b-button>
           </div>
         </div>
       </div>

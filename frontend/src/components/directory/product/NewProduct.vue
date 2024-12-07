@@ -3,7 +3,7 @@
     <div class="col-md-3">
       <input v-validate="'required'" v-model="name" name="name"
              v-bind:class="{ validationError: errors.has('name')}"
-             placeholder='Enter product name here..' style="width: 100%"/>
+             placeholder='Введіть назву тут..' style="width: 100%"/>
       <p v-if="errors.has('name') > 0" class="alert">{{errors.first('name')}}</p>
     </div>
     <div class="col-md-2" style="margin-top: 5px">
@@ -31,10 +31,10 @@
       <input type="number" min="0" step="0.01" v-model="weight" name="defaultWeight" style="width: 100%"/>
     </div>
     <div class="col-md-1">
-      <b-button variant="outline-success" size="sm" v-on:click="addNewProduct">Add</b-button>
+      <b-button variant="outline-success" size="sm" v-on:click="addNewProduct">Додати</b-button>
     </div>
     <div class="col-md-1">
-      <b-button variant="outline-danger" size="sm" v-on:click="cancelAdd">Cancel</b-button>
+      <b-button variant="outline-danger" size="sm" v-on:click="cancelAdd">Назад</b-button>
     </div>
   </div>
 </template>

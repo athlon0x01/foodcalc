@@ -4,7 +4,7 @@
       <div class="col-md-3">
         <input v-validate="'required'" v-model="name" name="name"
                v-bind:class="{ validationError: errors.has('name')}"
-               placeholder='Enter product name here..' style="width: 100%"/>
+               placeholder='Введіть назву тут..' style="width: 100%"/>
         <p v-if="errors.has('name') > 0" class="alert">{{errors.first('name')}}</p>
       </div>
       <div class="col-md-2" style="margin-top: 5px">
@@ -30,10 +30,10 @@
         <input type="number" min="0" step="0.01" v-model="weight" name="defaultWeight" style="width: 100%"/>
       </div>
       <div class="col-sm-1">
-        <b-button variant="outline-success" size="sm" v-on:click="updateProduct">Update</b-button>
+        <b-button variant="outline-success" size="sm" v-on:click="updateProduct">Онов.</b-button>
       </div>
       <div class="col-sm-1">
-        <b-button variant="outline-danger" size="sm" v-on:click="cancelEdit">Cancel</b-button>
+        <b-button variant="outline-danger" size="sm" v-on:click="cancelEdit">Назад</b-button>
       </div>
       <div v-show="errors.has('item.name')" class="alert" style="margin-top: 5px">
         <span>{{errors.first('item.name')}}</span>
@@ -47,10 +47,10 @@
       <div class="col-md-1 border">{{carbs}}</div>
       <div class="col-md-1 border">{{weight}}</div>
       <div class="col-md-1">
-        <b-button variant="outline-success" size="sm" v-on:click="startEdit">Edit</b-button>
+        <b-button variant="outline-success" size="sm" v-on:click="startEdit">Змін.</b-button>
       </div>
       <div class="col-md-1">
-        <b-button variant="outline-danger" size="sm" v-on:click="removeItem">Delete</b-button>
+        <b-button variant="outline-danger" size="sm" v-on:click="removeItem">Видал.</b-button>
       </div>
     </template>
   </div>

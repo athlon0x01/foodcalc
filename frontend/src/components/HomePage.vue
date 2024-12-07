@@ -1,16 +1,16 @@
 <template>
   <div>
-    <h1 class="calc-header">Outdoor Food Calculator</h1>
-    <h2 class="food-plan-header">Food plans:</h2>
+    <h1 class="calc-header">Калькулятор туристичних розкладок</h1>
+    <h2 class="food-plan-header">Розкладка:</h2>
     <!--Food plans list-->
     <div v-if="foodPlans.length > 0" class="container">
       <!--Header-->
       <div class="row headerRow bg-light">
-        <div class="col-md-5 border"><strong>Name</strong></div>
-        <div class="col-md-1 border"><strong>Members</strong></div>
-        <div class="col-md-1 border"><strong>Duration</strong></div>
-        <div class="col-md-2 border"><strong>Created On</strong></div>
-        <div class="col-md-2 border"><strong>Last Updated</strong></div>
+        <div class="col-md-5 border"><strong>Назва</strong></div>
+        <div class="col-md-1 border"><strong>Учасники</strong></div>
+        <div class="col-md-1 border"><strong>Дні</strong></div>
+        <div class="col-md-2 border"><strong>Створено</strong></div>
+        <div class="col-md-2 border"><strong>Оновленно</strong></div>
       </div>
       <div v-for="plan in foodPlans" :key="plan.id">
         <div class="row">
@@ -20,38 +20,38 @@
           <div class="col-md-2 border">{{plan.createdOn}}</div>
           <div class="col-md-2 border">{{plan.lastUpdated}}</div>
           <div class="col-md-1">
-            <b-button variant="outline-danger" size="sm" v-on:click="deletePlan(plan.id)">Delete</b-button>
+            <b-button variant="outline-danger" size="sm" v-on:click="deletePlan(plan.id)">Видал.</b-button>
           </div>
         </div>
       </div>
     </div>
     <div v-if="foodPlans.length === 0 && errorMessage === null">
-      <p><em>No Food Plans yet...</em></p>
+      <p><em>Розкладок немає...</em></p>
     </div>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
       <p>{{errorMessage}}</p>
     </div>
     <!--Add new food plan section-->
-    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Add new</b-button>
+    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Додати нову розкладку</b-button>
     <div v-if="addMode !== undefined && addMode" class="container">
       <div class="row">
         <div class="col-md-4"/>
-        <div class="col-md-2 border bg-light"><strong>Name</strong></div>
+        <div class="col-md-2 border bg-light"><strong>Назва</strong></div>
         <div>
           <input v-validate="'required'" v-model="planName" name="planName"
                  v-bind:class="{ validationError: errors.has('planName')}"
-                 placeholder='Enter food plan name here..' style="width: 100%"/>
+                 placeholder='Введіть назву тут..' style="width: 100%"/>
           <p v-if="errors.has('planName') > 0" class="alert">{{errors.first('planName')}}</p>
         </div>
       </div>
       <div class="row" style="padding-top:10px;">
         <div class="col-md-5"/>
         <div class="col-md-1">
-          <b-button variant="outline-success" size="sm" v-on:click="addNewPlan">Add</b-button>
+          <b-button variant="outline-success" size="sm" v-on:click="addNewPlan">Додати</b-button>
         </div>
         <div class="col-md-1">
-          <b-button variant="outline-danger" size="sm" v-on:click="addMode = false">Cancel</b-button>
+          <b-button variant="outline-danger" size="sm" v-on:click="addMode = false">Назад</b-button>
         </div>
       </div>
     </div>

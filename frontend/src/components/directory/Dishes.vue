@@ -1,17 +1,17 @@
 <template>
   <div>
-    <h2 class="directory-header">Dishes list</h2>
+    <h2 class="directory-header">Страви</h2>
 
     <!--Dishes list-->
     <div v-if="hasDishes()" class="container border">
       <!--Header-->
       <div class="row headerRow bg-light">
-        <div class="col-md-5 border"><strong>Name</strong></div>
-        <div class="col-md-1 border"><strong>Calorific</strong></div>
-        <div class="col-md-1 border"><strong>Proteins</strong></div>
-        <div class="col-md-1 border"><strong>Fats</strong></div>
-        <div class="col-md-1 border"><strong>Carbs</strong></div>
-        <div class="col-md-1 border"><strong>Weight</strong></div>
+        <div class="col-md-5 border"><strong>Назва</strong></div>
+        <div class="col-md-1 border"><strong>Калорії</strong></div>
+        <div class="col-md-1 border"><strong>Протеіни</strong></div>
+        <div class="col-md-1 border"><strong>Жири</strong></div>
+        <div class="col-md-1 border"><strong>Вуглвд.</strong></div>
+        <div class="col-md-1 border"><strong>Вага</strong></div>
       </div>
       <!--Content-->
       <div v-for="category in categoriesWithDishes" :key="category.id">
@@ -22,9 +22,9 @@
       </div>
     </div>
     <div v-if="!hasDishes() && errorMessage === null">
-      <p><em>No Dishes yet...</em></p>
+      <p><em>Страв немає...</em></p>
     </div>
-    <router-link :to="{ name : 'EditDishPage' }">Add new</router-link>
+    <router-link :to="{ name : 'EditDishPage' }">Додати страву</router-link>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
       <p>{{errorMessage}}</p>

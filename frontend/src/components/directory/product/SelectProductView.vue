@@ -1,17 +1,17 @@
 <template>
   <div style="padding:10px">
-    <p style="text-align: center"><em>Select products to de added</em></p>
+    <p style="text-align: center"><em>Оберіть продукти для додавання</em></p>
 
     <!--Products list-->
     <div v-if="hasProducts()" class="container border">
       <!--Header-->
       <div class="row headerRow bg-light">
-        <div class="col-md-6 border"><strong>Name</strong></div>
-        <div class="col-md-1 border"><strong>Calorific</strong></div>
-        <div class="col-md-1 border"><strong>Proteins</strong></div>
-        <div class="col-md-1 border"><strong>Fats</strong></div>
-        <div class="col-md-1 border"><strong>Carbs</strong></div>
-        <div class="col-md-1 border"><strong>Weight</strong></div>
+        <div class="col-md-6 border"><strong>Назва</strong></div>
+        <div class="col-md-1 border"><strong>Калорії</strong></div>
+        <div class="col-md-1 border"><strong>Протеіни</strong></div>
+        <div class="col-md-1 border"><strong>Жири</strong></div>
+        <div class="col-md-1 border"><strong>Вуглвд.</strong></div>
+        <div class="col-md-1 border"><strong>Вага</strong></div>
       </div>
       <!--Content-->
       <div v-for="category in categoriesWithProducts" :key="category.id">
@@ -20,11 +20,11 @@
       </div>
     </div>
     <div v-if="!hasProducts()">
-      <p><em>No Products yet...</em></p>
-      <router-link :to="{ name : 'ProductsPage' }"><b-button variant="outline-success" size="sm" >Add Products</b-button></router-link>
+      <p><em>Продуктів немає...</em></p>
+      <router-link :to="{ name : 'ProductsPage' }"><b-button variant="outline-success" size="sm" >Додати продукти</b-button></router-link>
     </div>
     <div style="padding-top:10px">
-      <b-button variant="outline-info" size="sm" v-on:click="closeMe" >Hide Products to be added</b-button>
+      <b-button variant="outline-info" size="sm" v-on:click="closeMe" >Приховати продукти</b-button>
     </div>
   </div>
 </template>

@@ -6,7 +6,7 @@
     <h4 class="meal-header">{{mealTitle}}</h4>
     <div class="container">
       <div class="row">
-        <div class="col-md-2 border bg-light"><strong>Date</strong></div>
+        <div class="col-md-2 border bg-light"><strong>Тип</strong></div>
         <div>
           <select v-model="mealTypeId" name="typeId" style="width: 100%">
             <option v-for="mealType in mealTypes" :key="mealType.id" :value="mealType.id">
@@ -16,32 +16,32 @@
         </div>
       </div>
       <div class="row">
-        <div class="col-md-2 border bg-light"><strong>Description</strong></div>
+        <div class="col-md-2 border bg-light"><strong>Дата</strong></div>
         <div class="col-md-10 border">
           <textarea v-model="mealDescription" name="mealDescription" style="width: 100%"/>
         </div>
       </div>
       <div class="row justify-content-md-center" style="padding-top:5px">
         <div class="col-md-2">
-          <b-button variant="outline-success" size="sm" v-on:click="updateMeal">Update</b-button>
+          <b-button variant="outline-success" size="sm" v-on:click="updateMeal">Змінити</b-button>
         </div>
         <div class="col-md-4"/>
         <div class="col-md-2">
-          <b-button variant="outline-danger" size="sm" v-on:click="goBack">Cancel</b-button>
+          <b-button variant="outline-danger" size="sm" v-on:click="goBack">Назад</b-button>
         </div>
       </div>
       <!--Dishes section-->
       <template v-if="mealDishes.length > 0" class="row">
         <!--Header-->
-        <h5 style="padding-top:10px">Dishes</h5>
+        <h5 style="padding-top:10px">Страви</h5>
         <div class="row headerRow bg-light">
-          <div class="col-md-3 border"><strong>Name</strong></div>
-          <div class="col-md-1 border"><strong>Calorific</strong></div>
-          <div class="col-md-1 border"><strong>Proteins</strong></div>
-          <div class="col-md-1 border"><strong>Fats</strong></div>
-          <div class="col-md-1 border"><strong>Carbs</strong></div>
-          <div class="col-md-1 border"><strong>Weight</strong></div>
-          <div class="col-md-2 border"><strong>Package</strong></div>
+          <div class="col-md-3 border"><strong>Назва</strong></div>
+          <div class="col-md-1 border"><strong>Калорії</strong></div>
+          <div class="col-md-1 border"><strong>Протеіни</strong></div>
+          <div class="col-md-1 border"><strong>Жири</strong></div>
+          <div class="col-md-1 border"><strong>Вуглвд.</strong></div>
+          <div class="col-md-1 border"><strong>Вага</strong></div>
+          <div class="col-md-2 border"><strong>Пакунок</strong></div>
         </div>
         <div v-for="dish in mealDishes" :key="'mealDish-' + dish.id">
           <dish-view v-bind:dish="dish"
@@ -54,15 +54,15 @@
       <!--Products section-->
       <template v-if="mealProducts.length > 0" class="row">
         <!--Header-->
-        <h5 style="padding-top:10px">Products</h5>
+        <h5 style="padding-top:10px">Продукти</h5>
         <div class="row headerRow bg-light">
-          <div class="col-md-3 border"><strong>Name</strong></div>
-          <div class="col-md-1 border"><strong>Calorific</strong></div>
-          <div class="col-md-1 border"><strong>Proteins</strong></div>
-          <div class="col-md-1 border"><strong>Fats</strong></div>
-          <div class="col-md-1 border"><strong>Carbs</strong></div>
-          <div class="col-md-1 border"><strong>Weight</strong></div>
-          <div class="col-md-2 border"><strong>Package</strong></div>
+          <div class="col-md-3 border"><strong>Назва</strong></div>
+          <div class="col-md-1 border"><strong>Калорії</strong></div>
+          <div class="col-md-1 border"><strong>Протеіни</strong></div>
+          <div class="col-md-1 border"><strong>Жири</strong></div>
+          <div class="col-md-1 border"><strong>Вуглвд.</strong></div>
+          <div class="col-md-1 border"><strong>Вага</strong></div>
+          <div class="col-md-2 border"><strong>Пакунок</strong></div>
         </div>
         <!--Content-->
         <div v-for="product in mealProducts" :key="'mealProduct-' + product.id">
@@ -76,7 +76,7 @@
                                      v-on:productRemoved="removeProduct"/>
         </div>
         <div class="row headerRow bg-light">
-          <div class="col-md-3 border"><em>Total</em></div>
+          <div class="col-md-3 border"><em>Загалом</em></div>
           <div class="col-md-1 border"><em>{{ productCalorific }}</em></div>
           <div class="col-md-1 border"><em>{{ productProteins }}</em></div>
           <div class="col-md-1 border"><em>{{ productFats }}</em></div>
@@ -119,9 +119,9 @@ export default {
       planId: null,
       goBackPath: null,
       addProductsMode: false,
-      productsTitle: 'Show Products to add',
+      productsTitle: 'Показати продукти',
       addDishesMode: false,
-      dishesTitle: 'Show Dishes to add',
+      dishesTitle: 'Показати страви',
       foodPackages: [],
       mealTypes: [],
       mealTitle: null,
@@ -151,12 +151,12 @@ export default {
 
     addDishesModeChange () {
       this.addDishesMode = !this.addDishesMode
-      this.dishesTitle = this.addDishesMode ? 'Hide Dishes to be added' : 'Show Dishes to add'
+      this.dishesTitle = this.addDishesMode ? 'Приховати страви' : 'Показати страви'
     },
 
     hideDishesToAdd () {
       this.addDishesMode = false
-      this.dishesTitle = 'Show Dishes to add'
+      this.dishesTitle = 'Показати страви'
     },
 
     addDish (dishId) {
@@ -184,12 +184,12 @@ export default {
 
     addProductsModeChange () {
       this.addProductsMode = !this.addProductsMode
-      this.productsTitle = this.addProductsMode ? 'Hide Products to be added' : 'Show Products to add'
+      this.productsTitle = this.addProductsMode ? 'Приховати продукти' : 'Показати продукти'
     },
 
     hideProductsToAdd () {
       this.addProductsMode = false
-      this.productsTitle = 'Show Products to add'
+      this.productsTitle = 'Показати продукти'
     },
 
     addProduct (product) {

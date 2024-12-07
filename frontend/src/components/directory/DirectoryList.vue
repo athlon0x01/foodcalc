@@ -5,7 +5,7 @@
     <!--List-->
     <div v-if="items.length > 0" class="container">
       <div class="row headerRow">
-        <div class="col-sm-10"><strong>Name</strong></div>
+        <div class="col-sm-10"><strong>Назва</strong></div>
       </div>
       <div v-for="item in items" :key="item.id">
         <directory-list-item v-bind:item-data="item" v-on:update="updateItem" v-on:remove="removeItem"/>
@@ -20,7 +20,7 @@
     </div>
 
     <!--Add new item section-->
-    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Add new</b-button>
+    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Додати</b-button>
     <div v-if="addMode !== undefined && addMode" class="container">
       <directory-list-new-item v-on:addNew="addItem" v-on:cancelAdd="addMode = false"/>
     </div>

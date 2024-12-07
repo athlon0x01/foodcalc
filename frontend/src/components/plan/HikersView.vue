@@ -1,13 +1,13 @@
 <template>
   <div>
-    <h3 class="members-header">Members</h3>
+    <h3 class="members-header">Учасники</h3>
     <!--hikers \ members-->
     <div v-if="members.length > 0" class="container">
       <!--Header-->
       <div class="row headerRow bg-light">
-        <div class="col-md-3 border"><strong>Name</strong></div>
-        <div class="col-md-5 border"><strong>Description</strong></div>
-        <div class="col-md-2 border"><strong>Coefficient</strong></div>
+        <div class="col-md-3 border"><strong>Ім'я</strong></div>
+        <div class="col-md-5 border"><strong>Опис</strong></div>
+        <div class="col-md-2 border"><strong>Коефіцієнт</strong></div>
       </div>
       <div v-for="hiker in members" :key="'hiker-' + hiker.id">
         <hiker-item v-bind:hiker = "hiker"
@@ -20,25 +20,25 @@
       <p>{{errorMessage}}</p>
     </div>
     <!--Add new hiker section-->
-    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Add new member</b-button>
+    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Додати учасника</b-button>
     <div v-if="addMode !== undefined && addMode" class="container">
       <div class="row">
         <div class="col-md-4"/>
-        <div class="col-md-2 border bg-light"><strong>Name</strong></div>
+        <div class="col-md-2 border bg-light"><strong>Ім'я</strong></div>
         <div>
           <input v-validate="'required'" v-model="newHiker" name="newHiker"
                  v-bind:class="{ validationError: errors.has('newHiker')}"
-                 placeholder='Enter member name here..' style="width: 100%"/>
+                 placeholder='Введіть тут..' style="width: 100%"/>
           <p v-if="errors.has('newHiker') > 0" class="alert">{{errors.first('newHiker')}}</p>
         </div>
       </div>
       <div class="row" style="padding-top:10px;padding-bottom:15px">
         <div class="col-md-5"/>
         <div class="col-md-1">
-          <b-button variant="outline-success" size="sm" v-on:click="addNewHiker">Add</b-button>
+          <b-button variant="outline-success" size="sm" v-on:click="addNewHiker">Додати</b-button>
         </div>
         <div class="col-md-1">
-          <b-button variant="outline-danger" size="sm" v-on:click="addMode = false">Cancel</b-button>
+          <b-button variant="outline-danger" size="sm" v-on:click="addMode = false">Назад</b-button>
         </div>
       </div>
     </div>

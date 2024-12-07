@@ -11,7 +11,7 @@ export default {
   data () {
     return {
       url: '/api/dish-categories/',
-      title: 'Dish Categories'
+      title: 'Категорії страв'
     }
   }
 }

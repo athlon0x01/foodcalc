@@ -11,7 +11,7 @@ export default {
   data () {
     return {
       url: '/api/product-categories/',
-      title: 'Product Categories'
+      title: 'Категорії продуктів'
     }
   }
 }

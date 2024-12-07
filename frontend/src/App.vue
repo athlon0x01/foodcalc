@@ -2,13 +2,13 @@
   <div id="app">
     <b-nav justified tabs>
       <b-nav-item>
-        <router-link to="/">Home</router-link>
+        <router-link to="/">Розкладки</router-link>
       </b-nav-item>
       <b-nav-item>
-        <router-link to="/directory">Food Guide</router-link>
+        <router-link to="/directory">Довідники</router-link>
       </b-nav-item>
       <b-nav-item>
-        <router-link to="/about">About</router-link>
+        <router-link to="/about">Про Калькулятор</router-link>
       </b-nav-item>
     </b-nav>
     <router-view/>

@@ -7,11 +7,11 @@
       </div>
       <div class="row justify-content-md-center" style="padding-bottom:5px">
         <div class="col-md-2">
-          <b-button variant="outline-success" size="sm" v-on:click="editDay">Edit</b-button>
+          <b-button variant="outline-success" size="sm" v-on:click="editDay">Змінити</b-button>
         </div>
         <div class="col-md-4"/>
         <div class="col-md-2">
-          <b-button variant="outline-danger" size="sm" v-on:click="deleteDay">Delete</b-button>
+          <b-button variant="outline-danger" size="sm" v-on:click="deleteDay">Видалити</b-button>
         </div>
       </div>
       <!--day meals-->
@@ -25,15 +25,15 @@
       <template v-if="foodDay.dishes.length > 0" class="row">
         <div class="container border border-success">
           <!--Header-->
-          <h5 style="padding-top:10px">Dishes</h5>
+          <h5 style="padding-top:10px">Страви</h5>
           <div class="row headerRow bg-light">
-            <div class="col-md-3 border"><strong>Name</strong></div>
-            <div class="col-md-1 border"><strong>Calorific</strong></div>
-            <div class="col-md-1 border"><strong>Proteins</strong></div>
-            <div class="col-md-1 border"><strong>Fats</strong></div>
-            <div class="col-md-1 border"><strong>Carbs</strong></div>
-            <div class="col-md-1 border"><strong>Weight</strong></div>
-            <div class="col-md-2 border"><strong>Package</strong></div>
+            <div class="col-md-3 border"><strong>Назва</strong></div>
+            <div class="col-md-1 border"><strong>Калорії</strong></div>
+            <div class="col-md-1 border"><strong>Протеіни</strong></div>
+            <div class="col-md-1 border"><strong>Жири</strong></div>
+            <div class="col-md-1 border"><strong>Вуглвд.</strong></div>
+            <div class="col-md-1 border"><strong>Вага</strong></div>
+            <div class="col-md-2 border"><strong>Пакунок</strong></div>
           </div>
           <div v-for="dish in foodDay.dishes" :key="'dayDish-' + dish.id">
             <dish-view v-bind:dish="dish"/>
@@ -43,15 +43,15 @@
       <!--Products section-->
       <template v-if="foodDay.products.length > 0" class="row">
         <!--Header-->
-        <h5 style="padding-top:10px">Products</h5>
+        <h5 style="padding-top:10px">Продукти</h5>
         <div class="row headerRow bg-light">
-          <div class="col-md-3 border"><strong>Name</strong></div>
-          <div class="col-md-1 border"><strong>Calorific</strong></div>
-          <div class="col-md-1 border"><strong>Proteins</strong></div>
-          <div class="col-md-1 border"><strong>Fats</strong></div>
-          <div class="col-md-1 border"><strong>Carbs</strong></div>
-          <div class="col-md-1 border"><strong>Weight</strong></div>
-          <div class="col-md-2 border"><strong>Package</strong></div>
+          <div class="col-md-3 border"><strong>Назва</strong></div>
+          <div class="col-md-1 border"><strong>Калорії</strong></div>
+          <div class="col-md-1 border"><strong>Протеіни</strong></div>
+          <div class="col-md-1 border"><strong>Жири</strong></div>
+          <div class="col-md-1 border"><strong>Вуглвд.</strong></div>
+          <div class="col-md-1 border"><strong>Вага</strong></div>
+          <div class="col-md-2 border"><strong>Пакунок</strong></div>
         </div>
         <!--Content-->
         <div v-for="product in foodDay.products" :key="'dayProduct-' + product.id">
@@ -62,14 +62,14 @@
       </template>
       <div class="row headerRow bg-light">
         <div class="col-md-2"/>
-        <div class="col-md-2 border"><em>Calorific</em></div>
-        <div class="col-md-2 border"><em>Proteins</em></div>
-        <div class="col-md-2 border"><em>Fats</em></div>
-        <div class="col-md-2 border"><em>Carbs</em></div>
-        <div class="col-md-2 border"><em>Weight</em></div>
+        <div class="col-md-2 border"><em>Калорії</em></div>
+        <div class="col-md-2 border"><em>Протеіни</em></div>
+        <div class="col-md-2 border"><em>Жири</em></div>
+        <div class="col-md-2 border"><em>Вуглвд.</em></div>
+        <div class="col-md-2 border"><em>Вага</em></div>
       </div>
       <div class="row">
-        <div class="col-md-2 border"><em><strong>Day Total</strong></em></div>
+        <div class="col-md-2 border"><em><strong>Загалом День</strong></em></div>
         <div class="col-md-2 border"><em><strong>{{foodDay.calorific}}</strong></em></div>
         <div class="col-md-2 border"><em><strong>{{foodDay.proteins}}</strong></em></div>
         <div class="col-md-2 border"><em><strong>{{foodDay.fats}}</strong></em></div>

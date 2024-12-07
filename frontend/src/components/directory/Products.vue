@@ -1,17 +1,17 @@
 <template>
   <div>
-    <h2 class="directory-header">Products list</h2>
+    <h2 class="directory-header">Продукти</h2>
 
     <!--Products list-->
     <div v-if="hasProducts()" class="container border">
       <!--Header-->
       <div class="row headerRow bg-light">
-        <div class="col-md-5 border"><strong>Name</strong></div>
-        <div class="col-md-1 border"><strong>Calorific</strong></div>
-        <div class="col-md-1 border"><strong>Proteins</strong></div>
-        <div class="col-md-1 border"><strong>Fats</strong></div>
-        <div class="col-md-1 border"><strong>Carbs</strong></div>
-        <div class="col-md-1 border"><strong>Weight</strong></div>
+        <div class="col-md-5 border"><strong>Назва</strong></div>
+        <div class="col-md-1 border"><strong>Калорії</strong></div>
+        <div class="col-md-1 border"><strong>Протеіни</strong></div>
+        <div class="col-md-1 border"><strong>Жири</strong></div>
+        <div class="col-md-1 border"><strong>Вуглвд.</strong></div>
+        <div class="col-md-1 border"><strong>Вага</strong></div>
       </div>
       <!--Content-->
       <div v-for="category in categoriesWithProducts" :key="category.id">
@@ -22,7 +22,7 @@
       </div>
     </div>
     <div v-if="!hasProducts() && errorMessage === null">
-      <p><em>No Products yet...</em></p>
+      <p><em>Немає продуктів...</em></p>
     </div>
     <!--Errors output-->
     <div v-if="errorMessage !== null" class="alert">
@@ -30,7 +30,7 @@
     </div>
 
     <!--Add new item section-->
-    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Add new</b-button>
+    <b-button variant="link" size="sm" v-on:click="addMode = !addMode">Додати новий продукт</b-button>
     <div v-if="addMode !== undefined && addMode" class="container">
       <new-product v-bind:categories="simpleCategories" v-on:addNew="addProduct" v-on:cancelAdd="addMode = false"/>
     </div>

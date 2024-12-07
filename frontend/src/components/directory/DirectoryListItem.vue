@@ -7,10 +7,10 @@
                v-on:keyup.13="updateItem" style="width: 100%"/>
       </div>
       <div class="col-sm-1">
-        <b-button variant="outline-success" size="sm" v-on:click="updateItem()">Update</b-button>
+        <b-button variant="outline-success" size="sm" v-on:click="updateItem()">Онов.</b-button>
       </div>
       <div class="col-sm-1">
-        <b-button variant="outline-danger" size="sm" v-on:click="cancelEdit()">Cancel</b-button>
+        <b-button variant="outline-danger" size="sm" v-on:click="cancelEdit()">Назад</b-button>
       </div>
       <div v-show="errors.has('item.name')" class="alert" style="margin-top: 5px">
         <span>{{errors.first('item.name')}}</span>
@@ -19,10 +19,10 @@
     <template v-else>
       <div class="col-sm-10 text-left"><i>{{itemName}}</i></div>
       <div class="col-sm-1">
-        <b-button variant="outline-success" size="sm" v-on:click="startEdit()">Edit</b-button>
+        <b-button variant="outline-success" size="sm" v-on:click="startEdit()">Змін.</b-button>
       </div>
       <div class="col-sm-1">
-        <b-button variant="outline-danger" size="sm" v-on:click="removeItem()">Delete</b-button>
+        <b-button variant="outline-danger" size="sm" v-on:click="removeItem()">Видал.</b-button>
       </div>
     </template>
   </div>

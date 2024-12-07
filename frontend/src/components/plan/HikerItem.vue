@@ -3,7 +3,7 @@
     <div class="col-md-3">
       <input v-validate="'required'" v-model="hiker.name" name="hikerName"
              v-bind:class="{ validationError: errors.has('hikerName')}"
-             placeholder='Enter member name here..' style="width: 100%"/>
+             placeholder='Введіть тут..' style="width: 100%"/>
       <p v-if="errors.has('hikerName') > 0" class="alert">{{errors.first('hikerName')}}</p>
     </div>
     <div class="col-md-5">
@@ -13,10 +13,10 @@
       <input type="number" min="0" step="0.1" v-model="hiker.weightCoefficient" name="hikerCoefficient" style="width: 100%"/>
     </div>
     <div class="col-sm-1">
-      <b-button variant="outline-success" size="sm" v-on:click="updateHiker">Update</b-button>
+      <b-button variant="outline-success" size="sm" v-on:click="updateHiker">Змін.</b-button>
     </div>
     <div class="col-sm-1">
-      <b-button variant="outline-danger" size="sm" v-on:click="deleteHiker">Delete</b-button>
+      <b-button variant="outline-danger" size="sm" v-on:click="deleteHiker">Видал.</b-button>
     </div>
   </div>
 </template>

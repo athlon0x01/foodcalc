@@ -28,7 +28,7 @@
       <b-button variant="outline-info" size="sm" v-on:click="moveDown">\/</b-button>
     </div>
     <div class="col-md-1" v-if="manageMode">
-      <b-button variant="outline-danger" size="sm" v-on:click="deleteProduct" >Delete</b-button>
+      <b-button variant="outline-danger" size="sm" v-on:click="deleteProduct" >Видал.</b-button>
     </div>
   </div>
 </template>

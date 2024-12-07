@@ -11,7 +11,7 @@ export default {
   data () {
     return {
       url: '/api/meal-types/',
-      title: 'Meal Types'
+      title: 'Типи трапез'
     }
   }
 }

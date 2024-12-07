@@ -6,7 +6,7 @@
         <div class="col-md-9">
           <input v-validate="'required'" v-model="name" name="name"
                  v-bind:class="{ validationError: errors.has('name')}"
-                 placeholder='Enter dish name here..' style="width: 100%"/>
+                 placeholder='Введіть назву тут..' style="width: 100%"/>
           <p v-if="errors.has('name') > 0" class="alert">{{ errors.first('name') }}</p>
         </div>
         <div class="col-md-3" style="margin-top: 3px">
@@ -20,25 +20,25 @@
         </div>
       </div>
       <div class="row" style="margin-top: 3px">
-        <div class="col-md-2" style="margin-top: 10px"><strong>Description</strong></div>
+        <div class="col-md-2" style="margin-top: 10px"><strong>Опис</strong></div>
         <div class="col-md-10">
           <textarea v-model="description" name="dishDescription" style="width: 100%"/>
         </div>
       </div>
       <!--Products section-->
       <template v-if="products.length > 0" class="row">
-        <h4 style="padding-top:10px">Products</h4>
+        <h4 style="padding-top:10px">Продукти</h4>
         <div class="row headerRow bg-light">
           <!--Header-->
-          <div class="col-md-5 border"><strong>Name</strong></div>
-          <div class="col-md-1 border"><strong>Calorific</strong></div>
-          <div class="col-md-1 border"><strong>Proteins</strong></div>
-          <div class="col-md-1 border"><strong>Fats</strong></div>
-          <div class="col-md-1 border"><strong>Carbs</strong></div>
-          <div class="col-md-1 border"><strong>Weight</strong></div>
+          <div class="col-md-5 border"><strong>Назва</strong></div>
+          <div class="col-md-1 border"><strong>Калорії</strong></div>
+          <div class="col-md-1 border"><strong>Протеіни</strong></div>
+          <div class="col-md-1 border"><strong>Жири</strong></div>
+          <div class="col-md-1 border"><strong>Вуглвд.</strong></div>
+          <div class="col-md-1 border"><strong>Вага</strong></div>
         </div>
         <div class="row headerRow bg-light">
-          <div class="col-md-5 border"><em>Total</em></div>
+          <div class="col-md-5 border"><em>Загалом</em></div>
           <div class="col-md-1 border"><em>{{ totalCalorific }}</em></div>
           <div class="col-md-1 border"><em>{{ totalProteins }}</em></div>
           <div class="col-md-1 border"><em>{{ totalFats }}</em></div>
@@ -63,7 +63,7 @@
       </div>
       <div style="margin-top: 15px">
         <b-button variant="outline-success" size="sm" v-on:click="addNewDish">{{ addButtonTitle }}</b-button>
-        <router-link :to="{ name : 'DishesPage' }"><b-button variant="outline-danger" size="sm" >Cancel</b-button></router-link>
+        <router-link :to="{ name : 'DishesPage' }"><b-button variant="outline-danger" size="sm" >Назад</b-button></router-link>
       </div>
     </div>
   </div>
@@ -93,9 +93,9 @@ export default {
       dishCategories: [],
       foodPackages: [],
       addProductsMode: false,
-      pageTitle: this.editMode() ? 'Edit Dish' : 'Add Dish',
-      productsTitle: 'Show Products to add',
-      addButtonTitle: this.editMode() ? 'Update' : 'Add',
+      pageTitle: this.editMode() ? 'Редагувати страву' : 'Додати страву',
+      productsTitle: 'Додати продукти',
+      addButtonTitle: this.editMode() ? 'Змін.' : 'Додати',
       dishId: this.editMode() ? this.oldDish.id : -1,
       name: this.editMode() ? this.oldDish.name : '',
       categoryId: this.editMode() ? this.oldDish.categoryId : 0,
@@ -117,12 +117,12 @@ export default {
 
     addProductsModeChange () {
       this.addProductsMode = !this.addProductsMode
-      this.productsTitle = this.addProductsMode ? 'Hide Products to be added' : 'Show Products to add'
+      this.productsTitle = this.addProductsMode ? 'Приховати продукти' : 'Додати продукти'
     },
 
     hideProductsToAdd () {
       this.addProductsMode = false
-      this.productsTitle = 'Show Products to add'
+      this.productsTitle = 'Додати продукти'
     },
 
     addProduct (product) {

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h2 align="center">Outdoor Food Calculator About page</h2>
-    <p align="center">(c) Anton Borovyk&lt;athlon0x01@gmail.com&gt;, 2019</p>
+    <h2>Інформаціяна сторінка Калькулятора туристичних розкладок</h2>
+    <p align="center">(c) Антон Боровик, Ольга Боровик &lt;athlon0x01@gmail.com&gt;, 2024</p>
   </div>
 </template>
 
