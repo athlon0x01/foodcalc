@@ -64,14 +64,6 @@
           <div class="col-md-1 border"><strong>Weight</strong></div>
           <div class="col-md-2 border"><strong>Package</strong></div>
         </div>
-        <div class="row headerRow bg-light">
-          <div class="col-md-3 border"><em>Total</em></div>
-          <div class="col-md-1 border"><em>{{ productCalorific }}</em></div>
-          <div class="col-md-1 border"><em>{{ productProteins }}</em></div>
-          <div class="col-md-1 border"><em>{{ productFats }}</em></div>
-          <div class="col-md-1 border"><em>{{ productCarbs }}</em></div>
-          <div class="col-md-1 border"><em>{{ productWeight }}</em></div>
-        </div>
         <!--Content-->
         <div v-for="product in mealProducts" :key="'mealProduct-' + product.id">
           <product-with-package-view v-bind:product="product"
@@ -82,6 +74,14 @@
                                      v-on:weightUpdated="updateProductWeight"
                                      v-on:packageIdUpdated="updateProductPackageId"
                                      v-on:productRemoved="removeProduct"/>
+        </div>
+        <div class="row headerRow bg-light">
+          <div class="col-md-3 border"><em>Total</em></div>
+          <div class="col-md-1 border"><em>{{ productCalorific }}</em></div>
+          <div class="col-md-1 border"><em>{{ productProteins }}</em></div>
+          <div class="col-md-1 border"><em>{{ productFats }}</em></div>
+          <div class="col-md-1 border"><em>{{ productCarbs }}</em></div>
+          <div class="col-md-1 border"><em>{{ productWeight }}</em></div>
         </div>
       </template>
     </div>

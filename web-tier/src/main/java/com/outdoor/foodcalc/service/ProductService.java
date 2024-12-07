@@ -175,6 +175,20 @@ public class ProductService {
                 .build();
     }
 
+    ProductView mapProductRef(ProductRef product, int members) {
+        return ProductView.builder()
+                .id(product.getProductId())
+                .name(product.getName())
+                .categoryId(product.getProductCategoryId())
+                .calorific(product.getCalorific() * members)
+                .proteins(product.getProteins() * members)
+                .fats(product.getFats() * members)
+                .carbs(product.getCarbs() * members)
+                .weight(product.getWeight() * members)
+                .packageId(product.getPackageId())
+                .build();
+    }
+
     ProductView mapProductRefWithPackageName(Map<Long, String> packagesName, ProductRef product) {
         ProductView productView = mapProductRef(product);
         return productView.toBuilder()

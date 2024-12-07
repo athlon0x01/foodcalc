@@ -24,6 +24,17 @@
           <b-button variant="outline-danger" size="sm" v-on:click="goBack">Cancel</b-button>
         </div>
       </div>
+      <!--day meals-->
+      <template v-if="dayMeals.length > 0">
+        <div v-for="meal in dayMeals" :key="meal.id">
+          <meal-view v-bind:meal="meal"
+                     v-bind:editable="true"
+                     v-bind:plan-title="planTitle"
+                     v-bind:date-title=dateTitle
+                     v-on:remove="removeMeal"/>
+        </div>
+        <div style="padding-bottom: 5px"/>
+      </template>
       <!--Dishes section-->
       <template v-if="dayDishes.length > 0" class="row">
         <!--Header-->
@@ -58,14 +69,6 @@
           <div class="col-md-1 border"><strong>Weight</strong></div>
           <div class="col-md-2 border"><strong>Package</strong></div>
         </div>
-        <div class="row headerRow bg-light">
-          <div class="col-md-3 border"><em>Total</em></div>
-          <div class="col-md-1 border"><em>{{ productCalorific }}</em></div>
-          <div class="col-md-1 border"><em>{{ productProteins }}</em></div>
-          <div class="col-md-1 border"><em>{{ productFats }}</em></div>
-          <div class="col-md-1 border"><em>{{ productCarbs }}</em></div>
-          <div class="col-md-1 border"><em>{{ productWeight }}</em></div>
-        </div>
         <!--Content-->
         <div v-for="product in dayProducts" :key="'dayProduct-' + product.id">
           <product-with-package-view v-bind:product="product"
@@ -76,6 +79,14 @@
                                      v-on:weightUpdated="updateProductWeight"
                                      v-on:packageIdUpdated="updateProductPackageId"
                                      v-on:productRemoved="removeProduct"/>
+        </div>
+        <div class="row headerRow bg-light">
+          <div class="col-md-3 border"><em>Total</em></div>
+          <div class="col-md-1 border"><em>{{ productCalorific }}</em></div>
+          <div class="col-md-1 border"><em>{{ productProteins }}</em></div>
+          <div class="col-md-1 border"><em>{{ productFats }}</em></div>
+          <div class="col-md-1 border"><em>{{ productCarbs }}</em></div>
+          <div class="col-md-1 border"><em>{{ productWeight }}</em></div>
         </div>
       </template>
     </div>
@@ -89,17 +100,6 @@
       <select-product-view v-on:hideProducts="hideProductsToAdd"
                            v-on:productSelected="addProduct"/>
     </div>
-    <!--day meals-->
-    <template v-if="dayMeals.length > 0">
-      <div v-for="meal in dayMeals" :key="meal.id">
-        <meal-view v-bind:meal="meal"
-                   v-bind:editable="true"
-                   v-bind:plan-title="planTitle"
-                   v-bind:date-title=dateTitle
-                   v-on:remove="removeMeal"/>
-      </div>
-      <div style="padding-bottom: 5px"/>
-    </template>
     <!--Add new meal section-->
     <b-button variant="link" size="sm" v-on:click="addMode = true">Add new meal</b-button>
     <div v-if="addMode" class="container">

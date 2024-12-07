@@ -44,6 +44,12 @@ public abstract class ComplexFoodEntity implements FoodDetails {
         return new FoodDetailsInstance(products);
     }
 
+    @Override
+    public FoodDetailsInstance getFoodDetails(int members) {
+        FoodDetailsInstance foodDetails = getFoodDetails();
+        return new FoodDetailsInstance(foodDetails, members);
+    }
+
     /**
      * Reduce list of the same products by summing the weight
      * @param products not empty product list, that contains same products

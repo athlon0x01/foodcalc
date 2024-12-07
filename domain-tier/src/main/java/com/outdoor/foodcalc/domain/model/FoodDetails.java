@@ -18,8 +18,14 @@ public interface FoodDetails {
     Collection<ProductRef> getAllProducts();
 
     /**
-     * Method for calculation and getting aggregated food details instance.
+     * Method for calculation and getting aggregated food details instance for single person
      * @return aggregated food details instance
      */
     FoodDetailsInstance getFoodDetails();
+
+    /**
+     * Method for calculation and getting aggregated food details instance for specified persons
+     * @return aggregated food details instance
+     */
+    FoodDetailsInstance getFoodDetails(int members);
 }
