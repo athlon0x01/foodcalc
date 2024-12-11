@@ -24,7 +24,7 @@ public class FoodDistributionsStorage {
     private final Map<Long, List<PackageWithProducts>> packagesByDay;
     private final List<SameDayFoodDistributions> allDistributions;
     private final double eps;
-    private long distributionsProcessed;
+    public long distributionsProcessed;
 
     public FoodDistributionsStorage(List<Hiker> allHikers, List<PlanDay> allDays, List<PackageWithProducts> allPackages) {
         this.allHikers = allHikers;
@@ -43,6 +43,7 @@ public class FoodDistributionsStorage {
                     .dayDistributions(new HashSet<>())
                     .currentWeight(weight)
                     .minDeviation(weight / 4) //threshold for obviously NOT effective distributions
+                    .threshold(weight / 4) //threshold for obviously NOT effective distributions
                     .build());
             packagesByDay.put(theDay.getDayId(), new ArrayList<>());
         }
@@ -50,7 +51,7 @@ public class FoodDistributionsStorage {
         this.allPackages.forEach(pack -> pack.getDayProducts().keySet()
                 .forEach(k -> packagesByDay.get(k).add(pack)));
         //threshold of weight deviation in percentage of mean weight (10% for now)
-        eps = allDistributions.get(allDistributions.size() - 1).getCurrentWeight() / allHikers.size() * 0.1;
+        eps = allDistributions.get(allDistributions.size() - 1).getCurrentWeight() / allHikers.size() * 0.05;
         distributionsProcessed = 0;
     }
 
@@ -117,14 +118,16 @@ public class FoodDistributionsStorage {
         return copy;
     }
 
-    public Set<FoodDistribution> generateDistributionsAddingPackage(FoodDistribution initialDistribution, List<PackageWithProducts> productsPackage) {
+    public Set<FoodDistribution> generateDistributionsAddingPackage(FoodDistribution initialDistribution, List<PackageWithProducts> productsPackage, double threshold) {
         Set<FoodDistribution> generatedDistributions = new HashSet<>();
         PackageWithProducts firstPackage = productsPackage.get(0);
         //next set of productPackage distributed across all hikers
         Set<FoodDistribution> nextDistributions = new HashSet<>();
         for (HikerWithPackages hikerPackages : initialDistribution.getHikerPackages()) {
             FoodDistribution newDistribution = copyDistributionWithNewPackage(initialDistribution, hikerPackages.getHiker().getId(), firstPackage);
-            nextDistributions.add(newDistribution);
+            if (newDistribution.deviation() < threshold) {
+                nextDistributions.add(newDistribution);
+            }
         }
         if (productsPackage.size() > 1) {
             ArrayList<PackageWithProducts> remainingProducts = new ArrayList<>(productsPackage);
@@ -133,7 +136,7 @@ public class FoodDistributionsStorage {
             nextDistributions.forEach(
                     newDistribution -> {
                         Set<FoodDistribution> nextPackageDistributions =
-                                generateDistributionsAddingPackage(newDistribution, remainingProducts);
+                                generateDistributionsAddingPackage(newDistribution, remainingProducts, threshold);
                         //collecting all results in one set
                         generatedDistributions.addAll(nextPackageDistributions);
                     });
@@ -145,11 +148,11 @@ public class FoodDistributionsStorage {
     }
 
     public void buildInitialDistributionSetForFirstDay(FoodDistribution emptyHikersDistribution, Set<Long> days) {
-        Set<FoodDistribution> lastDayDistributions = generateDistributionsAddingPackage(emptyHikersDistribution, getPackagesForDays(days));
         SameDayFoodDistributions lastDayDistributionsContainer = allDistributions.get(0);
+        Set<FoodDistribution> lastDayDistributions = generateDistributionsAddingPackage(emptyHikersDistribution, getPackagesForDays(days), lastDayDistributionsContainer.getThreshold());
         lastDayDistributionsContainer.getDayDistributions()
                 .addAll(lastDayDistributions.stream()
-                        .filter(dist -> dist.deviation() < lastDayDistributionsContainer.getMinDeviation())
+                        .filter(dist -> dist.deviation() < lastDayDistributionsContainer.getThreshold())
                         .collect(Collectors.toSet()));
     }
 
@@ -171,9 +174,9 @@ public class FoodDistributionsStorage {
                 Set<FoodDistribution> filteredDistributions = Collections.emptySet();
                 List<PackageWithProducts> newPackages = getNewPackagesForDays(nextDays, nextDayId);
                 if (!newPackages.isEmpty()) {
-                    Set<FoodDistribution> nextDayDistributions = generateDistributionsAddingPackage(nextDayDistribution, newPackages);
+                    Set<FoodDistribution> nextDayDistributions = generateDistributionsAddingPackage(nextDayDistribution, newPackages, nextDayContainer.getThreshold());
                     filteredDistributions = nextDayDistributions.stream()
-                            .filter(dist -> dist.deviation() < nextDayContainer.getMinDeviation())
+                            .filter(dist -> dist.deviation() < nextDayContainer.getThreshold())
                             .collect(Collectors.toSet());
                 }
                 //and continue recursion

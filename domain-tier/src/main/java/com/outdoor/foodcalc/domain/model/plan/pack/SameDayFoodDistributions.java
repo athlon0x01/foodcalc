@@ -15,6 +15,7 @@ public class SameDayFoodDistributions {
     private final Set<Long> allDays;
     private final double currentWeight;
     private double minDeviation;
+    private double threshold;
     private Set<FoodDistribution> dayDistributions;
     private FoodDistribution best;
 }

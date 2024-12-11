@@ -44,21 +44,4 @@ public class FoodDistribution {
         return Math.sqrt(deviation / n);
     }
 
-    @Override
-    //TODO remove
-    public String toString() {
-        double deviation = 0;
-        try {
-            deviation = deviation();
-        } catch (Exception e) {
-            //ignore
-        }
-        return "FoodDistribution{" +
-                "day=" + day +
-                ", processed=" + processed +
-                ", allDays=" + Optional.ofNullable(allDays).orElse(Collections.emptySet()) +
-                ", deviation=" + deviation +
-                ", hikerPackages=" + Optional.ofNullable(hikerPackages).orElse(Collections.emptyList()) +
-                '}';
-    }
 }
