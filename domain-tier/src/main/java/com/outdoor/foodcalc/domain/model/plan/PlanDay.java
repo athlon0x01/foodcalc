@@ -59,4 +59,10 @@ public class PlanDay extends ComplexFoodEntity implements IDomainEntity {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        //TODO remove
+        return "[id=" + dayId + ", day=" + date + "]";
+    }
 }

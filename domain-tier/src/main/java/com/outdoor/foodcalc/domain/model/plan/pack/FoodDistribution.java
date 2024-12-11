@@ -6,7 +6,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -40,5 +42,23 @@ public class FoodDistribution {
             deviation += delta * delta;
         }
         return Math.sqrt(deviation / n);
+    }
+
+    @Override
+    //TODO remove
+    public String toString() {
+        double deviation = 0;
+        try {
+            deviation = deviation();
+        } catch (Exception e) {
+            //ignore
+        }
+        return "FoodDistribution{" +
+                "day=" + day +
+                ", processed=" + processed +
+                ", allDays=" + Optional.ofNullable(allDays).orElse(Collections.emptySet()) +
+                ", deviation=" + deviation +
+                ", hikerPackages=" + Optional.ofNullable(hikerPackages).orElse(Collections.emptyList()) +
+                '}';
     }
 }

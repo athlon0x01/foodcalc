@@ -24,6 +24,7 @@ public class FoodDistributionsStorage {
     private final Map<Long, List<PackageWithProducts>> packagesByDay;
     private final List<SameDayFoodDistributions> allDistributions;
     private final double eps;
+    private long distributionsProcessed;
 
     public FoodDistributionsStorage(List<Hiker> allHikers, List<PlanDay> allDays, List<PackageWithProducts> allPackages) {
         this.allHikers = allHikers;
@@ -50,6 +51,7 @@ public class FoodDistributionsStorage {
                 .forEach(k -> packagesByDay.get(k).add(pack)));
         //threshold of weight deviation in percentage of mean weight (10% for now)
         eps = allDistributions.get(allDistributions.size() - 1).getCurrentWeight() / allHikers.size() * 0.1;
+        distributionsProcessed = 0;
     }
 
     private double calculatePackagesEstimatedWeightForDays(Set<Long> days) {
@@ -182,6 +184,7 @@ public class FoodDistributionsStorage {
                 }
                 nextDayContainer.getDayDistributions().addAll(filteredDistributions);
                 currentDistribution.get().setProcessed(true);
+                distributionsProcessed++;
                 //go recursively through all currentDistribution for next day
                 var best = recursiveSearch(ndx + 1, nextDays);
                 if (best.isPresent()) {
@@ -211,6 +214,7 @@ public class FoodDistributionsStorage {
             container.setMinDeviation(deviation);
         }
         distribution.setProcessed(true);
+        distributionsProcessed++;
     }
 
     Optional<FoodDistribution> getFirstUnprocessed(SameDayFoodDistributions container) {
