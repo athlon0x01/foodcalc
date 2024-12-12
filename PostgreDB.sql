@@ -11,7 +11,6 @@ CREATE TABLE product
 (
     id          bigserial PRIMARY KEY,
     name        varchar(64) NOT NULL,
-    description varchar(265),
     category    bigint REFERENCES product_category,
     calorific   real    DEFAULT 0.0,
     proteins    real    DEFAULT 0.0,
