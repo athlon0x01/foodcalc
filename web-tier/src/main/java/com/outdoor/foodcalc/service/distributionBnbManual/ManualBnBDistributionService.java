@@ -73,6 +73,8 @@ public class ManualBnBDistributionService {
     // Рекурсивний обхід дерева рішень (Branch and Bound)
     private void branchAndBound(int dayIndex, List<HikerState> states) {
         if (foundSolution) return; // можна зупинитися при першому валідному рішенні
+
+        // базовий випадок: усі дні розподілені
         if (dayIndex >= sortedDates.size()) {
             foundSolution = true;
             bestSolution = states.stream()
@@ -84,6 +86,7 @@ public class ManualBnBDistributionService {
         LocalDate currentDay = sortedDates.get(dayIndex);
         List<PackageWithProducts> dayPackages = getUnassignedPackages(states, currentDay);
 
+        // якщо на день немає пакунків — просто переходимо далі
         if (dayPackages.isEmpty()) {
             branchAndBound(dayIndex + 1, states);
             return;
@@ -99,22 +102,42 @@ public class ManualBnBDistributionService {
         // Сортування пакунків
         dayPackages.sort(Comparator.comparingDouble(p -> -p.getProductsWeight()));
 
+        // розподіляємо всі пакунки поточного дня
+        assignPackagesOfDay(currentDay, dayPackages, states, dayIndex);
+
+        // після завершення поточного дня переходимо до наступного
+        branchAndBound(dayIndex + 1, states);
+    }
+
+    private void assignPackagesOfDay(LocalDate currentDay,
+                                     List<PackageWithProducts> remainingPacks,
+                                     List<HikerState> states,
+                                     int dayIndex) {
+        if (foundSolution) return; // якщо вже знайшли рішення — далі не перебираємо
+
+        // якщо всі пакунки поточного дня вже розподілені
+        if (remainingPacks.isEmpty()) {
+            return;
+        }
+
+        PackageWithProducts pack = remainingPacks.get(0);
+        List<PackageWithProducts> next = remainingPacks.subList(1, remainingPacks.size());
+
         double tolerance = (dayIndex == 0) ? 0.3 : 0.1;
 
-        for (PackageWithProducts pack : dayPackages) {
-            for (HikerState hiker : states) {
+        // пробуємо призначити цей пакунок кожному туристу
+        for (HikerState hiker : states) {
+            hiker.addPackage(pack);
 
-                // BRANCH
-                hiker.addPackage(pack);
-
-                if (isFeasible(hiker, currentDay, states, tolerance)) {
-                    branchAndBound(dayIndex + 1, states);
-                    if (foundSolution) return;
-                }
-
-                // BACKTRACK
-                hiker.removePackage(pack);
+            if (isFeasible(hiker, currentDay, states, tolerance)) {
+                // розподіляємо решту пакунків цього ж дня
+                assignPackagesOfDay(currentDay, next, states, dayIndex);
             }
+
+            // відкат стану (повернення назад)
+            hiker.removePackage(pack);
+
+            if (foundSolution) return; // якщо вже знайшли рішення — виходимо раніше
         }
     }
 
