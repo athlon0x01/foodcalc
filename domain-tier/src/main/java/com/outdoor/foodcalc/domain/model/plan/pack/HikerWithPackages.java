@@ -1,6 +1,7 @@
 package com.outdoor.foodcalc.domain.model.plan.pack;
 
 import com.outdoor.foodcalc.domain.model.plan.Hiker;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,6 +12,7 @@ import java.util.Set;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Jacksonized
+@AllArgsConstructor
 @Builder(toBuilder = true)
 public class HikerWithPackages {
     @EqualsAndHashCode.Include
