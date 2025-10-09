@@ -34,16 +34,29 @@ public class ExcelExportManualBnBService {
         XSSFWorkbook workbook = new XSSFWorkbook();
         workbook.getProperties().getCoreProperties().setTitle(plan.getName());
 
-        Sheet sheet = workbook.createSheet("Food Plan By Days");
-        Row aRow = sheet.createRow(0);
-        aRow.createCell(0).setCellValue("Name");
-        aRow.createCell(1).setCellValue(plan.getName());
-        aRow = sheet.createRow(1);
-        aRow.createCell(0).setCellValue("Members");
-        aRow.createCell(1).setCellValue(bestDistribution.size());
-        aRow = sheet.createRow(2);
-        aRow.createCell(0).setCellValue("Description");
-        aRow.createCell(1).setCellValue(plan.getDescription());
+        Sheet sheet = workbook.createSheet("Distribution");
+        Row header = sheet.createRow(0);
+        header.createCell(0).setCellValue("Tourist");
+        header.createCell(1).setCellValue("Assigned Packages");
+
+        int rowNum = 1;
+        for (HikerWithPackages hiker : bestDistribution) {
+            Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue(hiker.getHiker().getName());
+
+            // зібрати імена пакунків через кому
+            String packagesList = hiker.getPackages().stream()
+                    .map(p -> p.getFoodPackage().getName())
+                    .reduce((a, b) -> a + ", " + b)
+                    .orElse("");
+
+            row.createCell(1).setCellValue(packagesList);
+        }
+
+        // автоширина колонок
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+
         return workbook;
     }
 }
