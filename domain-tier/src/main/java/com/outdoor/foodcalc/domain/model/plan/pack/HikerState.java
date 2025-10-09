@@ -9,26 +9,24 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Jacksonized
-@Builder(toBuilder = true)
+@NoArgsConstructor(force = true)
 public class HikerState {
 
     @EqualsAndHashCode.Include
     private final Hiker hiker;
 
     // Вага туриста за кожен день
-    @Builder.Default
     private final Map<LocalDate, Double> weightByDay = new HashMap<>();
 
     // Призначені пакунки
-    @Builder.Default
     private final Set<PackageWithProducts> assignedPackages = new HashSet<>();
 
     // Цільова вага туриста (target) за кожен день
-    @Builder.Default
     private final Map<LocalDate, Double> targetByDay = new HashMap<>();
 
     public HikerState(Hiker hiker) {
@@ -92,5 +90,29 @@ public class HikerState {
         clone.targetByDay.putAll(this.targetByDay);
         clone.assignedPackages.addAll(this.assignedPackages);
         return clone;
+    }
+
+    @Override
+    public String toString() {
+        String weights = weightByDay.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(e -> e.getKey() + "=" + String.format("%.1f", e.getValue()))
+                .collect(Collectors.joining(", "));
+
+        String targets = targetByDay.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .map(e -> e.getKey() + "=" + String.format("%.1f", e.getValue()))
+                .collect(Collectors.joining(", "));
+
+        String packagesInfo = assignedPackages.stream()
+                .map(p -> p.getFoodPackage() != null ? p.getFoodPackage().getName() : "null")
+                .collect(Collectors.joining(", "));
+
+        return "[hiker=" + (hiker != null ? hiker.getName() : "null") +
+                ", totalWeight=" + String.format("%.1f", totalWeight()) +
+                ", weightByDay={" + weights + "}" +
+                ", targetByDay={" + targets + "}" +
+                ", assignedPackages=[" + packagesInfo + "]" +
+                "]";
     }
 }

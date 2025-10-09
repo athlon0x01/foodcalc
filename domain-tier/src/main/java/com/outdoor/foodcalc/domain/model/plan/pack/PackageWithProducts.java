@@ -56,4 +56,24 @@ public class PackageWithProducts {
         double weight = getProductsWeight() * members * foodPackage.getVolumeCoefficient();
         return weight + foodPackage.getAdditionalWeight();
     }
+
+    @Override
+    public String toString() {
+        // Формуємо компактне представлення назв продуктів по днях
+        String daysInfo = getPackageDays().stream()
+                .map(day -> {
+                    String productNames = day.getProducts().stream()
+                            .map(ProductRef::getName)
+                            .collect(Collectors.joining(", "));
+                    return "[dayId=" + day.getDayId() +
+                            ", date=" + day.getDate() +
+                            ", products=[" + productNames + "]]";
+                })
+                .collect(Collectors.joining(", "));
+
+        return "[foodPackage=" + (foodPackage != null ? foodPackage.getName() : "null") +
+                ", totalWeight=" + getProductsWeight() +
+                ", days=" + getPackageDays().size() +
+                ", dayProducts=" + daysInfo + "]";
+    }
 }

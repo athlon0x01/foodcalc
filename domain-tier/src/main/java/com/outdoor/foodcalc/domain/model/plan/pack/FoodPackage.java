@@ -48,4 +48,13 @@ public class FoodPackage implements IDomainEntity {
         }
         return false;
     }
+
+    @Override
+    public String toString() {
+        return "[id=" + id +
+                ", name=" + name +
+                ", volumeCoefficient=" + volumeCoefficient +
+                ", additionalWeight=" + getAdditionalWeight() +
+                ", description=" + description + "]";
+    }
 }

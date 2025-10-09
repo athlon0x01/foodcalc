@@ -10,6 +10,7 @@ import lombok.extern.jackson.Jacksonized;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -28,5 +29,13 @@ public class PackageDayProducts {
         return products.stream()
                 .mapToDouble(ProductRef::getWeight)
                 .sum();
+    }
+
+    @Override
+    public String toString() {
+        String productNames = products.stream()
+                .map(ProductRef::getName)
+                .collect(Collectors.joining(", "));
+        return "[dayId=" + dayId + ", date=" + date + ", products=[" + productNames + "]]";
     }
 }
