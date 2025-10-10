@@ -100,7 +100,7 @@ public class ToStringTest {
                 .build();
 
         HikerState state = new HikerState(hiker);
-        state.addPackage(pack);
+        state.addPackage(pack, 1);
         state.setTargetForDay(LocalDate.of(2025, 8, 1), 150.0);
 
         System.out.println("HikerState → " + state);

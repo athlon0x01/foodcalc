@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.extern.jackson.Jacksonized;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -55,6 +56,36 @@ public class PackageWithProducts {
     public double getEstimatedWeight(int members) {
         double weight = getProductsWeight() * members * foodPackage.getVolumeCoefficient();
         return weight + foodPackage.getAdditionalWeight();
+    }
+
+    // повертаємо останній день використання пакунку
+    public LocalDate getLastUsageDay() {
+        return getPackageDays().stream()
+                .map(PackageDayProducts::getDate)
+                .max(LocalDate::compareTo)
+                .orElse(null);
+    }
+
+    /** Вага цього пакунку, яку реально несе хайкер у конкретний день:
+     *  сума продуктів за день * members * volumeCoeff + (additionalWeight лише в останній день)
+     */
+    public double getWeightForDay(LocalDate day, int members) {
+        // 1) вага продуктів за один день
+        double dayProductsWeight = getPackageDays().stream()
+                .filter(pd -> pd.getDate().equals(day))
+                .mapToDouble(PackageDayProducts::getWeight) // у грамах
+                .sum();
+
+        // 2) масштабуємо під кількість учасників та коефіцієнт об'єму
+        double scaled = dayProductsWeight * members * foodPackage.getVolumeCoefficient();
+
+        // 3) тара тільки в останній день
+        LocalDate last = getLastUsageDay();
+        if (last != null && last.equals(day)) {
+            scaled += foodPackage.getAdditionalWeight();
+        }
+
+        return scaled; // грами
     }
 
     @Override

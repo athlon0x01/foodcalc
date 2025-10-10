@@ -20,8 +20,8 @@ public class ManualBnBDistributionService {
     private List<LocalDate> sortedDates;
     private Map<LocalDate, List<PackageWithProducts>> packagesByDate;
     private List<HikerState> bestSolution;
-    private double bestDeviation = Double.MAX_VALUE;
     private boolean foundSolution = false;
+    private int membersCount;
 
     public ManualBnBDistributionService(FoodPackageDomainService foodPackageDomainService) {
         this.foodPackageDomainService = foodPackageDomainService;
@@ -39,6 +39,8 @@ public class ManualBnBDistributionService {
     // Головний метод — пошук найкращого розподілу
     public List<HikerWithPackages> findBestDistribution(FoodPlan plan, List<PackageWithProducts> packages) {
         prepareData(packages);
+
+        this.membersCount = plan.getMembers().size();
 
         List<HikerState> states = plan.getMembers().stream()
                 .map(HikerState::new)
@@ -80,11 +82,40 @@ public class ManualBnBDistributionService {
             bestSolution = states.stream()
                     .map(HikerState::cloneState)
                     .collect(Collectors.toList());
+
+            // для логування
+            System.out.println("знайдено розподіл:");
+            bestSolution.forEach(s -> System.out.println(s.getHiker().getName() + " -> " + s.getAssignedPackages()));
+
             return;
         }
 
         LocalDate currentDay = sortedDates.get(dayIndex);
         List<PackageWithProducts> dayPackages = getUnassignedPackages(states, currentDay);
+
+        // Сортування пакунків
+        dayPackages.sort(Comparator.comparingDouble(
+                p -> -p.getWeightForDay(currentDay, membersCount)));
+
+
+        // для логування
+        System.out.println("\n День " + currentDay + ": " + dayPackages.size() + " пакунків");
+        // Логування пакунків поточного дня
+        System.out.println("📦 Пакунки на день " + currentDay + ":");
+        for (PackageWithProducts pack : dayPackages) {
+            double total = pack.getProductsWeight(); // загальна вага всіх продуктів
+            double dayWeight = pack.getPackageDays().stream()
+                    .filter(pd -> pd.getDate().equals(currentDay))
+                    .mapToDouble(PackageDayProducts::getWeight)
+                    .sum();
+
+            System.out.printf("  - %s (загальна=%.1fг; %s=%.1fг)%n",
+                    pack.getFoodPackage().getName(),
+                    total,
+                    currentDay,
+                    dayWeight
+            );
+        }
 
         // якщо на день немає пакунків — просто переходимо далі
         if (dayPackages.isEmpty()) {
@@ -95,12 +126,19 @@ public class ManualBnBDistributionService {
         // сортування hikers
         if (dayIndex == 0) {
             states.sort(Comparator.comparingDouble(s -> -s.getHiker().getWeightCoefficient())); // сильніші спочатку
+            System.out.println("\nСортування D" + dayIndex + " (" + sortedDates.get(dayIndex) + ") за силою:");
+            for (HikerState h : states) {
+                System.out.printf("  %s (coeff=%.2f)%n", h.getHiker().getName(), h.getHiker().getWeightCoefficient());
+            }
         } else {
-            states.sort(Comparator.comparingDouble(s -> s.getTotalWeightUpTo(sortedDates.get(dayIndex - 1)))); // менше навантажені спочатку
-        }
+            states.sort(Comparator.comparingDouble(s -> s.getTotalWeightUpTo(sortedDates.get(dayIndex)))); // менше навантажені спочатку
 
-        // Сортування пакунків
-        dayPackages.sort(Comparator.comparingDouble(p -> -p.getProductsWeight()));
+            System.out.println("\nСортування D" + dayIndex + " (" + currentDay + ") за сумарним навантаженням:");
+            for (HikerState h : states) {
+                double load = h.getTotalWeightUpTo(currentDay);
+                System.out.printf("  %s -> loadUpTo[%s]=%.2f г%n", h.getHiker().getName(), currentDay, load);
+            }
+        }
 
         // розподіляємо всі пакунки поточного дня
         assignPackagesOfDay(currentDay, dayPackages, states, dayIndex);
@@ -127,15 +165,25 @@ public class ManualBnBDistributionService {
 
         // пробуємо призначити цей пакунок кожному туристу
         for (HikerState hiker : states) {
-            hiker.addPackage(pack);
+            // для логування
+            System.out.println("Пробуємо дати " + pack.getFoodPackage().getName() +
+                    " туристу " + hiker.getHiker().getName() +
+                    " (dayWeight=" + pack.getWeightForDay(currentDay, membersCount) + ")");
+
+            hiker.addPackage(pack, membersCount);
 
             if (isFeasible(hiker, currentDay, states, tolerance)) {
+                // для логування
+                System.out.println("Припустимо, йдемо далі");
                 // розподіляємо решту пакунків цього ж дня
                 assignPackagesOfDay(currentDay, next, states, dayIndex);
+            } else {
+                // для логування
+                System.out.println("Не припустимо, відкочуємо");
             }
 
             // відкат стану (повернення назад)
-            hiker.removePackage(pack);
+            hiker.removePackage(pack, membersCount);
 
             if (foundSolution) return; // якщо вже знайшли рішення — виходимо раніше
         }
@@ -159,6 +207,11 @@ public class ManualBnBDistributionService {
 
         double actual = current.getWeight(day);
         double deviation = Math.abs(actual - target) / (target == 0 ? 1 : target);
+
+        // для логування
+        System.out.printf("    [%s] day=%s actual=%.2f target=%.2f dev=%.2f tol=%.2f%n",
+                current.getHiker().getName(), day, actual, target, deviation, tolerance);
+
         return deviation <= tolerance;
     }
 
@@ -175,17 +228,26 @@ public class ManualBnBDistributionService {
         // Отримати базову цільову вагу з попереднього дня
         double previousTarget = (previousDay != null)
                 ? hikerState.getTargetForDay(previousDay)
-                : 0;
+                : 0.0;
 
-        // Обчислити суму ваг пакунків цього дня
+        // Обчислити реальну вагу ДЛЯ ВСІЄЇ ГРУПИ на поточний день (з members, volumeCoeff, тарою в останній день
         List<PackageWithProducts> currentDayPackages = packagesByDate.getOrDefault(currentDay, Collections.emptyList());
+
         double totalWeightThisDay = currentDayPackages.stream()
-                .flatMap(p -> p.getPackageDays().stream())
-                .filter(pd -> pd.getDate().equals(currentDay))
-                .mapToDouble(PackageDayProducts::getWeight)
+                .mapToDouble(p -> p.getWeightForDay(currentDay, membersCount))
                 .sum();
 
-        // Формула цільової ваги для поточного дня
+        System.out.printf(
+                "   [TargetCalc] Hiker=%s prev=%.2f totalWeightThisDay=%.2f coeff=%.2f members=%d -> target=%.2f%n",
+                hikerState.getHiker().getName(),
+                previousTarget,
+                totalWeightThisDay,
+                hikerState.getHiker().getWeightCoefficient(),
+                totalHikers,
+                previousTarget + (totalWeightThisDay * hikerState.getHiker().getWeightCoefficient() / totalHikers)
+        );
+
+        // Формула цільової ваги для хайкера на поточний день
         return previousTarget + (totalWeightThisDay * hikerState.getHiker().getWeightCoefficient() / totalHikers);
     }
 }

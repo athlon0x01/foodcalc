@@ -1,5 +1,6 @@
 package com.outdoor.foodcalc.endpoint.impl;
 
+import com.outdoor.foodcalc.service.ExcelExportManualBnBService;
 import com.outdoor.foodcalc.service.ExcelExportService;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
@@ -23,9 +24,9 @@ public class ExportEndpoint {
 
     private static final Logger LOG = LoggerFactory.getLogger(ExportEndpoint.class);
 
-    private final ExcelExportService excelExportService;
+    private final ExcelExportManualBnBService excelExportService;
 
-    public ExportEndpoint(ExcelExportService excelExportService) {
+    public ExportEndpoint(ExcelExportManualBnBService excelExportService) {
         this.excelExportService = excelExportService;
     }
 

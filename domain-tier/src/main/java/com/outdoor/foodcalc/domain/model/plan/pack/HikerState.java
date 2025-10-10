@@ -21,7 +21,7 @@ public class HikerState {
     private final Hiker hiker;
 
     // Вага туриста за кожен день
-    private final Map<LocalDate, Double> weightByDay = new HashMap<>();
+    private final Map<LocalDate, Double> hikerLoadByDay = new HashMap<>();
 
     // Призначені пакунки
     private final Set<PackageWithProducts> assignedPackages = new HashSet<>();
@@ -35,34 +35,34 @@ public class HikerState {
 
     // Отримати поточну вагу для конкретного дня
     public double getWeight(LocalDate day) {
-        return weightByDay.getOrDefault(day, 0.0);
+        return hikerLoadByDay.getOrDefault(day, 0.0);
     }
 
     // Додати пакунок на всі дні
-    public void addPackage(PackageWithProducts pack) {
-        // додаємо всі дні пакунку одразу
+    public void addPackage(PackageWithProducts pack, int members) {
+        // додаємо вагу на КОЖЕН день пакунку, вже зі всіма коефіцієнтами
         for (PackageDayProducts pd : pack.getPackageDays()) {
-            double addWeight = pd.getWeight();
-            weightByDay.merge(pd.getDate(), addWeight, Double::sum);
+            double addWeight = pack.getWeightForDay(pd.getDate(), members);
+            hikerLoadByDay.merge(pd.getDate(), addWeight, Double::sum);
         }
         assignedPackages.add(pack);
     }
 
     // Прибрати пакунок при відкаті (backtrack)
-    public void removePackage(PackageWithProducts pack) {
-        // знімаємо всі дні пакунку
+    public void removePackage(PackageWithProducts pack, int members) {
+        // знімаємо вагу на КОЖЕН день пакунку
         for (PackageDayProducts pd : pack.getPackageDays()) {
-            double removeWeight = pd.getWeight();
-            weightByDay.merge(pd.getDate(), -removeWeight, Double::sum);
-            if (weightByDay.get(pd.getDate()) <= 0.0)
-                weightByDay.remove(pd.getDate());
+            double removeWeight = pack.getWeightForDay(pd.getDate(), members);
+            hikerLoadByDay.merge(pd.getDate(), -removeWeight, Double::sum);
+            if (hikerLoadByDay.get(pd.getDate()) != null && hikerLoadByDay.get(pd.getDate()) <= 0.0)
+                hikerLoadByDay.remove(pd.getDate());
         }
         assignedPackages.remove(pack);
     }
 
     // Сумарна вага для всіх днів
     public double totalWeight() {
-        return weightByDay.values().stream().mapToDouble(Double::doubleValue).sum();
+        return hikerLoadByDay.values().stream().mapToDouble(Double::doubleValue).sum();
     }
 
     // Задати цільову вагу (target) для конкретного дня
@@ -77,7 +77,7 @@ public class HikerState {
 
     // Скільки загальної ваги турист уже ніс (або несе) до певного дня включно
     public double getTotalWeightUpTo(LocalDate day) {
-        return weightByDay.entrySet().stream()
+        return hikerLoadByDay.entrySet().stream()
                 .filter(e -> !e.getKey().isAfter(day))
                 .mapToDouble(Map.Entry::getValue)
                 .sum();
@@ -86,7 +86,7 @@ public class HikerState {
     // Клонування стану для нової гілки BnB
     public HikerState cloneState() {
         HikerState clone = new HikerState(this.hiker);
-        clone.weightByDay.putAll(this.weightByDay);
+        clone.hikerLoadByDay.putAll(this.hikerLoadByDay);
         clone.targetByDay.putAll(this.targetByDay);
         clone.assignedPackages.addAll(this.assignedPackages);
         return clone;
@@ -94,7 +94,7 @@ public class HikerState {
 
     @Override
     public String toString() {
-        String weights = weightByDay.entrySet().stream()
+        String weights = hikerLoadByDay.entrySet().stream()
                 .sorted(Map.Entry.comparingByKey())
                 .map(e -> e.getKey() + "=" + String.format("%.1f", e.getValue()))
                 .collect(Collectors.joining(", "));
