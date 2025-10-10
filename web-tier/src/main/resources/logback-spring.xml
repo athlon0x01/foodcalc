@@ -1,15 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/bnb_debug_log.txt</file>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/bnb_debug_log.%d{yyyy-MM-dd}.txt</fileNamePattern>
+            <maxHistory>5</maxHistory>
+        </rollingPolicy>
+    </appender>
 
-    <root level="INFO">
-        <appender-ref ref="CONSOLE" />
+    <logger name="com.outdoor.foodcalc" level="INFO" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <root level="WARN">
+        <appender-ref ref="FILE" />
     </root>
-
-    <logger name="com.outdoor.foodcalc" additivity="false" level="DEBUG">
-        <appender-ref ref="CONSOLE" />
-    </logger>
-    <logger name="io.swagger.models.parameters" additivity="false" level="ERROR">
-        <appender-ref ref="CONSOLE" />
-    </logger>
 </configuration>

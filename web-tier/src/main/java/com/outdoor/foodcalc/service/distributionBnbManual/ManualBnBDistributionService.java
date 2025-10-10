@@ -8,11 +8,14 @@ import com.outdoor.foodcalc.domain.model.plan.pack.PackageDayProducts;
 import com.outdoor.foodcalc.domain.model.plan.pack.PackageWithProducts;
 import com.outdoor.foodcalc.domain.service.plan.FoodPackageDomainService;
 import org.springframework.stereotype.Service;
+import lombok.extern.slf4j.Slf4j;
+
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class ManualBnBDistributionService {
     private final FoodPackageDomainService foodPackageDomainService;
@@ -84,8 +87,8 @@ public class ManualBnBDistributionService {
                     .collect(Collectors.toList());
 
             // для логування
-            System.out.println("знайдено розподіл:");
-            bestSolution.forEach(s -> System.out.println(s.getHiker().getName() + " -> " + s.getAssignedPackages()));
+            log.info("знайдено розподіл:");
+            bestSolution.forEach(s -> log.info(s.getHiker().getName() + " -> " + s.getAssignedPackages()));
 
             return;
         }
@@ -99,9 +102,9 @@ public class ManualBnBDistributionService {
 
 
         // для логування
-        System.out.println("\n День " + currentDay + ": " + dayPackages.size() + " пакунків");
+        log.info("\n День " + currentDay + ": " + dayPackages.size() + " пакунків");
         // Логування пакунків поточного дня
-        System.out.println("📦 Пакунки на день " + currentDay + ":");
+        log.info("📦 Пакунки на день " + currentDay + ":");
         for (PackageWithProducts pack : dayPackages) {
             double total = pack.getProductsWeight(); // загальна вага всіх продуктів
             double dayWeight = pack.getPackageDays().stream()
@@ -109,11 +112,11 @@ public class ManualBnBDistributionService {
                     .mapToDouble(PackageDayProducts::getWeight)
                     .sum();
 
-            System.out.printf("  - %s (загальна=%.1fг; %s=%.1fг)%n",
+            log.info("  - {} (загальна={}г; {}={}г)",
                     pack.getFoodPackage().getName(),
-                    total,
+                    String.format("%.1f", total),
                     currentDay,
-                    dayWeight
+                    String.format("%.1f", dayWeight)
             );
         }
 
@@ -126,17 +129,17 @@ public class ManualBnBDistributionService {
         // сортування hikers
         if (dayIndex == 0) {
             states.sort(Comparator.comparingDouble(s -> -s.getHiker().getWeightCoefficient())); // сильніші спочатку
-            System.out.println("\nСортування D" + dayIndex + " (" + sortedDates.get(dayIndex) + ") за силою:");
+            log.info("\nСортування D" + dayIndex + " (" + sortedDates.get(dayIndex) + ") за силою:");
             for (HikerState h : states) {
-                System.out.printf("  %s (coeff=%.2f)%n", h.getHiker().getName(), h.getHiker().getWeightCoefficient());
+                log.info("  {} (coeff={})", h.getHiker().getName(), String.format("%.2f", h.getHiker().getWeightCoefficient()));
             }
         } else {
             states.sort(Comparator.comparingDouble(s -> s.getTotalWeightUpTo(sortedDates.get(dayIndex)))); // менше навантажені спочатку
 
-            System.out.println("\nСортування D" + dayIndex + " (" + currentDay + ") за сумарним навантаженням:");
+            log.info("\nСортування D" + dayIndex + " (" + currentDay + ") за сумарним навантаженням:");
             for (HikerState h : states) {
                 double load = h.getTotalWeightUpTo(currentDay);
-                System.out.printf("  %s -> loadUpTo[%s]=%.2f г%n", h.getHiker().getName(), currentDay, load);
+                log.info("  {} -> loadUpTo[{}]={} г", h.getHiker().getName(), currentDay, String.format("%.2f", load));
             }
         }
 
@@ -166,26 +169,37 @@ public class ManualBnBDistributionService {
         // пробуємо призначити цей пакунок кожному туристу
         for (HikerState hiker : states) {
             // для логування
-            System.out.println("Пробуємо дати " + pack.getFoodPackage().getName() +
-                    " туристу " + hiker.getHiker().getName() +
-                    " (dayWeight=" + pack.getWeightForDay(currentDay, membersCount) + ")");
+            double before = hiker.getWeight(currentDay);
+            double added = pack.getWeightForDay(currentDay, membersCount);
+            log.info("Пробуємо дати {} туристу {} (частина на {} = {}г, до додавання мав {}г)",
+                    pack.getFoodPackage().getName(),
+                    hiker.getHiker().getName(),
+                    currentDay,
+                    String.format("%.2f", added),
+                    String.format("%.2f", before)
+            );
 
+            // Додаємо пакунок
             hiker.addPackage(pack, membersCount);
 
+            double after = hiker.getWeight(currentDay);
+            log.info("  Після додавання має {}г у день {}", String.format("%.2f", after), currentDay);
+
+            // Перевіряємо допустимість
             if (isFeasible(hiker, currentDay, states, tolerance)) {
                 // для логування
-                System.out.println("Припустимо, йдемо далі");
+                log.info("можна додати, йдемо далі");
                 // розподіляємо решту пакунків цього ж дня
                 assignPackagesOfDay(currentDay, next, states, dayIndex);
             } else {
                 // для логування
-                System.out.println("Не припустимо, відкочуємо");
+                log.info("Не можна додати, заважкий, відкочуємо");
             }
 
-            // відкат стану (повернення назад)
+            // відкат стану
             hiker.removePackage(pack, membersCount);
 
-            if (foundSolution) return; // якщо вже знайшли рішення — виходимо раніше
+            if (foundSolution) return; // вихід, якщо знайдено рішення
         }
     }
 
@@ -202,17 +216,31 @@ public class ManualBnBDistributionService {
 
     // Перевірка меж (чи припустиме поточне рішення)
     private boolean isFeasible(HikerState current, LocalDate day, List<HikerState> all, double tolerance) {
+        // Розраховуємо цільову вагу для туриста на цей день
         double target = dailyTargetOfHiker(current, day, all);
         current.setTargetForDay(day, target);
 
-        double actual = current.getWeight(day);
-        double deviation = Math.abs(actual - target) / (target == 0 ? 1 : target);
+        // Поточне навантаження туриста за цей день
+        double currentLoad = current.getWeight(day);
 
-        // для логування
-        System.out.printf("    [%s] day=%s actual=%.2f target=%.2f dev=%.2f tol=%.2f%n",
-                current.getHiker().getName(), day, actual, target, deviation, tolerance);
+        // Дозволене максимальне навантаження з урахуванням толерансу
+        double allowed = target * (1 + tolerance);
 
-        return deviation <= tolerance;
+        // Перевіряємо, чи не перевищено межу
+        boolean feasible = currentLoad <= allowed;
+
+        log.info(
+                "    [{}] day={} load={} target={} allowed={} tol={} -> {}",
+                current.getHiker().getName(),
+                day,
+                String.format("%.2f", currentLoad),
+                String.format("%.2f", target),
+                String.format("%.2f", allowed),
+                String.format("%.2f", tolerance),
+                feasible ? "OK" : "TOO HEAVY"
+        );
+
+        return feasible;
     }
 
     // Цільова вага туриста
@@ -237,14 +265,14 @@ public class ManualBnBDistributionService {
                 .mapToDouble(p -> p.getWeightForDay(currentDay, membersCount))
                 .sum();
 
-        System.out.printf(
-                "   [TargetCalc] Hiker=%s prev=%.2f totalWeightThisDay=%.2f coeff=%.2f members=%d -> target=%.2f%n",
+        log.info(
+                "   [TargetCalc] Hiker={} prev={} totalWeightThisDay={} coeff={} members={} -> target={}",
                 hikerState.getHiker().getName(),
-                previousTarget,
-                totalWeightThisDay,
-                hikerState.getHiker().getWeightCoefficient(),
+                String.format("%.2f", previousTarget),
+                String.format("%.2f", totalWeightThisDay),
+                String.format("%.2f", hikerState.getHiker().getWeightCoefficient()),
                 totalHikers,
-                previousTarget + (totalWeightThisDay * hikerState.getHiker().getWeightCoefficient() / totalHikers)
+                String.format("%.2f", previousTarget + (totalWeightThisDay * hikerState.getHiker().getWeightCoefficient() / totalHikers))
         );
 
         // Формула цільової ваги для хайкера на поточний день
