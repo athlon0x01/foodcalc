@@ -3,6 +3,7 @@ package com.outdoor.foodcalc.domain.model.plan.pack;
 import com.outdoor.foodcalc.domain.model.plan.Hiker;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
+import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Jacksonized
@@ -29,6 +31,9 @@ public class HikerState {
     // Цільова вага туриста (target) за кожен день
     private final Map<LocalDate, Double> targetByDay = new HashMap<>();
 
+    // для збереження розподілу по днях
+    private final Map<LocalDate, Set<PackageWithProducts>> assignedByDay = new HashMap<>();
+
     public HikerState(Hiker hiker) {
         this.hiker = hiker;
     }
@@ -42,6 +47,9 @@ public class HikerState {
     public void addPackage(PackageWithProducts pack, int members) {
         // додаємо вагу на КОЖЕН день пакунку, вже зі всіма коефіцієнтами
         for (PackageDayProducts pd : pack.getPackageDays()) {
+            assignedByDay
+                    .computeIfAbsent(pd.getDate(), k -> new HashSet<>())
+                    .add(pack);
             double addWeight = pack.getWeightForDay(pd.getDate(), members);
             hikerLoadByDay.merge(pd.getDate(), addWeight, Double::sum);
         }
@@ -52,12 +60,24 @@ public class HikerState {
     public void removePackage(PackageWithProducts pack, int members) {
         // знімаємо вагу на КОЖЕН день пакунку
         for (PackageDayProducts pd : pack.getPackageDays()) {
+            Set<PackageWithProducts> set = assignedByDay.get(pd.getDate());
+            if (set != null) {
+                set.remove(pack);
+            }
             double removeWeight = pack.getWeightForDay(pd.getDate(), members);
             hikerLoadByDay.merge(pd.getDate(), -removeWeight, Double::sum);
             if (hikerLoadByDay.get(pd.getDate()) != null && hikerLoadByDay.get(pd.getDate()) <= 0.0)
                 hikerLoadByDay.remove(pd.getDate());
         }
         assignedPackages.remove(pack);
+    }
+
+
+    // метод, який повертає всі пакунки (для Excel)
+    public Set<PackageWithProducts> getAllAssignedPackages() {
+        return assignedByDay.values().stream()
+                .flatMap(Set::stream)
+                .collect(Collectors.toSet());
     }
 
     // Сумарна вага для всіх днів
@@ -89,6 +109,15 @@ public class HikerState {
         clone.hikerLoadByDay.putAll(this.hikerLoadByDay);
         clone.targetByDay.putAll(this.targetByDay);
         clone.assignedPackages.addAll(this.assignedPackages);
+
+        // копіюємо assignedByDay
+        for (var entry : this.assignedByDay.entrySet()) {
+            clone.assignedByDay.put(entry.getKey(), new HashSet<>(entry.getValue()));
+        }
+
+        log.debug("Клонування HikerState для {}", this.hiker.getName());
+        log.debug("  assignedByDay до клонування: {}", this.assignedByDay);
+
         return clone;
     }
 

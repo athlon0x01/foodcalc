@@ -2,7 +2,7 @@ package com.outdoor.foodcalc.service;
 
 import com.outdoor.foodcalc.domain.exception.FoodcalcDomainException;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
-import com.outdoor.foodcalc.domain.model.plan.pack.HikerWithPackages;
+import com.outdoor.foodcalc.domain.model.plan.pack.HikerState;
 import com.outdoor.foodcalc.domain.model.plan.pack.PackageWithProducts;
 import com.outdoor.foodcalc.domain.service.plan.FoodPlanDomainService;
 import com.outdoor.foodcalc.service.distributionBnbManual.ManualBnBDistributionService;
@@ -11,7 +11,11 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ExcelExportManualBnBService {
@@ -27,10 +31,13 @@ public class ExcelExportManualBnBService {
     public XSSFWorkbook exportFoodPlan(long planId) {
         FoodPlan plan = foodPlanService.getFoodPlan(planId)
                 .orElseThrow(() -> new FoodcalcDomainException("Failed to load FoodPlan id = " + planId));
-        //TODO export all packages
-        List<PackageWithProducts> packagesWithProducts = engine.getPackagesWithProductsForPlan(planId, plan.getMembers().size());
-        //TODO export best distribution (each member on separate  sheet)
-        List<HikerWithPackages> bestDistribution = engine.findBestDistribution(plan, packagesWithProducts);
+
+        List<PackageWithProducts> packagesWithProducts =
+                engine.getPackagesWithProductsForPlan(planId, plan.getMembers().size());
+
+        List<HikerState> bestStates =
+                engine.findBestDistribution(plan, packagesWithProducts);
+
         XSSFWorkbook workbook = new XSSFWorkbook();
         workbook.getProperties().getCoreProperties().setTitle(plan.getName());
 
@@ -40,17 +47,31 @@ public class ExcelExportManualBnBService {
         header.createCell(1).setCellValue("Assigned Packages");
 
         int rowNum = 1;
-        for (HikerWithPackages hiker : bestDistribution) {
+        for (HikerState hiker : bestStates) {
             Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue(hiker.getHiker().getName());
 
-            // зібрати імена пакунків через кому
-            String packagesList = hiker.getPackages().stream()
-                    .map(p -> p.getFoodPackage().getName())
-                    .reduce((a, b) -> a + ", " + b)
-                    .orElse("");
+            // отримаємо Map<LocalDate, Set<PackageWithProducts>> із HikerState
+            Map<LocalDate, Set<PackageWithProducts>> byDay =
+                    hiker.getAssignedByDay() != null ? hiker.getAssignedByDay() : Map.of();
 
-            row.createCell(1).setCellValue(packagesList);
+            // Формуємо текст по днях
+            StringBuilder sb = new StringBuilder();
+            engine.getSortedDates().forEach(day -> {
+                Set<PackageWithProducts> dayPacks = byDay.getOrDefault(day, Set.of());
+                if (!dayPacks.isEmpty()) {
+                    sb.append(day).append(": ");
+                    sb.append(dayPacks.stream()
+                            .map(p -> p.getFoodPackage().getName())
+                            .sorted()
+                            .collect(Collectors.joining(", ")));
+                    sb.append("\n");
+                }
+            });
+
+            row.createCell(1).setCellValue(sb.toString().trim());
+            row.getCell(1).getCellStyle().setWrapText(true);
+
         }
 
         // автоширина колонок

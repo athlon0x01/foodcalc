@@ -3,10 +3,10 @@ package com.outdoor.foodcalc.service.distributionBnbManual;
 import com.outdoor.foodcalc.domain.exception.FoodcalcException;
 import com.outdoor.foodcalc.domain.model.plan.FoodPlan;
 import com.outdoor.foodcalc.domain.model.plan.pack.HikerState;
-import com.outdoor.foodcalc.domain.model.plan.pack.HikerWithPackages;
 import com.outdoor.foodcalc.domain.model.plan.pack.PackageDayProducts;
 import com.outdoor.foodcalc.domain.model.plan.pack.PackageWithProducts;
 import com.outdoor.foodcalc.domain.service.plan.FoodPackageDomainService;
+import lombok.Getter;
 import org.springframework.stereotype.Service;
 import lombok.extern.slf4j.Slf4j;
 
@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class ManualBnBDistributionService {
     private final FoodPackageDomainService foodPackageDomainService;
 
+    @Getter
     private List<LocalDate> sortedDates;
     private Map<LocalDate, List<PackageWithProducts>> packagesByDate;
     private List<HikerState> bestSolution;
@@ -39,9 +40,12 @@ public class ManualBnBDistributionService {
                 .collect(Collectors.toList());
     }
 
+
     // Головний метод — пошук найкращого розподілу
-    public List<HikerWithPackages> findBestDistribution(FoodPlan plan, List<PackageWithProducts> packages) {
+    public List<HikerState> findBestDistribution(FoodPlan plan, List<PackageWithProducts> packages) {
         prepareData(packages);
+        log.info("Днів у плані: {}", sortedDates.size());
+        sortedDates.forEach(d -> log.info("  {} -> {} пакунків", d, packagesByDate.get(d).size()));
 
         this.membersCount = plan.getMembers().size();
 
@@ -52,15 +56,45 @@ public class ManualBnBDistributionService {
         branchAndBound(0, states);
 
         if (bestSolution == null) {
+            log.error("Не знайдено допустимий розподіл (foundSolution={})", foundSolution);
             throw new FoodcalcException("Не вдалося знайти допустимий розподіл пакунків");
         }
 
-        return bestSolution.stream()
-                .map(s -> HikerWithPackages.builder()
-                        .hiker(s.getHiker())
-                        .packages(new HashSet<>(s.getAssignedPackages()))
-                        .build())
-                .collect(Collectors.toList());
+        log.info("Знайдено розподіл для {} днів і {} туристів", sortedDates.size(), plan.getMembers().size());
+
+        log.info("=== ФІНАЛЬНИЙ РОЗПОДІЛ ПО ТУРИСТАХ ===");
+
+        for (HikerState hikerState : bestSolution) {
+            log.info("Турист: {}", hikerState.getHiker().getName());
+
+            Map<LocalDate, Set<PackageWithProducts>> byDay = hikerState.getAssignedByDay();
+            if (byDay == null || byDay.isEmpty()) {
+                log.info("  (немає пакунків)");
+                continue;
+            }
+
+            // проходимо по кожному дню у правильному порядку
+            for (LocalDate day : sortedDates) {
+                Set<PackageWithProducts> packs = byDay.get(day);
+                if (packs != null && !packs.isEmpty()) {
+                    String joined = packs.stream()
+                            .map(p -> {
+                                // знайти загальну вагу цього пакунка на поточний день
+                                double dayWeight = p.getPackageDays().stream()
+                                        .filter(pd -> pd.getDate().equals(day))
+                                        .mapToDouble(PackageDayProducts::getWeight)
+                                        .sum();
+                                return p.getFoodPackage().getName() + "(" + String.format("%.1f", dayWeight) + "г)";
+                            })
+                            .collect(Collectors.joining(", "));
+                    log.info("  {} -> {}", day, joined);
+                }
+            }
+        }
+
+        log.info("=========================================");
+
+        return bestSolution;
     }
 
     // Групує пакунки за датами і сортує дні
@@ -77,20 +111,13 @@ public class ManualBnBDistributionService {
 
     // Рекурсивний обхід дерева рішень (Branch and Bound)
     private void branchAndBound(int dayIndex, List<HikerState> states) {
+
         if (foundSolution) return; // можна зупинитися при першому валідному рішенні
 
         // базовий випадок: усі дні розподілені
         if (dayIndex >= sortedDates.size()) {
             foundSolution = true;
-            bestSolution = states.stream()
-                    .map(HikerState::cloneState)
-                    .collect(Collectors.toList());
-
-            // для логування
-            log.info("знайдено розподіл:");
-            bestSolution.forEach(s -> log.info(s.getHiker().getName() + " -> " + s.getAssignedPackages()));
-
-            return;
+            return; // рішення вже збережено в assignPackagesOfDay
         }
 
         LocalDate currentDay = sortedDates.get(dayIndex);
@@ -104,7 +131,7 @@ public class ManualBnBDistributionService {
         // для логування
         log.info("\n День " + currentDay + ": " + dayPackages.size() + " пакунків");
         // Логування пакунків поточного дня
-        log.info("📦 Пакунки на день " + currentDay + ":");
+        log.info("Пакунки на день " + currentDay + ":");
         for (PackageWithProducts pack : dayPackages) {
             double total = pack.getProductsWeight(); // загальна вага всіх продуктів
             double dayWeight = pack.getPackageDays().stream()
@@ -134,7 +161,7 @@ public class ManualBnBDistributionService {
                 log.info("  {} (coeff={})", h.getHiker().getName(), String.format("%.2f", h.getHiker().getWeightCoefficient()));
             }
         } else {
-            states.sort(Comparator.comparingDouble(s -> s.getTotalWeightUpTo(sortedDates.get(dayIndex)))); // менше навантажені спочатку
+            states.sort(Comparator.comparingDouble(s -> s.getTotalWeightUpTo(currentDay))); // менше навантажені спочатку
 
             log.info("\nСортування D" + dayIndex + " (" + currentDay + ") за сумарним навантаженням:");
             for (HikerState h : states) {
@@ -146,8 +173,10 @@ public class ManualBnBDistributionService {
         // розподіляємо всі пакунки поточного дня
         assignPackagesOfDay(currentDay, dayPackages, states, dayIndex);
 
-        // після завершення поточного дня переходимо до наступного
-        branchAndBound(dayIndex + 1, states);
+        // переходимо далі лише якщо рішення ще не знайдене
+        if (!foundSolution) {
+            branchAndBound(dayIndex + 1, states);
+        }
     }
 
     private void assignPackagesOfDay(LocalDate currentDay,
@@ -158,20 +187,71 @@ public class ManualBnBDistributionService {
 
         // якщо всі пакунки поточного дня вже розподілені
         if (remainingPacks.isEmpty()) {
+            log.info("Всі пакунки дня {} розподілено.", currentDay);
+
+            // якщо ще є наступні дні — переходимо далі
+//            if (dayIndex < sortedDates.size() - 1) {
+//                LocalDate nextDay = sortedDates.get(dayIndex + 1);
+//                List<PackageWithProducts> nextDayPacks = packagesByDate.getOrDefault(nextDay, List.of());
+//                assignPackagesOfDay(nextDay, nextDayPacks, states, dayIndex + 1);
+//                return;
+//            }
+            if (dayIndex < sortedDates.size() - 1) {
+                branchAndBound(dayIndex + 1, states);
+                return;
+            }
+
+
+            // якщо це останній день — зберігаємо рішення
+            foundSolution = true;
+            bestSolution = states.stream()
+                    .map(HikerState::cloneState)
+                    .collect(Collectors.toList());
+
+            log.info("== РОЗПОДІЛ ПЕРЕД ЗБЕРЕЖЕННЯМ В bestSolution ==");
+            for (HikerState h : states) {
+                log.info("Турист: {}", h.getHiker().getName());
+                for (LocalDate day : sortedDates) {
+                    String assigned = h.getAssignedByDay()
+                            .getOrDefault(day, Set.of()).stream()
+                            .map(p -> p.getFoodPackage().getName())
+                            .collect(Collectors.joining(", "));
+                    log.info("  {} -> {}", day, assigned);
+                }
+            }
+            log.info("===============================================");
             return;
         }
 
+        // поточний пакунок
         PackageWithProducts pack = remainingPacks.get(0);
+        // решта пакунків поточного дня
         List<PackageWithProducts> next = remainingPacks.subList(1, remainingPacks.size());
 
         double tolerance = (dayIndex == 0) ? 0.3 : 0.1;
 
         // пробуємо призначити цей пакунок кожному туристу
         for (HikerState hiker : states) {
-            // для логування
-            double before = hiker.getWeight(currentDay);
+            if (foundSolution) return;
+
+            // видаляємо "removePackage" у кінці — тепер не треба відкочувати
+            // виправляємо логіку, щоб додавання робилося у копії (не в оригіналі)
+
+            // Створюємо копію всього списку станів (щоб гілка була незалежною)
+            List<HikerState> nextStates = states.stream()
+                    .map(HikerState::cloneState)
+                    .collect(Collectors.toList());
+
+            // Знаходимо відповідного туриста у копії
+            HikerState current = nextStates.stream()
+                    .filter(s -> s.getHiker().equals(hiker.getHiker()))
+                    .findFirst()
+                    .orElseThrow();
+
+            // додаємо пакунок туристу
+            double before = current.getWeight(currentDay);
             double added = pack.getWeightForDay(currentDay, membersCount);
-            log.info("Пробуємо дати {} туристу {} (частина на {} = {}г, до додавання мав {}г)",
+            log.debug("Пробуємо дати {} туристу {} (частина на {} = {}г, до додавання мав {}г)",
                     pack.getFoodPackage().getName(),
                     hiker.getHiker().getName(),
                     currentDay,
@@ -179,25 +259,20 @@ public class ManualBnBDistributionService {
                     String.format("%.2f", before)
             );
 
-            // Додаємо пакунок
-            hiker.addPackage(pack, membersCount);
+            // Додаємо пакунок у копію (а не в оригінал)
+            current.addPackage(pack, membersCount);
 
-            double after = hiker.getWeight(currentDay);
-            log.info("  Після додавання має {}г у день {}", String.format("%.2f", after), currentDay);
+            double after = current.getWeight(currentDay);
+            log.debug("  Після додавання має {} г у день {}", String.format("%.2f", after), currentDay);
 
             // Перевіряємо допустимість
-            if (isFeasible(hiker, currentDay, states, tolerance)) {
-                // для логування
-                log.info("можна додати, йдемо далі");
-                // розподіляємо решту пакунків цього ж дня
-                assignPackagesOfDay(currentDay, next, states, dayIndex);
+            if (isFeasible(current, currentDay, nextStates, tolerance)) {
+                log.debug("можна додати {}, пробуємо далі", pack.getFoodPackage().getName());
+                // рекурсія з новою копією станів
+                assignPackagesOfDay(currentDay, next, nextStates, dayIndex);
             } else {
-                // для логування
-                log.info("Не можна додати, заважкий, відкочуємо");
+                log.debug("не можна додати {}, перевищено вагу", pack.getFoodPackage().getName());
             }
-
-            // відкат стану
-            hiker.removePackage(pack, membersCount);
 
             if (foundSolution) return; // вихід, якщо знайдено рішення
         }
