@@ -177,7 +177,7 @@ public class ManualBnBDistributionService {
                 log.info("  {} (coeff={})", h.getHiker().getName(), String.format("%.2f", h.getHiker().getWeightCoefficient()));
             }
         } else {
-            states.sort(Comparator.comparingDouble(s -> s.getTotalWeightUpTo(currentDay))); // менше навантажені спочатку
+            states.sort(Comparator.comparingDouble(s -> s.getCumulativeLoadFromLastDay(currentDay))); // менше навантажені спочатку
 
             log.info("\nСортування D" + dayIndex + " (" + currentDay + ") за сумарним навантаженням:");
             for (HikerState h : states) {
@@ -271,7 +271,7 @@ public class ManualBnBDistributionService {
             log.debug("  Після додавання має {} г у день {}", String.format("%.2f", after), currentDay);
 
             // Перевіряємо допустимість
-            if (isFeasible(current, currentDay, nextStates, tolerance)) {
+            if (isFeasible(current, pack, currentDay, nextStates, tolerance)) {
                 log.debug("можна додати {}, пробуємо далі", pack.getFoodPackage().getName());
                 // рекурсія з новою копією станів
                 assignPackagesOfDay(currentDay, next, nextStates, dayIndex);
@@ -294,68 +294,60 @@ public class ManualBnBDistributionService {
                 .collect(Collectors.toList());
     }
 
-    // Перевірка меж (чи припустиме поточне рішення)
-    private boolean isFeasible(HikerState current, LocalDate day, List<HikerState> all, double tolerance) {
-        // Розраховуємо цільову вагу для туриста на цей день
-        double target = dailyTargetOfHiker(current, day, all);
-        current.setTargetForDay(day, target);
+    // Перевірка меж (чи припустиме поточне рішення). Враховує поточний і всі майбутні дні, коли пакунок використовується.
+    private boolean isFeasible(HikerState current, PackageWithProducts pack,
+                               LocalDate currentDay, List<HikerState> all, double tolerance) {
 
-        // Поточне навантаження туриста за цей день
-        double currentLoad = current.getWeight(day);
+        // Отримуємо всі дні, коли пакунок використовується
+        List<LocalDate> usageDays = pack.getPackageDays().stream()
+                .map(PackageDayProducts::getDate)
+                .sorted()
+                .collect(Collectors.toList());
 
-        // Дозволене максимальне навантаження з урахуванням толерансу
-        double allowed = target * (1 + tolerance);
+        // Для кожного дня, починаючи з поточного і далі
+        for (LocalDate day : usageDays) {
+            if (day.isBefore(currentDay)) continue; // пропускаємо попередні дні
 
-        // Перевіряємо, чи не перевищено межу
-        boolean feasible = currentLoad <= allowed;
+            // Розраховуємо груповий таргет і суму коефіцієнтів
+            double groupTarget = dailyWeightTarget(day);
+            double totalGroupCoeff = all.stream()
+                    .mapToDouble(h -> h.getHiker().getWeightCoefficient())
+                    .sum();
 
-        log.info(
-                "    [{}] day={} load={} target={} allowed={} tol={} -> {}",
-                current.getHiker().getName(),
-                day,
-                String.format("%.2f", currentLoad),
-                String.format("%.2f", target),
-                String.format("%.2f", allowed),
-                String.format("%.2f", tolerance),
-                feasible ? "OK" : "TOO HEAVY"
-        );
+            // Ціль для цього хайкера
+            double target = groupTarget * (current.getHiker().getWeightCoefficient() / totalGroupCoeff);
+            current.setTargetForDay(day, target);
 
-        return feasible;
+            // Поточне навантаження (включно з усіма призначеними пакунками)
+            double currentLoad = current.getWeight(day);
+            double allowed = target * (1 + tolerance);
+
+            boolean feasible = currentLoad <= allowed;
+
+            log.info(
+                    "    [{}] check day={} load={} target={} allowed={} tol={} -> {}",
+                    current.getHiker().getName(),
+                    day,
+                    String.format("%.2f", currentLoad),
+                    String.format("%.2f", target),
+                    String.format("%.2f", allowed),
+                    String.format("%.2f", tolerance),
+                    feasible ? "OK" : "TOO HEAVY"
+            );
+
+            // Якщо хоч в один день перевищено — вся гілка недопустима
+            if (!feasible) return false;
+        }
+
+        return true;
     }
 
-    // Цільова вага туриста
-    private double dailyTargetOfHiker(HikerState hikerState, LocalDate currentDay, List<HikerState> allHikers) {
-        int totalHikers = allHikers.size();
-        int currentIndex = sortedDates.indexOf(currentDay);
-
-        // Знайти попередній день (якщо є)
-        LocalDate previousDay = (currentIndex < sortedDates.size() - 1)
-                ? sortedDates.get(currentIndex + 1)
-                : null;
-
-        // Отримати базову цільову вагу з попереднього дня
-        double previousTarget = (previousDay != null)
-                ? hikerState.getTargetForDay(previousDay)
-                : 0.0;
-
-        // Обчислити реальну вагу ДЛЯ ВСІЄЇ ГРУПИ на поточний день (з members, volumeCoeff, тарою в останній день
-        List<PackageWithProducts> currentDayPackages = packagesByDate.getOrDefault(currentDay, Collections.emptyList());
-
-        double totalWeightThisDay = currentDayPackages.stream()
+    // Розрахунок загального добового таргету для всієї групи
+    private double dailyWeightTarget(LocalDate currentDay) {
+        // Сумуємо реальну вагу всіх пакунків на цей день з урахуванням коефіцієнтів і тари
+        return packagesByDate.getOrDefault(currentDay, Collections.emptyList())
+                .stream()
                 .mapToDouble(p -> p.getWeightForDay(currentDay, membersCount))
                 .sum();
-
-        log.info(
-                "   [TargetCalc] Hiker={} prev={} totalWeightThisDay={} coeff={} members={} -> target={}",
-                hikerState.getHiker().getName(),
-                String.format("%.2f", previousTarget),
-                String.format("%.2f", totalWeightThisDay),
-                String.format("%.2f", hikerState.getHiker().getWeightCoefficient()),
-                totalHikers,
-                String.format("%.2f", previousTarget + (totalWeightThisDay * hikerState.getHiker().getWeightCoefficient() / totalHikers))
-        );
-
-        // Формула цільової ваги для хайкера на поточний день
-        return previousTarget + (totalWeightThisDay * hikerState.getHiker().getWeightCoefficient() / totalHikers);
     }
 }

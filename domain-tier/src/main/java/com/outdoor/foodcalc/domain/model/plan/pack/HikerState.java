@@ -56,29 +56,7 @@ public class HikerState {
         assignedPackages.add(pack);
     }
 
-    // Прибрати пакунок при відкаті (backtrack)
-    public void removePackage(PackageWithProducts pack, int members) {
-        // знімаємо вагу на КОЖЕН день пакунку
-        for (PackageDayProducts pd : pack.getPackageDays()) {
-            Set<PackageWithProducts> set = assignedByDay.get(pd.getDate());
-            if (set != null) {
-                set.remove(pack);
-            }
-            double removeWeight = pack.getWeightForDay(pd.getDate(), members);
-            hikerLoadByDay.merge(pd.getDate(), -removeWeight, Double::sum);
-            if (hikerLoadByDay.get(pd.getDate()) != null && hikerLoadByDay.get(pd.getDate()) <= 0.0)
-                hikerLoadByDay.remove(pd.getDate());
-        }
-        assignedPackages.remove(pack);
-    }
-
-
     // метод, який повертає всі пакунки (для Excel)
-    public Set<PackageWithProducts> getAllAssignedPackages() {
-        return assignedByDay.values().stream()
-                .flatMap(Set::stream)
-                .collect(Collectors.toSet());
-    }
 
     // Сумарна вага для всіх днів
     public double totalWeight() {
@@ -91,14 +69,19 @@ public class HikerState {
     }
 
     // Отримати цільову вагу (target) для дня
-    public double getTargetForDay(LocalDate day) {
-        return targetByDay.getOrDefault(day, 0.0);
-    }
 
     // Скільки загальної ваги турист уже ніс (або несе) до певного дня включно
     public double getTotalWeightUpTo(LocalDate day) {
         return hikerLoadByDay.entrySet().stream()
                 .filter(e -> !e.getKey().isAfter(day))
+                .mapToDouble(Map.Entry::getValue)
+                .sum();
+    }
+
+    // вага з поточного дня і ДАЛІ (включно), тобто до кінця маршруту
+    public double getCumulativeLoadFromLastDay(LocalDate day) {
+        return hikerLoadByDay.entrySet().stream()
+                .filter(e -> !e.getKey().isBefore(day)) // дні >= day
                 .mapToDouble(Map.Entry::getValue)
                 .sum();
     }
