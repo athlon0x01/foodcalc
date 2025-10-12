@@ -40,7 +40,6 @@ public class ManualBnBDistributionService {
                 .collect(Collectors.toList());
     }
 
-
     // Головний метод — пошук найкращого розподілу
     public List<HikerState> findBestDistribution(FoodPlan plan, List<PackageWithProducts> packages) {
         prepareData(packages);
@@ -117,6 +116,24 @@ public class ManualBnBDistributionService {
         // базовий випадок: усі дні розподілені
         if (dayIndex >= sortedDates.size()) {
             foundSolution = true;
+
+            log.info("== РОЗПОДІЛ ПЕРЕД ЗБЕРЕЖЕННЯМ В bestSolution ==");
+            for (HikerState h : states) {
+                log.info("Турист: {}", h.getHiker().getName());
+                for (LocalDate day : sortedDates) {
+                    String assigned = h.getAssignedByDay()
+                            .getOrDefault(day, Set.of()).stream()
+                            .map(p -> p.getFoodPackage().getName())
+                            .collect(Collectors.joining(", "));
+                    log.info("  {} -> {}", day, assigned);
+                }
+            }
+            log.info("===============================================");
+
+            bestSolution = states.stream()
+                    .map(HikerState::cloneState)
+                    .collect(Collectors.toList());
+
             return; // рішення вже збережено в assignPackagesOfDay
         }
 
@@ -126,7 +143,6 @@ public class ManualBnBDistributionService {
         // Сортування пакунків
         dayPackages.sort(Comparator.comparingDouble(
                 p -> -p.getWeightForDay(currentDay, membersCount)));
-
 
         // для логування
         log.info("\n День " + currentDay + ": " + dayPackages.size() + " пакунків");
@@ -189,37 +205,29 @@ public class ManualBnBDistributionService {
         if (remainingPacks.isEmpty()) {
             log.info("Всі пакунки дня {} розподілено.", currentDay);
 
-            // якщо ще є наступні дні — переходимо далі
-//            if (dayIndex < sortedDates.size() - 1) {
-//                LocalDate nextDay = sortedDates.get(dayIndex + 1);
-//                List<PackageWithProducts> nextDayPacks = packagesByDate.getOrDefault(nextDay, List.of());
-//                assignPackagesOfDay(nextDay, nextDayPacks, states, dayIndex + 1);
-//                return;
-//            }
             if (dayIndex < sortedDates.size() - 1) {
+                // Якщо ще є наступні дні — переходимо далі
                 branchAndBound(dayIndex + 1, states);
-                return;
-            }
+            } else {
+                // якщо це останній день — зберігаємо рішення
+                foundSolution = true;
+                bestSolution = states.stream()
+                        .map(HikerState::cloneState)
+                        .collect(Collectors.toList());
 
-
-            // якщо це останній день — зберігаємо рішення
-            foundSolution = true;
-            bestSolution = states.stream()
-                    .map(HikerState::cloneState)
-                    .collect(Collectors.toList());
-
-            log.info("== РОЗПОДІЛ ПЕРЕД ЗБЕРЕЖЕННЯМ В bestSolution ==");
-            for (HikerState h : states) {
-                log.info("Турист: {}", h.getHiker().getName());
-                for (LocalDate day : sortedDates) {
-                    String assigned = h.getAssignedByDay()
-                            .getOrDefault(day, Set.of()).stream()
-                            .map(p -> p.getFoodPackage().getName())
-                            .collect(Collectors.joining(", "));
-                    log.info("  {} -> {}", day, assigned);
+                log.info("== РОЗПОДІЛ ПЕРЕД ЗБЕРЕЖЕННЯМ В bestSolution ==");
+                for (HikerState h : states) {
+                    log.info("Турист: {}", h.getHiker().getName());
+                    for (LocalDate day : sortedDates) {
+                        String assigned = h.getAssignedByDay()
+                                .getOrDefault(day, Set.of()).stream()
+                                .map(p -> p.getFoodPackage().getName())
+                                .collect(Collectors.joining(", "));
+                        log.info("  {} -> {}", day, assigned);
+                    }
                 }
+                log.info("===============================================");
             }
-            log.info("===============================================");
             return;
         }
 
@@ -233,9 +241,6 @@ public class ManualBnBDistributionService {
         // пробуємо призначити цей пакунок кожному туристу
         for (HikerState hiker : states) {
             if (foundSolution) return;
-
-            // видаляємо "removePackage" у кінці — тепер не треба відкочувати
-            // виправляємо логіку, щоб додавання робилося у копії (не в оригіналі)
 
             // Створюємо копію всього списку станів (щоб гілка була незалежною)
             List<HikerState> nextStates = states.stream()
