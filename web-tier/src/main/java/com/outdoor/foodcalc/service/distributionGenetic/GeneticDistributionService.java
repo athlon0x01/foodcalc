@@ -127,6 +127,24 @@ public class GeneticDistributionService {
                 .map(HikerState::new)
                 .collect(Collectors.toList());
 
+        // --- Додаємо розрахунок Target For Day (з урахуванням коефіцієнтів туристів) ---
+        Map<LocalDate, Double> totalPerDay = calculateDailyTargets(packages, membersCount);
+
+        // Знаходимо суму коефіцієнтів усіх туристів
+        double totalCoef = plan.getMembers().stream()
+                .mapToDouble(h -> h.getWeightCoefficient())
+                .sum();
+
+        // Для кожного туриста розраховуємо індивідуальний target на кожен день
+        for (HikerState hiker : result) {
+            double coef = hiker.getHiker().getWeightCoefficient();
+            for (LocalDate date : sortedDates) {
+                double groupTarget = totalPerDay.getOrDefault(date, 0.0);
+                double personalTarget = groupTarget * (coef / totalCoef);
+                hiker.setTargetForDay(date, personalTarget);
+            }
+        }
+
         Chromosome<IntegerGene> chromosome = gt.chromosome();
         for (int i = 0; i < chromosome.length(); i++) {
             int hikerIndex = chromosome.get(i).allele();
@@ -155,5 +173,20 @@ public class GeneticDistributionService {
                 .sorted(Collections.reverseOrder(
                         Comparator.comparingDouble(pack -> pack.getEstimatedWeight(members))))
                 .collect(Collectors.toList());
+    }
+
+    // Розрахунок загального добового таргету для всієї групи
+    private Map<LocalDate, Double> calculateDailyTargets(List<PackageWithProducts> packages, int membersCount) {
+        Map<LocalDate, Double> dailyTargets = new HashMap<>();
+
+        for (PackageWithProducts pack : packages) {
+            for (PackageDayProducts pd : pack.getPackageDays()) {
+                // Використовуємо саме вагу пакунка на цей день
+                double dayWeight = pack.getWeightForDay(pd.getDate(), membersCount);
+                dailyTargets.merge(pd.getDate(), dayWeight, Double::sum);
+            }
+        }
+
+        return dailyTargets;
     }
 }
