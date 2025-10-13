@@ -90,6 +90,13 @@
             <version>${spring-boot.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.jenetics</groupId>
+            <artifactId>jenetics</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
