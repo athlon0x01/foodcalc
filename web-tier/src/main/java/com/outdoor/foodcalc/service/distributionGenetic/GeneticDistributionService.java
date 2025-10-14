@@ -52,8 +52,6 @@ public class GeneticDistributionService {
         prepareData(packages);
         membersCount = plan.getMembers().size();
 
-        log.info("Початок генетичного розподілу для {} туристів і {} пакунків", membersCount, packages.size());
-
         // --- 1. Генотип: для кожного пакунка вказуємо індекс туриста ---
         Factory<Genotype<IntegerGene>> genotypeFactory =
                 Genotype.of(IntegerChromosome.of(0, membersCount - 1, packages.size()));
@@ -61,61 +59,114 @@ public class GeneticDistributionService {
         // --- 2. Еволюційний двигун ---
         Engine<IntegerGene, Double> engine = Engine
                 .builder(gt -> evaluateFitness(gt, plan, packages), genotypeFactory)
-                .populationSize(250)
+                .populationSize(400)
                 .optimize(Optimize.MAXIMUM)
                 .alterers(
-                        new Mutator<>(0.2),
-                        new UniformCrossover<>(0.5)
+                        new Mutator<>(0.25),                 // було 0.2
+                        new SwapMutator<>(0.05),             // ← NEW: інколи добре міняє місцями гени
+                        new UniformCrossover<>(0.6)          // було 0.5
                 )
+                .offspringFraction(0.7)                  // ← NEW: більше нащадків
+                .survivorsSelector(new EliteSelector<>(3))// ← NEW: зберігаємо 3 кращих у поколінні
                 .build();
 
         // --- 3. Запуск еволюції ---
         Phenotype<IntegerGene, Double> best = engine.stream()
-                .limit(150)
+                .limit(320)
                 .collect(EvolutionResult.toBestPhenotype());
 
         log.info("GA завершено, fitness = {}", best.fitness());
 
-        // --- 4. Перетворюємо рішення у HikerState ---
         return buildResult(best.genotype(), plan, packages);
     }
 
-    // ========= ОЦІНКА ПРИСТОСОВАНОСТІ =========
+    // ========= ОЦІНКА ПРИСТОСОВАНОСТІ: сильний м’який штраф за >10%/30% =========
     private double evaluateFitness(Genotype<IntegerGene> gt, FoodPlan plan, List<PackageWithProducts> packages) {
+        final int days = sortedDates.size();
+        final int hikers = membersCount;
+
+        // date -> day index
+        Map<LocalDate, Integer> dayIndex = new HashMap<>(days);
+        for (int d = 0; d < days; d++) dayIndex.put(sortedDates.get(d), d);
+
+        // 1) Фактично призначені ваги на кожен день для кожного туриста
+        double[][] load = new double[hikers][days];
+
         Chromosome<IntegerGene> chromosome = gt.chromosome();
-        int n = chromosome.length();
-
-        // 1. Обчислюємо сумарну вагу для кожного туриста
-        double[] hikerWeights = new double[membersCount];
-        for (int i = 0; i < n; i++) {
-            int hikerIndex = chromosome.get(i).allele();
+        for (int i = 0; i < chromosome.length(); i++) {
+            int hIdx = chromosome.get(i).allele();
             PackageWithProducts pack = packages.get(i);
-            double totalWeight = pack.getProductsWeight();
-            hikerWeights[hikerIndex] += totalWeight;
-        }
-
-        // 2. Обчислюємо середню вагу та стандартне відхилення
-        double mean = Arrays.stream(hikerWeights).average().orElse(0);
-        double variance = 0;
-        for (double w : hikerWeights) {
-            variance += Math.pow(w - mean, 2);
-        }
-        double stdev = Math.sqrt(variance / membersCount);
-
-        // 3. Обчислюємо коефіцієнт коригування за перевищення (штраф)
-        double penalty = 0.0;
-        for (int i = 0; i < membersCount; i++) {
-            double coef = plan.getMembers().get(i).getWeightCoefficient();
-            double allowed = mean * coef * 1.1; // 10% допуск
-            if (hikerWeights[i] > allowed) {
-                penalty += (hikerWeights[i] - allowed);
+            for (PackageDayProducts pd : pack.getPackageDays()) {
+                Integer dIdx = dayIndex.get(pd.getDate());
+                if (dIdx == null) continue;
+                load[hIdx][dIdx] += pack.getWeightForDay(pd.getDate(), membersCount);
             }
         }
 
-        // 4. Чим менше стандартне відхилення і штраф — тим краще
-        double fitness = 1.0 / (1.0 + stdev + penalty / 1000.0);
+        // 2) Групова вага на день
+        double[] groupPerDay = new double[days];
+        for (int d = 0; d < days; d++) {
+            double s = 0.0;
+            for (int h = 0; h < hikers; h++) s += load[h][d];
+            groupPerDay[d] = s;
+        }
 
-        return fitness;
+        // 3) Персональні таргети на день
+        double totalCoef = plan.getMembers().stream().mapToDouble(m -> m.getWeightCoefficient()).sum();
+        double[][] target = new double[hikers][days];
+        for (int h = 0; h < hikers; h++) {
+            double share = (totalCoef == 0.0) ? 0.0 : plan.getMembers().get(h).getWeightCoefficient() / totalCoef;
+            for (int d = 0; d < days; d++) target[h][d] = groupPerDay[d] * share;
+        }
+
+        // 4) Толеранси: останній календарний день = max(sortedDates) має 30%, решта 10%
+        LocalDate lastDay = Collections.max(sortedDates);
+        int lastDayIdx = dayIndex.getOrDefault(lastDay, days - 1);
+
+        // всередині evaluateFitness(...)
+        // ... попередній код, який рахує load[][], groupPerDay[], target[][], lastDayIdx ...
+
+        // М’які штрафи: ПОЗА допуском — дуже сильний; всередині — легкий
+        double penaltyOutside = 0.0;
+        double penaltyInside  = 0.0;
+
+        for (int d = 0; d < days; d++) {
+            final double tol = (d == lastDayIdx) ? 0.30 : 0.10;
+            for (int h = 0; h < hikers; h++) {
+                double t = target[h][d];
+                if (t <= 1e-9) continue;
+
+                double rel  = (load[h][d] - t) / t;      // відносне відхилення
+                double over = Math.abs(rel) - tol;       // наскільки вийшли за допуск
+
+                if (over > 0) {
+                    // СИЛЬНИЙ штраф поза допуском: кубічний (можна 4-й степінь)
+                    penaltyOutside += Math.pow(over, 3);             // ← NEW (було over*over)
+                } else {
+                    // Легкий штраф всередині допуску, щоб тягнуло до таргету
+                    double inside = Math.abs(rel) / Math.max(tol, 1e-6);
+                    penaltyInside += 0.1 * inside * inside;
+                }
+            }
+        }
+
+        // Баланс між туристами (як і було)
+        double[] totalPerHiker = new double[hikers];
+        for (int h = 0; h < hikers; h++) {
+            double s = 0.0; for (int d = 0; d < days; d++) s += load[h][d];
+            totalPerHiker[h] = s;
+        }
+        double mean = Arrays.stream(totalPerHiker).average().orElse(0.0);
+        double var = 0.0; for (double w : totalPerHiker) var += (w - mean)*(w - mean);
+        double stdev = Math.sqrt(var / Math.max(1, hikers));
+
+        // ВАГИ штрафів — зроби їх агресивнішими
+        final double A = 200.0;   // сила за вихід за допуск (було менше)     ← NEW
+        final double B = 0.5;     // всередині допуску (було 1.0)             ← NEW
+        final double C = 0.02;    // дисбаланс між туристами (було 0.01)      ← NEW
+
+        double cost = A * penaltyOutside + B * penaltyInside + C * stdev;
+        return 1.0 / (1.0 + cost);
     }
 
     // ========= ПЕРЕТВОРЕННЯ У HikerState =========
