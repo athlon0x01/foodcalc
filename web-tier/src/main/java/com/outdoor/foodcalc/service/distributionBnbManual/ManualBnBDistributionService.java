@@ -24,8 +24,9 @@ public class ManualBnBDistributionService {
     private List<LocalDate> sortedDates;
     private Map<LocalDate, List<PackageWithProducts>> packagesByDate;
     private List<HikerState> bestSolution;
-    private boolean foundSolution = false;
     private int membersCount;
+    // Метрики для вибору найкращого рішення
+    private double bestDeviation = Double.MAX_VALUE;  // найменше середнє відхилення серед усіх знайдених рішень
 
     public ManualBnBDistributionService(FoodPackageDomainService foodPackageDomainService) {
         this.foodPackageDomainService = foodPackageDomainService;
@@ -61,7 +62,6 @@ public class ManualBnBDistributionService {
         branchAndBound(0, states);
 
         if (bestSolution == null) {
-            log.error("Не знайдено допустимий розподіл (foundSolution={})", foundSolution);
             throw new FoodcalcException("Не вдалося знайти допустимий розподіл пакунків");
         }
 
@@ -117,11 +117,18 @@ public class ManualBnBDistributionService {
     // Рекурсивний обхід дерева рішень (Branch and Bound)
     private void branchAndBound(int dayIndex, List<HikerState> states) {
 
-        if (foundSolution) return; // можна зупинитися при першому валідному рішенні
-
         // базовий випадок: усі дні розподілені
         if (dayIndex >= sortedDates.size()) {
-            foundSolution = true;
+
+            // зберігаємо тільки найкраще рішення
+            double currentDeviation = calculateTotalDeviation(states);
+            if (currentDeviation < bestDeviation) {
+                bestDeviation = currentDeviation;
+                bestSolution = states.stream()
+                        .map(HikerState::cloneState)
+                        .collect(Collectors.toList());
+                log.info("Нове найкраще рішення: середнє відхилення = {}%", String.format("%.2f", bestDeviation));
+            }
 
             log.info("== РОЗПОДІЛ ПЕРЕД ЗБЕРЕЖЕННЯМ В bestSolution ==");
             for (HikerState h : states) {
@@ -135,10 +142,6 @@ public class ManualBnBDistributionService {
                 }
             }
             log.info("===============================================");
-
-            bestSolution = states.stream()
-                    .map(HikerState::cloneState)
-                    .collect(Collectors.toList());
 
             return; // рішення вже збережено в assignPackagesOfDay
         }
@@ -195,17 +198,14 @@ public class ManualBnBDistributionService {
         // розподіляємо всі пакунки поточного дня
         assignPackagesOfDay(currentDay, dayPackages, states, dayIndex);
 
-        // переходимо далі лише якщо рішення ще не знайдене
-        if (!foundSolution) {
-            branchAndBound(dayIndex + 1, states);
-        }
+        // переходимо далі
+        branchAndBound(dayIndex + 1, states);
     }
 
     private void assignPackagesOfDay(LocalDate currentDay,
                                      List<PackageWithProducts> remainingPacks,
                                      List<HikerState> states,
                                      int dayIndex) {
-        if (foundSolution) return; // якщо вже знайшли рішення — далі не перебираємо
 
         // якщо всі пакунки поточного дня вже розподілені
         if (remainingPacks.isEmpty()) {
@@ -215,7 +215,7 @@ public class ManualBnBDistributionService {
             for (HikerState h : states) {
                 double target = h.getTargetByDay().getOrDefault(currentDay, 0.0);
                 double load = h.getWeight(currentDay);
-                double tol = (dayIndex == 0) ? 0.30 : 0.10;
+                double tol = currentDay.equals(sortedDates.get(0)) ? 0.30 : 0.10;
                 double minAllowed = target * (1 - tol);
 
                 if (load < minAllowed) {
@@ -234,11 +234,44 @@ public class ManualBnBDistributionService {
                 // Якщо ще є наступні дні — переходимо далі
                 branchAndBound(dayIndex + 1, states);
             } else {
+                // === Перевіряємо остаточну допустимість рішення перед збереженням ===
+                boolean valid = true;
+                for (HikerState h : states) {
+                    for (LocalDate day : sortedDates) {
+                        Double target = h.getTargetByDay().get(day);
+                        if (target == null) continue;
+                        double load = h.getWeight(day);
+                        double tol = day.equals(sortedDates.get(0)) ? 0.30 : 0.10;
+                        double minAllowed = target * (1 - tol);
+                        double maxAllowed = target * (1 + tol);
+
+                        if (load < minAllowed || load > maxAllowed) {
+                            log.warn("[{}] день {}: вихід за межі допустимого ({} < {} або {} > {})",
+                                    h.getHiker().getName(),
+                                    day,
+                                    String.format("%.1f", load),
+                                    String.format("%.1f", minAllowed),
+                                    String.format("%.1f", load),
+                                    String.format("%.1f", maxAllowed)
+                            );
+                            valid = false;
+                        }
+                    }
+                }
+                if (!valid) {
+                    log.warn("Рішення не збережено — перевищено допустимі межі навантаження");
+                    return;
+                }
+
                 // якщо це останній день — зберігаємо рішення
-                foundSolution = true;
-                bestSolution = states.stream()
-                        .map(HikerState::cloneState)
-                        .collect(Collectors.toList());
+                double currentDeviation = calculateTotalDeviation(states);
+                if (currentDeviation < bestDeviation) {
+                    bestDeviation = currentDeviation;
+                    bestSolution = states.stream()
+                            .map(HikerState::cloneState)
+                            .collect(Collectors.toList());
+                    log.info("🔹 Нове найкраще рішення: середнє відхилення = {}%", String.format("%.2f", bestDeviation));
+                }
 
                 log.info("== РОЗПОДІЛ ПЕРЕД ЗБЕРЕЖЕННЯМ В bestSolution ==");
                 for (HikerState h : states) {
@@ -261,12 +294,8 @@ public class ManualBnBDistributionService {
         // решта пакунків поточного дня
         List<PackageWithProducts> next = remainingPacks.subList(1, remainingPacks.size());
 
-        double tolerance = (dayIndex == 0) ? 0.3 : 0.1;
-
         // пробуємо призначити цей пакунок кожному туристу
         for (HikerState hiker : states) {
-            if (foundSolution) return;
-
             // Створюємо копію всього списку станів (щоб гілка була незалежною)
             List<HikerState> nextStates = states.stream()
                     .map(HikerState::cloneState)
@@ -296,15 +325,13 @@ public class ManualBnBDistributionService {
             log.debug("  Після додавання має {} г у день {}", String.format("%.2f", after), currentDay);
 
             // Перевіряємо допустимість
-            if (isFeasible(current, pack, currentDay, nextStates, tolerance)) {
+            if (isFeasible(current, pack, currentDay, nextStates)) {
                 log.debug("можна додати {}, пробуємо далі", pack.getFoodPackage().getName());
                 // рекурсія з новою копією станів
                 assignPackagesOfDay(currentDay, next, nextStates, dayIndex);
             } else {
                 log.debug("не можна додати {}, перевищено вагу", pack.getFoodPackage().getName());
             }
-
-            if (foundSolution) return; // вихід, якщо знайдено рішення
         }
     }
 
@@ -321,7 +348,7 @@ public class ManualBnBDistributionService {
 
     // Перевірка меж (чи припустиме поточне рішення). Враховує поточний і всі майбутні дні, коли пакунок використовується.
     private boolean isFeasible(HikerState current, PackageWithProducts pack,
-                               LocalDate currentDay, List<HikerState> all, double tolerance) {
+                               LocalDate currentDay, List<HikerState> all) {
 
         // Константи для допуску
         final double FIRST_DAY_TOL = 0.30;   // ±30% для першого дня
@@ -347,8 +374,10 @@ public class ManualBnBDistributionService {
             // Поточне навантаження (включно з усіма призначеними пакунками)
             double currentLoad = current.getWeight(day);
 
-            // Визначаємо межі допустимого відхилення
+            // Обираємо толеранс залежно від того, чи це перший день
             double tol = day.equals(sortedDates.get(0)) ? FIRST_DAY_TOL : OTHER_DAY_TOL;
+
+            // Визначаємо межі допустимого відхилення
             double maxAllowed = target * (1 + tol);
 
             // Перевіряємо чи навантаження в межах
@@ -406,8 +435,20 @@ public class ManualBnBDistributionService {
         }
     }
 
-    private boolean remainingPacksExistForDay(LocalDate day, List<HikerState> all) {
-        return packagesByDate.getOrDefault(day, Collections.emptyList()).stream()
-                .anyMatch(p -> all.stream().noneMatch(h -> h.getAssignedPackages().contains(p)));
+    // Обчислення середнього відхилення від таргету по всіх туристах і днях
+    private double calculateTotalDeviation(List<HikerState> states) {
+        double total = 0;
+        int count = 0;
+        for (HikerState h : states) {
+            for (LocalDate day : sortedDates) {
+                Double target = h.getTargetByDay().get(day);
+                if (target == null || target == 0) continue;
+                double load = h.getWeight(day);
+                double deviation = Math.abs(load - target) / target;
+                total += deviation;
+                count++;
+            }
+        }
+        return (count == 0) ? Double.MAX_VALUE : (total / count) * 100.0;
     }
 }
