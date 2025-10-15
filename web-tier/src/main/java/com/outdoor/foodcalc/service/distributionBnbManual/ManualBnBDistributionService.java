@@ -111,7 +111,7 @@ public class ManualBnBDistributionService {
             }
         }
         sortedDates = new ArrayList<>(packagesByDate.keySet());
-        sortedDates.sort(Comparator.reverseOrder()); // D0 → D1 → D2...
+        sortedDates.sort(Comparator.naturalOrder()); // D0 → D1 → D2...
     }
 
     // Рекурсивний обхід дерева рішень (Branch and Bound)
@@ -215,7 +215,7 @@ public class ManualBnBDistributionService {
             for (HikerState h : states) {
                 double target = h.getTargetByDay().getOrDefault(currentDay, 0.0);
                 double load = h.getWeight(currentDay);
-                double tol = currentDay.equals(sortedDates.get(0)) ? 0.30 : 0.10;
+                double tol = 0.10;
                 double minAllowed = target * (1 - tol);
 
                 if (load < minAllowed) {
@@ -241,7 +241,7 @@ public class ManualBnBDistributionService {
                         Double target = h.getTargetByDay().get(day);
                         if (target == null) continue;
                         double load = h.getWeight(day);
-                        double tol = day.equals(sortedDates.get(0)) ? 0.30 : 0.10;
+                        double tol = 0.10;
                         double minAllowed = target * (1 - tol);
                         double maxAllowed = target * (1 + tol);
 
@@ -350,10 +350,6 @@ public class ManualBnBDistributionService {
     private boolean isFeasible(HikerState current, PackageWithProducts pack,
                                LocalDate currentDay, List<HikerState> all) {
 
-        // Константи для допуску
-        final double FIRST_DAY_TOL = 0.30;   // ±30% для першого дня
-        final double OTHER_DAY_TOL = 0.10;   // ±10% для інших днів
-
         // Отримуємо всі дні, коли пакунок використовується
         List<LocalDate> usageDays = pack.getPackageDays().stream()
                 .map(PackageDayProducts::getDate)
@@ -374,8 +370,8 @@ public class ManualBnBDistributionService {
             // Поточне навантаження (включно з усіма призначеними пакунками)
             double currentLoad = current.getWeight(day);
 
-            // Обираємо толеранс залежно від того, чи це перший день
-            double tol = day.equals(sortedDates.get(0)) ? FIRST_DAY_TOL : OTHER_DAY_TOL;
+            // Вказуємо толеранс
+            double tol = 0.1;
 
             // Визначаємо межі допустимого відхилення
             double maxAllowed = target * (1 + tol);
