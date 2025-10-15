@@ -48,9 +48,15 @@ public class ManualBnBDistributionService {
 
         this.membersCount = plan.getMembers().size();
 
+        Map<LocalDate, Double> groupTargets = calculateGroupTargets(sortedDates);
+
+        // Ініціалізація станів
         List<HikerState> states = plan.getMembers().stream()
                 .map(HikerState::new)
                 .collect(Collectors.toList());
+
+        // Розрахунок індивідуальних таргетів
+        calculateIndividualTargets(plan, states, groupTargets);
 
         branchAndBound(0, states);
 
@@ -205,6 +211,25 @@ public class ManualBnBDistributionService {
         if (remainingPacks.isEmpty()) {
             log.info("Всі пакунки дня {} розподілено.", currentDay);
 
+            // Перевіряємо, що всі туристи мають навантаження не менше 70% (перший день) або 90% (інші)
+            for (HikerState h : states) {
+                double target = h.getTargetByDay().getOrDefault(currentDay, 0.0);
+                double load = h.getWeight(currentDay);
+                double tol = (dayIndex == 0) ? 0.30 : 0.10;
+                double minAllowed = target * (1 - tol);
+
+                if (load < minAllowed) {
+                    log.info("[{}] має занадто мале навантаження на {}: {} < {} ({}%)",
+                            h.getHiker().getName(),
+                            currentDay,
+                            String.format("%.2f", load),
+                            String.format("%.2f", minAllowed),
+                            String.format("%.0f", (1 - tol) * 100)
+                    );
+                    return; // день недопустимий, не продовжуємо гілку
+                }
+            }
+
             if (dayIndex < sortedDates.size() - 1) {
                 // Якщо ще є наступні дні — переходимо далі
                 branchAndBound(dayIndex + 1, states);
@@ -298,6 +323,10 @@ public class ManualBnBDistributionService {
     private boolean isFeasible(HikerState current, PackageWithProducts pack,
                                LocalDate currentDay, List<HikerState> all, double tolerance) {
 
+        // Константи для допуску
+        final double FIRST_DAY_TOL = 0.30;   // ±30% для першого дня
+        final double OTHER_DAY_TOL = 0.10;   // ±10% для інших днів
+
         // Отримуємо всі дні, коли пакунок використовується
         List<LocalDate> usageDays = pack.getPackageDays().stream()
                 .map(PackageDayProducts::getDate)
@@ -308,34 +337,35 @@ public class ManualBnBDistributionService {
         for (LocalDate day : usageDays) {
             if (day.isBefore(currentDay)) continue; // пропускаємо попередні дні
 
-            // Розраховуємо груповий таргет і суму коефіцієнтів
-            double groupTarget = dailyWeightTarget(day);
-            double totalGroupCoeff = all.stream()
-                    .mapToDouble(h -> h.getHiker().getWeightCoefficient())
-                    .sum();
-
-            // Ціль для цього хайкера
-            double target = groupTarget * (current.getHiker().getWeightCoefficient() / totalGroupCoeff);
-            current.setTargetForDay(day, target);
+            // Отримуємо вже розрахований таргет
+            Double target = current.getTargetByDay().get(day);
+            if (target == null) {
+                log.warn("Target for day {} not initialized for {}", day, current.getHiker().getName());
+                return false;
+            }
 
             // Поточне навантаження (включно з усіма призначеними пакунками)
             double currentLoad = current.getWeight(day);
-            double allowed = target * (1 + tolerance);
 
-            boolean feasible = currentLoad <= allowed;
+            // Визначаємо межі допустимого відхилення
+            double tol = day.equals(sortedDates.get(0)) ? FIRST_DAY_TOL : OTHER_DAY_TOL;
+            double maxAllowed = target * (1 + tol);
+
+            // Перевіряємо чи навантаження в межах
+            // Якщо розподіл ще триває — перевіряємо тільки верхню межу
+            boolean feasible = currentLoad <= maxAllowed;
 
             log.info(
-                    "    [{}] check day={} load={} target={} allowed={} tol={} -> {}",
+                    "    [{}] day={} load={} target={} max={} tol={} -> {}",
                     current.getHiker().getName(),
                     day,
                     String.format("%.2f", currentLoad),
                     String.format("%.2f", target),
-                    String.format("%.2f", allowed),
-                    String.format("%.2f", tolerance),
+                    String.format("%.2f", maxAllowed),
+                    String.format("%.2f", tol),
                     feasible ? "OK" : "TOO HEAVY"
             );
 
-            // Якщо хоч в один день перевищено — вся гілка недопустима
             if (!feasible) return false;
         }
 
@@ -349,5 +379,35 @@ public class ManualBnBDistributionService {
                 .stream()
                 .mapToDouble(p -> p.getWeightForDay(currentDay, membersCount))
                 .sum();
+    }
+
+    // === Розрахунок групових таргетів для кожного дня ===
+    private Map<LocalDate, Double> calculateGroupTargets(List<LocalDate> sortedDates) {
+        Map<LocalDate, Double> result = new HashMap<>();
+        for (LocalDate day : sortedDates) {
+            double total = dailyWeightTarget(day);
+            result.put(day, total);
+        }
+        return result;
+    }
+
+    // === Розрахунок індивідуальних таргетів для кожного туриста ===
+    private void calculateIndividualTargets(FoodPlan plan, List<HikerState> states, Map<LocalDate, Double> groupTargets) {
+        double totalCoeff = plan.getMembers().stream()
+                .mapToDouble(h -> h.getWeightCoefficient())
+                .sum();
+
+        for (HikerState h : states) {
+            for (LocalDate day : sortedDates) {
+                double groupTarget = groupTargets.getOrDefault(day, 0.0);
+                double target = groupTarget * (h.getHiker().getWeightCoefficient() / totalCoeff);
+                h.setTargetForDay(day, target);
+            }
+        }
+    }
+
+    private boolean remainingPacksExistForDay(LocalDate day, List<HikerState> all) {
+        return packagesByDate.getOrDefault(day, Collections.emptyList()).stream()
+                .anyMatch(p -> all.stream().noneMatch(h -> h.getAssignedPackages().contains(p)));
     }
 }
