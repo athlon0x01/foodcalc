@@ -44,8 +44,8 @@ public class ManualBnBDistributionService {
     // Головний метод — пошук найкращого розподілу
     public List<HikerState> findBestDistribution(FoodPlan plan, List<PackageWithProducts> packages) {
         prepareData(packages);
-        log.info("Днів у плані: {}", sortedDates.size());
-        sortedDates.forEach(d -> log.info("  {} -> {} пакунків", d, packagesByDate.get(d).size()));
+        log.debug("Днів у плані: {}", sortedDates.size());
+        sortedDates.forEach(d -> log.debug("  {} -> {} пакунків", d, packagesByDate.get(d).size()));
 
         this.membersCount = plan.getMembers().size();
 
@@ -111,7 +111,7 @@ public class ManualBnBDistributionService {
             }
         }
         sortedDates = new ArrayList<>(packagesByDate.keySet());
-        sortedDates.sort(Comparator.naturalOrder()); // D0 → D1 → D2...
+        sortedDates.sort(Comparator.reverseOrder()); // D0 (дата фінішу) → D1 → D2... (дата старту)
     }
 
     // Рекурсивний обхід дерева рішень (Branch and Bound)
@@ -153,10 +153,9 @@ public class ManualBnBDistributionService {
         dayPackages.sort(Comparator.comparingDouble(
                 p -> -p.getWeightForDay(currentDay, membersCount)));
 
-        // для логування
-        log.info("\n День " + currentDay + ": " + dayPackages.size() + " пакунків");
+
         // Логування пакунків поточного дня
-        log.info("Пакунки на день " + currentDay + ":");
+        log.debug("День {}: {} пакунків для розподілу", currentDay, dayPackages.size());
         for (PackageWithProducts pack : dayPackages) {
             double total = pack.getProductsWeight(); // загальна вага всіх продуктів
             double dayWeight = pack.getPackageDays().stream()
@@ -164,7 +163,7 @@ public class ManualBnBDistributionService {
                     .mapToDouble(PackageDayProducts::getWeight)
                     .sum();
 
-            log.info("  - {} (загальна={}г; {}={}г)",
+            log.debug("  - {} (загальна={}г; {}={}г)",
                     pack.getFoodPackage().getName(),
                     String.format("%.1f", total),
                     currentDay,
@@ -181,18 +180,8 @@ public class ManualBnBDistributionService {
         // сортування hikers
         if (dayIndex == 0) {
             states.sort(Comparator.comparingDouble(s -> -s.getHiker().getWeightCoefficient())); // сильніші спочатку
-            log.info("\nСортування D" + dayIndex + " (" + sortedDates.get(dayIndex) + ") за силою:");
-            for (HikerState h : states) {
-                log.info("  {} (coeff={})", h.getHiker().getName(), String.format("%.2f", h.getHiker().getWeightCoefficient()));
-            }
         } else {
-            states.sort(Comparator.comparingDouble(s -> s.getCumulativeLoadFromLastDay(currentDay))); // менше навантажені спочатку
-
-            log.info("\nСортування D" + dayIndex + " (" + currentDay + ") за сумарним навантаженням:");
-            for (HikerState h : states) {
-                double load = h.getTotalWeightUpTo(currentDay);
-                log.info("  {} -> loadUpTo[{}]={} г", h.getHiker().getName(), currentDay, String.format("%.2f", load));
-            }
+            states.sort(Comparator.comparingDouble(s -> s.getTotalWeightUpTo(currentDay))); // менше навантажені спочатку
         }
 
         // розподіляємо всі пакунки поточного дня
@@ -209,7 +198,8 @@ public class ManualBnBDistributionService {
 
         // якщо всі пакунки поточного дня вже розподілені
         if (remainingPacks.isEmpty()) {
-            log.info("Всі пакунки дня {} розподілено.", currentDay);
+            if (dayIndex == sortedDates.size() - 1)
+                log.info("Всі пакунки останнього дня {} розподілено.", currentDay);
 
             // Перевіряємо, що всі туристи мають навантаження не менше 70% (перший день) або 90% (інші)
             for (HikerState h : states) {
@@ -247,13 +237,13 @@ public class ManualBnBDistributionService {
 
                         if (load < minAllowed || load > maxAllowed) {
                             log.warn("[{}] день {}: вихід за межі допустимого ({} < {} або {} > {})",
-                                    h.getHiker().getName(),
-                                    day,
+                                    h.getHiker().getName(), day,
                                     String.format("%.1f", load),
                                     String.format("%.1f", minAllowed),
                                     String.format("%.1f", load),
                                     String.format("%.1f", maxAllowed)
                             );
+
                             valid = false;
                         }
                     }
@@ -272,19 +262,6 @@ public class ManualBnBDistributionService {
                             .collect(Collectors.toList());
                     log.info("🔹 Нове найкраще рішення: середнє відхилення = {}%", String.format("%.2f", bestDeviation));
                 }
-
-                log.info("== РОЗПОДІЛ ПЕРЕД ЗБЕРЕЖЕННЯМ В bestSolution ==");
-                for (HikerState h : states) {
-                    log.info("Турист: {}", h.getHiker().getName());
-                    for (LocalDate day : sortedDates) {
-                        String assigned = h.getAssignedByDay()
-                                .getOrDefault(day, Set.of()).stream()
-                                .map(p -> p.getFoodPackage().getName())
-                                .collect(Collectors.joining(", "));
-                        log.info("  {} -> {}", day, assigned);
-                    }
-                }
-                log.info("===============================================");
             }
             return;
         }
@@ -380,7 +357,7 @@ public class ManualBnBDistributionService {
             // Якщо розподіл ще триває — перевіряємо тільки верхню межу
             boolean feasible = currentLoad <= maxAllowed;
 
-            log.info(
+            log.debug(
                     "    [{}] day={} load={} target={} max={} tol={} -> {}",
                     current.getHiker().getName(),
                     day,
