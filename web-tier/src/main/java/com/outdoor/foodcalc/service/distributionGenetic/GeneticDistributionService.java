@@ -81,7 +81,9 @@ public class GeneticDistributionService {
     }
 
     //  Оцінка пристосованості: штраф за >10%
-    private double evaluateFitness(Genotype<IntegerGene> gt, FoodPlan plan, List<PackageWithProducts> packages) {
+    private double evaluateFitness(Genotype<IntegerGene> gt,
+                                   FoodPlan plan,
+                                   List<PackageWithProducts> packages) {
         final int days = sortedDates.size();
         final int hikers = membersCount;
 
@@ -113,7 +115,8 @@ public class GeneticDistributionService {
 
         // Персональні таргети на день
         double totalCoef = plan.getMembers().stream()
-                .mapToDouble(m -> m.getWeightCoefficient()).sum();
+                .mapToDouble(m -> m.getWeightCoefficient())
+                .sum();
 
         double[][] target = new double[hikers][days];
         for (int h = 0; h < hikers; h++) {
@@ -121,49 +124,58 @@ public class GeneticDistributionService {
             for (int d = 0; d < days; d++) target[h][d] = groupPerDay[d] * share;
         }
 
-        // М’які штрафи: поза допуском — дуже сильний; всередині — легкий
-        double penaltyOutside = 0.0;
-        double penaltyInside  = 0.0;
+        // Штрафи
+        double penaltyOutsideDaily = 0.0; // вихід за ±10% у будь-який день
+        double penaltyInsideDaily  = 0.0; // легкий штраф всередині допуску
+        double penaltyTripTotals   = 0.0; // відхилення сумарної ваги туриста від його сумарного таргету
 
-        // Tolerance
-        final double tol = 0.10;
+        final double DAILY_TOL = 0.10;  // ±10% на день
+        final double TRIP_TOL  = 0.05;  // ±5% на підсумок по туристу
 
-
+        // Денний штраф
         for (int d = 0; d < days; d++) {
             for (int h = 0; h < hikers; h++) {
                 double t = target[h][d];
                 if (t <= 1e-9) continue;
 
-                double rel  = (load[h][d] - t) / t;      // відносне відхилення
-                double over = Math.abs(rel) - tol;       // наскільки вийшли за допуск
+                double rel  = (load[h][d] - t) / t;     // відносне відхилення
+                double over = Math.abs(rel) - DAILY_TOL;
 
                 if (over > 0) {
-                    // Сильний штраф поза допуском
-                    penaltyOutside += Math.pow(over, 4);
+                    // Сильний штраф за вихід за ±10% (кубічний)
+                    penaltyOutsideDaily += Math.pow(over, 3);
                 } else {
-                    // Легкий штраф всередині допуску, щоб тягнуло до таргету
-                    double inside = Math.abs(rel) / Math.max(tol, 1e-6);
-                    penaltyInside += 0.1 * inside * inside;
+                    // Усередині допуску — легке “притиснення” до таргету
+                    double inside = Math.abs(rel) / DAILY_TOL;
+                    penaltyInsideDaily += 0.1 * inside * inside;
                 }
             }
         }
 
-        // Баланс між туристами
-        double[] totalPerHiker = new double[hikers];
+        // Підсумковий штраф по туристу
         for (int h = 0; h < hikers; h++) {
-            double s = 0.0; for (int d = 0; d < days; d++) s += load[h][d];
-            totalPerHiker[h] = s;
+            double totLoad = 0.0, totTarget = 0.0;
+            for (int d = 0; d < days; d++) {
+                totLoad   += load[h][d];
+                totTarget += target[h][d];
+            }
+            if (totTarget > 1e-9) {
+                double relTot = (totLoad - totTarget) / totTarget;
+                double overTot = Math.abs(relTot) - TRIP_TOL;
+                if (overTot > 0) {
+                    // квадратний штраф достатньо агресивний
+                    penaltyTripTotals += overTot * overTot;
+                }
+            }
         }
-        double mean = Arrays.stream(totalPerHiker).average().orElse(0.0);
-        double var = 0.0; for (double w : totalPerHiker) var += (w - mean)*(w - mean);
-        double stdev = Math.sqrt(var / Math.max(1, hikers));
 
-        // ваги штрафів робимо агресивнішими
-        final double A = 200.0;   // сила за вихід за допуск (було менше)
-        final double B = 0.5;     // всередині допуску (було 1.0)
-        final double C = 0.02;    // дисбаланс між туристами (було 0.01)
+        // Ваги: щоденний вихід за межі — найсильніший; всередині — м’яко; підсумок по туристу — середньо-сильний
+        final double A = 200.0;  // поза ±10%/день
+        final double B = 0.4;    // усередині ±10%/день
+        final double D = 150.0;  // підсумок по туристу (±5%)
 
-        double cost = A * penaltyOutside + B * penaltyInside + C * stdev;
+        double cost = A * penaltyOutsideDaily + B * penaltyInsideDaily + D * penaltyTripTotals;
+
         return 1.0 / (1.0 + cost);
     }
 
